@@ -25,7 +25,7 @@ require_once($CFG->dirroot . '/filter/poodll/Browser.php');
 //unadded Justin 20120508 caused problems in repository and I guess elsewhere too ... need to investigate.
 //require_once($CFG->dirroot . '/filter/poodll/poodlllogiclib.php');
 
-global $PAGE,$FPLAYERJSLOADED;
+global $PAGE, $FPLAYERJSLOADED;
 //$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/mod/assignment/type/poodllonline/swfobject.js'));
 //$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/mod/assignment/type/poodllonline/javascript.php'));
 //these could be called with the head flag set to true, (see flowplayer eg below) and remove from
@@ -1975,31 +1975,19 @@ global $CFG, $DB, $COURSE;
 
 	
 //Given a user object, return the url to a picture for that user.
-function fetch_user_picture($user,$size){
-global $CFG;
+//Given a user object, return the url to a picture for that user.
+function fetch_user_picture($user,$size=35){
+global $CFG, $PAGE;
+	//we ignore size these days Justin 20120705
+	$upic = new user_picture($user);
+	if($upic){
+		return $upic->get_url($PAGE);
+	}else{
+		return "";
+	}
 
-	//get default sizes for non custom pics
-    if (empty($size)) {
-		//size = 35;
-        $file = 'f2';        
-    } else if ($size === true or $size == 1) {
-        //size = 100;
-		$file = 'f1';        
-    } else if ($size >= 50) {
-        $file = 'f1';
-    } else {
-        $file = 'f2';
-    }
-	
-	//now get the url for the pic
-    if ($user->picture) {  // Print custom user picture
-        require_once($CFG->libdir.'/filelib.php');
-        $src = get_file_url($user->id.'/'.$file.'.jpg', null, 'user');
-    } else {         // Print default user pictures (use theme version if available)
-        $src =  "$CFG->pixpath/u/$file.png";
-    }
-	return $src;
 }
+
 
 
 //embed a quizlet iframe
@@ -2202,13 +2190,14 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 	//init our return code
 	$retcode = "";
 	
+		
 	//added the global and conditional inclusion her because questions in a quiz don't get the JS loaded in the header
 	//it is only a problem in a quiz with student role. In other cases the load code at top of this file is on time. Justin 20120704
 	if(!$FPLAYERJSLOADED){
 		$retcode .= "<script src='" .$CFG->wwwroot . "/filter/poodll/flowplayer/flowplayer-3.2.9.min.js'></script>";
 		$FPLAYERJSLOADED=true;
 	}
-	
+
 	//this conditional including of JS is actually bad, we should do this the same way as the flowplayer-3.2.9.mins.ja
 	//by adding it to head. And then weirding around with the GLOBAL Justin 20120704
 	if($ismobile){
