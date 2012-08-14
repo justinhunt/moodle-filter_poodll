@@ -26,10 +26,18 @@ require_once($CFG->dirroot . '/filter/poodll/Browser.php');
 //unadded Justin 20120508 caused problems in repository and I guess elsewhere too ... need to investigate.
 //require_once($CFG->dirroot . '/filter/poodll/poodlllogiclib.php');
 
+<<<<<<< HEAD
 global $PAGE, $FPLAYERJSLOADED, $EMBEDJSLOADED;
 
 //I have tried to remove calls to these libraries inline, though I did not change stuff we 
 //dont use in poodll 2 yet(e.g pairwork). I will test those when I enable them, Justin 20120724
+=======
+global $PAGE, $FPLAYERJSLOADED;
+//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/mod/assignment/type/poodllonline/swfobject.js'));
+//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/mod/assignment/type/poodllonline/javascript.php'));
+//these could be called with the head flag set to true, (see flowplayer eg below) and remove from
+//other functions in this file. needs testing though. Justin 20120604
+>>>>>>> 79e791a967f7757d0fadf21dd092ffcefd7acb71
 $PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject.js'));
 $PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/javascript.php'));
 

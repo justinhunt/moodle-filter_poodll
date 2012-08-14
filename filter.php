@@ -145,8 +145,12 @@ function filter_poodll_callback(array $link){
 			break;
 			
 		case 'audiorecorder':
+<<<<<<< HEAD
 			$returnHtml= fetchSimpleAudioRecorder($filterprops['runtime'],
 						!empty($filterprops['savefolder']) ? $filterprops['savefolder'] : '');
+=======
+			$returnHtml= fetchSimpleAudioRecorder($filterprops['runtime'],$filterprops['savefolder']);
+>>>>>>> 79e791a967f7757d0fadf21dd092ffcefd7acb71
 			break;	
 			
 		case 'audiotest':
@@ -245,7 +249,19 @@ function filter_poodll_callback(array $link){
 				!empty($filterprops['permitfullscreen']) ? $filterprops['permitfullscreen'] : false );
 			break;	
 			
+<<<<<<< HEAD
 			
+=======
+		case 'newpoodllpairwork':
+			$returnHtml= fetch_embeddablepairclient($filterprops['runtime'],!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_newpairwidth,
+				!empty($filterprops['height']) ? $filterprops['height'] : $CFG->filter_poodll_newpairheight,
+				!empty($filterprops['chat']) ? $filterprops['chat'] : true,
+				!empty($filterprops['whiteboard']) ? $filterprops['whiteboard'] : false, 
+				!empty($filterprops['showvideo']) ? $filterprops['showvideo'] : false,
+				!empty($filterprops['whiteboardback']) ? $filterprops['whiteboardback'] : ''
+				);
+			break;	
+>>>>>>> 79e791a967f7757d0fadf21dd092ffcefd7acb71
 
 		case 'screensubscribe':
 			$returnHtml= fetch_screencast_subscribe($filterprops['runtime'],"",true,!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_showwidth,
@@ -320,6 +336,7 @@ function filter_poodll_callback(array $link){
 				!empty($filterprops['height']) ? $filterprops['height'] :  '326')
 				;
 			break;	
+<<<<<<< HEAD
 		
 		case 'snapshot':
 			$returnHtml= fetchSnapshotCamera(!empty($filterprops['updatecontrol']) ? $filterprops['updatecontrol'] :  'filename',
@@ -328,14 +345,20 @@ function filter_poodll_callback(array $link){
 				!empty($filterprops['height']) ? $filterprops['height'] :  '400')
 				;
 			break;	
+=======
+>>>>>>> 79e791a967f7757d0fadf21dd092ffcefd7acb71
 			
 		case 'teachersrecorder':
 			$returnHtml= fetch_teachersrecorder($filterprops['runtime'],$filterprops['savepath'], "");
 			break;	
 			
 		case 'videorecorder':
+<<<<<<< HEAD
 			$returnHtml= fetchSimpleVideoRecorder($filterprops['runtime'],
 						!empty($filterprops['savefolder']) ? $filterprops['savefolder'] : '');
+=======
+			$returnHtml= fetchSimpleVideoRecorder($filterprops['runtime'],$filterprops['savefolder']);
+>>>>>>> 79e791a967f7757d0fadf21dd092ffcefd7acb71
 			break;	
 			
 		case 'video': 
@@ -415,6 +438,7 @@ global $CFG;
 	//get the url and massage it a little
     $url = $link[1];
     $rawurl = str_replace('&amp;', '&', $url);
+<<<<<<< HEAD
 	
 	//test for presence of player selectors and serve up the correct player
 	$len = strlen($link[2]);
@@ -429,6 +453,10 @@ global $CFG;
 		$returnHtml= fetchSimpleAudioPlayer('auto',$rawurl,'http',$CFG->filter_poodll_audiowidth,$CFG->filter_poodll_audioheight,false,'Play');
 	}
 	
+=======
+
+    $returnHtml= fetchSimpleAudioPlayer('auto',$rawurl,'http',$CFG->filter_poodll_audiowidth,$CFG->filter_poodll_audioheight,false,'Play');
+>>>>>>> 79e791a967f7757d0fadf21dd092ffcefd7acb71
 	return $returnHtml;
 }
 
@@ -453,6 +481,7 @@ global $CFG;
 		$width = $link[3];
 		$height = $link[4];
 	}
+<<<<<<< HEAD
 	
 	//get the url and massage it a little
     $url = $link[1];
@@ -474,5 +503,10 @@ global $CFG;
 		$returnHtml= fetchSimpleVideoPlayer('auto',$url,$width,$height,'http',false,true , 'Play');
 	}
 	
+=======
+
+
+	$returnHtml= fetchSimpleVideoPlayer('auto',$url,$width,$height,'http',false,true , 'Play');
+>>>>>>> 79e791a967f7757d0fadf21dd092ffcefd7acb71
 	return $returnHtml;
 }
