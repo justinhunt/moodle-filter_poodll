@@ -14,7 +14,7 @@
 * Includes and requires
 */
 //relative path is dangerous, so only use it if we have no $CFG already Justin 20120424
-if(!$CFG){
+if(!isset($CFG)){
 require_once("../../config.php");
 }
 require_once($CFG->dirroot . '/filter/poodll/poodllinit.php');
@@ -186,13 +186,20 @@ require_once($CFG->libdir . '/filelib.php');
 //Fetch the users for this course 
 //later we should distinguish teachers and students maybe
 function fetch_course_users($courseid){
-global $CFG;
+global $CFG,$DB;
 
 	
 	//fetch user objects for all users in course
 	$coursecontext = get_context_instance(CONTEXT_COURSE, $courseid);	
+	
+	//get course and require requester is logged in
+	if (! $course = $DB->get_record('course', array('id' => $courseid))) {
+		print_error('invalidcourseid');
+	}
+	require_course_login($course);
+	
 	//'u.id, u.username, u.firstname, u.lastname, u.picture'
-	$users = get_users_by_capability($coursecontext, 'moodle/course:view');
+	$users = get_users_by_capability($coursecontext, 'moodle/user:viewdetails');
 
 	//usersummary variable
 	$usersummary ="";
@@ -757,14 +764,19 @@ global $CFG, $DB;
 
 
 function fetchcourseitems($courseid){
-global $CFG;
+global $CFG,$DB;
 
 
 	
 	$xml_output="";
-	$course = get_record('course', 'id', $courseid);
 
-	 $modinfo =& get_fast_modinfo($course);
+	if (! $course = $DB->get_record('course', array('id' => $courseid))) {
+		print_error('invalidcourseid');
+	}
+	require_course_login($course);
+
+
+	$modinfo =& get_fast_modinfo($course);
 
 
 	get_all_mods($courseid, $mods, $modnames, $modnamesplural, $modnamesused);
@@ -827,7 +839,4 @@ global $CFG;
 
 
 }
-
-
-	
 ?>

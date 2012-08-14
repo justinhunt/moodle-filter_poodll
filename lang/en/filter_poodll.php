@@ -29,10 +29,14 @@ $string['videowidth'] = 'Video Player Width';
 $string['videoheight'] = 'Video Player Height';
 $string['videosplash'] = 'Show Simple Video Splash';
 $string['videosplashdetails'] = 'Splash screen is shown for Flowplayer only.';
+$string['thumbnailsplash'] = 'Use Thumbnail as Splash';
+$string['thumbnailsplashdetails'] = 'Thumbnail splash uses first frame of video as the splash image. Only use this when using server tokyo.poodll.com.';
 $string['audiowidth'] = 'Audio Player Width';
 $string['audioheight'] = 'Audio Player Height';
 $string['audiosplash'] = 'Show Simple Audio Splash';
 $string['audiosplashdetails'] = 'Splash screen is shown for Flowplayer only.';
+$string['miniplayerwidth'] = 'Mini Player Width';
+$string['wordplayerfontsize'] = 'Word Player Fontsize';
 
 
 $string['talkbackwidth'] = 'Talkback Player Width';

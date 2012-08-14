@@ -20,7 +20,7 @@ global $CFG;
 //but the relative path fails from a quiz but it has already been set in that case
 //, so we check before we call it, to cover both bases
 
-if(!$CFG){
+if(!isset($CFG)){
 require_once("../../config.php");
 }
 //require_once('../filter/poodll/poodllinit.php');
@@ -35,6 +35,11 @@ require_once($CFG->libdir . '/filelib.php');
 	$contextid  = optional_param('contextid', 0, PARAM_INT);  // the id of the course 
 	$courseid  = optional_param('courseid', 0, PARAM_INT);  // the id of the course 
 	$moduleid  = optional_param('moduleid', 0, PARAM_INT);  // the id of the module 
+	//added justin 20120803 careful here, I think $component is a php keyword or something
+	//it screwed the whole world
+	$comp = optional_param('component', "", PARAM_TEXT);  // the component
+	$farea = optional_param('filearea', "", PARAM_TEXT);  // the filearea
+	
 	$itemid  = optional_param('itemid', 0, PARAM_INT);  // the id of the module
 	$hash  = optional_param('hash', "", PARAM_TEXT);  // file or dir hash
 	$requestid  = optional_param('requestid', "", PARAM_TEXT);  // file or dir hash
@@ -43,6 +48,14 @@ require_once($CFG->libdir . '/filelib.php');
 	$paramthree  = optional_param('paramthree', "", PARAM_TEXT);  // nature of value depends on datatype, maybe filearea
 
 	switch($datatype){
+		
+		case "uploadfile":
+			header("Content-type: text/xml");
+			echo "<?xml version=\"1.0\"?>\n";
+			//uploadfile filedata(base64), fileextension (needs to be cleaned), blah blah 
+			//paramone is the file data, paramtwo is the file extension, requestid is the actionid
+			$returnxml = uploadfile($paramone,$paramtwo, $requestid,$contextid, $comp, $farea,$itemid);
+			break;
 		
 		case "poodllpluginfile":
 			//poodllpluginfile($contextid,$component,$filearea,$itemid,$filepath,$filename);
@@ -187,7 +200,89 @@ require_once($CFG->libdir . '/filelib.php');
 	return;
 
 
+//Fetch a sub directory list for file explorer  
+//calls itself recursively, dangerous
+function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $farea,$itemid){
+	global $CFG,$USER;
+	
+	//see instance_remotedownload for more on this method
+	//we should tighten up here a little I think
 
+	//setup our return object
+	$return=fetchReturnArray(true);
+	
+	//make sure nobodyapassed in a bogey file extension
+	switch($fileextension){
+		case "mp3": 
+		case "flv":
+		case "jpg":
+		case "png":
+		case "xml":
+		case "mp4":
+			break;
+		default: $fileextension="";
+	}
+	
+	//init our fs object
+	$fs = get_file_storage();
+	//assume a root level filepath
+	$filepath="/";
+	
+
+		
+	
+	//make our filerecord
+	 $record = new stdClass();
+     $record->filearea = $farea;
+    $record->component = $comp;
+    $record->filepath = $filepath;
+    $record->itemid   = $itemid;
+    $record->license  = $CFG->sitedefaultlicense;
+    $record->author   = 'Moodle User';
+	$record->contextid = $contextid;
+    $record->userid    = $USER->id;
+    $record->source    = '';
+        
+  
+	//make filename and set it
+	$filename = "upfile_" . rand(100,32767) . rand(100,32767) . "." . $fileextension;
+	$record->filename = $filename;
+	
+	
+	//in most cases we will be storing files in a draft area and lettign Moodle do the rest
+	//one condition of using this function is that only one file can be here,
+	//attachment limits in question. could be bypassed if reason enough
+		if($farea=='draft'){
+			$fs->delete_area_files($contextid,$comp,$farea,$itemid);
+		}
+	
+	//if file already exists, raise an error
+	if($fs->file_exists($contextid,$comp,$farea,$itemid,$filepath,$filename)){
+		$return['success']=false;
+		array_push($return['messages'],"Already exists, file with filename:" . $filename );
+	}else{
+	
+		//actually make the file
+		$filedata = base64_decode($filedata);
+		 $stored_file = $fs->create_file_from_string($record, $filedata);
+		//if successful return filename
+		if($storedfile){
+			array_push($return['messages'],$filename );
+		//if unsuccessful, return error
+		}else{
+			$return['success']=false;
+			array_push($return['messages'],"unable to save file with filename:" . $filename );
+		}
+	
+	}
+		
+	//we process the result for return to browser
+	$xml_output=prepareXMLReturn($return, $actionid);	
+	
+	//we return to widget/client the result of our file operation
+	return $xml_output;
+	
+}
 
 //Fetch a sub directory list for file explorer  
 //calls itself recursively, dangerous
@@ -601,7 +696,7 @@ function poodllpluginfile($contextid,$component,$filearea,$itemid,$filepath,$fil
 
 /* download file from remote server and stash it in our file area */
 //15,'123456789.flv','user','draft','746337947','99999'
-function instance_remotedownload($contextid,$filename,$component, $filearea,$itemid, $requestid){
+function instance_remotedownload($contextid,$filename,$component, $filearea,$itemid, $requestid, $filepath='/'){
 global $CFG,$USER;
 //set up return object	
 //set up return object	
@@ -614,6 +709,8 @@ $return=fetchReturnArray(true);
 	$ext = substr($filename,-4); 
 	if($ext ==".mp4" || $ext ==".mp3"){
 		$jsp = "convert.jsp";
+	}else if($ext==".png"){
+		$jsp="snapshot.jsp";
 	}
 
 $red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
@@ -628,7 +725,9 @@ $red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 		$fs = get_file_storage();
 		$browser = get_file_browser();
 		
-		$filepath='/';
+		
+		//we set a default if not passed in, as of 20120805 fr questions
+		//$filepath='/';
 		
 	//create the file record for our new file
 		$file_record = array(

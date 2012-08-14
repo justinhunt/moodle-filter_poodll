@@ -78,7 +78,7 @@ div.poodllplaylist a em {
     height:40px;
 
     /* black background with a gradient */
-    background:#000 url(../filter/poodll/flowplayer/fpjscontrols.png) repeat-x 0 -4px;
+    background:#000 url(/filter/poodll/flowplayer/fpjscontrols.png) repeat-x 0 -4px;
     width:400px;
 }
 
@@ -89,7 +89,7 @@ div.poodllplaylist a em {
     height: 40px;
     display:block;
     text-indent:-9999em;
-    background:url(../filter/poodll/flowplayer/fpjscontrols.png) no-repeat 10px -61px;
+    background:url(/filter/poodll/flowplayer/fpjscontrols.png) no-repeat 10px -61px;
     cursor:pointer;
     border-right:1px solid #000;
 }
@@ -174,7 +174,7 @@ div.poodllplaylist a em {
     padding:8px 0;
     cursor:pointer;
     text-indent:-9999em;
-    background:url(../filter/poodll/flowplayer/fpjscontrols.png) no-repeat 5px -323px;
+    background:url(/filter/poodll/flowplayer/fpjscontrols.png) no-repeat 5px -323px;
 }
 
 .fpjscontrols .mute:hover {

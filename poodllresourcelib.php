@@ -21,27 +21,30 @@ define('MR_TYPETALKBACK',2);
  
 require_once($CFG->dirroot . '/filter/poodll/poodllinit.php');
 require_once($CFG->dirroot . '/filter/poodll/Browser.php');
+
 //added Justin 20120424 
 //unadded Justin 20120508 caused problems in repository and I guess elsewhere too ... need to investigate.
 //require_once($CFG->dirroot . '/filter/poodll/poodlllogiclib.php');
 
-global $PAGE,$FPLAYERJSLOADED;
-//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/mod/assignment/type/poodllonline/swfobject.js'));
-//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/mod/assignment/type/poodllonline/javascript.php'));
-//these could be called with the head flag set to true, (see flowplayer eg below) and remove from
-//other functions in this file. needs testing though. Justin 20120604
+global $PAGE, $FPLAYERJSLOADED, $EMBEDJSLOADED;
+
+//I have tried to remove calls to these libraries inline, though I did not change stuff we 
+//dont use in poodll 2 yet(e.g pairwork). I will test those when I enable them, Justin 20120724
 $PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject.js'));
 $PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/javascript.php'));
-$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
 
-//we need this for flowplayer and it only works in head (hence the 'true' flag)
-//BUT in quizzes , with only student role, header is output before this point for some reason
-//so we need to set a flag to tell flowplayer function (way below) to load it, but just once, hence the global Justin 20120704
+
+//we need this for flowplayer and embedding it only works in head (hence the 'true' flag)
+//BUT in quizzes or poodll repository , with only student role, header is output before this point for some reason
+//so we need to set a flag to tell widgets to load it, but just once, hence the globals Justin 20120704
 if(!$PAGE->requires->is_head_done()){
 	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot .'/filter/poodll/flowplayer/flowplayer-3.2.9.min.js'),true);
+	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'),true);
 	$FPLAYERJSLOADED=true;
+	$EMBEDJSLOADED=true;
 }else{
 	$FPLAYERJSLOADED=false;
+	$EMBEDJSLOADED=false;
 }
 
 //added for moodle 2
@@ -239,11 +242,13 @@ function fetch_pairclient($runtime, $chat=true, $whiteboard=true, $showvideo=fal
 	//Set the servername
 	$flvserver = $CFG->poodll_media_server;
 	
+	//here in moodle 2.3 we may want to add the servername to this string
+	$courseid = $COURSE->id;
 
 
 	$baseUrl = $CFG->wwwroot . '/filter/poodll/flash/newpairclient.lzx.swf9.swf';
-	$params = '?red5url='.urlencode($flvserver) . '&mename=' . $mename . '&mefullname=' . $mefullname . '&mepictureurl=' . $mepictureurl 
-			. '&chat=' . $chat  . '&useroles=' . $useroles  . '&whiteboard=' . $whiteboard . '&whiteboardback=' . $whiteboardback . '&showvideo=' . $showvideo  . '&courseid=' . $COURSE->id .'&teacherallstreamname=voiceofauthority&lzproxied=false';
+	$params = '?red5url='.urlencode($flvserver) . '&mename=' . $mename . '&mefullname=' . $mefullname .   '&mepictureurl=' . urlencode($mepictureurl) 
+			. '&chat=' . $chat  . '&courseid=' . $courseid . '&useroles=' . $useroles  . '&whiteboard=' . $whiteboard . '&whiteboardback=' . $whiteboardback . '&showvideo=' . $showvideo  .'&teacherallstreamname=voiceofauthority&lzproxied=false';
 	return $baseUrl . $params;	
 }
 
@@ -618,6 +623,121 @@ $params = array();
 
 }
 
+function fetchMP3RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid){
+global $CFG, $USER, $COURSE;
+
+//Set the microphone config params
+$micrate = $CFG->filter_poodll_micrate;
+$micgain = $CFG->filter_poodll_micgain;
+$micsilence = $CFG->filter_poodll_micsilencelevel;
+$micecho = $CFG->filter_poodll_micecho;
+$micloopback = $CFG->filter_poodll_micloopback;
+$micdevice = $CFG->filter_poodll_studentmic;
+
+//removed from params to make way for moodle 2 filesystem params Justin 20120213
+$width="530";
+$height="220";
+$poodllfilelib= $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+
+//If we are using course ids then lets do that
+//else send -1 to widget (ignore flag)
+if ($CFG->filter_poodll_usecourseid){
+	$courseid = $COURSE->id;
+}else{
+	$courseid = -1;
+} 
+
+
+if ($updatecontrol == "saveflvvoice"){
+	$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
+}else{
+	$savecontrol = "";
+}
+
+$params = array();
+
+		$params['rate'] = $micrate;
+		$params['gain'] = $micgain;
+		$params['prefdevice'] = $micdevice;
+		$params['loopback'] = $micloopback;
+		$params['echosupression'] = $micecho;
+		$params['silencelevel'] = $micsilence;
+		$params['course'] = $courseid;
+		$params['updatecontrol'] = $updatecontrol;
+		$params['uid'] = $userid;
+		//for file system in moodle 2
+		$params['poodllfilelib'] = $poodllfilelib;
+		$params['contextid'] = $contextid;
+		$params['component'] = $component;
+		$params['filearea'] = $filearea;
+		$params['itemid'] = $itemid;
+	
+    	$returnString=  fetchSWFWidgetCode('PoodLLMP3Recorder.lzx.swf10.swf',
+    						$params,$width,$height,'#CFCFCF');
+    						
+    	$returnString .= 	 $savecontrol;
+    						
+    	return $returnString ;
+
+}
+
+function fetchWhiteboardForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid){
+global $CFG, $USER, $COURSE;
+   
+ //Set the servername 
+///$flvserver = $CFG->poodll_media_server;
+
+//If standalone submission will always be standalone ... or will it ...
+//pair submissions could be interesting ..
+$boardname="solo";
+
+//whats my name...? my name goddamit, I can't remember  N A mm eeeE
+//$mename=$USER->username;		
+
+	//removed from params to make way for moodle 2 filesystem params Justin 20120213
+	$width="640";
+	$height="500";
+	$poodllfilelib= $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+
+
+	//the control to put the filename of our picture
+	if ($updatecontrol == "saveflvvoice"){
+		$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
+	}else{
+		$savecontrol = "";
+	}
+
+	$params = array();
+
+
+		$params['updatecontrol'] = $updatecontrol;
+		$params['boardname'] = $boardname;
+		$params['imageurl'] = $imageurl;
+		$params['courseid'] = $COURSE->id;
+		//for file system in moodle 2
+		$params['poodllfilelib'] = $poodllfilelib;
+		$params['contextid'] = $contextid;
+		$params['component'] = $component;
+		$params['filearea'] = $filearea;
+		$params['itemid'] = $itemid;
+		
+		//normal mode is a standard scribble with a cpanel
+		//simple mode has a simple double click popup menu
+		if ($mode=='normal'){
+			$returnString =  fetchSWFWidgetCode('scribblesubmit.lzx.swf9.swf',
+				$params,$width,$height,'#FFFFFF');	
+		}else{
+			
+			$returnString =  fetchSWFWidgetCode('scribblesubmit.lzx.swf9.swf',
+					$params,$width,$height,'#FFFFFF');
+		}
+
+    						
+    	$returnString .= 	 $savecontrol;
+    						
+    	return $returnString ;
+
+}
 
 function fetchAudioRecorderForSubmission($runtime, $assigname, $updatecontrol="saveflvvoice", $contextid,$component,$filearea,$itemid){
 global $CFG, $USER, $COURSE;
@@ -744,11 +864,16 @@ $userid = $USER->username;
     }elseif($runtime=='swf'){
     	$returnString=  fetchSWFWidgetCode('stopwatch.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
+	
+	 }elseif($runtime=='js'){
+    	$returnString=   fetchJSWidgetCode('stopwatch.lzx.js',
+    						$params,$width,$height,'#FFFFFF');
+							
 	 }elseif($runtime=='auto'){
     	$returnString=  fetchAutoWidgetCode('stopwatch.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
     }else{
-    	$returnString=  fetchJSWidgetCode('stopwatch.lzx.js',
+    	$returnString=  fetchAutoWidgetCode('stopwatch.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
     }
    						
@@ -853,18 +978,22 @@ $userid = $USER->username;
 		$params['mode'] = $mode;
 		
 		//LZ string if master/save  mode and not admin => show slave mode
-	//otherwise show stopwatch
+	//otherwise show countdown timer
 	if ($mode=='master' && !$isadmin) {
     	$returnString=  fetchSWFWidgetCode('slaveview.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
     }elseif($runtime=='swf'){
     	$returnString=  fetchSWFWidgetCode('countdowntimer.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
+	}elseif($runtime=='js'){
+		$returnString=  fetchJSWidgetCode('countdowntimer.lzx.js',
+    						$params,$width,$height,'#FFFFFF');
+							
 	}elseif($runtime=='auto'){
     	$returnString=  fetchAutoWidgetCode('countdowntimer.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
-    }else{
-    	$returnString=  fetchJSWidgetCode('countdowntimer.lzx.js',
+    }else{		
+		$returnString=  fetchAutoWidgetCode('countdowntimer.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
     
     
@@ -889,11 +1018,17 @@ global $CFG;
     	if($runtime=="swf"){
     		$returnString=  fetchSWFWidgetCode('counter.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
+							
+		}elseif($runtime=="js"){
+    		$returnString=  fetchJSWidgetCode('counter.lzx.js',
+    						$params,$width,$height,'#FFFFFF');
+							
 		}elseif($runtime=="auto"){
     		$returnString=  fetchAutoWidgetCode('counter.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
+							
 		}else{
-			$returnString=  fetchJSWidgetCode('counter.lzx.js',
+			$returnString=  fetchAutoWidgetCode('counter.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
 		}
    						
@@ -914,11 +1049,16 @@ global $CFG;
 	if($runtime=="swf"){
     	$returnString=  fetchSWFWidgetCode('dice.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
+	
+	}elseif($runtime=="js"){
+    	$returnString=   fetchJSWidgetCode('dice.lzx.js',
+    						$params,$width,$height,'#FFFFFF');
+							
 	}elseif($runtime=="auto"){
     	$returnString=  fetchAutoWidgetCode('dice.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
 	}else{
-		$returnString=  fetchJSWidgetCode('dice.lzx.js',
+		$returnString=  fetchAutoWidgetCode('dice.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
 	}
     	
@@ -1184,6 +1324,107 @@ $params = array();
 }
 
 //Audio playltest player with defaults, for use with directories of audio files
+function fetch_miniplayer($runtime, $src,$protocol="http",$imageurl="",$width=0,$height=0,$iframe=false){
+global  $CFG, $COURSE;
+
+		//support legacy files, just in case we have an old timer ...
+		if($protocol=='rtmp' || $protocol=='legacy'){
+			$src= $CFG->wwwroot . "/file.php/" .  $COURSE->id . "/" . $src;
+			$type = 'http';
+		}
+		
+		if($width==0){
+			$width=$CFG->filter_poodll_miniplayerwidth;
+		}
+		if($height==0){
+			$height=$CFG->filter_poodll_miniplayerwidth;
+		}
+	
+		$params = array();
+
+		$params['src']= $src;//urlencode($src);
+	
+
+		//for html5 players we can make a picture link to play the audio
+		//the default is in the poodll filter directory
+		if($imageurl==""){
+			$imageurl = $CFG->wwwroot . "/filter/poodll/pix/MiniPlayIcon32.png";
+		}
+    						
+    	
+	//depending on runtime, we show a SWF or html5 player			
+	if($runtime=="js" || ($runtime=="auto" && isMobile())){
+		$returnString=  "<a onclick=\"this.firstChild.play()\"><audio src=\"$src\"></audio><img height=\"$height\" width=\"$width\" src=\"" . 
+				$imageurl . 
+				"\"/></a>";
+		
+	}else{
+		//in the autolinked glossary popup, JS is not run and embed fails. In that case we use an iframe justin 20120814 
+		if($iframe){
+				$returnString= fetchIFrameSWFWidgetCode('poodllminiplayer.lzx.swf9.swf',
+							$params,$width,$height,'#FFFFFF');
+		}else{		
+    			$returnString=  fetchSWFWidgetCode('poodllminiplayer.lzx.swf9.swf',
+							$params,$width,$height,'#FFFFFF');
+		}
+	}
+		
+		
+		return $returnString;
+
+
+}
+
+//Audio playltest player with defaults, for use with directories of audio files
+function fetch_wordplayer($runtime, $src,$word,$fontsize, $protocol="http", $width="0",$height="0",$iframe=false){
+
+global  $CFG, $COURSE;
+
+		//support legacy files, just in case we have an old timer ...
+		if($protocol=='rtmp' || $protocol=='legacy'){
+			$src= $CFG->wwwroot . "/file.php/" .  $COURSE->id . "/" . $src;
+			$type = 'http';
+		}
+
+		//fontsize if not passed in is set to the filtersettings default
+		if ($fontsize==0){
+			$fontsize = $CFG->filter_poodll_wordplayerfontsize;
+		}
+		
+		if($width ==0 || $height == 0){
+			$height=$fontsize + (int)($fontsize * 0.5);
+			$width=(int)($fontsize * 0.8) * strlen($word);
+		}
+		
+		$params = array();
+		//$params['red5url'] = urlencode($flvserver);
+		$params['src']=urlencode($src);
+		$params['word']= $word;
+		$params['fontsize']= $fontsize;
+	
+		//depending on runtime, we show a SWF or html5 player					
+		if($runtime=="js" || ($runtime=="auto" && isMobile())){
+			$returnString=  "<a onclick=\"this.firstChild.play()\"><audio src=\"$src\"></audio>$word</a>";
+		
+		}else{
+			//in the autolinked glossary popup, JS is not run and embed fails. In that case we use an iframe justin 20120814 
+			if($iframe){
+				$returnString= fetchIFrameSWFWidgetCode('poodllwordplayer.lzx.swf9.swf',
+							$params,$width,$height,'#FFFFFF');
+			}else{
+				$returnString=  fetchSWFWidgetCode('poodllwordplayer.lzx.swf9.swf',
+							$params,$width,$height,'#FFFFFF');
+			}
+		}
+							
+							
+    						
+    	return $returnString;
+
+
+}
+
+//Audio playltest player with defaults, for use with directories of audio files
 function fetchAudioTestPlayer($runtime, $playlist,$protocol="", $width="400",$height="150",$filearea="content"){
 global $CFG, $USER, $COURSE;
 
@@ -1231,19 +1472,8 @@ global $CFG, $USER, $COURSE;
 $moduleid = optional_param('id', 0, PARAM_INT);    // The ID of the current module (eg moodleurl/view.php?id=X )
 
 
-//determine if we are mobile or not
- $browser = new Browser();
-	 switch($browser->getBrowser()){
-		case Browser::BROWSER_IPAD:
-		case Browser::BROWSER_IPOD:
-		case Browser::BROWSER_IPHONE:
-		case Browser::BROWSER_ANDROID:
-			$ismobile = true;
-			break;
-				
-		default: 
-			$ismobile = false;
-	}
+//determine if we are on a mobile device or not
+ $ismobile = isMobile();
 
 	//if its a poodll player we want an xml feed
 	//if its jw or fp we want an rss feed
@@ -1326,19 +1556,8 @@ $flvserver = $CFG->poodll_media_server;
 $courseid= $COURSE->id;
 $useplayer=$CFG->filter_poodll_defaultplayer;
 
-//determine if we are mobile or not
- $browser = new Browser();
-	 switch($browser->getBrowser()){
-		case Browser::BROWSER_IPAD:
-		case Browser::BROWSER_IPOD:
-		case Browser::BROWSER_IPHONE:
-		case Browser::BROWSER_ANDROID:
-			$ismobile = true;
-			break;
-				
-		default: 
-			$ismobile = false;
-	}
+//determine if we are on a mobile device or not
+ $ismobile = isMobile();
 
 	//Set our use protocol type
 	//if one was not passed, then it may have been tagged to the url
@@ -1499,19 +1718,8 @@ $flvserver = $CFG->poodll_media_server;
 $courseid= $COURSE->id;
 $useplayer=$CFG->filter_poodll_defaultplayer;
 
-//determine if we are mobile or not
- $browser = new Browser();
-	 switch($browser->getBrowser()){
-		case Browser::BROWSER_IPAD:
-		case Browser::BROWSER_IPOD:
-		case Browser::BROWSER_IPHONE:
-		case Browser::BROWSER_ANDROID:
-			$ismobile = true;
-			break;
-				
-		default: 
-			$ismobile = false;
-	}
+//determine if we are on a mobile device or not
+$ismobile=isMobile();
 
 
 	//Massage the media file name if we have a username variable passed in.	
@@ -1975,31 +2183,19 @@ global $CFG, $DB, $COURSE;
 
 	
 //Given a user object, return the url to a picture for that user.
-function fetch_user_picture($user,$size){
-global $CFG;
+//Given a user object, return the url to a picture for that user.
+function fetch_user_picture($user,$size=35){
+global $CFG, $PAGE;
+	//we ignore size these days Justin 20120705
+	$upic = new user_picture($user);
+	if($upic){
+		return $upic->get_url($PAGE);
+	}else{
+		return "";
+	}
 
-	//get default sizes for non custom pics
-    if (empty($size)) {
-		//size = 35;
-        $file = 'f2';        
-    } else if ($size === true or $size == 1) {
-        //size = 100;
-		$file = 'f1';        
-    } else if ($size >= 50) {
-        $file = 'f1';
-    } else {
-        $file = 'f2';
-    }
-	
-	//now get the url for the pic
-    if ($user->picture) {  // Print custom user picture
-        require_once($CFG->libdir.'/filelib.php');
-        $src = get_file_url($user->id.'/'.$file.'.jpg', null, 'user');
-    } else {         // Print default user pictures (use theme version if available)
-        $src =  "$CFG->pixpath/u/$file.png";
-    }
-	return $src;
 }
+
 
 
 //embed a quizlet iframe
@@ -2104,8 +2300,9 @@ function fetchAutoWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFF
 	 return $ret;
 }
 
+//This is used for all the flash widgets
 function fetchSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF"){
-	global $CFG, $PAGE;
+	global $CFG, $PAGE, $EMBEDJSLOADED;
 	
 	//build the parameter string out of the passed in array
 	$params="?";
@@ -2119,12 +2316,23 @@ function fetchSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFF
 	//if we wish to pass in more common params, here is the place
 	//eg. $params .= '&modulename=' . $PAGE->cm->modname;
 	
+	//commented out embed-compressed.js, because called it more responsibly in head at top of this file
+	//justin 20120724
+	
+	//added the global and conditional inclusion of embed js here because repo doesn't get the JS loaded in the header
+	//In other cases the load code at top of this file is on time. Justin 20120704
+	$embedcode="";
+	if(!$EMBEDJSLOADED){
+		$embedcode .= "<script type=\"text/javascript\" src=\"{$CFG->wwwroot}/filter/poodll/flash/embed-compressed.js\"></script> ";
+		$EMBEDJSLOADED=true;
+	}
+	
 	$retcode = "
         <table><tr><td>
         <script type=\'text/javascript\'>
             lzOptions = { ServerRoot: \'\'};
-        </script>
-        <script type=\"text/javascript\" src=\"{$CFG->wwwroot}/filter/poodll/flash/embed-compressed.js\"></script>
+        </script> 
+       " . $embedcode . "
         <script type=\"text/javascript\">
 " . '	lz.embed.swf({url: \'' . $CFG->wwwroot . '/filter/poodll/flash/' . $widget . $params . 
 		 '\', bgcolor: \'' . $bgcolor . '\', cancelmousewheel: true, allowfullscreen: true, width: \'' .$width . '\', height: \'' . $height . '\', id: \'lzapp_' . rand(100000, 999999) . '\', accessible: \'false\'});	
@@ -2141,6 +2349,7 @@ function fetchSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFF
 
 }
 
+//this is only used for JW player, ie not really used
 function fetchSWFObjectWidgetCode($widget,$flashvarsArray,$width,$height,$bgcolor){
 	global $CFG, $PAGE;
 	//this doesn't work here or at top of file!!
@@ -2170,6 +2379,27 @@ function fetchSWFObjectWidgetCode($widget,$flashvarsArray,$width,$height,$bgcolo
 
 	
 	
+}
+
+//Here we try to detect if this is a mobile device or not
+//this is used to determine whther to return a JS or SWF widget
+function isMobile(){
+	
+	$browser = new Browser();
+	 switch($browser->getBrowser()){
+		case Browser::BROWSER_IPAD:
+		case Browser::BROWSER_IPOD:
+		case Browser::BROWSER_IPHONE:
+		case Browser::BROWSER_ANDROID:
+			$ismobile = true;
+			break;
+				
+		default: 
+			$ismobile = false;
+	}
+
+	return $ismobile;
+
 }
 
 function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=false, $playlisturlstring ="",$loop='false'){
@@ -2202,13 +2432,14 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 	//init our return code
 	$retcode = "";
 	
+		
 	//added the global and conditional inclusion her because questions in a quiz don't get the JS loaded in the header
 	//it is only a problem in a quiz with student role. In other cases the load code at top of this file is on time. Justin 20120704
 	if(!$FPLAYERJSLOADED){
 		$retcode .= "<script src='" .$CFG->wwwroot . "/filter/poodll/flowplayer/flowplayer-3.2.9.min.js'></script>";
 		$FPLAYERJSLOADED=true;
 	}
-	
+
 	//this conditional including of JS is actually bad, we should do this the same way as the flowplayer-3.2.9.mins.ja
 	//by adding it to head. And then weirding around with the GLOBAL Justin 20120704
 	if($ismobile){
@@ -2311,7 +2542,13 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 			//best to have a splash screen to prevent browser hangs on many flashplayers in a forum etc
 			if($CFG->filter_poodll_videosplash){
 				$clip = "{ autoPlay: true }";
-				$splash = "<img src='" . $CFG->wwwroot . "/filter/poodll/flowplayer/videosplash.jpg' alt='click to play video' width='" . $width . "' height='" . $height . "'/>";
+				if($CFG->filter_poodll_thumbnailsplash){
+					$splashpath = fetchVideoSplash($path);
+				}else{
+					$splashpath=false;
+				}
+				if(!$splashpath){$splashpath = $CFG->wwwroot . "/filter/poodll/flowplayer/videosplash.jpg";}
+				$splash = "<img src='" . $splashpath . "' alt='click to play video' width='" . $width . "' height='" . $height . "'/>";
 			}else{
 				$clip = "{ autoPlay: false }";
 				$splash="";
@@ -2412,6 +2649,100 @@ $PAGE->requires->js_init_call('M.filter_poodll_flowplayer329min.flowplayer', arr
 	return $retcode;
 }
 
+function fetchVideoSplash($src){
+		global $CFG;
+
+	 $src = urldecode($src);
+	 
+	 //if this is not a local file , quit.
+	 $possy = strpos($src,"pluginfile.php");
+	 if(!$possy){return false;}
+	 
+	 //get relative path
+	 //e.g http://m23.poodll.com/pluginfile.php/59/mod_page/content/20/360332574229687.flv
+	 //should become /59/mod_page/content/20/360332574229687.flv
+	 $relpath = substr($src,$possy + 14);
+	 
+
+//These are two paths from testing, they can be deleted	 
+//$relpath="/22/mod_assignment/submission/1/230358740780502.flv";
+//$relpath="/21/mod_page/content/0/808474302291870.flv";
+
+//like everything file related with questions, it doesn't work
+//it looks in general like getting a hash from a url is dodgey anyway
+//this is the seed of a way we might do it for qs, but really for qs its not v imp.
+//we can come back on it
+/*
+$relarray = explode('/',$relpath);
+$len = $count($relarray);
+$qitemid = $relarray($len-2);
+$qfilename = $relarray($len-1);
+*/
+
+//remove any pesky forcedownload params
+$relpath=str_replace("?forcedownload=1","", $relpath);
+
+	 //if something went wrong, and we can't confirm get a handle on the file, 
+	 //set the item id to zero. If it still fails, quit
+	 $fs = get_file_storage();
+	 $file = $fs->get_file_by_hash(sha1($relpath));
+     if (!$file) {
+			
+			//try again, and set the item id to 0, for mod_page the itemid is stored as 0, but refed as 
+			//something else. Why? The answer is blowing in the wind.....
+			//but we may get weirdness like this in quiz questions too
+			 $relarray = explode('/',$relpath);
+			 $relarray[4]='0';
+			 $relpath = implode('/',$relarray);
+			 $file = $fs->get_file_by_hash(sha1($relpath));
+			 
+			 if(!$file){
+				return false;
+				//return "no video file found @ " . $relpath;
+			}
+	}
+	
+	//check if we really can have/make a splash for this file
+	//if name is too short, we didn't make it, it wont be on our red5 server
+	$filename = $file->get_filename();
+	if(strlen($filename)<5){
+		//return false;
+		return "bad filename ";
+	}
+	
+	//if name is not numeric, it is not a video file we made, it wont be on our red5 server
+	if(!is_numeric(substr($filename,0,strlen($filename)-4))){
+		//return false;
+		return "not nuimeric filename";
+	}
+	
+	//check if we have an image file here already, if so return that URL
+	$relimagepath = substr($relpath,0,strlen($relpath)-3) . 'png';
+	$fullimagepath = substr($src,0,strlen($src)-3) . 'png';
+	$imagefilename = substr($filename,0,strlen($filename)-3) . 'png';
+	if ($imagefile = $fs->get_file_by_hash(sha1($relimagepath))) {
+            return $fullimagepath;
+	
+	//if we don't have that image lets get it from tokyopoodll and return it
+	}else{
+		require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
+		instance_remotedownload($file->get_contextid(),
+					$imagefilename, 
+					$file->get_component(),
+					$file->get_filearea(),
+					$file->get_itemid(),
+					"99999",
+					$file->get_filepath()
+					);
+		
+		return $fullimagepath;
+	}
+	
+	
+	
+	
+}
+
 function fetchJSWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF", $usemastersprite="false"){
 	global $CFG, $PAGE;
 
@@ -2430,6 +2761,33 @@ function fetchJSWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFF
 	
 	
 	$retframe="<iframe scrolling=\"no\" frameBorder=\"0\" src=\"{$pathtoJS}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}&usemastersprite={$usemastersprite}\" width=\"{$width}\" height=\"{$height}\"></iframe>"; 
+	return $retframe;
+
+
+}
+function fetchIFrameSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF"){
+	global $CFG, $PAGE;
+	
+	//There seems to be an internal margin on the iframe
+	//which I could not cancel entirely. So we compensate here to show all the widget
+	$marginadjust = 5;
+	$fwidth = $marginadjust + $width;
+	$fheight = $marginadjust + $height;
+	
+	//build the parameter string out of the passed in array
+	$params="?";
+	foreach ($paramsArray as $key => $value) {
+    	$params .= '&' . $key . '=' . $value;
+	}
+	
+	//add in any common params
+	$params .= '&debug=false&lzproxied=false';	
+	
+	//path to our js idgets folder
+	$pathtoSWF= $CFG->wwwroot . '/filter/poodll/flash/';
+	
+	
+	$retframe="<iframe scrolling=\"no\" frameBorder=\"0\" src=\"{$pathtoSWF}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}\" width=\"{$fwidth}\" height=\"{$fheight}\"></iframe>"; 
 	return $retframe;
 
 
