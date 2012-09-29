@@ -88,8 +88,11 @@ require_once($CFG->libdir . '/filelib.php');
 		case "poodllmedialist": 
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
-			//moduleid/courseid/path/playerype/filearea
-			$returnxml=fetch_poodllmedialist($moduleid, $courseid, $paramone, $paramtwo, $paramthree);
+			if($paramthree=="poodlldata"){
+				$returnxml=fetch_poodllmedialist_poodlldata($courseid, $paramone, $paramtwo);
+			}else{
+				$returnxml=fetch_poodllmedialist($moduleid, $courseid, $paramone, $paramtwo, $paramthree);
+			}
 			break;
 		
 		case "poodllrsslist": 
@@ -98,7 +101,7 @@ require_once($CFG->libdir . '/filelib.php');
 				xmlns:media=\"http://search.yahoo.com/mrss/\"
 				xmlns:fp=\"http://flowplayer.org/fprss/\">";
 			//moduleid/courseid/path/playerype/filearea
-			$returnxml=fetch_poodllaudiolist($moduleid, $courseid, $paramone, $paramtwo, $paramthree,"rss");
+			$returnxml=fetch_poodllaudiolist($moduleid, $courseid, $paramone, $paramtwo, $paramthree,"rss",$paramfour=="true");
 			$returnxml .="</rss>";
 			break;
 			
@@ -106,7 +109,7 @@ require_once($CFG->libdir . '/filelib.php');
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
 			//moduleid/courseid/path/playerype/filearea
-			$returnxml=fetch_poodllaudiolist($moduleid, $courseid, $paramone, $paramtwo, $paramthree);
+			$returnxml=fetch_poodllaudiolist($moduleid, $courseid, $paramone, $paramtwo, $paramthree,"xml");
 			break;
 			
 		case "poodllflashcards": 
@@ -457,15 +460,12 @@ global $CFG, $DB;
 
 
 //Fetch the menu (assignments/resources/quizzes) for this course 
-function old_fetch_poodllmedialist($courseid, $path, $playertype){
+function fetch_poodllmedialist_poodlldata($courseid, $path, $playertype){
 global $CFG;	
-	//Handle directories
-	$baseDir = $CFG->{'dataroot'} . "/" . $courseid . "/" . $path;
-
-	$mediapath=$courseid . "/" . $path . "/";
-	if ($playertype == "http"){
-		$mediapath= $CFG->{'wwwroot'} . "/file.php/" . $mediapath;		
-	}
+	
+	//work out our directory structure
+	$baseDir = $CFG->{'dirroot'} . "/" . $CFG->{'filter_poodll_datadir'}  . "/" . $path;
+	$baseURL = $CFG->{'wwwroot'} . "/" . $CFG->{'filter_poodll_datadir'}  . "/" . $path . "/";
 
 	
 	//set up xml to return
@@ -475,16 +475,11 @@ global $CFG;
 		foreach (glob($baseDir . "/*.yutu") as $filename) {
 			$xml_output .=  "\t<video videoname='" . basename($filename) ."' playertype='" . $playertype . "' url='" . substr(basename($filename),0,11) . "'/>\n";
 		}
-	//If protocol is rtmp, look for flv or mp3		
-	}else if($playertype == "rtmp"){
-		foreach (glob($baseDir . "/*.{flv,mp3}",GLOB_BRACE) as $filename) {
-			$xml_output .=  "\t<video videoname='" . basename($filename) ."' playertype='" . $playertype . "' url='" . $mediapath . basename($filename). "'/>\n";
-		}
 		
 	//default protocol is http, which can play back mp4 or flv	
 	}else{		
 		foreach (glob($baseDir . "/*.{flv,mp4}",GLOB_BRACE) as $filename) {
-			$xml_output .=  "\t<video videoname='" . basename($filename) ."' playertype='" . $playertype . "' url='" . $mediapath . basename($filename). "'/>\n";
+			$xml_output .=  "\t<video videoname='" . basename($filename) ."' playertype='" . $playertype . "' url='" . $baseURL . basename($filename). "'/>\n";
 		}
 	}
 

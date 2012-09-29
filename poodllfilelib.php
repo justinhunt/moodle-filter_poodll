@@ -266,8 +266,9 @@ function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $fa
 		$filedata = base64_decode($filedata);
 		 $stored_file = $fs->create_file_from_string($record, $filedata);
 		//if successful return filename
-		if($storedfile){
+		if($stored_file){
 			array_push($return['messages'],$filename );
+			//array_push($return['messages'],$stored_file->get_itemid() );
 		//if unsuccessful, return error
 		}else{
 			$return['success']=false;

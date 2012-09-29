@@ -16,6 +16,7 @@ $string['filter_poodll_whiteboard_heading'] = 'Whiteboard Settings';
 $string['filter_poodll_legacy_heading'] = 'PoodLL Legacy Settings';
 $string['filter_poodll_playertypes_heading'] = 'Default Player Types';
 $string['filter_poodll_intercept_heading'] = 'Filetypes PoodLL Handles by Default';
+$string['filter_poodll_flowplayer_heading'] = 'Flowplayer Settings'; 
 
      
 $string['defaultplayer'] = 'Default A/V Player';
@@ -43,6 +44,9 @@ $string['talkbackwidth'] = 'Talkback Player Width';
 $string['talkbackheight'] = 'Talkback Player Height';
 $string['showwidth'] = 'Screencast Player Width';
 $string['showheight'] = 'Screencast Player Height';
+
+$string['datadir'] = 'PoodLL Data Dir';
+$string['datadirdetails'] = 'A sub directory of Moodle dir, to allow some components Moodle 1.9 style file access to media resources. Should only be used for non sensitive media resources. PoodLL will not create, or manage access rights for, this folder';
 
 $string['forum_recording'] = 'PoodLL Forum: AV Recording Enabled?';
 $string['forum_audio'] = 'PoodLL Forum: Audio?';
@@ -99,5 +103,9 @@ $string['micecho'] = 'Mic. Echo';
 $string['micloopback'] = 'Mic. Loopback';
 $string['audiotranscode'] = 'Auto Conv. to MP3';
 $string['audiotranscodedetails'] = 'Automatically convert recorded audio file to MP3 format before copying back into Moodle. Only use this when using server tokyo.poodll.com.';
+
+//fpembedtype
+$string['fpembedtype'] = 'Flowplayer Embed Method';
+$string['fp_bgcolor'] = 'Flowplayer Color';
 
 ?>

@@ -44,7 +44,7 @@ function fetchSWFWidgetCode($widget,$params,$width,$height, $bgcolor="#FFFFFF"){
 	//eg. $params .= '&modulename=' . $PAGE->cm->modname;
 
 	//embed js library for OpenLaszlo
-	$embedcode .= "<script type=\"text/javascript\" src=\"{$CFG->wwwroot}/filter/poodll/flash/embed-compressed.js\"></script> ";
+	$embedcode = "<script type=\"text/javascript\" src=\"{$CFG->wwwroot}/filter/poodll/flash/embed-compressed.js\"></script> ";
 
 	
 	$retcode = "

@@ -13,7 +13,7 @@ global $CFG;
 
 
 // Setting up the PoodLL Media Server String
-if($CFG->filter_poodll_serverport=='443' || $CFG->filter_poodll_serverport=='80'){
+if($CFG->filter_poodll_serverport=='443' || $CFG->filter_poodll_serverport=='80' ){
 	$protocol='rtmpt';
 }else{
 	$protocol='rtmp';
