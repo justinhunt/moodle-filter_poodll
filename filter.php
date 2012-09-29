@@ -39,10 +39,13 @@ class filter_poodll extends moodle_text_filter {
 			//using match all to see what will be matched and in what index of "link" variable it will show
 			//currently MP4/FLV 0 shows the whole string, 1 the link,2 the width+height param string, 3, the width, 4 the height, 5 the linked text
 			//MP3 0 shows the whole string, 1 the link, 2 the linked text
-				
+			
+			//I think we can optimize this whole things a bit more, anyway we try to filter as little as possible
+			$havelinks = !(stripos($text, '</a>') ===false);
+			
 			//check for mp3
-			 if (!empty($CFG->filter_poodll_handlemp3)) {
-				if (!(stripos($text, '</a>') ===false)) {
+			 if ($CFG->filter_poodll_handlemp3) {
+				if ($havelinks) {
 				// performance shortcut - all filepicker media links  end with the </a> tag,
 					$search = '/<a\s[^>]*href="([^"#\?]+\.mp3)"[^>]*>([^>]*)<\/a>/is';
 					$newtext = preg_replace_callback($search, 'filter_poodll_mp3_callback', $newtext);
@@ -50,8 +53,8 @@ class filter_poodll extends moodle_text_filter {
 			}
 			
 			//check for mp4
-			if (!empty($CFG->filter_poodll_handlemp4)) {
-				if (!(stripos($text, '</a>') === false)) {
+			if ($CFG->filter_poodll_handlemp4) {
+				if ($havelinks) {
 					// performance shortcut - all filepicker media links  end with the </a> tag,
 					
 					//justin 20120525 added ability to declare width of media by appending strings like: ?d=640x480
@@ -62,8 +65,8 @@ class filter_poodll extends moodle_text_filter {
 			}
 			
 			//check for flv
-			if (!empty($CFG->filter_poodll_handleflv)) {
-				if (!(stripos($text, '</a>') === false)) {
+			if ($CFG->filter_poodll_handleflv) {
+				if ($havelinks) {
 				// performance shortcut - all filepicker media links  end with the </a> tag,
 				
 					//justin 20120525 added ability to declare width of media by appending strings like: ?d=640x480
@@ -75,15 +78,23 @@ class filter_poodll extends moodle_text_filter {
 			
 			//check for .pdl . This is a shorthand filter using presets to allow selection of PoodLL widgets
 			//from the Moodle File repository
-			if (!(stripos($text, '</a>') ===false)) {
-				// performance shortcut - all filepicker media links  end with the </a> tag,
+			if($havelinks){
+				if (!(stripos($text, '.pdl') ===false)) {
+					// performance shortcut - all filepicker media links  end with the </a> tag,
 					$search = '/<a\s[^>]*href="([^"#\?]+\.pdl)"[^>]*>([^>]*)<\/a>/is';
 					$newtext = preg_replace_callback($search, 'filter_poodll_pdl_callback', $newtext);
 				}
+			}
 
-					
+				/*
+
+			//Trying this but it does not seem to improve performance
+			 if (!(stripos($text, '{POODLL:') === false)) {
+            	// Performance shortcut - if no poodll tag, nothing can match.
+            	return $text;
+       		 }		
 			
-		
+	*/
 			
 			$search = '/{POODLL:.*?}/is';
 
@@ -192,6 +203,12 @@ function filter_poodll_callback(array $link){
 				!empty($filterprops['height']) ? $filterprops['height'] : 400);
 			break;
 
+		case 'cambroadcaster':
+			$returnHtml= fetchCamBroadcaster($filterprops['runtime'],
+						!empty($filterprops['mename']) ? $filterprops['mename'] : '',
+						!empty($filterprops['broadcastkey']) ? $filterprops['broadcastkey'] : '1234567');
+			break;	
+
 
 		case 'countdown':
 			$returnHtml= fetch_countdowntimer($filterprops['runtime'],$filterprops['initseconds'],
@@ -285,9 +302,12 @@ function filter_poodll_callback(array $link){
 			
 
 		case 'screensubscribe':
-			$returnHtml= fetch_screencast_subscribe($filterprops['runtime'],"",true,
+			$returnHtml= fetch_screencast_subscribe($filterprops['runtime'],
+			!empty($filterprops['mename']) ? $filterprops['mename'] : '',
+			true,
 			!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_showwidth,
-			!empty($filterprops['height']) ? $filterprops['height'] : $CFG->filter_poodll_showheight
+			!empty($filterprops['height']) ? $filterprops['height'] : $CFG->filter_poodll_showheight,
+			!empty($filterprops['broadcastkey']) ? $filterprops['broadcastkey'] : '1234567'
 				);
 			break;	
 

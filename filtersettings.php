@@ -59,6 +59,8 @@ $items[] = new admin_setting_configcheckbox('filter_poodll_thumbnailsplash', get
 $embedoptions = array('swfobject' => 'SWF Object', 'flowplayer' => 'Flowplayer JS', 'flashembed' => 'Flashembed JS');
 $items[] = new admin_setting_configselect('filter_poodll_fp_embedtype', get_string('fpembedtype', 'filter_poodll'), '', 'swfobject', $embedoptions);
 $items[] = new admin_setting_configtext('filter_poodll_fp_bgcolor', get_string('fp_bgcolor', 'filter_poodll'), '', '#0a2bb5');
+$items[] = new admin_setting_configcheckbox('filter_poodll_fp_playlist', get_string('fp_enableplaylist', 'filter_poodll'), get_string('fp_enableplaylistdescr', 'filter_poodll'), 0);
+
 
 //video capture settings.
 $items[] = new admin_setting_heading('filter_poodll_camera_settings', get_string('filter_poodll_camera_heading', 'filter_poodll'), '');
