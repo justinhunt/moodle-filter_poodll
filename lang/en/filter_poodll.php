@@ -106,6 +106,7 @@ $string['audiotranscodedetails'] = 'Automatically convert recorded audio file to
 
 //fpembedtype
 $string['fpembedtype'] = 'Flowplayer Embed Method';
+$string['fpembedtypedescr'] = 'SWF Object is the most reliable. Flowplayer JS handles preview splash images better. If you use Flowplayer JS consider turning off Multimedia Plugins filter MP3/FLV/MP4 handling to avoid double-filtering. ';
 $string['fp_bgcolor'] = 'Flowplayer Color';
 $string['fp_enableplaylist'] = 'Enable Flowplayer Audiolist';
 $string['fp_enableplaylistdescr'] = 'This requires the JQuery javascript library and adds about 100kb to the page download size. Moodle will cache it though, so there should be no noticeable slowdown. You should also set the Flowplayer embed setting to Flowplayer js. Purge the cache after changing this or any flowplayer config setting.';

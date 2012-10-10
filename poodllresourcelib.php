@@ -23,47 +23,37 @@ define('MR_TYPETALKBACK',2);
 global $PAGE, $FPLAYERJSLOADED, $EMBEDJSLOADED;
 
 //Establish if PoodLL filter is enabled
+/*
 $poodllenabled=false;
 $context = $PAGE->context;
 $filters = filter_get_active_in_context($context);
 if (array_key_exists("filter_poodll",$filters)){
 	$poodllenabled =true;
 }
+*/
 
-//This file may get loaded even if PoodLL filter is disabled, because so much of the other poodll
-//requires it.	But we don't want all the JS loading unless it is really necessary
-//if($poodllenabled){
-if(true){
 
 	//these are required by poodll filter
 	require_once($CFG->dirroot . '/filter/poodll/poodllinit.php');
 	require_once($CFG->dirroot . '/filter/poodll/Browser.php');
 	
-	//I have tried to remove calls to these libraries inline, though I did not change stuff we 
-	//dont use in poodll 2 yet(e.g pairwork). I will test those when I enable them, Justin 20120724
 	//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject.js'));
 	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject_22.js'));
 	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/javascript.php'));
 	
 	
-	//we need this for flowplayer and embedding it only works in head (hence the 'true' flag)
-	//BUT in quizzes or poodll repository , with only student role, header is output before this point for some reason
-	//so we need to set a flag to tell widgets to load it, but just once, hence the globals Justin 20120704
+	//we need this for  embedding widgets it only works in head (hence the 'true' flag)
+	//adn we set theglobal to try to ensure it is only loaded once. Later we could try to optimize this and call it from footer
 	if(!$PAGE->requires->is_head_done()){
-	//if(!isset($FPLAYERJSLOADED) || !$FPLAYERJSLOADED){
-		if(false){
-		//if(shouldLoadFlowPlayerJS()){
-			$PAGE->requires->js(new moodle_url($CFG->httpswwwroot .'/filter/poodll/flowplayer/flowplayer-3.2.9.min.js'),true);
-			$FPLAYERJSLOADED=true;
-		}
+
 		$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'),true);
-		
 		$EMBEDJSLOADED=true;
+		
 	}else{
-		$FPLAYERJSLOADED=false;
+		//$FPLAYERJSLOADED=false;
 		$EMBEDJSLOADED=false;
 	}
-}//end of if PoodLL enabled
+
 
 //added for moodle 2
 require_once($CFG->libdir . '/filelib.php');
@@ -1234,7 +1224,8 @@ global $CFG,$COURSE;
 		$fetchdataurl=$cardset;
 	}elseif(strlen($cardset) > 4 && substr($cardset,-4)==".xml"){
 		//get a manually made playlist
-		$fetchdataurl= $CFG->wwwroot . "/file.php/" .  $COURSE->id . "/" . $cardset;
+		//$fetchdataurl= $CFG->wwwroot . "/file.php/" .  $COURSE->id . "/" . $cardset;
+		$fetchdataurl = $CFG->wwwroot . "/" . $CFG->filter_poodll_datadir  . "/" .  $cardset ;
 	}else{
 		//get the url to the automated medialist maker
 		$fetchdataurl= $CFG->wwwroot . '/filter/poodll/poodlllogiclib.php?datatype=poodllflashcards&courseid=' . $COURSE->id 
@@ -1390,6 +1381,7 @@ $params = array();
 		//$params['echosupression'] = $micecho;
 		//$params['silencelevel'] = $micsilence;
 		$params['capturefps'] = $capturefps;
+		$params['capturedevice'] = $capturedevice;
 		$params['captureheight'] = $captureheight;
 		$params['picqual'] = $picqual;
 		$params['bandwidth'] = $bandwidth;
@@ -1735,7 +1727,7 @@ global  $CFG, $COURSE;
 
 }
 
-//Audio playltest player with defaults, for use with directories of audio files
+//Audio playlisttest player with defaults, for use with directories of audio files
 function fetchAudioTestPlayer($runtime, $playlist,$protocol="", $width="400",$height="150",$filearea="content"){
 global $CFG, $USER, $COURSE;
 
@@ -1745,10 +1737,11 @@ $moduleid = optional_param('id', 0, PARAM_INT);    // The ID of the current modu
 $flvserver = $CFG->poodll_media_server;
 
 
+
 //determine which of, automated or manual playlists to use
 if(strlen($playlist) > 4 && substr($playlist,-4)==".xml"){
 	//get a manually made playlist
-	$fetchdataurl= $CFG->wwwroot . "/file.php/" .  $courseid . "/" . $playlist;
+	$fetchdataurl = $CFG->wwwroot . "/" . $CFG->filter_poodll_datadir  . "/" . $playlist ;
 }else{
 	//get the url to the automated medialist maker
 	$fetchdataurl= $CFG->wwwroot . '/filter/poodll/poodlllogiclib.php?datatype=poodllaudiolist'
@@ -1861,7 +1854,9 @@ $moduleid = optional_param('id', 0, PARAM_INT);    // The ID of the current modu
 }
 
 //Audio player with defaults, for use with PoodLL filter
-function fetchSimpleAudioPlayer($runtime, $rtmp_file, $protocol="", $width="450",$height="25",$embed=false, $embedstring="Play",$permitfullscreen=false){
+function fetchSimpleAudioPlayer($runtime, $rtmp_file, $protocol="", $width="450",$height="25",
+										$embed=false, $embedstring="Play",$permitfullscreen=false,
+										$usepoodlldata=false, $splashurl=''){
 global $CFG, $USER, $COURSE;
 
 //Set our servername .
@@ -1922,6 +1917,10 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 	if($protocol=='rtmp' || $protocol=='legacy'){
 		$rtmp_file= $CFG->wwwroot . "/file.php/" .  $courseid . "/" . $rtmp_file;
         $type = 'http';
+	//if using poodlldata, take stub from base dir + poodlldatadir then add file name/path	
+	}else if($usepoodlldata){
+		$baseURL = $CFG->{'wwwroot'} . "/" . $CFG->{'filter_poodll_datadir'}  . "/" ;
+		$rtmp_file = $baseURL . $rtmp_file;
 	}
 	
 	//If we want to avoid loading many players per page, this loads the player only after a text link is clicked
@@ -1990,7 +1989,7 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 				//Flowplayer
 				if($useplayer=="fp" || $CFG->filter_poodll_html5controls=="js"){
 					
-					$returnString= fetchFlowPlayerCode($width,$height,$rtmp_file,"audio",$ismobile);
+					$returnString= fetchFlowPlayerCode($width,$height,$rtmp_file,"audio",$ismobile,"",false,$splashurl);
 				
 				//JW player
 				} else if($useplayer=="jw"){
@@ -2023,7 +2022,7 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 
 
 //Video player with defaults, for use with PoodLL filter
-function fetchSimpleVideoPlayer($runtime, $rtmp_file, $width="400",$height="380",$protocol="",$embed=false,$permitfullscreen=false, $embedstring="Play"){
+function fetchSimpleVideoPlayer($runtime, $rtmp_file, $width="400",$height="380",$protocol="",$embed=false,$permitfullscreen=false, $embedstring="Play", $splashurl=""){
 global $CFG, $USER, $COURSE;
 
 //Set our servername .
@@ -2127,8 +2126,20 @@ $ismobile=isMobile();
 		if($runtime=='js' && ($CFG->filter_poodll_html5controls=='native')){
 				$returnString="";
 
+			//get a poster image if it is appropriate
+			$poster = "";
+			if ($splashurl!=""){
+				$poster=$splashurl;
+			}else  if($CFG->filter_poodll_videosplash){
+				if($CFG->filter_poodll_thumbnailsplash){
+					$splashurl = fetchVideoSplash($rtmp_file);
+				}else{
+					$splashurl=false;
+				}
+				if(!$splashurl){$splashurl = $CFG->wwwroot . "/filter/poodll/flowplayer/videosplash.jpg";}
+				$poster=$splashurl;
+			}
 			
-			$poster="";//To do add poster code, once we have thought it all through a bit better
 			$returnString .="<video controls poster='" . $poster . "' width='" . $width . "' height='" . $height . "'>
 								<source type='video/mp4' src='" .$rtmp_file . "'/>
 							</video>";
@@ -2157,7 +2168,7 @@ $ismobile=isMobile();
 				//Flowplayer
 				if($useplayer=="fp" || $CFG->filter_poodll_html5controls=="js"){
 					
-					$returnString= fetchFlowPlayerCode($width,$height,$rtmp_file,"video",$ismobile);
+					$returnString= fetchFlowPlayerCode($width,$height,$rtmp_file,"video",$ismobile,"",false,$splashurl);
 				
 				//JW player
 				} else if($useplayer=="jw"){
@@ -2775,7 +2786,7 @@ function isMobile(){
 }
 
 
-function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=false, $playlisturlstring ="",$loop='false'){
+function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=false, $playlisturlstring ="",$loop='false',$splashurl=''){
 
 	global $CFG, $PAGE, $FPLAYERJSLOADED;
 	
@@ -2821,7 +2832,10 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 		case "audio":
 			//If we have a splash screen show it and enable autoplay(user only clicks once)
 			//best to have a splash screen to prevent browser hangs on many flashplayers in a forum etc
-			if($CFG->filter_poodll_audiosplash){
+			if($splashurl !=''){
+				$splash = "<img src='" . $splashurl . "' alt='click to play audio' width='" . $width . "' height='" . $height . "'/>";
+				
+			}else if($CFG->filter_poodll_audiosplash){
 				$splash = "<img src='" . $CFG->wwwroot . "/filter/poodll/flowplayer/audiosplash.jpg' alt='click to play audio' width='" . $width . "' height='" . $height . "'/>";
 			}else{
 				$splash = "";
@@ -2834,15 +2848,19 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 		
 		case "video":
 			//If we have a splash screen show it and enable autoplay(user only clicks once)
-			//best to have a splash screen to prevent browser hangs on many flashplayers in a forum etc
-			if($CFG->filter_poodll_videosplash){
+			//best to have a splash screen to prevent browser hangs on many flowplayers in a forum etc
+			if($splashurl !=''){
+				$splash = "<img src='" . $splashurl . "' alt='click to play video' width='" . $width . "' height='" . $height . "'/>";
+				
+			}else if($CFG->filter_poodll_videosplash){
 				if($CFG->filter_poodll_thumbnailsplash){
-					$splashpath = fetchVideoSplash($path);
+					$splashurl = fetchVideoSplash($path);
 				}else{
-					$splashpath=false;
+					$splashurl=false;
 				}
-				if(!$splashpath){$splashpath = $CFG->wwwroot . "/filter/poodll/flowplayer/videosplash.jpg";}
-				$splash = "<img src='" . $splashpath . "' alt='click to play video' width='" . $width . "' height='" . $height . "'/>";
+				if(!$splashurl){$splashurl = $CFG->wwwroot . "/filter/poodll/flowplayer/videosplash.jpg";}
+				$splash = "<img src='" . $splashurl . "' alt='click to play video' width='" . $width . "' height='" . $height . "'/>";
+			
 			}else{
 				$splash="";
 			}
@@ -2966,8 +2984,8 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 		"path"=> $path,
 		"playerid"=> $playerid, 
 		"playerpath"=> $playerpath, 
-		"poodll_audiosplash"=> $CFG->filter_poodll_audiosplash, 
-		"poodll_videosplash"=> $CFG->filter_poodll_videosplash, 
+		"poodll_audiosplash"=> ($CFG->filter_poodll_audiosplash==1), 
+		"poodll_videosplash"=> ($CFG->filter_poodll_videosplash==1), 
 		"jscontrols"=> $jscontrols,
 		"height"=> $height,
 		"width"=> $width,

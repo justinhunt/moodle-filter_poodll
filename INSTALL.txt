@@ -10,11 +10,18 @@ The files in the poodllall archive are all in the necessary directory structure.
 
 Then login to your site as admin and go to your Moodle site's top page. Moodle should then guide you through the installation or upgrade of the four modules. 
 
-Changes in the version:
+Changes in this version: 2012100100
 =============================
--Added logic to filter to allow audiolist player to use different players than the default A/V player, by adding the player=XX parameter. Possible values are pd(PoodLL player) and fp (Flowplayer).
--Fixed bug where multiple flashplayers on a single page could not be paused or stopped after playback began.
+-Fixed the way the flowplayer video and audio player was embedded on the page. Provided option in filter settings to select the embedding method. 
+This will fix some weirdness that people had where players didn't play, endlessly played or resized themselves. The default is to use the SWF Object embedding  method which works the best for the most people. The other option you might use is Flowplayer JS. If you use this, it might pay to tell the multimedia plugins filter to ignore the file expensions that you handle with PoodLL (mp3,mp4,flv by default). Otherwise conflicts can occur. In Moodle 2.3 this can be done at:
+Site Administration -> Appearance -> Media Embedding
 
+In Moodle 2 you can do this at:
+Site Administration -> Plugins -> Filters -> MultiMedia Plugins settings.
+
+-Added a PoodLL Data Directory feature. This allows you to specify a web accessible directory from which to store and access media files and other resources. This is mostly useful for some of the older widgets from Moodle 1.9  days, that some people want to use. These include the talkback widget, small video gallery, big video gallery,audio list players and flashcards.
+
+-Added / reenabled a few new widgets. These include talkback, the video galleries, screen subscribe/cambroadcaster
 
 
 Setting up the PoodLL Filter
@@ -24,14 +31,10 @@ When Moodle shows you the PoodLL Filter Settings page, the second property from 
 This defaults to 80, which allows users to make recordings through firewalls. If you experience instability when recording, try setting the PoodLL Server Port Number(RTMP) to 1935.
 
 All of the PoodLL mods require the PoodLL filter to be installed and enabled so you should do that now.
-T enable the filter go to:
+To enable the filter go to:
 "Site Administration->Plugins->Filters->Manage Filters"
 And set the PoodLL Filter to "On."
 
-Also set the "Multimedia Plugins" filter to "On." The PoodLL filter should be higher in the list.
-
-*** Please note that audio recording on Flash versions 11.2.202.228 - 11.2.202.235 (at the time of writing the most current releases) won't playback. It is an Adobe issue and it is fixed in Adobe Flash Player 11.3 Beta.
-You can also avoid this problem if you are using tokyo.poodll.com and set PoodLL Server Port (RTMP) to 1935 on the PoodLL filter settings page, though this may be blocked by a school's firewall. ****
 
 
 Setting up the PoodLL Repository
@@ -48,3 +51,5 @@ More instructions, documentation and video tutorials are available at http://www
 Good luck.
 
 Justin Hunt
+Chief PoodLL'er
+poodllsupport@gmail.com

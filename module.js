@@ -103,7 +103,11 @@ theconfig = { plugins:
 			
 			//without looking inside the playlist we don't know if the audios are flv or mp3.
 			//here we assume that audio playlists are mp3. If not we need to remove the provider element
-			theconfig.clip.autoPlay=true;
+			if (opts['loop']=='true'){
+				theconfig.clip.autoPlay=true;
+			}else{
+				theconfig.clip.autoPlay=false;
+			}
 			theconfig.clip.provider='audio';
 			break;
 		
@@ -149,13 +153,13 @@ theconfig = { plugins:
 	if(opts['embedtype']=='flashembed'){
        theconfig.clip.url= opts['path'];
 		//we should not have to specify this, but we do ...?
-	
+		var uniqconfig = theconfig;
 		if(splash){
 			document.getElementById(opts['playerid']).onclick = function() {
-				flashembed(opts['playerid'], opts['playerpath'], {config: theconfig});
+				flashembed(opts['playerid'], opts['playerpath'], {config: uniqconfig});
 			}
 		}else{
-			flashembed(opts['playerid'], opts['playerpath'], {config: theconfig});
+			flashembed(opts['playerid'], opts['playerpath'], {config: uniqconfig});
 		}
 		//console.log("flashembed embedded");
 	
@@ -164,7 +168,8 @@ theconfig = { plugins:
 
        //we should not have to specify this, but we do ...?
        theconfig.clip.url= opts['path'];
-       
+       //we declare this here so that when called from click it refers to this config, and not a later one (object referecnes ...)
+       var configstring=JSON.stringify(theconfig);
 	   if(splash){
 			// get flash container and assign click handler for it
 			document.getElementById(opts['playerid']).onclick = function() {
@@ -173,7 +178,7 @@ theconfig = { plugins:
 						opts['height'] , 
 						"9.0.0", 
 						null, 
-						{config: JSON.stringify(theconfig)}
+						{config: configstring}
 					);
 			}
 		}else{
@@ -182,7 +187,7 @@ theconfig = { plugins:
     				opts['height'] , 
     				"9.0.0", 
     				null, 
-    				{config: JSON.stringify(theconfig)}
+    				{config: configstring}
     			);
 		}
     	//console.log(JSON.stringify(theconfig));

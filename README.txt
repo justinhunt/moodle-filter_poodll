@@ -20,12 +20,7 @@ And set the PoodLL Filter to "On."
 Also set the "Multimedia Plugins" filter to "On." The PoodLL filter should be higher in the list.
 
 All of the PoodLL mods require the PoodLL filter to be installed. If you are only interesting in audio and video recording, then you don't need to know much more. 
-Please note however that audio recording on Flash versions 11.2.202.228 - 11.2.202.235 (at the time of writing the most current releases) won't playback. It is an Adobe issue and it is fixed in Adobe Flash Player 11.3 Beta.
-You can also avoid this problem if you set PoodLL Server Port (RTMP) to 1935 on the PoodLL filter settings page, though this may be blocked by a school's firewall.
 
-Changes in the version:
--Added logic to filter to allow audiolist player to use different players than the default A/V player, by adding the player=XX parameter. Possible values are pd(PoodLL player) and fp (Flowplayer).
--Fixed bug where multiple flashplayers on a single page could not be paused or stopped after playback began.
 
 PoodLL Widgets
 ==============
