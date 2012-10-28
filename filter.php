@@ -64,6 +64,14 @@ class filter_poodll extends moodle_text_filter {
 				}
 			}
 			
+			//experimental .mov support
+			if ($CFG->filter_poodll_handlemov) {
+				if ($havelinks) {
+					$search = '/<a\s[^>]*href="([^"#\?]+\.mov)(\?d=([\d]{1,4})x([\d]{1,4}))?"[^>]*>([^>]*)<\/a>/is';
+					$newtext = preg_replace_callback($search, 'filter_poodll_mp4flv_callback', $newtext);
+				}
+			}
+			
 			//check for flv
 			if ($CFG->filter_poodll_handleflv) {
 				if ($havelinks) {
@@ -537,19 +545,26 @@ global $CFG;
     $rawurl = str_replace('&amp;', '&', $url);
 	
 	//test for presence of player selectors and serve up the correct player
+	//determine the file extension
+	$ext = substr($link[5],-3); 
 	$len = strlen($link[5]);
-	if (strrpos($link[5],'.mini.flv')=== $len-9){
+	if (strrpos($link[5],'.mini.' . $ext)=== $len-9){
 		$returnHtml=fetch_miniplayer('auto',$rawurl,'http','',0,0,true);
 	
-	}else if (strrpos($link[2],'.once.flv')=== $len-9){
+	}else if (strrpos($link[2],'.once.' . $ext)=== $len-9){
 		$returnHtml=fetch_onceplayer('auto',$rawurl,'http');
 		
-	}elseif(strrpos($link[5],'.word.flv')=== $len-9){
+	}elseif(strrpos($link[5],'.word.' . $ext)=== $len-9){
 		$word=substr($link[5],0,$len-9);
 		$returnHtml=fetch_wordplayer('auto',$rawurl,$word,0,'http',0,0,true);
 		
-	}elseif(strrpos($link[5],'.audio.flv')=== $len-10){
+	}elseif(strrpos($link[5],'.audio.' . $ext)=== $len-10){
 		$returnHtml= fetchSimpleAudioPlayer('auto',$rawurl,'http',$CFG->filter_poodll_audiowidth,$CFG->filter_poodll_audioheight,false,'Play');
+		
+	}elseif(strrpos($link[5],'.inlineword.' . $ext)=== $len-15){
+		$word=substr($link[5],0,$len-15);
+		$returnHtml=fetch_wordplayer('js',$rawurl,$word,0,'http',0,0,true);
+	
 		
 	}else{
 		$returnHtml= fetchSimpleVideoPlayer('auto',$url,$width,$height,'http',false,true , 'Play');

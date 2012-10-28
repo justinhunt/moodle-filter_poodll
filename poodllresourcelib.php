@@ -768,6 +768,11 @@ $params = array();
 function fetchMP3RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid){
 global $CFG, $USER, $COURSE;
 
+//get our HTML5 Uploader if we have a mobile device
+if(isMobile()){
+	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
+}
+
 //Set the microphone config params
 $micrate = $CFG->filter_poodll_micrate;
 $micgain = $CFG->filter_poodll_micgain;
@@ -834,6 +839,13 @@ global $CFG, $USER, $COURSE;
  //Set the servername 
 ///$flvserver = $CFG->poodll_media_server;
 
+//head off to HTML5 logic if mobile
+
+if(isMobile()){
+//if(true){
+	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
+}
+
 //If standalone submission will always be standalone ... or will it ...
 //pair submissions could be interesting ..
 $boardname="solo";
@@ -888,6 +900,12 @@ $mode="normal";
 
 function fetchAudioRecorderForSubmission($runtime, $assigname, $updatecontrol="saveflvvoice", $contextid,$component,$filearea,$itemid){
 global $CFG, $USER, $COURSE;
+
+//get our HTML5 Uploader if we have a mobile device
+if(isMobile()){
+	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
+}
+
 
 //Set the servername 
 $flvserver = $CFG->poodll_media_server;
@@ -1296,6 +1314,11 @@ $params = array();
 function fetchSnapshotCameraForSubmission($updatecontrol="filename", $filename="apic.jpg", $width="350",$height="400",$contextid,$component,$filearea,$itemid){
 global $CFG, $USER, $COURSE;
 
+//get our HTML5 Uploader if we have a mobile device
+if(isMobile()){
+	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
+}
+
 //Set the servername and a capture settings from config file
 
 $capturewidth=$CFG->filter_poodll_capturewidth;
@@ -1487,6 +1510,11 @@ $params = array();
 function fetchVideoRecorderForSubmission($runtime, $assigname, $updatecontrol="saveflvvoice", $contextid,$component,$filearea,$itemid){
 global $CFG, $USER, $COURSE;
 
+//head off to HTML5 logic if mobile
+if (isMobile()){
+	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "video");
+}
+
 //Set the servername and a capture settings from config file
 $flvserver = $CFG->poodll_media_server;
 $capturewidth=$CFG->filter_poodll_capturewidth;
@@ -1578,6 +1606,65 @@ $params = array();
 
 }
 
+function fetch_HTML5RecorderForSubmission($updatecontrol="saveflvvoice", $contextid,$component,$filearea,$itemid, $mediatype="image",$fromrepo=false){
+global $CFG,$PAGE;
+
+	//configure our options array for the JS Call
+	$fileliburl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+	/*
+	$opts = array(
+		"updatecontrol"=> $updatecontrol,
+		"contextid"=> $contextid, 
+		"component"=> $component, 
+		"filearea"=> $filearea, 
+		"itemid"=> $itemid,
+		"fileliburl"=> $CFG->wwwroot . '/filter/poodll/poodllfilelib.php'
+		);
+		*/
+		$opts = array();
+		
+	//setup our JS call
+	if(!$fromrepo){
+		$PAGE->requires->js_init_call('M.filter_poodll.loadmobileupload', array($opts),false);
+	}
+
+	//the control to put the filename of our data. The saveflvvoice is a legacy, needs to be changed
+	//check at least poodllrecordingquestion and poodll online assignment and poodll database field for it
+	if ($updatecontrol == "saveflvvoice"){
+		$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
+	}else{
+		$savecontrol = "";
+	}
+
+	//depending on our media type, tell the mobile device what kind of file we want
+	switch($mediatype){
+		case "image": $mediatype="accept=\"image/*\"";break;
+		case "audio":
+		case "video": $mediatype="accept=\"video/*\"";break;
+		default: $mediatype="";
+	}
+	
+	//Output our HTML
+	$returnString="
+		<div>
+			$savecontrol
+			<input type=\"hidden\" id=\"p_updatecontrol\" value=\"$updatecontrol\" />
+			<input type=\"hidden\" id=\"p_contextid\" value=\"$contextid\" />
+			<input type=\"hidden\" id=\"p_component\" value=\"$component\" />
+			<input type=\"hidden\" id=\"p_filearea\" value=\"$filearea\" />
+			<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />
+			<input type=\"hidden\" id=\"p_fileliburl\" value=\"$fileliburl\" />
+			
+			<label for=\"poodllfileselect\">Upload File:</label>
+			<input type=\"file\" id=\"poodllfileselect\" name=\"poodllfileselect[]\" $mediatype />
+		</div>
+		<div id=\"p_progress\"></div>
+		<div id=\"p_messages\"></div>
+	";
+
+	return $returnString;
+}
+
 //Audio playltest player with defaults, for use with directories of audio files
 function fetch_miniplayer($runtime, $src,$protocol="http",$imageurl="",$width=0,$height=0,$iframe=false){
 global  $CFG, $COURSE;
@@ -1609,6 +1696,12 @@ global  $CFG, $COURSE;
     	
 	//depending on runtime, we show a SWF or html5 player			
 	if($runtime=="js" || ($runtime=="auto" && isMobile())){
+	
+		//the $src url as it comes from assignment and questions, is urlencoded,
+		//unlikely to arrive here encoded, but lets just be safe 
+		//or html 5 playback will fail Justin 20121016
+		$src= urldecode($src);
+	
 		$returnString=  "<a onclick=\"this.firstChild.play()\"><audio src=\"$src\"></audio><img height=\"$height\" width=\"$width\" src=\"" . 
 				$imageurl . 
 				"\"/></a>";
@@ -1659,6 +1752,12 @@ global  $CFG, $COURSE;
 	
 		//depending on runtime, we show a SWF or html5 player					
 		if($runtime=="js" || ($runtime=="auto" && isMobile())){
+		
+			//the $src url as it comes from assignment and questions, is urlencoded,
+			//unlikely to arrive here encoded, but lets just be safe 
+			//or html 5 playback will fail Justin 20121016
+			$src= urldecode($src);
+		
 			$returnString=  "<a onclick=\"this.firstChild.play()\"><audio src=\"$src\"></audio>$word</a>";
 		
 		}else{
@@ -1706,6 +1805,12 @@ global  $CFG, $COURSE;
 	//currently no js implementation	
 	if(false){
 	//if($runtime=="js" || ($runtime=="auto" && isMobile())){
+	
+		//the $src url as it comes from assignment and questions, is urlencoded,
+		//unlikely to arrive here encoded, but lets just be safe 
+		//or html 5 playback will fail Justin 20121016
+		$src= urldecode($src);
+	
 		$returnString=  "<a onclick=\"this.firstChild.play()\"><audio src=\"$src\"></audio><img height=\"$height\" width=\"$width\" src=\"" . 
 				$imageurl . 
 				"\"/></a>";
@@ -1943,22 +2048,45 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 		$params['permitfullscreen'] = $permitfullscreen;
 		
 		
+		//establish the fileextension
+		$ext = substr($rtmp_file,-3);
+	
 		//if we are on mobile we want to play mp3 using html5 tags
+		//if we have a file type that flash wont play, default to runtime = js
 		if($runtime=='auto' ){
 			if($ismobile){		
+					$runtime='js';
+			}else if($ext=='3gp' || $ext=='ebm' || $ext=='3g2'){
 					$runtime='js';
 			}else{
 					$runtime='swf';
 			}
 		}//end of if runtime=auto
+
 	
 	
 		if($runtime=='js' && ($CFG->filter_poodll_html5controls=='native')){
 				$returnString="";
 				
+				
+				//the $rtmp_file as it comes from assignment and questions, is urlencoded, we need to decode 
+				//or html 5 playback will fail Justin 20121016
+				$rtmp_file = urldecode($rtmp_file);
+				
+				//figure out the mime type by the extension
+				$mime = "";
+				switch($ext){
+					case "mov":
+					case "mp4": $mime = "video/mp4"; break;
+					case "3gp": $mime = "video/3gpp"; break;
+					case "3g2": $mime = "video/3gpp2"; break;
+					case "ebm": $mime = "video/webm"; break;
+					default: $mime = "video/mp4";
+				}
+				
 				//The HTML5 Code (can be used on its own OR with the mediaelement code below it
 				$returnString .="<audio controls width='" . $width . "' height='" . $height . "'>
-								<source src='" .$rtmp_file . "'/>
+								<source type='" . $mime . "' src='" .$rtmp_file . "'/>
 								</audio>";
 				
 				//=======================
@@ -2022,16 +2150,23 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 
 
 //Video player with defaults, for use with PoodLL filter
-function fetchSimpleVideoPlayer($runtime, $rtmp_file, $width="400",$height="380",$protocol="",$embed=false,$permitfullscreen=false, $embedstring="Play", $splashurl=""){
+function fetchSimpleVideoPlayer($runtime, $rtmp_file, $width="400",$height="380",$protocol="",$embed=false,$permitfullscreen=false, $embedstring="Play", $splashurl="",$useplayer=""){
 global $CFG, $USER, $COURSE;
 
 //Set our servername .
 $flvserver = $CFG->poodll_media_server;
 $courseid= $COURSE->id;
-$useplayer=$CFG->filter_poodll_defaultplayer;
+
+//Set the playertype to use
+if($protocol=="yutu"){
+	$useplayer="pd";
+}else if($useplayer==""){
+	$useplayer=$CFG->filter_poodll_defaultplayer;
+}
 
 //determine if we are on a mobile device or not
 $ismobile=isMobile();
+//$ismobile=true;
 
 
 	//Massage the media file name if we have a username variable passed in.	
@@ -2112,10 +2247,15 @@ $ismobile=isMobile();
 		$params['playertype'] = $type;
 		$params['mediapath'] = $rtmp_file;
 		$params['permitfullscreen'] = $permitfullscreen;
+		
+		//establish the fileextension
+		$ext = substr($rtmp_file,-3);
 	
 		//if we are on mobile we want to play mp3 using html5 tags
 		if($runtime=='auto' ){
 			if($ismobile){		
+					$runtime='js';
+			}else if($ext=='3gp' || $ext=='ebm' || $ext=='3g2'){
 					$runtime='js';
 			}else{
 					$runtime='swf';
@@ -2140,8 +2280,24 @@ $ismobile=isMobile();
 				$poster=$splashurl;
 			}
 			
+			//the $rtmp_file as it comes from assignment and questions, is urlencoded, we need to decode 
+			//or html 5 playback will fail Justin 20121016
+			$rtmp_file = urldecode($rtmp_file);
+			
+			//figure out the mime type by the extension
+			$mime = "";
+			switch($ext){
+				case "mov":
+				case "mp4": $mime = "video/mp4"; break;
+				case "3gp": $mime = "video/3gpp"; break;
+				case "3g2": $mime = "video/3gpp2"; break;
+				case "ebm": $mime = "video/webm"; break;
+				default: $mime = "video/mp4";
+			}
+			
+			//return the html5 video code
 			$returnString .="<video controls poster='" . $poster . "' width='" . $width . "' height='" . $height . "'>
-								<source type='video/mp4' src='" .$rtmp_file . "'/>
+								<source type='" . $mime . "' src='" .$rtmp_file . "'/>
 							</video>";
 			//============================
 			//if we are using mediaelement js use this
@@ -2767,6 +2923,7 @@ function fetchSWFObjectWidgetCode($widget,$flashvarsArray,$width,$height,$bgcolo
 //Here we try to detect if this is a mobile device or not
 //this is used to determine whther to return a JS or SWF widget
 function isMobile(){
+
 	
 	$browser = new Browser();
 	 switch($browser->getBrowser()){
@@ -3001,8 +3158,15 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 		"audiocontrolsurl" =>  $CFG->wwwroot . "/filter/poodll/flowplayer/flowplayer.audio-3.2.9.swf" 
 		);
 		
+		//We need this so that we can require the JSON , for json stringify
+		$jsmodule = array(
+			'name'     => 'filter_poodll',
+			'fullpath' => '/filter/poodll/module.js',
+			'requires' => array('json')
+		);
+		
 	//setup our JS call
-	$PAGE->requires->js_init_call('M.filter_poodll.loadflowplayer', array($opts),false);
+	$PAGE->requires->js_init_call('M.filter_poodll.loadflowplayer', array($opts),false,$jsmodule);
 
 	
 	

@@ -200,13 +200,10 @@ require_once($CFG->libdir . '/filelib.php');
 	return;
 
 
-//Fetch a sub directory list for file explorer  
-//calls itself recursively, dangerous
+//For uploading a file diorect from an HTML5 or SWF widget
 function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $farea,$itemid){
 	global $CFG,$USER;
 	
-	//see instance_remotedownload for more on this method
-	//we should tighten up here a little I think
 
 	//setup our return object
 	$return=fetchReturnArray(true);
@@ -218,6 +215,7 @@ function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $fa
 		case "jpg":
 		case "png":
 		case "xml":
+		case "mov":
 		case "mp4":
 			break;
 		default: $fileextension="";
@@ -261,13 +259,25 @@ function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $fa
 		$return['success']=false;
 		array_push($return['messages'],"Already exists, file with filename:" . $filename );
 	}else{
+		
+		//check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes
+		//if so it will look like this: data:image/png;base64,iVBORw0K
+		//we remove it, there must be a better way of course ...
+		//$metapos = strPos($filedata,";base64,");
+		$metapos = strPos($filedata,",");
+		if($metapos >10 && $metapos <30){
+			//$trunced = substr($filedata,0,$metapos+8);
+			$filedata = substr($filedata,$metapos+1);
+		
+		}
 	
 		//actually make the file
-		$filedata = base64_decode($filedata);
-		 $stored_file = $fs->create_file_from_string($record, $filedata);
+		$xfiledata = base64_decode($filedata);
+		 $stored_file = $fs->create_file_from_string($record, $xfiledata);
 		//if successful return filename
 		if($stored_file){
 			array_push($return['messages'],$filename );
+			//array_push($return['messages'],$filedata );
 			//array_push($return['messages'],$stored_file->get_itemid() );
 		//if unsuccessful, return error
 		}else{

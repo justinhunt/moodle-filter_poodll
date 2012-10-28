@@ -26,6 +26,7 @@ $items[] = new admin_setting_configselect('filter_poodll_html5controls', get_str
 $items[] = new admin_setting_heading('filter_poodll_intercept_settings', get_string('filter_poodll_intercept_heading', 'filter_poodll'), '');
 $items[] = new admin_setting_configcheckbox('filter_poodll_handleflv', get_string('handleflv', 'filter_poodll'), '', 1);
 $items[] = new admin_setting_configcheckbox('filter_poodll_handlemp4', get_string('handlemp4', 'filter_poodll'), '', 1);
+$items[] = new admin_setting_configcheckbox('filter_poodll_handlemov', get_string('handlemov', 'filter_poodll'), '', 1);
 $items[] = new admin_setting_configcheckbox('filter_poodll_handlemp3', get_string('handlemp3', 'filter_poodll'), '', 1);
 
 	//audio player settings.	
