@@ -144,9 +144,13 @@ theconfig = { plugins:
 			//set the color to black on video screens
 			theconfig.plugins.controls.backgroundColor = '#0';
 			break;
-	
-	
+		
 	}
+	
+	
+	//Get our element to replace
+	var playerel= document.getElementById(opts['playerid']);
+	if(!playerel){return;}
 	
 	//should there be a problem with standard embedding, we can try this simpler
 	//way
@@ -155,7 +159,7 @@ theconfig = { plugins:
 		//we should not have to specify this, but we do ...?
 		var uniqconfig = theconfig;
 		if(splash){
-			document.getElementById(opts['playerid']).onclick = function() {
+			playerel.onclick = function() {
 				flashembed(opts['playerid'], opts['playerpath'], {config: uniqconfig});
 			}
 		}else{
@@ -173,8 +177,9 @@ theconfig = { plugins:
 	   //we need to convert double to single quotes, for IE's benefit
 	   configstring= configstring.replace(/"/g,"'");
 	   if(splash){
+			//console.log("playerid:" + opts['playerid']);
 			// get flash container and assign click handler for it
-			document.getElementById(opts['playerid']).onclick = function() {
+			playerel.onclick = function() {
 				swfobject.embedSWF(opts['playerpath'],
 						opts['playerid'], opts['width'], 
 						opts['height'] , 
@@ -183,6 +188,7 @@ theconfig = { plugins:
 						{config: configstring}
 					);
 			}
+			
 		}else{
 			swfobject.embedSWF(opts['playerpath'],
     				opts['playerid'], opts['width'], 
@@ -192,27 +198,19 @@ theconfig = { plugins:
     				{config: configstring}
     			);
 		}
-    	//console.log(JSON.stringify(theconfig));
-    	//console.log("swfobject embedded");
-		//console.log(configstring);
-    	
-    	
-    	
-    	
-    	
-    	
+
 	
-	//usually we will try this, though.
+	//we default to flowplayer embed method
 	}else{
 	
-		/* output the flowplayer */	
-		$fp = flowplayer(opts['playerid'],opts['playerpath'],theconfig);
-		
+		/* output the flowplayer */
+		var playerid= opts['playerid'];		
+		var playerpath = opts['playerpath'];
+		$fp = flowplayer(playerid,playerpath,theconfig);
 		//output any other bits and pieces required
 		if(opts['controls']!="0"){$fp = $fp.controls(opts['controls']);}
 		if(opts['ipad']){$fp=$fp.ipad();}
 		if(opts['playlist']){$fp=$fp.playlist("div.poodllplaylist", {loop: opts["loop"]});}
-	
 	}
 
 	//for debugging
@@ -221,7 +219,9 @@ theconfig = { plugins:
 	
 }
 
-// Replace poodll_flowplayer divs with flowplayers
+
+
+// handle file uploads for Mobile
 M.filter_poodll.loadmobileupload = function(Y,opts) {
 	var fileselect = $id('poodllfileselect');
 	if(fileselect){
@@ -405,9 +405,3 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 		}
 
 	}//end of upload file
-
-
-
-
-
-
