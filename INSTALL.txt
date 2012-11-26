@@ -10,18 +10,9 @@ The files in the poodllall archive are all in the necessary directory structure.
 
 Then login to your site as admin and go to your Moodle site's top page. Moodle should then guide you through the installation or upgrade of the four modules. 
 
-Changes in this version: 2012100100
+Changes in this version: 2012110500
 =============================
--Fixed the way the flowplayer video and audio player was embedded on the page. Provided option in filter settings to select the embedding method. 
-This will fix some weirdness that people had where players didn't play, endlessly played or resized themselves. The default is to use the SWF Object embedding  method which works the best for the most people. The other option you might use is Flowplayer JS. If you use this, it might pay to tell the multimedia plugins filter to ignore the file expensions that you handle with PoodLL (mp3,mp4,flv by default). Otherwise conflicts can occur. In Moodle 2.3 this can be done at:
-Site Administration -> Appearance -> Media Embedding
-
-In Moodle 2 you can do this at:
-Site Administration -> Plugins -> Filters -> MultiMedia Plugins settings.
-
--Added a PoodLL Data Directory feature. This allows you to specify a web accessible directory from which to store and access media files and other resources. This is mostly useful for some of the older widgets from Moodle 1.9  days, that some people want to use. These include the talkback widget, small video gallery, big video gallery,audio list players and flashcards.
-
--Added / reenabled a few new widgets. These include talkback, the video galleries, screen subscribe/cambroadcaster
+-Added the PoodLL database field and 2.3 Assignment submission type to the main PoodLL distribution.
 
 
 Setting up the PoodLL Filter

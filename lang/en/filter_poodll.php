@@ -61,6 +61,7 @@ $string['servername'] = 'PoodLL Host Address';
 $string['serverid'] = 'PoodLL Server Id';
 $string['serverport'] = 'PoodLL Server Port (RTMP)';
 $string['serverhttpport'] = 'PoodLL Server Port (HTTP)';
+$string['autotryports'] = 'Try diff. ports if cannot connect';
 
 //$string['useproxy'] = 'Use Moodle Proxy?';
 
