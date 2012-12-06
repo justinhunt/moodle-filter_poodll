@@ -53,8 +53,9 @@ require_once($CFG->libdir . '/filelib.php');
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
 			//uploadfile filedata(base64), fileextension (needs to be cleaned), blah blah 
-			//paramone is the file data, paramtwo is the file extension, requestid is the actionid
-			$returnxml = uploadfile($paramone,$paramtwo, $requestid,$contextid, $comp, $farea,$itemid);
+			//paramone is the file data, paramtwo is the file extension, paramthree is the mediatype (audio,video, image)
+			//requestid is the actionid
+			$returnxml = uploadfile($paramone,$paramtwo, $paramthree, $requestid,$contextid, $comp, $farea,$itemid);
 			break;
 		
 		case "poodllpluginfile":
@@ -201,7 +202,7 @@ require_once($CFG->libdir . '/filelib.php');
 
 
 //For uploading a file diorect from an HTML5 or SWF widget
-function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $farea,$itemid){
+function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid, $comp, $farea,$itemid){
 	global $CFG,$USER;
 	
 
@@ -243,16 +244,17 @@ function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $fa
         
   
 	//make filename and set it
-	$filename = "upfile_" . rand(100,32767) . rand(100,32767) . "." . $fileextension;
+	$filenamebase = "upfile_" . rand(100,32767) . rand(100,32767) . "." ;
+	$filename = $filenamebase . $fileextension;
 	$record->filename = $filename;
 	
 	
 	//in most cases we will be storing files in a draft area and lettign Moodle do the rest
 	//one condition of using this function is that only one file can be here,
 	//attachment limits in question. could be bypassed if reason enough
-		if($farea=='draft'){
-			$fs->delete_area_files($contextid,$comp,$farea,$itemid);
-		}
+	if($farea=='draft'){
+		$fs->delete_area_files($contextid,$comp,$farea,$itemid);
+	}
 	
 	//if file already exists, raise an error
 	if($fs->file_exists($contextid,$comp,$farea,$itemid,$filepath,$filename)){
@@ -271,9 +273,79 @@ function uploadfile($filedata,  $fileextension, $actionid,$contextid, $comp, $fa
 		
 		}
 	
-		//actually make the file
+		//decode the data and store it in memory
 		$xfiledata = base64_decode($filedata);
-		 $stored_file = $fs->create_file_from_string($record, $xfiledata);
+		
+		//Determine if we need to convert and what format the conversions should take
+		if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_audiotranscode && $fileextension!="mp3" && $mediatype=="audio"){
+			$convext = "mp3";	
+		}else if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_videotranscode && $fileextension!="mp4" && $mediatype=="video"){
+			$convext = "mp4";
+		}else{
+			$convext="";
+		}
+		
+		//if we need to convert with ffmpeg, get on with it
+		if($convext!=""){
+		
+			//determine the temp directory
+			if (isset($CFG->tempdir)){
+				$tempdir =  $CFG->tempdir . "/";	
+			}else{
+				//moodle 2.1 users have no $CFG->tempdir
+				$tempdir =  $CFG->dataroot . "/temp/";
+			}
+			//actually make the file on disk so FFMPEG can get it
+			$ret = file_put_contents($tempdir . $filename, $xfiledata);
+			
+			//if successful saved to disk, convert
+			if($ret){
+				
+				//if use ffmpeg, then attempt to convert mp3 or mp4
+					$convfilename = $filenamebase . $convext;
+					shell_exec("ffmpeg -i " . $tempdir . $filename . " " . $tempdir . $convfilename . " >/dev/null 2>/dev/null ");
+					/* About FFMPEG conv
+					it would be better to do the conversion in the background not here.
+					in that case you would place an ampersand at the end .. like this ...
+					" >/dev/null 2>/dev/null &");
+					But you have to get the information back to Moodle, and copy the file over, so the plumbing gets tough.
+					Right now there is no "converting message" displayed to user, but we need to do this.
+					*/
+					
+					//Check if conversion worked
+					if(is_readable(realpath($tempdir . $convfilename))){
+						$record->filename = $convfilename;
+						$stored_file = 	$fs->create_file_from_pathname($record, $tempdir . $convfilename);
+						//need to kill the two temp files here
+						if(is_readable(realpath($tempdir . $convfilename))){
+							unlink(realpath($tempdir . $convfilename));
+						}
+						if(is_readable(realpath($tempdir . $filename))){
+							unlink(realpath($tempdir . $filename));
+						}
+						$filename = $convfilename;
+						
+					//if failed, default to using the original uploaded data
+					//and delete the temp file we made
+					}else{
+						$stored_file = $fs->create_file_from_string($record, $xfiledata);
+						if(is_readable(realpath($tempdir . $filename))){
+							unlink(realpath($tempdir . $filename));
+						}
+					}
+					
+					
+				
+			//if couldn't create on disk fall back to the original data
+			}else{
+				$stored_file = $fs->create_file_from_string($record, $xfiledata);
+			}
+			
+		//if we are not converting, then just create our moodle file entry with original file data 		
+		}else{
+			$stored_file = $fs->create_file_from_string($record, $xfiledata);
+		}
+		
 		//if successful return filename
 		if($stored_file){
 			array_push($return['messages'],$filename );
@@ -815,6 +887,33 @@ $red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 						array_push($return['messages'],"Unable to get URL for file." );
 					}
 				}//end of if fileinfo
+				
+				//Here we can try to get an automated thumbnail of a video file
+				//this will return nothing great if it is an audio flv ...
+				//Set this to NOT process, because it wont work for repo. code in
+				//poodll reseource lib, fetchvideosplash is better cos video will always go through there
+				//in the 30 min req.
+				if($ext==".flv" || $ext==".mp4"){
+					if($CFG->filter_poodll_thumbnailsplash && false){
+					
+						//create a new file fetch url for the splash
+						$filename = substr($filename,0,-3) . "png";
+						$jsp = "snapshot.jsp";						
+						$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
+						":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" . 
+						$CFG->filter_poodll_serverid . "&filename=" . $filename . "&caller=" . urlencode($CFG->wwwroot);
+						
+						//update our file record with image name
+						$file_record['filename']=$filename;
+		
+						//fetch image
+						//we are not concerned if it works or not. If it fails, its just a shame.
+						$fs->create_file_from_url($file_record, $red5_fileurl,$options, false);
+						
+					}
+				}
+				
+				
 		}//end of if could create_file_from_url
 		
 

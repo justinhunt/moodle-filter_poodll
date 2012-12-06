@@ -387,6 +387,7 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 			//spent hours tracking that down ...justin 20121012
 			params += "&paramone=" + encodeURIComponent(filedata);
 			params += "&paramtwo=" + ext;
+			params += "&paramthree=" + $id("p_mediatype").value;
 			params += "&requestid=12345";
 			params += "&contextid=" + $id("p_contextid").value;
 			params += "&component=" + $id("p_component").value;
@@ -396,6 +397,7 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 			
 			xhr.open("POST", $id("p_fileliburl").value, true);
 			xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+			xhr.setRequestHeader("Cache-Control", "no-cache");
 			xhr.setRequestHeader("Content-length", params.length);
 			xhr.setRequestHeader("Connection", "close");
 

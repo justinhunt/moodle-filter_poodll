@@ -121,7 +121,7 @@ function fetch_poodllconsole($runtime, $coursedataurl="",$mename="", $courseid=-
 
 	//Set the camera prefs
 	$capturewidth=$CFG->filter_poodll_capturewidth;
-	$captureheight=$CFG->filter_poodll_captureheight;
+	$captureheight=(string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 	$capturefps=$CFG->filter_poodll_capturefps;
 	$prefcam=$CFG->filter_poodll_screencapturedevice;
 	$prefmic=$CFG->filter_poodll_studentmic;
@@ -333,7 +333,7 @@ $poodlllogicurl = $CFG->wwwroot . '/filter/poodll/poodlllogiclib.php';
 
 //Set the camera prefs
 $capturewidth=$CFG->filter_poodll_capturewidth;
-$captureheight=$CFG->filter_poodll_captureheight;
+$captureheight=(string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 $capturefps=$CFG->filter_poodll_capturefps;
 $prefcam=$CFG->filter_poodll_studentcam;
 $prefmic=$CFG->filter_poodll_studentmic;
@@ -431,7 +431,7 @@ if ($filename == ""){
 
 //Set the camera prefs
 $capturewidth=$CFG->filter_poodll_capturewidth;
-$captureheight=$CFG->filter_poodll_captureheight;
+$captureheight=(string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 $capturefps=$CFG->filter_poodll_capturefps;
 $prefcam=$CFG->filter_poodll_studentcam;
 $prefmic=$CFG->filter_poodll_studentmic;
@@ -774,7 +774,7 @@ function fetchMP3RecorderForSubmission($updatecontrol, $contextid,$component,$fi
 global $CFG, $USER, $COURSE;
 
 //get our HTML5 Uploader if we have a mobile device
-if(isMobile()){
+if(isMobile($CFG->filter_poodll_html5rec)){
 	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
 }
 
@@ -847,7 +847,7 @@ global $CFG, $USER, $COURSE;
 
 //head off to HTML5 logic if mobile
 
-if(isMobile()){
+if(isMobile($CFG->filter_poodll_html5widgets)){
 //if(true){
 	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
 }
@@ -908,7 +908,7 @@ function fetchAudioRecorderForSubmission($runtime, $assigname, $updatecontrol="s
 global $CFG, $USER, $COURSE;
 
 //get our HTML5 Uploader if we have a mobile device
-if(isMobile()){
+if(isMobile($CFG->filter_poodll_html5rec)){
 	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
 }
 
@@ -1293,7 +1293,7 @@ global $CFG, $USER, $COURSE;
 //Set the servername and a capture settings from config file
 
 $capturewidth=$CFG->filter_poodll_capturewidth;
-$captureheight=$CFG->filter_poodll_captureheight;
+$captureheight=(string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 $capturefps=$CFG->filter_poodll_capturefps;
 $prefcam=$CFG->filter_poodll_studentcam;
 $prefmic=$CFG->filter_poodll_studentmic;
@@ -1326,14 +1326,14 @@ function fetchSnapshotCameraForSubmission($updatecontrol="filename", $filename="
 global $CFG, $USER, $COURSE;
 
 //get our HTML5 Uploader if we have a mobile device
-if(isMobile()){
+if(isMobile($CFG->filter_poodll_html5widgets)){
 	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
 }
 
 //Set the servername and a capture settings from config file
 
 $capturewidth=$CFG->filter_poodll_capturewidth;
-$captureheight=$CFG->filter_poodll_captureheight;
+$captureheight=(string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 $capturefps=$CFG->filter_poodll_capturefps;
 $prefcam=$CFG->filter_poodll_studentcam;
 $prefmic=$CFG->filter_poodll_studentmic;
@@ -1380,7 +1380,7 @@ global $CFG, $USER, $COURSE;
 //Set the servername and a capture settings from config file
 $flvserver = $CFG->poodll_media_server;
 $capturewidth=$CFG->filter_poodll_capturewidth;
-$captureheight=$CFG->filter_poodll_captureheight;
+$captureheight=(string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 $capturefps=$CFG->filter_poodll_capturefps;
 $prefcam=$CFG->filter_poodll_studentcam;
 $prefmic=$CFG->filter_poodll_studentmic;
@@ -1443,7 +1443,7 @@ global $CFG, $USER, $COURSE;
 //Set the servername and a capture settings from config file
 $flvserver = $CFG->poodll_media_server;
 $capturewidth=$CFG->filter_poodll_capturewidth;
-$captureheight=$CFG->filter_poodll_captureheight;
+$captureheight=(string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 $capturefps=$CFG->filter_poodll_capturefps;
 $prefcam=$CFG->filter_poodll_studentcam;
 $prefmic=$CFG->filter_poodll_studentmic;
@@ -1528,14 +1528,14 @@ function fetchVideoRecorderForSubmission($runtime, $assigname, $updatecontrol="s
 global $CFG, $USER, $COURSE;
 
 //head off to HTML5 logic if mobile
-if (isMobile()){
+if (isMobile($CFG->filter_poodll_html5rec)){
 	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "video");
 }
 
 //Set the servername and a capture settings from config file
 $flvserver = $CFG->poodll_media_server;
 $capturewidth=$CFG->filter_poodll_capturewidth;
-$captureheight=$CFG->filter_poodll_captureheight;
+$captureheight= (string)(0.75 * intval($CFG->filter_poodll_capturewidth));
 $capturefps=$CFG->filter_poodll_capturefps;
 $prefcam=$CFG->filter_poodll_studentcam;
 $prefmic=$CFG->filter_poodll_studentmic;
@@ -1660,10 +1660,10 @@ global $CFG,$PAGE;
 
 	//depending on our media type, tell the mobile device what kind of file we want
 	switch($mediatype){
-		case "image": $mediatype="accept=\"image/*\"";break;
+		case "image": $acceptmedia="accept=\"image/*\"";break;
 		case "audio":
-		case "video": $mediatype="accept=\"video/*\"";break;
-		default: $mediatype="";
+		case "video": $acceptmedia="accept=\"video/*\"";break;
+		default: $acceptmedia="";
 	}
 	
 	//Output our HTML
@@ -1675,10 +1675,11 @@ global $CFG,$PAGE;
 			<input type=\"hidden\" id=\"p_component\" value=\"$component\" />
 			<input type=\"hidden\" id=\"p_filearea\" value=\"$filearea\" />
 			<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />
+			<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />
 			<input type=\"hidden\" id=\"p_fileliburl\" value=\"$fileliburl\" />
 			
 			<label for=\"poodllfileselect\">Upload File:</label>
-			<input type=\"file\" id=\"poodllfileselect\" name=\"poodllfileselect[]\" $mediatype />
+			<input type=\"file\" id=\"poodllfileselect\" name=\"poodllfileselect[]\" $acceptmedia />
 		</div>
 		<div id=\"p_progress\"></div>
 		<div id=\"p_messages\"></div>
@@ -1717,7 +1718,7 @@ global  $CFG, $COURSE;
     						
     	
 	//depending on runtime, we show a SWF or html5 player			
-	if($runtime=="js" || ($runtime=="auto" && isMobile())){
+	if($runtime=="js" || ($runtime=="auto" && isMobile($CFG->filter_poodll_html5play))){
 	
 		//the $src url as it comes from assignment and questions, is urlencoded,
 		//unlikely to arrive here encoded, but lets just be safe 
@@ -1773,7 +1774,7 @@ global  $CFG, $COURSE;
 		$params['fontsize']= $fontsize;
 	
 		//depending on runtime, we show a SWF or html5 player					
-		if($runtime=="js" || ($runtime=="auto" && isMobile())){
+		if($runtime=="js" || ($runtime=="auto" && isMobile($CFG->filter_poodll_html5play))){
 		
 			//the $src url as it comes from assignment and questions, is urlencoded,
 			//unlikely to arrive here encoded, but lets just be safe 
@@ -1826,7 +1827,7 @@ global  $CFG, $COURSE;
 	//depending on runtime, we show a SWF or html5 player
 	//currently no js implementation	
 	if(false){
-	//if($runtime=="js" || ($runtime=="auto" && isMobile())){
+	//if($runtime=="js" || ($runtime=="auto" && isMobile($CFG->filter_poodll_html5play))){
 	
 		//the $src url as it comes from assignment and questions, is urlencoded,
 		//unlikely to arrive here encoded, but lets just be safe 
@@ -1903,7 +1904,7 @@ $moduleid = optional_param('id', 0, PARAM_INT);    // The ID of the current modu
 
 
 //determine if we are on a mobile device or not
- $ismobile = isMobile();
+ $ismobile = isMobile($CFG->filter_poodll_html5play);
 
 	//if its a poodll player we want an xml feed
 	//if its jw or fp we want an rss feed
@@ -1992,7 +1993,7 @@ $courseid= $COURSE->id;
 $useplayer=$CFG->filter_poodll_defaultplayer;
 
 //determine if we are on a mobile device or not
- $ismobile = isMobile();
+ $ismobile = isMobile($CFG->filter_poodll_html5play);
 
 	//Set our use protocol type
 	//if one was not passed, then it may have been tagged to the url
@@ -2187,7 +2188,7 @@ if($protocol=="yutu"){
 }
 
 //determine if we are on a mobile device or not
-$ismobile=isMobile();
+$ismobile=isMobile($CFG->filter_poodll_html5play);
 //$ismobile=true;
 
 
@@ -2371,8 +2372,6 @@ $ismobile=isMobile();
 	}
 
 }
-
-
 
 
 function fetchSmallVideoGallery($runtime, $playlist, $filearea="content", $protocol="", $width, $height,$permitfullscreen=false, $usepoodlldata=false){
@@ -2840,12 +2839,8 @@ function fetch_filter_properties($filterstring){
 function fetchAutoWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF"){
 	global $CFG, $PAGE;
 	$ret="";
-	 $browser = new Browser();
-	 switch($browser->getBrowser()){
-		case Browser::BROWSER_IPAD:
-		case Browser::BROWSER_IPOD:
-		case Browser::BROWSER_IPHONE:
-		case Browser::BROWSER_ANDROID:
+	//determine if this is mobile or not
+	 if(isMobile($CFG->filter_poodll_html5widgets)){
 			
 			$pos =strPos($widget,".lzx.");
 			if ($pos > 0){
@@ -2853,8 +2848,7 @@ function fetchAutoWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFF
 					$widget=$basestring . ".js";
 					$ret= fetchJSWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF");	
 			}
-			break;
-		default:
+	}else{
 			//$ret=$browser->getPlatform();
 			$ret = fetchSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF");	
 	 }
@@ -2944,24 +2938,49 @@ function fetchSWFObjectWidgetCode($widget,$flashvarsArray,$width,$height,$bgcolo
 
 //Here we try to detect if this is a mobile device or not
 //this is used to determine whther to return a JS or SWF widget
-function isMobile(){
-
+function isMobile($profile='mobile'){
+	global $CFG;
+	
+	if ($profile=='never'){return false;}
+	if ($profile=='always'){return true;}
 	
 	$browser = new Browser();
+	
+	//check by browser
 	 switch($browser->getBrowser()){
 		case Browser::BROWSER_IPAD:
 		case Browser::BROWSER_IPOD:
 		case Browser::BROWSER_IPHONE:
 		case Browser::BROWSER_ANDROID:
-			$ismobile = true;
-			break;
-				
-		default: 
-			$ismobile = false;
+		return true;
 	}
 
-	return $ismobile;
+	//check by platform
+	switch($browser->getPlatform()){
 
+			case Browser::PLATFORM_IPHONE:
+			case Browser::PLATFORM_IPOD:
+			case Browser::PLATFORM_IPAD:
+			case Browser::PLATFORM_BLACKBERRY:
+			case Browser::PLATFORM_NOKIA:
+			case Browser::PLATFORM_ANDROID:
+			case Browser::PLATFORM_WINDOWS_CE:
+			return true;
+	}//end of switch
+
+	
+	//if we are still not mobile, but webkit browwsers count, check that too
+	if ($profile=='webkit'){
+		 switch($browser->getBrowser()){
+			case Browser::BROWSER_SAFARI:
+			case Browser::BROWSER_ICAB:
+			case Browser::BROWSER_OMNIWEB:
+			case Browser::BROWSER_NOKIA_S60:
+			case Browser::BROWSER_CHROME:
+			return true;
+		}		
+	}
+	return false;
 }
 
 
