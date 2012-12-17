@@ -211,3 +211,70 @@ div.poodllplaylist a em {
 {
 	background: #c00 none 0 0 no-repeat;
 }
+
+
+.p_btn {
+display: inline-block;
+cursor: pointer;
+padding: 7px 10px;
+font-weight: 700;
+line-height: 1;
+color: white;
+background: #345;
+border: 0;
+-moz-border-radius: 4px;
+-webkit-border-radius: 4px;
+border-radius: 4px;
+}
+
+
+
+.p_btn_wrapper {
+display: inline-block;
+margin: 0;
+position: relative;
+overflow: hidden;
+cursor: pointer;
+}
+
+.p_btn_wrapper [type="file"] {
+position: absolute;
+top: 0;
+left: 0;
+filter: alpha(opacity=0);
+-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+opacity: 0;
+cursor: pointer;
+}
+
+
+#p_scrollbox {
+	position: relative;
+}
+
+.xaxis{
+	white-space: pre;
+	display: inline-block;
+}
+
+#p_scrollboxcontainer {
+    overflow: hidden;
+    border : 1px solid black;
+    padding: 3px;
+    position: relative;
+}
+
+.p_scroll_btn_wrapper {
+position: absolute;
+z-index: 10;
+top: 50%;
+left: 50%;
+}
+
+.p_scroll_btn_wrapper .p_btn {
+background: #E20022;
+position: relative;
+top: -50%;
+left: -50%;
+
+}

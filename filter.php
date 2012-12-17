@@ -256,7 +256,11 @@ function filter_poodll_callback(array $link){
 			break;
 			
 		case 'flashcards':
-			$returnHtml= fetch_flashcards($filterprops['runtime'],$filterprops['cardset'],
+			$returnHtml= fetch_flashcards($filterprops['runtime'],
+				!empty($filterprops['cardset']) ? $filterprops['cardset'] : -1,
+				!empty($filterprops['qname']) ? $filterprops['qname'] : "",
+				!empty($filterprops['frontcolor']) ? $filterprops['frontcolor'] : "0xDDDDDD",
+				!empty($filterprops['backcolor']) ? $filterprops['backcolor'] : "0x000000",
 				!empty($filterprops['cardwidth']) ? $filterprops['cardwidth'] : 300,
 				!empty($filterprops['cardheight']) ? $filterprops['cardheight'] : 150,
 				!empty($filterprops['randomize']) ? $filterprops['randomize'] : 'yes',
@@ -384,6 +388,21 @@ function filter_poodll_callback(array $link){
 				;
 			break;	
 			
+		case 'scrollerstart':
+			$returnHtml= fetch_poodllscroller(true,
+				!empty($filterprops['width']) ? $filterprops['width'] :  '400',
+				!empty($filterprops['height']) ? $filterprops['height'] :  '200',
+				!empty($filterprops['speed']) ? $filterprops['speed'] :  '3',
+				!empty($filterprops['repeat']) ? $filterprops['repeat'] :  'yes',
+				!empty($filterprops['axis']) ? $filterprops['axis'] :  'y')
+				;
+			break;	
+		
+		case 'scrollerstop':
+			$returnHtml= fetch_poodllscroller(false);
+
+			break;
+				
 		case 'sliderocket':
 			$returnHtml= fetch_sliderocket($filterprops['id'],
 				!empty($filterprops['width']) ? $filterprops['width'] :  '400',

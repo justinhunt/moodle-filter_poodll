@@ -245,47 +245,6 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 	
 	// output file information
 	function ParseFile(file) {
-
-	/*
-		//output basic file info. good for debugging
-		Output(
-			"<p>File information: <strong>" + file.name +
-			"</strong> type: <strong>" + file.type +
-			"</strong> size: <strong>" + file.size +
-			"</strong> bytes</p>"
-		);
-		*/
-		
-/*
-		// display an image, nice but not necessary in ios, it does it anyway
-		if (file.type.indexOf("image") == 0) {
-			var reader = new FileReader();
-			reader.onload = function(e) {
-				Output(
-					"<p><strong>" + file.name + ":</strong><br />" +
-					'<img src="' + e.target.result + '" /></p>'
-				);
-			}
-			reader.readAsDataURL(file);
-		}
-		
-*/		
-		
-		
-/*
-		// display text
-		if (file.type.indexOf("text") == 0) {
-			var reader = new FileReader();
-			reader.onload = function(e) {
-				Output(
-					"<p><strong>" + file.name + ":</strong></p><pre>" +
-					e.target.result.replace(/</g, "&lt;").replace(/>/g, "&gt;") +
-					"</pre>"
-				);
-			}
-			reader.readAsText(file);
-		}
-		*/
 			
 			// start upload
 			var filedata ="";
@@ -407,3 +366,66 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 		}
 
 	}//end of upload file
+	
+	//===============================
+	// Start of text scroller
+M.filter_poodll.loadscroller = function(Y,opts) {
+	 
+	window.current = (opts['scrollspeed']);
+	window.scrollopts = opts;
+}
+	 
+	function HeightData(){
+		AreaHeight=dataobj.offsetHeight;
+		AreaWidth=dataobj.offsetWidth;
+		
+		//if (AreaHeight==0){
+		if(false){
+			setTimeout("HeightData()",( scrollopts['startdelay'] * 1000 ));
+		}
+		else {
+			if(scrollopts['axis']=="y"){
+				DoScrollAxisY();
+			}else{
+				DoScrollAxisX();
+			}
+		}
+	}
+	 
+	function ScrollBoxStart(){
+		dataobj=document.all? document.all.p_scrollbox : document.getElementById("p_scrollbox");
+		dataobj.style.top=scrollopts['topspace'];
+		dataobj.style.left=scrollopts['leftspace'];
+		var startbutton = document.getElementById("p_scrollstartbutton");
+		startbutton.style.display='none';
+		HeightData();
+
+	}
+	 
+	function DoScrollAxisY(){
+		dataobj.style.top=(parseInt(dataobj.style.top)- scrollopts['scrollspeed']) + "px";
+		if (parseInt(dataobj.style.top)<AreaHeight*(-1)) {
+			dataobj.style.top=scrollopts['framesize'];
+			if(scrollopts['repeat']=='yes'){
+				var startbutton = document.getElementById("p_scrollstartbutton");
+				startbutton.style.display='';
+			}
+		}else {
+			setTimeout("DoScrollAxisY()",scrollopts['speedjump']);
+		}
+	}
+	
+	function DoScrollAxisX(){
+		dataobj.style.left=(parseInt(dataobj.style.left)- scrollopts['scrollspeed']) + "px";
+		if (parseInt(dataobj.style.left)<AreaWidth*(-1)) {
+			dataobj.style.left=scrollopts['framesize'];
+			if(scrollopts['repeat']=='yes'){
+				var startbutton = document.getElementById("p_scrollstartbutton");
+				startbutton.style.display='';
+			}
+		}else {
+			setTimeout("DoScrollAxisX()",scrollopts['speedjump']);
+		}
+	}
+	 
+ 

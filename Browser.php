@@ -185,6 +185,9 @@
 
 		const PLATFORM_UNKNOWN = 'unknown';
 		const PLATFORM_WINDOWS = 'Windows';
+		//added Justin 20121208
+		const PLATFORM_MICROSOFT_SURFACE = 'Microsoft Surface';
+		
 		const PLATFORM_WINDOWS_CE = 'Windows CE';
 		const PLATFORM_APPLE = 'Apple';
 		const PLATFORM_LINUX = 'Linux';
@@ -514,6 +517,7 @@
 	     * Determine if the browser is Internet Explorer or not (last updated 1.7)
 	     * @return boolean True if the browser is Internet Explorer otherwise false
 	     */
+	    //Microsoft Surface: Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; ARM; Trident/6.0; Touch)
 	    protected function checkBrowserInternetExplorer() {
 
 		    // Test for v1 - v1.5 IE
@@ -532,6 +536,13 @@
 		    	if( stripos($this->_agent,'msnb') !== false ) {
 			    	$aresult = explode(' ',stristr(str_replace(';','; ',$this->_agent),'MSN'));
 				    $this->setBrowser( self::BROWSER_MSN );
+				    $this->setVersion(str_replace(array('(',')',';'),'',$aresult[1]));
+				    return true;
+		    	}
+		    	if( stripos($this->_agent,'ARM') !== false && stripos($this->_agent,'MSIE') != false && stripos($this->_agent,'TOUCH') != false ) {
+			    	$aresult = explode(' ',stristr(str_replace(';','; ',$this->_agent),'MSIE'));
+				    $this->setBrowser( self::BROWSER_IE );
+				    $this->setPlatform( self::PLATFORM_MICROSOFT_SURFACE );
 				    $this->setVersion(str_replace(array('(',')',';'),'',$aresult[1]));
 				    return true;
 		    	}
@@ -993,6 +1004,7 @@
 	    /**
 	     * Determine the user's platform (last updated 1.7)
 	     */
+	    // Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; ARM; Trident/6.0)
 	    protected function checkPlatform() {
 		    if( stripos($this->_agent, 'windows') !== false ) {
 			    $this->_platform = self::PLATFORM_WINDOWS;

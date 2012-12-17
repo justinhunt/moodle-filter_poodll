@@ -32,6 +32,7 @@ require_once($CFG->libdir . '/filelib.php');
 	$paramone  = optional_param('paramone', "", PARAM_TEXT);  // nature of value depends on datatype, maybe path
 	$paramtwo  = optional_param('paramtwo', "", PARAM_TEXT);  // nature of value depends on datatype, maybe protocol
 	$paramthree  = optional_param('paramthree', "", PARAM_TEXT);  // nature of value depends on datatype, maybe filearea
+	$paramfour  = optional_param('paramfour', "", PARAM_TEXT);  // nature of value depends on datatype, maybe filearea
 
 	switch($datatype){
 
@@ -115,7 +116,8 @@ require_once($CFG->libdir . '/filelib.php');
 		case "poodllflashcards": 
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
-			$returnxml=fetch_poodllflashcards($courseid, $paramone);
+			//courseid, cardset id,cardset name, fgcolor, bgcolor 
+			$returnxml=fetch_poodllflashcards($courseid, $paramone,$paramtwo,$paramthree,$paramfour);
 			break;	
 			
 		case "poodllflashcardsconvert": 
@@ -643,11 +645,18 @@ global $CFG;
 }
 
 //Fetch a deck of flashcards  
-function fetch_poodllflashcards($courseid, $flashcardid){
+function fetch_poodllflashcards($courseid, $cardsetid=-1,$cardsetname="",$frontcolor=-1, $backcolor=-1){
 global $CFG, $DB;	
-	//Handle directories
-	//$subquestions = $DB->get_records('question_match_sub', 'question', $flashcardid);
-	$subquestions = $DB->get_records('question_match_sub', array('question'=>$flashcardid));
+
+
+	//Get question index from db if a question name was specified
+	if($cardsetname != ""){
+		$question = $DB->get_record('question', array('name'=>$cardsetname,'qtype'=>'match'));
+		if($question){$cardsetid=$question->id;}
+	}
+	
+	//get card data from db
+	$subquestions = $DB->get_records('question_match_sub', array('question'=>$cardsetid));
 	
     if (empty($subquestions)) {
        // notice(get_string('nosubquestions', 'poodllflashcard'));
@@ -655,10 +664,11 @@ global $CFG, $DB;
     }
 	
 	//We really need to put formatting into the filter string itself, not mix it in with the data.
-	//Poor design, and a pain in the oshiri to tweak. Justin 2010/10/15
+	if($frontcolor==-1){$fgcolor='0xDDDDDD';}
+	if($backcolor==-1){$bgcolor='0x000000';}
 	
 	//set up xml to return
-	$xml_output = "<stack frontfgcolor='0xDDDDDD' frontbgcolor='0x0000FF' backfgcolor='0x000000' backbgcolor='0xDDDDDD'>\n";
+	$xml_output = "<stack frontfgcolor='$frontcolor' frontbgcolor='0x0000FF' backfgcolor='$backcolor' backbgcolor='0xDDDDDD'>\n";
 	
 
 	//loop through card data amd make xml doc.

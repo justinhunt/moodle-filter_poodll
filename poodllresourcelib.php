@@ -1078,6 +1078,67 @@ global $CFG;
 
 }
 
+function fetch_poodllscroller($start=true,$width="300", $height="150",$speed=3,$repeat='yes', $axis="y"){
+global $CFG,$PAGE;
+
+//start up the scroller
+if($start){
+	//configure our options array
+	//scrollspeed(1(slow) - ?) and speedjump(20 - 40) are the determinants of speed
+	$opts = array(
+			"scrollspeed" => $speed,
+			"speedjump" => "35", 
+			"repeat" => $repeat,
+			"topspace" => "2px", 
+			"leftspace" => "2px",
+			"framesize" => "2px",
+			"axis" => $axis 
+			);
+		
+		//The JS array for passing in options
+		$jsmodule = array(
+			'name'     => 'filter_poodll',
+			'fullpath' => '/filter/poodll/module.js'
+		);
+		
+		
+	//setup our JS call
+	$PAGE->requires->js_init_call('M.filter_poodll.loadscroller', array($opts),false,$jsmodule);
+
+	//Set the width/height of the scrollcontainer
+	$dimensions = "width:" . $width . "px; height:" . $height . "px";
+	
+	//set the display class of scroll box per axis
+	//x scroll shouldn't wrap words
+	if($axis=="y"){
+		$axisclass = "yaxis";
+	}else{
+		$axisclass = "xaxis";
+	}
+	
+	//The scrollbox container
+	$returnString = "<div id='p_scrollboxcontainer' style='$dimensions'>";	
+	
+	//the clickable "start" button
+  	$returnString .= "<div class=\"p_scroll_btn_wrapper\">";
+	$returnString .= "<button type=\"button\" onclick=\"ScrollBoxStart()\" id=\"p_scrollstartbutton\" class=\"p_btn\">Start</button>";
+	$returnString .= "</div>";
+	
+	
+	//The scrollbox that gets scrolled
+	$returnString .="<div id='p_scrollbox' class='$axisclass'>";
+	
+	return $returnString;
+}else{
+	//close off the scroller
+   	$returnString = "</div>";
+ 			
+   	$returnString .= "</div>";						
+    return $returnString;
+}
+
+}
+
 function fetch_explorer($runtime, $width, $height, $moduleid=0){
 global $CFG,$COURSE;
 	
@@ -1244,7 +1305,7 @@ global $CFG;
 
 }
 
-function fetch_flashcards($runtime, $cardset,$cardwidth,$cardheight,$randomize,$width,$height){
+function fetch_flashcards($runtime, $cardset,$cardsetname, $frontcolor,$backcolor, $cardwidth,$cardheight,$randomize,$width,$height){
 global $CFG,$COURSE;
 
 
@@ -1259,6 +1320,9 @@ global $CFG,$COURSE;
 		//get the url to the automated medialist maker
 		$fetchdataurl= $CFG->wwwroot . '/filter/poodll/poodlllogiclib.php?datatype=poodllflashcards&courseid=' . $COURSE->id 
 			. '&paramone=' . $cardset 
+			. '&paramtwo=' . $cardsetname
+			. '&paramthree=' . $frontcolor 			
+			. '&paramfour=' . $backcolor 	
 			. '&cachekiller=' . rand(10000,999999);
 	}
 	
@@ -1633,17 +1697,7 @@ global $CFG,$PAGE;
 
 	//configure our options array for the JS Call
 	$fileliburl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
-	/*
-	$opts = array(
-		"updatecontrol"=> $updatecontrol,
-		"contextid"=> $contextid, 
-		"component"=> $component, 
-		"filearea"=> $filearea, 
-		"itemid"=> $itemid,
-		"fileliburl"=> $CFG->wwwroot . '/filter/poodll/poodllfilelib.php'
-		);
-		*/
-		$opts = array();
+	$opts = array();
 		
 	//setup our JS call
 	if(!$fromrepo){
@@ -1668,7 +1722,7 @@ global $CFG,$PAGE;
 	
 	//Output our HTML
 	$returnString="
-		<div>
+		<div class=\"p_btn_wrapper\">	
 			$savecontrol
 			<input type=\"hidden\" id=\"p_updatecontrol\" value=\"$updatecontrol\" />
 			<input type=\"hidden\" id=\"p_contextid\" value=\"$contextid\" />
@@ -1677,9 +1731,8 @@ global $CFG,$PAGE;
 			<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />
 			<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />
 			<input type=\"hidden\" id=\"p_fileliburl\" value=\"$fileliburl\" />
-			
-			<label for=\"poodllfileselect\">Upload File:</label>
 			<input type=\"file\" id=\"poodllfileselect\" name=\"poodllfileselect[]\" $acceptmedia />
+			<button type=\"button\" class=\"p_btn\">Take or Choose a Video</button>
 		</div>
 		<div id=\"p_progress\"></div>
 		<div id=\"p_messages\"></div>
@@ -2965,6 +3018,7 @@ function isMobile($profile='mobile'){
 			case Browser::PLATFORM_NOKIA:
 			case Browser::PLATFORM_ANDROID:
 			case Browser::PLATFORM_WINDOWS_CE:
+			case Browser::PLATFORM_MICROSOFT_SURFACE:
 			return true;
 	}//end of switch
 
