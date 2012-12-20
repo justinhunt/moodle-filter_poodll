@@ -248,7 +248,7 @@ cursor: pointer;
 }
 
 
-#p_scrollbox {
+.p_scrollbox {
 	position: relative;
 }
 
@@ -257,7 +257,7 @@ cursor: pointer;
 	display: inline-block;
 }
 
-#p_scrollboxcontainer {
+.p_scrollboxcontainer {
     overflow: hidden;
     border : 1px solid black;
     padding: 3px;

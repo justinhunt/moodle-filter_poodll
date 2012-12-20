@@ -1078,16 +1078,21 @@ global $CFG;
 
 }
 
-function fetch_poodllscroller($start=true,$width="300", $height="150",$speed=3,$repeat='yes', $axis="y"){
+function fetch_poodllscroller($start=true,$width="300", $height="150",$speed=10,$repeat='yes', $axis="y", $pixelshift="2"){
 global $CFG,$PAGE;
 
 //start up the scroller
 if($start){
+
+	$uniqueid = rand(10000,999999);
 	//configure our options array
-	//scrollspeed(1(slow) - ?) and speedjump(20 - 40) are the determinants of speed
+	//scrollspeed(1(slow) - 50(fast)) and pixelshift(1 - 5 probably) are the determinants of speed
+	//every (50 - scrollspeed)ms the scroller moves (pixelshift)pixels
+
 	$opts = array(
-			"scrollspeed" => $speed,
-			"speedjump" => "35", 
+			"scrollerid" => $uniqueid,
+			"pixelshift" => $pixelshift,
+			"scrollspeed" => 51 - $speed, 
 			"repeat" => $repeat,
 			"topspace" => "2px", 
 			"leftspace" => "2px",
@@ -1117,16 +1122,16 @@ if($start){
 	}
 	
 	//The scrollbox container
-	$returnString = "<div id='p_scrollboxcontainer' style='$dimensions'>";	
+	$returnString = "<div id='p_scrollboxcontainer" . $uniqueid .  "' class='p_scrollboxcontainer' style='$dimensions'>";	
 	
 	//the clickable "start" button
-  	$returnString .= "<div class=\"p_scroll_btn_wrapper\">";
-	$returnString .= "<button type=\"button\" onclick=\"ScrollBoxStart()\" id=\"p_scrollstartbutton\" class=\"p_btn\">Start</button>";
+  	$returnString .= "<div class='p_scroll_btn_wrapper'>";
+	$returnString .= "<button type='button' onclick='ScrollBoxStart($uniqueid)' id='p_scrollstartbutton" . $uniqueid .  "' class='p_btn'>Start</button>";
 	$returnString .= "</div>";
 	
 	
 	//The scrollbox that gets scrolled
-	$returnString .="<div id='p_scrollbox' class='$axisclass'>";
+	$returnString .="<div id='p_scrollbox" . $uniqueid .  "' class='p_scrollbox $axisclass'>";
 	
 	return $returnString;
 }else{

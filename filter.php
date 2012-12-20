@@ -392,9 +392,10 @@ function filter_poodll_callback(array $link){
 			$returnHtml= fetch_poodllscroller(true,
 				!empty($filterprops['width']) ? $filterprops['width'] :  '400',
 				!empty($filterprops['height']) ? $filterprops['height'] :  '200',
-				!empty($filterprops['speed']) ? $filterprops['speed'] :  '3',
+				!empty($filterprops['speed']) ? $filterprops['speed'] :  '10',
 				!empty($filterprops['repeat']) ? $filterprops['repeat'] :  'yes',
-				!empty($filterprops['axis']) ? $filterprops['axis'] :  'y')
+				!empty($filterprops['axis']) ? $filterprops['axis'] :  'y',
+				!empty($filterprops['pixelshift']) ? $filterprops['pixelshift'] :  '2')
 				;
 			break;	
 		

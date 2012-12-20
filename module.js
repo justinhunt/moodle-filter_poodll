@@ -370,61 +370,71 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 	//===============================
 	// Start of text scroller
 M.filter_poodll.loadscroller = function(Y,opts) {
-	 
-	window.current = (opts['scrollspeed']);
-	window.scrollopts = opts;
+	
+	if(typeof window.scrollopts== 'undefined'){
+			window.scrollopts = new Array();
+		}
+	window.scrollopts[opts['scrollerid']] = opts;
 }
 	 
-	function HeightData(){
-		AreaHeight=dataobj.offsetHeight;
-		AreaWidth=dataobj.offsetWidth;
+	function KickOff(scrollerid){
+		if(typeof AreaHeight == 'undefined'){
+			AreaHeight = new Array();
+			AreaWidth = new Array();
+		}
+		AreaHeight[scrollerid]=dataobj[scrollerid].offsetHeight;
+		AreaWidth[scrollerid]=dataobj[scrollerid].offsetWidth;
 		
-		//if (AreaHeight==0){
-		if(false){
-			setTimeout("HeightData()",( scrollopts['startdelay'] * 1000 ));
+		if(scrollopts[scrollerid]['axis']=="y"){
+			DoScrollAxisY(scrollerid);
+		}else{
+			DoScrollAxisX(scrollerid);
 		}
-		else {
-			if(scrollopts['axis']=="y"){
-				DoScrollAxisY();
-			}else{
-				DoScrollAxisX();
-			}
-		}
+	
 	}
 	 
-	function ScrollBoxStart(){
-		dataobj=document.all? document.all.p_scrollbox : document.getElementById("p_scrollbox");
-		dataobj.style.top=scrollopts['topspace'];
-		dataobj.style.left=scrollopts['leftspace'];
-		var startbutton = document.getElementById("p_scrollstartbutton");
+	function ScrollBoxStart(scrollerid){
+		if(typeof dataobj == 'undefined'){
+			dataobj = new Array();
+		}
+		dataobj[scrollerid]= document.getElementById("p_scrollbox" + scrollerid );
+		dataobj[scrollerid].style.top=scrollopts[scrollerid]['topspace'];
+		dataobj[scrollerid].style.left=scrollopts[scrollerid]['leftspace'];
+		var startbutton = document.getElementById("p_scrollstartbutton" + scrollerid );
 		startbutton.style.display='none';
-		HeightData();
+		KickOff(scrollerid);
 
 	}
 	 
-	function DoScrollAxisY(){
-		dataobj.style.top=(parseInt(dataobj.style.top)- scrollopts['scrollspeed']) + "px";
-		if (parseInt(dataobj.style.top)<AreaHeight*(-1)) {
-			dataobj.style.top=scrollopts['framesize'];
-			if(scrollopts['repeat']=='yes'){
-				var startbutton = document.getElementById("p_scrollstartbutton");
+	function DoScrollAxisY(scrollerid){
+		var scroller = dataobj[scrollerid];
+		var opts = scrollopts[scrollerid];
+		scroller.style.top=(parseInt(scroller.style.top)- opts['pixelshift']) + "px";
+		if (parseInt(scroller.style.top)<AreaHeight[scrollerid]*(-1)) {
+			scroller.style.top=opts['framesize'];
+			if(opts['repeat']=='yes'){
+				var startbutton = document.getElementById("p_scrollstartbutton" + scrollerid );
 				startbutton.style.display='';
 			}
 		}else {
-			setTimeout("DoScrollAxisY()",scrollopts['speedjump']);
+			//setTimeout("DoScrollAxisY()",scrollopts['scrollspeed']);
+			setTimeout(function() {DoScrollAxisY(scrollerid);},opts['scrollspeed']);
 		}
 	}
 	
-	function DoScrollAxisX(){
-		dataobj.style.left=(parseInt(dataobj.style.left)- scrollopts['scrollspeed']) + "px";
-		if (parseInt(dataobj.style.left)<AreaWidth*(-1)) {
-			dataobj.style.left=scrollopts['framesize'];
-			if(scrollopts['repeat']=='yes'){
-				var startbutton = document.getElementById("p_scrollstartbutton");
+	function DoScrollAxisX(scrollerid){
+		var scroller = dataobj[scrollerid];
+		var opts = scrollopts[scrollerid];
+		scroller.style.left=(parseInt(scroller.style.left)- opts['pixelshift']) + "px";
+		if (parseInt(scroller.style.left)<AreaWidth[scrollerid]*(-1)) {
+			scroller.style.left=opts['framesize'];
+			if(opts['repeat']=='yes'){
+				var startbutton = document.getElementById("p_scrollstartbutton" + scrollerid);
 				startbutton.style.display='';
 			}
 		}else {
-			setTimeout("DoScrollAxisX()",scrollopts['speedjump']);
+			//setTimeout("DoScrollAxisX()",scrollopts['scrollspeed']);
+			setTimeout(function() {DoScrollAxisX(scrollerid);},opts['scrollspeed']);
 		}
 	}
 	 
