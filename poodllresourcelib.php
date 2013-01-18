@@ -144,7 +144,7 @@ function fetch_poodllconsole($runtime, $coursedataurl="",$mename="", $courseid=-
 	}
 	
 	//We need a moodle serverid
-	$moodleid = urlencode($CFG->wwwroot);
+	$moodleid = fetch_moodleid();
 	
 	//put in a coursedataurl if we need one
 	if ($coursedataurl=="") $coursedataurl= $CFG->wwwroot . '/filter/poodll/poodlllogiclib.php%3F';
@@ -236,6 +236,19 @@ function fetch_poodllheader($runtime){
 }
 
 
+//Because the moodleid is appended to URLs in some PoodLL requests we need to urlencode.
+//But some encoded characters mess up shared objects if decode is not called properly. 
+//Since we are just creating an id, it does not need to be reconstructed, so we just
+//play it safe and call this function instead of simply urlencode($CFG->wwwroot)
+function fetch_moodleid(){
+global $CFG;
+	$moodleid =  $CFG->wwwroot;
+	$splitindex = strpos($moodleid,":");
+	$moodleid = substr($moodleid,$splitindex+1);
+	$moodleid = str_replace("/","_",$moodleid);
+	return $moodleid;
+}
+
 //this is the code to get the embed code for the poodllpairwork client
 //We separate the embed and non embed into two functions 
 //unlike with clientconsole and adminconsole, because of the need for width and height params.
@@ -281,8 +294,7 @@ function fetch_pairclient($runtime, $chat=true, $whiteboard=true, $showvideo=fal
 	//in order that this works effectively on tokyo.poodll.com which services multiple Moodles
 	//we should change courseid (which creates a kind of virtual "room") to use the domainname of Moodle server
 	$courseid = $COURSE->id;
-	$moodleid  =urlencode($CFG->wwwroot);
-
+	$moodleid=fetch_moodleid();
 	
 	$baseUrl = $CFG->wwwroot . '/filter/poodll/flash/newpairclient.lzx.swf9.swf';
 	$params = '?red5url='.urlencode($flvserver) . '&mename=' . $mename . '&mefullname=' . $mefullname .   '&mepictureurl=' . urlencode($mepictureurl) 
@@ -371,7 +383,7 @@ global $CFG, $USER, $COURSE;
 $flvserver = $CFG->poodll_media_server;
 
 //moodle id
-$moodleid  =urlencode($CFG->wwwroot);
+$moodleid  = fetch_moodleid();
 
 //get my name
 if($mename==""){$mename=$USER->username;}
@@ -1473,7 +1485,7 @@ $micloopback = $CFG->filter_poodll_micloopback;
 if($mename==""){$mename=$USER->username;}
 
 //We need a moodle serverid
-	$moodleid = urlencode($CFG->wwwroot);
+	$moodleid = fetch_moodleid();
 	
 
 $params = array();
