@@ -211,7 +211,8 @@ function filter_poodll_callback(array $link){
 
 		case 'calculator':
 			$returnHtml= fetch_poodllcalc($filterprops['runtime'],!empty($filterprops['width']) ? $filterprops['width'] : 300,
-				!empty($filterprops['height']) ? $filterprops['height'] : 400);
+				!empty($filterprops['height']) ? $filterprops['height'] : 400,
+				!empty($filterprops['size']) ? $filterprops['size'] : 'normal');
 			break;
 
 		case 'cambroadcaster':

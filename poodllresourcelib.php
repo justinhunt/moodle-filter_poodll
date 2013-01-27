@@ -1070,11 +1070,21 @@ $userid = $USER->username;
 
 }
 
-function fetch_poodllcalc($runtime, $width, $height){
+function fetch_poodllcalc($runtime, $width, $height,$size='normal'){
 global $CFG;
 
 	//merge config data with javascript embed code
 		$params = array();
+		$params['size'] = $size;
+		
+		//fix up width and height which should not really be accepted as params
+		switch($size){
+			case 'normal' : $width=242;$height=362;break;
+			case 'small' : $width=202;$height=302;break;
+			case 'tiny' : $width=172;$height=262;break;
+		
+		}
+		
 		if($runtime=='js'){
 			$returnString=  fetchJSWidgetCode('poodllcalc.lzx.js',
     						$params,$width,$height,'#FFFFFF');
