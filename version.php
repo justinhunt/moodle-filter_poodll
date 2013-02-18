@@ -18,15 +18,15 @@
  * PoodLL filter
  *
  * @package    filter
- * @subpackage poodllonline
+ * @subpackage poodll
  * @copyright  2012 Justin Hunt bitwalkerjapan@gmail.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2012122000; 
+$plugin->version   = 2013012900; 
 $plugin->requires  = 2011070100.00; 
 $plugin->component = 'filter_poodll'; 
 $plugin->maturity  = MATURITY_BETA;
-$plugin->release   = '2.3.20 (Build 2012122000)';
+$plugin->release   = '2.4.00 (Build 2013122900)';

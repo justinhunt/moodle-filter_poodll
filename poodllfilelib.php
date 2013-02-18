@@ -219,7 +219,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		case "mov":
 		case "mp4":
 			break;
-		default: $fileextension="";
+		default: $fileextension="mp3";
 	}
 	
 	//init our fs object

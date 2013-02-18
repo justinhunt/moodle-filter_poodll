@@ -1740,9 +1740,16 @@ global $CFG,$PAGE;
 	}
 
 	//depending on our media type, tell the mobile device what kind of file we want
+	//we need to check for audio, because iOS still needs video (can't direct rec audio)
 	switch($mediatype){
 		case "image": $acceptmedia="accept=\"image/*\"";break;
-		case "audio":
+		case "audio": 
+					if(canSpecAudio()){	
+						$acceptmedia="accept=\"audio/*\"";
+					}else{
+						$acceptmedia="accept=\"video/*\"";
+					}
+					break;
 		case "video": $acceptmedia="accept=\"video/*\"";break;
 		default: $acceptmedia="";
 	}
@@ -1759,9 +1766,9 @@ global $CFG,$PAGE;
 			<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />
 			<input type=\"hidden\" id=\"p_fileliburl\" value=\"$fileliburl\" />
 			<input type=\"file\" id=\"poodllfileselect\" name=\"poodllfileselect[]\" $acceptmedia />
-			<button type=\"button\" class=\"p_btn\">Take or Choose a Video</button>
+			<button type=\"button\" class=\"p_btn\">Record or Choose a File</button>
 		</div>
-		<div id=\"p_progress\"></div>
+		<div id=\"p_progress\"><p></p></div>
 		<div id=\"p_messages\"></div>
 	";
 
@@ -3014,6 +3021,21 @@ function fetchSWFObjectWidgetCode($widget,$flashvarsArray,$width,$height,$bgcolo
 
 	
 	
+}
+
+//Here we try to detect if this supports uploading audio files spec
+//iOS doesn't but android can record from mic. Apple and Windows can just filter by audio when browsing
+function canSpecAudio(){
+	$browser = new Browser();
+	switch($browser->getPlatform()){
+
+			case Browser::PLATFORM_APPLE:
+			case Browser::PLATFORM_ANDROID:
+			case Browser::PLATFORM_WINDOWS:
+				return true;
+				break;
+			default: return false;
+	}//end of switch
 }
 
 //Here we try to detect if this is a mobile device or not

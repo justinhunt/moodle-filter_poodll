@@ -193,7 +193,7 @@ div.poodllplaylist a em {
 /* For HTML5 Uploads */
 #p_progress p
 {
-	display: block;
+	display: none;
 	width: 240px;
 	padding: 2px 5px;
 	margin: 2px 0;
@@ -241,7 +241,7 @@ cursor: pointer;
 position: absolute;
 top: 0;
 left: 0;
-height: 35px;
+height: 45px;
 filter: alpha(opacity=0);
 -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 opacity: 0;

@@ -305,6 +305,7 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 			}
 			//reset/set background position to 0, and label to "uploading
 			progress.className="";
+			progress.style.display = "block";
 			progress.style.backgroundPosition = "100% 0";
 			Output("Uploading.");
 
