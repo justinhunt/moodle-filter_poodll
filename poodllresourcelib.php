@@ -1722,6 +1722,9 @@ $params = array();
 function fetch_HTML5RecorderForSubmission($updatecontrol="saveflvvoice", $contextid,$component,$filearea,$itemid, $mediatype="image",$fromrepo=false){
 global $CFG,$PAGE;
 
+	//Get our browser object for determining HTML5 options
+	$browser = new Browser();
+
 	//configure our options array for the JS Call
 	$fileliburl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 	$opts = array();
@@ -1744,7 +1747,7 @@ global $CFG,$PAGE;
 	switch($mediatype){
 		case "image": $acceptmedia="accept=\"image/*\"";break;
 		case "audio": 
-					if(canSpecAudio()){	
+					if(canSpecAudio($browser)){	
 						$acceptmedia="accept=\"audio/*\"";
 					}else{
 						$acceptmedia="accept=\"video/*\"";
@@ -1755,8 +1758,11 @@ global $CFG,$PAGE;
 	}
 	
 	//Output our HTML
-	$returnString="
-		<div class=\"p_btn_wrapper\">	
+	$fancybutton = showFancyButton($browser);
+	$returnString = "";
+	
+	if($fancybutton){ $returnString .= "<div class=\"p_btn_wrapper\">";}
+	$returnString .="
 			$savecontrol
 			<input type=\"hidden\" id=\"p_updatecontrol\" value=\"$updatecontrol\" />
 			<input type=\"hidden\" id=\"p_contextid\" value=\"$contextid\" />
@@ -1766,11 +1772,13 @@ global $CFG,$PAGE;
 			<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />
 			<input type=\"hidden\" id=\"p_fileliburl\" value=\"$fileliburl\" />
 			<input type=\"file\" id=\"poodllfileselect\" name=\"poodllfileselect[]\" $acceptmedia />
-			<button type=\"button\" class=\"p_btn\">Record or Choose a File</button>
-		</div>
-		<div id=\"p_progress\"><p></p></div>
-		<div id=\"p_messages\"></div>
-	";
+			";
+	if($fancybutton){ $returnString .= 
+			"<button type=\"button\" class=\"p_btn\">Record or Choose a File</button>
+		</div>";}
+	$returnString .= 
+		"<div id=\"p_progress\"><p></p></div>
+		<div id=\"p_messages\"></div>";
 
 	return $returnString;
 }
@@ -3023,18 +3031,51 @@ function fetchSWFObjectWidgetCode($widget,$flashvarsArray,$width,$height,$bgcolo
 	
 }
 
+//If we wish to show a styled upload button, here we return true
+//on Firefox on Android doesn't support it currently, so we hard code that to false 
+//(2013/03/05)
+function showFancyButton($browser){
+
+	if($browser->getPlatform() == Browser::PLATFORM_ANDROID &&
+		$browser->getBrowser() == Browser::BROWSER_FIREFOX){
+				return false;
+	}else{
+				return true;
+	}
+}
+
 //Here we try to detect if this supports uploading audio files spec
 //iOS doesn't but android can record from mic. Apple and Windows can just filter by audio when browsing
-function canSpecAudio(){
-	$browser = new Browser();
+//(2013/03/05)Firefox on android, doesn't use sound recorder currently. 
+//(2013/03/05)Chrome on android gives wrong useragent(ipad/safari!)
+function canSpecAudio($browser){
+
 	switch($browser->getPlatform()){
 
 			case Browser::PLATFORM_APPLE:
-			case Browser::PLATFORM_ANDROID:
 			case Browser::PLATFORM_WINDOWS:
 				return true;
 				break;
-			default: return false;
+				
+			case Browser::PLATFORM_IPAD:
+				return false;
+				break;
+		
+			case Browser::PLATFORM_IPOD:
+			case Browser::PLATFORM_IPHONE:
+				return false;
+				break;
+			
+			case Browser::PLATFORM_ANDROID:
+				if($browser->getBrowser() == Browser::BROWSER_FIREFOX){
+					return false;
+				}else{
+					return true;
+				}
+				break;
+				
+			default:
+				return false;
 	}//end of switch
 }
 
