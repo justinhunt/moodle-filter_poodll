@@ -116,6 +116,8 @@ $string['html5use_heading'] ='When to use HTML5';
 $string['html5rec'] ='HTML5 Recording';
 $string['html5play'] ='HTML5 Playback';
 $string['html5widgets'] ='HTML5 PoodLL Widgets';
+$string['html5fancybutton'] ='Use Fancy Upload Button';
+
 
 //transcode settings
 $string['transcode_heading'] ='Audio/Video File Conversion Settings';
