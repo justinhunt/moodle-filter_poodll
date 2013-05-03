@@ -39,7 +39,7 @@ if (array_key_exists("filter_poodll",$filters)){
 	
 	//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject.js'));
 	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject_22.js'));
-	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/javascript.php'));
+	//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/javascript.php'));
 	
 	
 	//we need this for  embedding widgets it only works in head (hence the 'true' flag)
@@ -2148,7 +2148,10 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 	
 	//If we want to avoid loading many players per page, this loads the player only after a text link is clicked
 	//it uses the poodll player and only works if the file is an flv, otherwise it just proceeds as usual
-	if ($embed && substr($rtmp_file,-4)=='.flv'){
+	
+	//I quite loading javascript.php in head, so loadAudioPlayer won't work. I think noone uses it anyway. hence added if "false"
+	//Justin 20130406
+	if (false && $embed && substr($rtmp_file,-4)=='.flv'){
 		$lzid = "lzapp_audioplayer_" . rand(100000, 999999) ;
 		$returnString="		
 		 <div id='$lzid' class='player'>
