@@ -78,7 +78,7 @@ $items[] = new admin_setting_configselect('filter_poodll_capturewidth', get_stri
 //$items[] = new admin_setting_configtext('filter_poodll_captureheight', get_string('captureheight', 'filter_poodll'), '', '240', PARAM_INT);
 $items[] = new admin_setting_configtext('filter_poodll_capturefps', get_string('capturefps', 'filter_poodll'), '', '17', PARAM_INT);
 $items[] = new admin_setting_configtext('filter_poodll_bandwidth', get_string('bandwidth', 'filter_poodll'), '', '0', PARAM_INT);
-$items[] = new admin_setting_configtext('filter_poodll_picqual', get_string('picqual', 'filter_poodll'), '', '5', PARAM_INT);
+$items[] = new admin_setting_configtext('filter_poodll_picqual', get_string('picqual', 'filter_poodll'), '', '7', PARAM_INT);
 
 /*
 //HTML5 Recording
