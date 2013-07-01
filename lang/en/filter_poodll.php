@@ -40,6 +40,8 @@ $string['audiosplashdetails'] = 'Splash screen is shown for Flowplayer only.';
 $string['miniplayerwidth'] = 'Mini Player Width';
 $string['wordplayerfontsize'] = 'Word Player Fontsize';
 
+$string['showdownloadicon'] = 'Show download icon under players';
+
 
 $string['talkbackwidth'] = 'Talkback Player Width';
 $string['talkbackheight'] = 'Talkback Player Height';

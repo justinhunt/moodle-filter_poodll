@@ -15,18 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * PoodLL filter
+ * Plugin capabilities
  *
- * @package    filter
- * @subpackage poodll
- * @copyright  2012 Justin Hunt bitwalkerjapan@gmail.com
+ * @package    tinymce_skim
+ * @copyright  2013 Justin Hunt {@link http://www.poodll.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2013063000; 
-$plugin->requires  = 2011070100.00; 
-$plugin->component = 'filter_poodll'; 
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.5.3(Build 2013063000)';
+$capabilities = array(
+
+    'filter/poodll:candownloadmedia' => array(
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => array(
+			'coursecreator' => CAP_ALLOW,
+			'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW
+        )
+    )
+);
+

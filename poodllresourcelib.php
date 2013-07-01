@@ -2149,7 +2149,7 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 	//If we want to avoid loading many players per page, this loads the player only after a text link is clicked
 	//it uses the poodll player and only works if the file is an flv, otherwise it just proceeds as usual
 	
-	//I quite loading javascript.php in head, so loadAudioPlayer won't work. I think noone uses it anyway. hence added if "false"
+	//I quit loading javascript.php in head, so loadAudioPlayer won't work. I think noone uses it anyway. hence added if "false"
 	//Justin 20130406
 	if (false && $embed && substr($rtmp_file,-4)=='.flv'){
 		$lzid = "lzapp_audioplayer_" . rand(100000, 999999) ;
@@ -2262,6 +2262,15 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 					$returnString=  fetchSWFWidgetCode('poodllaudioplayer.lzx.swf9.swf',
 								$params,$width,$height,'#FFFFFF');
 				}
+				
+				//regardless of swf player, add a download icon if appropriate
+				$context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+				$has_permission = has_capability('filter/poodll:candownloadmedia', $context);
+				if($CFG->filter_poodll_download_media_ok && $has_permission){
+					$returnString .=  "<a href='" . urldecode($rtmp_file) . "'>" 
+													. "&nbsp;<img src='" . $CFG->{'wwwroot'} . "/filter/poodll/pix/download.gif' alt='download' />" 
+													."</a>";
+				}
 							
 		}
     						
@@ -2350,7 +2359,8 @@ $ismobile=isMobile($CFG->filter_poodll_html5play);
 	//this does screw up updating the entry on the page,
 	//which is seen after marking a single audio/vide assignment and returning to the list
 	//poodllonline assignment
-	if ($embed){
+	//if ($embed){
+	if (false){
 		$lzid = "lzapp_videoplayer_" . rand(100000, 999999) ;
 		$returnString="		
 	  <div id='$lzid' class='player'>
@@ -2462,6 +2472,14 @@ $ismobile=isMobile($CFG->filter_poodll_html5play);
 					
 					$returnString=  fetchSWFWidgetCode('poodllvideoplayer.lzx.swf9.swf',
 								$params,$width,$height,'#FFFFFF');
+				}
+				
+				$context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+				$has_permission = has_capability('filter/poodll:candownloadmedia', $context);
+				if($CFG->filter_poodll_download_media_ok && $has_permission){
+					$returnString .=  "<a href='" . urldecode($rtmp_file) . "'>" 
+													. "&nbsp;<img src='" . $CFG->{'wwwroot'} . "/filter/poodll/pix/download.gif' alt='download' />" 
+													."</a>";
 				}
 							
 		}

@@ -785,7 +785,8 @@ global $CFG,$DB;
 	require_course_login($course);
 
 
-	$modinfo =& get_fast_modinfo($course);
+	//$modinfo =& get_fast_modinfo($course);
+	$modinfo = get_fast_modinfo($course);
 
 
 	get_all_mods($courseid, $mods, $modnames, $modnamesplural, $modnamesused);
