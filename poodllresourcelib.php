@@ -114,10 +114,11 @@ function fetch_slidemenu($runtime){
 
 
 //This fetches the admin console for pairwork and screencasting
-function fetch_poodllconsole($runtime, $coursedataurl="",$mename="", $courseid=-1, $embed=false){
+function fetch_poodllconsole($runtime ){
 	global $CFG, $USER, $COURSE;
 	
 	$broadcastkey="1234567";
+	$mename="";
 
 	//Set the camera prefs
 	$capturewidth=$CFG->filter_poodll_capturewidth;
@@ -130,6 +131,9 @@ function fetch_poodllconsole($runtime, $coursedataurl="",$mename="", $courseid=-
 	$cameraprefs= '&capturefps=' . $capturefps . '&captureheight=' . $captureheight . '&picqual=' . $picqual . '&bandwidth=' . $bandwidth . '&capturewidth=' . $capturewidth .   '&prefmic=' . $prefmic . '&prefcam=' . $prefcam;
 	$flvserver = $CFG->poodll_media_server;
 	$teacherpairstreamname="voiceofauthority";
+	
+	//auto try ports
+	$autotryports = $CFG->filter_poodll_autotryports==1 ? "true" : "false" ;
 
 
 	if ($mename=="" && !empty($USER->username)){
@@ -139,15 +143,14 @@ function fetch_poodllconsole($runtime, $coursedataurl="",$mename="", $courseid=-
 	}
 
 	//if courseid not passed in, try to get it from global
-	if ($courseid==-1){
-		$courseid=$COURSE->id;
-	}
+	$courseid=$COURSE->id;
+
 	
 	//We need a moodle serverid
 	$moodleid = fetch_moodleid();
 	
-	//put in a coursedataurl if we need one
-	if ($coursedataurl=="") $coursedataurl= $CFG->wwwroot . '/filter/poodll/poodlllogiclib.php%3F';
+	//put in a coursedataurl
+	$coursedataurl= $CFG->wwwroot . '/filter/poodll/poodlllogiclib.php%3F';
 	
 	
 	//Show the buttons window if we are admin
@@ -164,27 +167,23 @@ function fetch_poodllconsole($runtime, $coursedataurl="",$mename="", $courseid=-
 		$params= '?red5url='.urlencode($flvserver). 
 							'&mename=' . $mename . '&courseid=' . $courseid .  
 							'&moodleid=' . $moodleid .
+							'&autotryports=' . $autotryports .
 							'&teacherpairstreamname=' . $teacherpairstreamname . 
 							$cameraprefs .
 							'&coursedataurl=' . $coursedataurl . '&broadcastkey=' . $broadcastkey .
 							'&lzr=swf9&runtime=swf9';
 
-		//if we are embedding, here we wrap the url and params in the necessary javascript tags
-		//otherwise we just return the url and params.
-		//embed code is called from poodlladminconsole.php
-		if($embed){
-				$partone= '<script type="text/javascript">lzOptions = { ServerRoot: \'\'};</script>';
-				$parttwo = '<script type="text/javascript" src="' . $CFG->wwwroot . '/filter/poodll/flash/embed-compressed.js"></script>';
-				$partthree='<script type="text/javascript">lz.embed.swf({url: \'' . $baseUrl . $params. 
-						'\' , width: \'1000\', height: \'750\', id: \'lzapp_admin_console\', accessible: \'false\'});
-							</script>
-						<noscript>
-							Please enable JavaScript in order to use this application.
-						</noscript>';
-				return $partone . $parttwo . $partthree;
-		}else{
-			return $baseUrl . $params;					
-		}				
+		//create our embed tags
+		$partone= '<script type="text/javascript">lzOptions = { ServerRoot: \'\'};</script>';
+		$parttwo = '<script type="text/javascript" src="' . $CFG->wwwroot . '/filter/poodll/flash/embed-compressed.js"></script>';
+		$partthree='<script type="text/javascript">lz.embed.swf({url: \'' . $baseUrl . $params. 
+				'\' , width: \'1000\', height: \'750\', id: \'lzapp_admin_console\', accessible: \'false\'});
+					</script>
+				<noscript>
+					Please enable JavaScript in order to use this application.
+				</noscript>';
+		return $partone . $parttwo . $partthree;
+		
 
 }
 
@@ -291,6 +290,9 @@ function fetch_pairclient($runtime, $chat=true, $whiteboard=true, $showvideo=fal
 	//Set the servername
 	$flvserver = $CFG->poodll_media_server;
 	
+	//auto try ports
+	$autotryports = $CFG->filter_poodll_autotryports==1 ? "true" : "false" ;
+	
 	//in order that this works effectively on tokyo.poodll.com which services multiple Moodles
 	//we should change courseid (which creates a kind of virtual "room") to use the domainname of Moodle server
 	$courseid = $COURSE->id;
@@ -298,7 +300,7 @@ function fetch_pairclient($runtime, $chat=true, $whiteboard=true, $showvideo=fal
 	
 	$baseUrl = $CFG->wwwroot . '/filter/poodll/flash/newpairclient.lzx.swf9.swf';
 	$params = '?red5url='.urlencode($flvserver) . '&mename=' . $mename . '&mefullname=' . $mefullname .   '&mepictureurl=' . urlencode($mepictureurl) 
-			. '&chat=' . $chat  . '&courseid=' . $courseid . '&moodleid=' . $moodleid .'&useroles=' . $useroles  . '&whiteboard=' . $whiteboard . '&whiteboardback=' . $whiteboardback . '&showvideo=' . $showvideo  .'&teacherallstreamname=voiceofauthority&lzproxied=false';
+			. '&chat=' . $chat  . '&autotryports=' . $autotryports . '&courseid=' . $courseid . '&moodleid=' . $moodleid .'&useroles=' . $useroles  . '&whiteboard=' . $whiteboard . '&whiteboardback=' . $whiteboardback . '&showvideo=' . $showvideo  .'&teacherallstreamname=voiceofauthority&lzproxied=false';
 	return $baseUrl . $params;	
 }
 

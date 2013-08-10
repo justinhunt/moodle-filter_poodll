@@ -151,7 +151,7 @@ function filter_poodll_callback(array $link){
 	switch ($filterprops['type']){
 			
 		case 'adminconsole':
-			$returnHtml= fetch_poodllconsole($filterprops['runtime'],"","billybob",-1,true);
+			$returnHtml= fetch_poodllconsole($filterprops['runtime']);
 			break;
 	
 			

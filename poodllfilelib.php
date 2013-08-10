@@ -298,19 +298,26 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			//actually make the file on disk so FFMPEG can get it
 			$ret = file_put_contents($tempdir . $filename, $xfiledata);
 			
-			//if successful saved to disk, convert
+			//if successfully saved to disk, convert
 			if($ret){
-				
+			
+				$stored_file = convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );
+				if($stored_file){
+					$filename=$stored_file->get_filename();
+		
+				//if failed, default to using the original uploaded data
+				//and delete the temp file we made
+				}else{
+					$stored_file = $fs->create_file_from_string($record, $xfiledata);
+					if(is_readable(realpath($tempdir . $filename))){
+						unlink(realpath($tempdir . $filename));
+					}
+				}
+				/*
 				//if use ffmpeg, then attempt to convert mp3 or mp4
 					$convfilename = $filenamebase . $convext;
 					shell_exec("ffmpeg -i " . $tempdir . $filename . " " . $tempdir . $convfilename . " >/dev/null 2>/dev/null ");
-					/* About FFMPEG conv
-					it would be better to do the conversion in the background not here.
-					in that case you would place an ampersand at the end .. like this ...
-					" >/dev/null 2>/dev/null &");
-					But you have to get the information back to Moodle, and copy the file over, so the plumbing gets tough.
-					Right now there is no "converting message" displayed to user, but we need to do this.
-					*/
+				
 					
 					//Check if conversion worked
 					if(is_readable(realpath($tempdir . $convfilename))){
@@ -333,7 +340,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 							unlink(realpath($tempdir . $filename));
 						}
 					}
-					
+					*/
 					
 				
 			//if couldn't create on disk fall back to the original data
@@ -364,8 +371,66 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	
 	//we return to widget/client the result of our file operation
 	return $xml_output;
-	
 }
+
+function convert_with_ffmpeg($filerecord, $tempdir, $tempfilename, $convfilenamebase, $convext){
+
+global $CFG;
+
+		//init our fs object
+		$fs = get_file_storage();
+		
+		//init our fs object
+		$fs = get_file_storage();
+		
+		//if use ffmpeg, then attempt to convert mp3 or mp4
+		$convfilename = $convfilenamebase . $convext;
+		//work out the options we pass to ffmpeg. diff versions supp. dioff switches
+		//has to be this way really.
+		switch ($convext){
+			case '.mp4':
+				$ffmpegopts = "-c:v libx264 -profile:v baseline";
+				$ffmpegopts = $CFG->filter_poodll_ffmpeg_mp4opts;
+				break;
+			case '.mp3':
+				$ffmpegopts = $CFG->filter_poodll_ffmpeg_mp3opts;
+				break;
+			default:
+				$ffmpegopts = "";
+		}
+		shell_exec("ffmpeg -i " . $tempdir . $tempfilename . " " . $ffmpegopts . " " . $tempdir . $convfilename . " >/dev/null 2>/dev/null ");
+		/* About FFMPEG conv
+		it would be better to do the conversion in the background not here.
+		in that case you would place an ampersand at the end .. like this ...
+		" >/dev/null 2>/dev/null &");
+		But you have to get the information back to Moodle, and copy the file over, so the plumbing gets tough.
+		Right now there is no "converting message" displayed to user, but we need to do this.
+		*/
+		
+		//Check if conversion worked
+		if(is_readable(realpath($tempdir . $convfilename))){
+			$filerecord->filename = $convfilename;
+			$stored_file = 	$fs->create_file_from_pathname($filerecord, $tempdir . $convfilename);
+			//need to kill the two temp files here
+			if(is_readable(realpath($tempdir . $convfilename))){
+				unlink(realpath($tempdir . $convfilename));
+			}
+			if(is_readable(realpath($tempdir . $tempfilename))){
+				unlink(realpath($tempdir . $tempfilename));
+			}
+			$filename = $convfilename;
+			
+		//if failed, set return value to FALSE
+		//and delete the temp file we made
+		}else{
+			$stored_file = false;
+			if(is_readable(realpath($tempdir . $filename))){
+				unlink(realpath($tempdir . $filename));
+			}
+		}		
+		return $stored_file;
+
+}//end of convert with FFMPEG
 
 //Fetch a sub directory list for file explorer  
 //calls itself recursively, dangerous
@@ -789,28 +854,44 @@ $return=fetchReturnArray(true);
 	//set up auto transcoding (mp3 or mp4) or not
 	//The jsp to call is different.
 	$jsp="download.jsp";
-	$ext = substr($filename,-4); 
-	if($ext ==".mp4" || $ext ==".mp3"){
-		$jsp = "convert.jsp";
-	}else if($ext==".png"){
-		$jsp="snapshot.jsp";
+	$convertlocally=false;
+	$ext = substr($filename,-4);
+	$filenamebase = substr($filename,0,-4); 	
+	switch($ext){
+		
+		case ".mp4":
+				if ($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_videotranscode){
+					$convertlocally=true;
+				}else{
+					$jsp="convert.jsp";
+				}
+				break;
+				
+		case ".mp3":
+				if ($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_audiotranscode){
+					$convertlocally=true;
+				}else{
+					$jsp="convert.jsp";
+				}
+				break;
+				
+		case ".png":
+				$jsp="snapshot.jsp";
+				break;
+				
+		default:
+				$jsp="download.jsp";
+				break;
+	
+	
+	
 	}
-
-$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
-						":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" . 
-						$CFG->filter_poodll_serverid . "&filename=" . $filename . "&caller=" . urlencode($CFG->wwwroot);
-					
-//	$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
-//						":443/poodll/" . $filename;
-
-						
+	
 	//setup our file manipulators
 		$fs = get_file_storage();
 		$browser = get_file_browser();
 		
-		
-		//we set a default if not passed in, as of 20120805 fr questions
-		//$filepath='/';
+
 		
 	//create the file record for our new file
 		$file_record = array(
@@ -826,7 +907,7 @@ $red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 		'timecreated'=>time(), 
 		'timemodified'=>time()
 		);
-		
+
 		//one condition of using this function is that only one file can be here,
 		//attachment limits
 		if($filearea=='draft'){
@@ -838,8 +919,14 @@ $red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 		if($fs->file_exists($contextid,$component,$filearea,$itemid,$filepath,$filename)){
 			//delete here ---
 		}
-		
-		//download options
+	
+	
+	//setup download information
+	$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
+						":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" . 
+						$CFG->filter_poodll_serverid . "&filename=" . $filename . "&caller=" . urlencode($CFG->wwwroot);
+	
+	//download options
 	$options = array();
 	$options['headers']=null;
 	$options['postdata']=null;
@@ -849,12 +936,61 @@ $red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 	$options['skipcertverify']=false;
 	$options['calctimeout']=false;
 	
-		//clear the output buffer, otherwise strange characters can get in to our file
-		//seems to have no effect though ...
-		while (ob_get_level()) {
-                        ob_end_clean();
-                } 
-
+	//clear the output buffer, otherwise strange characters can get in to our file
+	//seems to have no effect though ...
+	while (ob_get_level()) {
+					ob_end_clean();
+			} 
+				
+				
+	//branch logic depending on whether (converting locally) or (not conv||convert on server)
+	if($convertlocally){
+		//determine the temp directory
+		if (isset($CFG->tempdir)){
+			$tempdir =  $CFG->tempdir . "/";	
+		}else{
+			//moodle 2.1 users have no $CFG->tempdir
+			$tempdir =  $CFG->dataroot . "/temp/";
+		}
+		//actually make the file on disk so FFMPEG can get it
+		$mediastring = file_get_contents($red5_fileurl);
+		$ret = file_put_contents($tempdir . $filename, $mediastring);
+		
+		//if successfully saved to disk, convert
+		if($ret){
+		
+			$stored_file = convert_with_ffmpeg($file_record,$tempdir,$filename,$filenamebase, $ext );
+			if($stored_file){
+				$filename=$stored_file->get_filename();
+				
+				//setup our return object
+				$returnfilepath = $filename;		
+				array_push($return['messages'],$returnfilepath );
+	
+			//if failed, default to using the original uploaded data
+			//and delete the temp file we made
+			}else{
+				$return['success']=false;
+				array_push($return['messages'],"Unable to convert file locally." );
+				
+				if(is_readable(realpath($tempdir . $filename))){
+					unlink(realpath($tempdir . $filename));
+				}
+			}
+		}else{
+			$return['success']=false;
+			array_push($return['messages'],"Unable to create local temp file." );
+		}
+		
+		//we process the result for return to browser
+		$xml_output=prepareXMLReturn($return, $requestid);	
+		
+		//we return to browser the result of our file operation
+		return $xml_output;
+	}
+	
+	
+	//If get here we are downloading from JSP only, ie not converting locally
 		//actually copy over the file from remote server
 		if(!$fs->create_file_from_url($file_record, $red5_fileurl,$options, false)){
 		//	echo "boo:" . $red5_fileurl;
@@ -875,11 +1011,7 @@ $red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 					//if we couldn't get an url and it is a draft file, guess the URL
 					//<p><a href="http://m2.poodll.com/draftfile.php/5/user/draft/875191859/IMG_0594.MOV">IMG_0594.MOV</a></p>
 					if($filearea == 'draft'){
-						/*
-						$returnfilepath= $CFG->wwwroot. "/draftfile.php/" . $contextid . "/" 
-								. $component . "/" . $filearea 
-								. "/" . $itemid . "/" . $filename;
-								*/
+						
 						$returnfilepath = $filename;		
 						array_push($return['messages'],$returnfilepath );
 					}else{
@@ -887,32 +1019,7 @@ $red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 						array_push($return['messages'],"Unable to get URL for file." );
 					}
 				}//end of if fileinfo
-				
-				//Here we can try to get an automated thumbnail of a video file
-				//this will return nothing great if it is an audio flv ...
-				//Set this to NOT process, because it wont work for repo. code in
-				//poodll reseource lib, fetchvideosplash is better cos video will always go through there
-				//in the 30 min req.
-				if($ext==".flv" || $ext==".mp4"){
-					if($CFG->filter_poodll_thumbnailsplash && false){
-					
-						//create a new file fetch url for the splash
-						$filename = substr($filename,0,-3) . "png";
-						$jsp = "snapshot.jsp";						
-						$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
-						":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" . 
-						$CFG->filter_poodll_serverid . "&filename=" . $filename . "&caller=" . urlencode($CFG->wwwroot);
-						
-						//update our file record with image name
-						$file_record['filename']=$filename;
-		
-						//fetch image
-						//we are not concerned if it works or not. If it fails, its just a shame.
-						$fs->create_file_from_url($file_record, $red5_fileurl,$options, false);
-						
-					}
-				}
-				
+	
 				
 		}//end of if could create_file_from_url
 		
