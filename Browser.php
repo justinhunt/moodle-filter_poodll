@@ -238,6 +238,12 @@
 		* @return True if the browser is the specified browser
 		*/
 		function isBrowser($browserName) { return( 0 == strcasecmp($this->_browser_name, trim($browserName))); }
+		
+		/**
+		* Check to see if this is a nexus 7
+		* @return True if this is a nexus 7
+		*/
+		public function isNexus7() {  return strpos($this->_agent,"Nexus 7") !== false ;}
 
 		/**
 		* The name of the browser.  All return types are from the class contants

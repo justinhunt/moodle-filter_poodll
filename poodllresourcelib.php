@@ -3056,13 +3056,16 @@ function fetchSWFObjectWidgetCode($widget,$flashvarsArray,$width,$height,$bgcolo
 
 //If we wish to show a styled upload button, here we return true
 //on Firefox on Android doesn't support it currently, so we hard code that to false 
-//(2013/03/05)
+//also for MS Surface
+//(2013/08/19)
 function showFancyButton($browser){
 	global $CFG;
 
 	if($browser->getPlatform() == Browser::PLATFORM_ANDROID &&
 		$browser->getBrowser() == Browser::BROWSER_FIREFOX){
 				return false;
+	}else if($browser->getPlatform() == Browser::PLATFORM_MICROSOFT_SURFACE){
+		return false;
 	}else{
 				return $CFG->filter_poodll_html5fancybutton;
 	}
@@ -3092,6 +3095,8 @@ function canSpecAudio($browser){
 			
 			case Browser::PLATFORM_ANDROID:
 				if($browser->getBrowser() == Browser::BROWSER_FIREFOX){
+					return false;
+				}else if($browser->isNexus7()){
 					return false;
 				}else{
 					return true;
@@ -3132,7 +3137,7 @@ function isMobile($profile='mobile'){
 			case Browser::PLATFORM_NOKIA:
 			case Browser::PLATFORM_ANDROID:
 			case Browser::PLATFORM_WINDOWS_CE:
-			case Browser::PLATFORM_MICROSOFT_SURFACE:
+			//case Browser::PLATFORM_MICROSOFT_SURFACE:
 			return true;
 	}//end of switch
 

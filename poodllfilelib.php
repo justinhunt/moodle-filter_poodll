@@ -379,9 +379,7 @@ global $CFG;
 
 		//init our fs object
 		$fs = get_file_storage();
-		
-		//init our fs object
-		$fs = get_file_storage();
+
 		
 		//if use ffmpeg, then attempt to convert mp3 or mp4
 		$convfilename = $convfilenamebase . $convext;
