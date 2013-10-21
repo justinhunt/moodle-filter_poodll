@@ -789,7 +789,13 @@ global $CFG, $USER, $COURSE;
 
 //get our HTML5 Uploader if we have a mobile device
 if(isMobile($CFG->filter_poodll_html5rec)){
-	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
+	if(!canDoUpload()){
+		$ret ="<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
+	}else{	
+		$ret = fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
+	}
+	return $ret;
+
 }
 
 //Set the microphone config params
@@ -862,8 +868,13 @@ global $CFG, $USER, $COURSE;
 //head off to HTML5 logic if mobile
 
 if(isMobile($CFG->filter_poodll_html5widgets)){
-//if(true){
-	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
+	if(!canDoUpload()){
+		$ret ="<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
+	}else{	
+		$ret = fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
+	}
+	return $ret;
+
 }
 
 //If standalone submission will always be standalone ... or will it ...
@@ -923,7 +934,13 @@ global $CFG, $USER, $COURSE;
 
 //get our HTML5 Uploader if we have a mobile device
 if(isMobile($CFG->filter_poodll_html5rec)){
-	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
+	if(!canDoUpload()){
+		$ret ="<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
+	}else{	
+		$ret = fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "audio");
+	}
+	return $ret;
+
 }
 
 
@@ -1420,7 +1437,12 @@ global $CFG, $USER, $COURSE;
 
 //get our HTML5 Uploader if we have a mobile device
 if(isMobile($CFG->filter_poodll_html5widgets)){
-	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
+	if(!canDoUpload()){
+		$ret ="<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
+	}else{	
+		$ret = fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
+	}
+	return $ret;
 }
 
 //Set the servername and a capture settings from config file
@@ -1622,7 +1644,12 @@ global $CFG, $USER, $COURSE;
 
 //head off to HTML5 logic if mobile
 if (isMobile($CFG->filter_poodll_html5rec)){
-	return fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "video");
+	if(!canDoUpload()){
+		$ret ="<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
+	}else{	
+		$ret = fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "video");
+	}
+	return $ret;
 }
 
 //Set the servername and a capture settings from config file
@@ -3107,6 +3134,46 @@ function canSpecAudio($browser){
 				return false;
 	}//end of switch
 }
+
+//We check if the OS version is too old here,
+//Android 4+ iOS6+
+//(2013/09/26)
+function canDoUpload(){
+	$browser = new Browser();
+	
+	switch($browser->getPlatform()){
+	
+		case Browser::PLATFORM_ANDROID: 
+			$ver = $browser->getAndroidMajorVersion() ;
+			//if parsing failed, just assume they can upload
+				if(!$ver) {
+					return true;
+				}elseif($ver>3){
+					return true;
+				}else{
+					return false;
+				}
+				break;
+		
+		case Browser::PLATFORM_IPHONE:
+		case Browser::PLATFORM_IPOD:
+		case Browser::PLATFORM_IPAD:
+			$ver = $browser->getIOSMajorVersion() ;
+			//if parsing failed, just assume they can upload
+				if(!$ver) {
+					return true;
+				}elseif($ver>5){
+					return true;
+				}else{
+					return false;
+				}
+				break;
+		default:
+			return true;
+		}//end of switch
+		
+				
+	}//end of function
 
 //Here we try to detect if this is a mobile device or not
 //this is used to determine whther to return a JS or SWF widget

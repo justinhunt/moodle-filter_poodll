@@ -130,8 +130,12 @@ $string['audiotranscodedetails'] = 'Convert recorded/uploaded audio file to MP3 
 $string['ffmpeg'] ='Convert uploaded media with FFMPEG';
 $string['ffmpeg_details'] ='FFMPEG must be installed on your Moodle Server and on the system path. It will need to support converting to mp3, so try it out first on the command line, eg ffmpeg -i somefile.flv somefile.mp3 . This is still *experimental*';
 $string['mp4opts'] ='FFMPEG MP4 Conversion options';
-$string['mp4opts_details'] ='Leave this empty if you wish to let FFMPEG make the decisions. Anything you put here will appear between [ffmpeg - myfile.xx ] and [ myfile.mp4 ]';
+$string['mp4opts_details'] ='Leave this empty if you wish to let FFMPEG make the decisions. Anything you put here will appear between [ffmpeg -i myfile.xx ] and [ myfile.mp4 ]';
 $string['mp3opts'] ='FFMPEG MP3 Conversion options';
-$string['mp3opts_details'] ='Leave this empty if you wish to let FFMPEG make the decisions. Anything you put here will appear between [ffmpeg - myfile.xx ] and [ myfile.mp3 ]';
+$string['mp3opts_details'] ='Leave this empty if you wish to let FFMPEG make the decisions. Anything you put here will appear between [ffmpeg -i myfile.xx ] and [ myfile.mp3 ]';
+
+$string['mobile_os_version_warning'] ='<p>Your OS Version is too low</p>
+		<p>Android requires version 4 or greater.</p>
+		<p>iOS requires version 6 or greater.</p>';
 
 ?>

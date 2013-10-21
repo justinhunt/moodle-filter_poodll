@@ -279,3 +279,10 @@ top: -50%;
 left: -50%;
 
 }
+
+.os_version_warning { 
+	border: 1px solid #ff0000; 
+	font-size:14px; 
+	font-weight:bold; 
+	margin:10px; 
+}

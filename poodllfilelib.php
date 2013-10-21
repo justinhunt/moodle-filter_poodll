@@ -853,21 +853,24 @@ $return=fetchReturnArray(true);
 	//The jsp to call is different.
 	$jsp="download.jsp";
 	$convertlocally=false;
+	$downloadfilename = $filename;
 	$ext = substr($filename,-4);
 	$filenamebase = substr($filename,0,-4); 	
 	switch($ext){
 		
 		case ".mp4":
-				if ($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_videotranscode){
+				if ($CFG->filter_poodll_ffmpeg){
 					$convertlocally=true;
+					$downloadfilename = $filenamebase . ".flv";
 				}else{
 					$jsp="convert.jsp";
 				}
 				break;
 				
 		case ".mp3":
-				if ($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_audiotranscode){
+				if ($CFG->filter_poodll_ffmpeg){
 					$convertlocally=true;
+					$downloadfilename = $filenamebase . ".flv";
 				}else{
 					$jsp="convert.jsp";
 				}
@@ -890,7 +893,7 @@ $return=fetchReturnArray(true);
 		$browser = get_file_browser();
 		
 
-		
+	/*	
 	//create the file record for our new file
 		$file_record = array(
 		'userid' => $USER->id,
@@ -905,6 +908,23 @@ $return=fetchReturnArray(true);
 		'timecreated'=>time(), 
 		'timemodified'=>time()
 		);
+		*/
+		
+	//create the file record for our new file
+	 $file_record = new stdClass();
+	 $file_record->userid    = $USER->id;
+	 $file_record->contextid = $contextid;
+	 $file_record->component = $component;
+     $file_record->filearea = $filearea;
+	 $file_record->itemid   = $itemid;
+     $file_record->filepath = $filepath;
+	 $file_record->filename = $filename;
+	 $file_record->license  = $CFG->sitedefaultlicense;
+     $file_record->author   = 'Moodle User';
+	 $file_record->source    = '';
+	 $file_record->timecreated = time(); 
+	 $file_record->timemodified= time();
+
 
 		//one condition of using this function is that only one file can be here,
 		//attachment limits
@@ -922,7 +942,7 @@ $return=fetchReturnArray(true);
 	//setup download information
 	$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
 						":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" . 
-						$CFG->filter_poodll_serverid . "&filename=" . $filename . "&caller=" . urlencode($CFG->wwwroot);
+						$CFG->filter_poodll_serverid . "&filename=" . $downloadfilename . "&caller=" . urlencode($CFG->wwwroot);
 	
 	//download options
 	$options = array();

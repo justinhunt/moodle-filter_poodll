@@ -275,6 +275,32 @@
 		* @param $version The version of the Browser
 		*/
 		public function setVersion($version) { $this->_version = preg_replace('/[^0-9,.,a-z,A-Z-]/','',$version); }
+		
+		/**
+		* Get Major Version of Android.
+		* @return Major Version of the browser 
+		*/
+		public function getAndroidMajorVersion() { 
+			$androidPos = stripos($this->_agent,'Android') ;
+			if( $androidPos !== false ) {
+			    $aversion = substr($this->_agent, $androidPos+8,1);
+			    return intval($aversion);
+		    }
+		    return false;
+		}
+		/**
+		* Get Major Version of iOS.
+		* @return Major Version of the browser 
+		*/
+		public function getIOSMajorVersion() { 
+			$iosPos = stripos($this->_agent,' OS') ;
+			if( $iosPos !== false ) {
+			    $iosversion = substr($this->_agent, $iosPos+4,1);
+			    return intval($iosversion);
+		    }
+		    return false;
+		}
+		
 		/**
 		* The version of AOL.
 		* @return string Version of AOL (will only contain alpha-numeric characters and a period)
