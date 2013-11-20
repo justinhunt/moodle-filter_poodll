@@ -664,7 +664,7 @@ global $CFG, $DB;
 	
     if (empty($subquestions)) {
        // notice(get_string('nosubquestions', 'poodllflashcard'));
-        return "nothing nothing nothing goddamn it";          
+        return "nothing nothing nothing dang fang it";          
     }
 	
 	//We really need to put formatting into the filter string itself, not mix it in with the data.
@@ -674,19 +674,38 @@ global $CFG, $DB;
 	//set up xml to return
 	$xml_output = "<stack frontfgcolor='$frontcolor' frontbgcolor='0x0000FF' backfgcolor='$backcolor' backbgcolor='0xDDDDDD'>\n";
 	
-
+	//get our poodll data url base. If it starts with http it is assumed to be off site
+	if(strpos('http',$CFG->filter_poodll_datadir)===0){
+		$urlbase =  $CFG->filter_poodll_datadir;
+	}else{
+		$urlbase = $CFG->wwwroot . '/' . $CFG->filter_poodll_datadir;
+	}
+	
 	//loop through card data amd make xml doc.
 	//see for poodllflashcards freeplayview for extending this with media etc
 	foreach ($subquestions as $card) {
 		//insert courseid info into path for image tags
-		$newtext= str_replace( "src=\"","src=\"/file.php/" . $courseid . "/",$card->questiontext);
+		if(strpos($card->questiontext,'@@poodlldataimage@@')!==false){
+			$card->questiontext = strip_tags($card->questiontext); 
+			 $url = str_replace( '@@poodlldataimage@@',$urlbase,$card->questiontext);
+			$newtext='<p><img src="' .$url. '" alt="" width="50" align="middle" /></p>';
+		}else{
+			$newtext= str_replace( "src=\"","src=\"/file.php/" . $courseid . "/",$card->questiontext);
+		}
+
 		$qinnerheight=" ";
 		if($newtext != $card->questiontext){
 			$card->questiontext = $newtext;
 			$qinnerheight=" innerheight=\"0.8\" ";
 		}
-
-		$newtext  = str_replace( "src=\"","src=\"/file.php/" . $courseid . "/",$card->answertext);
+		
+		if(strpos($card->answertext,'@@poodlldataimage@@')!==false){
+			$card->answertext = strip_tags($card->answertext); 
+			 $url = str_replace( '@@poodlldataimage@@',$urlbase,$card->answertext);
+			$newtext='<p><img src="' .$url. '" alt="" width="50" align="middle" /></p>';
+		}else{
+			$newtext  = str_replace( "src=\"","src=\"/file.php/" . $courseid . "/",$card->answertext);
+		}
 		$ainnerheight=" ";
 		if($newtext != $card->answertext){
 			$card->answertext = $newtext;
@@ -708,7 +727,6 @@ global $CFG, $DB;
 
 
 }
-
 
 
 

@@ -312,36 +312,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 					if(is_readable(realpath($tempdir . $filename))){
 						unlink(realpath($tempdir . $filename));
 					}
-				}
-				/*
-				//if use ffmpeg, then attempt to convert mp3 or mp4
-					$convfilename = $filenamebase . $convext;
-					shell_exec("ffmpeg -i " . $tempdir . $filename . " " . $tempdir . $convfilename . " >/dev/null 2>/dev/null ");
-				
-					
-					//Check if conversion worked
-					if(is_readable(realpath($tempdir . $convfilename))){
-						$record->filename = $convfilename;
-						$stored_file = 	$fs->create_file_from_pathname($record, $tempdir . $convfilename);
-						//need to kill the two temp files here
-						if(is_readable(realpath($tempdir . $convfilename))){
-							unlink(realpath($tempdir . $convfilename));
-						}
-						if(is_readable(realpath($tempdir . $filename))){
-							unlink(realpath($tempdir . $filename));
-						}
-						$filename = $convfilename;
-						
-					//if failed, default to using the original uploaded data
-					//and delete the temp file we made
-					}else{
-						$stored_file = $fs->create_file_from_string($record, $xfiledata);
-						if(is_readable(realpath($tempdir . $filename))){
-							unlink(realpath($tempdir . $filename));
-						}
-					}
-					*/
-					
+				}				
 				
 			//if couldn't create on disk fall back to the original data
 			}else{
@@ -373,6 +344,97 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	return $xml_output;
 }
 
+/*
+* Extract an image from the video for use as splash
+* image stored in same location with same name (diff ext)
+* as original video file
+*
+*/
+function get_splash_ffmpeg($videofile, $newfilename){
+
+global $CFG, $USER;
+
+		//determine the temp directory
+		if (isset($CFG->tempdir)){
+			$tempdir =  $CFG->tempdir . "/";	
+		}else{
+			//moodle 2.1 users have no $CFG->tempdir
+			$tempdir =  $CFG->dataroot . "/temp/";
+		}
+
+		//init our fs object
+		$fs = get_file_storage();
+		//it would be best if we could use $videofile->get_content_filehandle somehow ..
+		//but this works for now.
+		$tempvideofilepath = $tempdir . $videofile->get_filename();
+		$tempsplashfilepath = $tempdir . $newfilename;
+		$ok = $videofile->copy_content_to($tempvideofilepath);
+		
+		//call on ffmpeg to create the snapshot
+		//$ffmpegopts = "-vframes 1 -an ";
+		//this takes the frame after 1 s
+		$ffmpegopts = "-ss 00:00:01 -vframes 1 -an ";
+		
+		shell_exec("ffmpeg -i " . $tempvideofilepath . " " . $ffmpegopts . " " . $tempsplashfilepath . " >/dev/null 2>/dev/null ");
+
+		//add the play button
+		//this can be done from ffmpeg, but probably not on all installs, so we do in php
+		if(is_readable(realpath($tempsplashfilepath))){	
+			$bg = imagecreatefrompng($tempsplashfilepath);
+			$btn = imagecreatefrompng($CFG->wwwroot . '/filter/poodll/pix/playbutton.png');
+			imagealphablending($bg, 1);
+			imagealphablending($btn, 1);
+			imagecopy($bg, $btn, (imagesx($bg)-imagesx($btn)) / 2, (imagesy($bg)-imagesy($btn)) / 2, 0 , 0,imagesx($btn) , imagesy($btn));			
+			$btnok = imagepng($bg, $tempsplashfilepath, 7);
+		}else{
+			return false;
+		}
+		
+	
+		//initialize return value
+		$stored_file = false;
+	
+		//Check if we could create the image
+		if(is_readable(realpath($tempsplashfilepath))){			
+			//make our filerecord
+			 $record = new stdClass();
+			$record->filearea = $videofile->get_filearea();
+			$record->component = $videofile->get_component();
+			$record->filepath = $videofile->get_filepath();
+			$record->itemid   = $videofile->get_itemid();
+			$record->license  = $CFG->sitedefaultlicense;
+			$record->author   = 'Moodle User';
+			$record->contextid = $videofile->get_contextid();
+			$record->userid    = $USER->id;
+			$record->source    = '';
+		
+			//set the image filename and call on Moodle to make a stored file from the image
+			$record->filename = $newfilename;
+			$stored_file = 	$fs->create_file_from_pathname($record, $tempsplashfilepath );
+
+			//need to kill the two temp files here
+			if(is_readable(realpath($tempsplashfilepath ))){
+				unlink(realpath($tempsplashfilepath ));
+			}
+			if(is_readable(realpath($tempvideofilepath))){
+				unlink(realpath($tempvideofilepath));
+			}
+	
+		//delete the temp file we made, regardless
+		}else{
+			if(is_readable(realpath($tempvideofile))){
+				unlink(realpath($tempvideofile));
+			}
+		}		
+		//return the stored file
+		return $stored_file;
+
+}
+
+/*
+* Convert a video file to a different format using ffmpeg
+*
+*/
 function convert_with_ffmpeg($filerecord, $tempdir, $tempfilename, $convfilenamebase, $convext){
 
 global $CFG;
@@ -385,9 +447,10 @@ global $CFG;
 		$convfilename = $convfilenamebase . $convext;
 		//work out the options we pass to ffmpeg. diff versions supp. dioff switches
 		//has to be this way really.
+
 		switch ($convext){
 			case '.mp4':
-				$ffmpegopts = "-c:v libx264 -profile:v baseline";
+				//$ffmpegopts = "-c:v libx264 -profile:v baseline";
 				$ffmpegopts = $CFG->filter_poodll_ffmpeg_mp4opts;
 				break;
 			case '.mp3':
@@ -397,6 +460,7 @@ global $CFG;
 				$ffmpegopts = "";
 		}
 		shell_exec("ffmpeg -i " . $tempdir . $tempfilename . " " . $ffmpegopts . " " . $tempdir . $convfilename . " >/dev/null 2>/dev/null ");
+		
 		/* About FFMPEG conv
 		it would be better to do the conversion in the background not here.
 		in that case you would place an ampersand at the end .. like this ...
@@ -417,7 +481,6 @@ global $CFG;
 				unlink(realpath($tempdir . $tempfilename));
 			}
 			$filename = $convfilename;
-			
 		//if failed, set return value to FALSE
 		//and delete the temp file we made
 		}else{
@@ -857,7 +920,7 @@ $return=fetchReturnArray(true);
 	$ext = substr($filename,-4);
 	$filenamebase = substr($filename,0,-4); 	
 	switch($ext){
-		
+	
 		case ".mp4":
 				if ($CFG->filter_poodll_ffmpeg){
 					$convertlocally=true;
@@ -868,7 +931,7 @@ $return=fetchReturnArray(true);
 				break;
 				
 		case ".mp3":
-				if ($CFG->filter_poodll_ffmpeg){
+				if ($CFG->filter_poodll_ffmpeg){	
 					$convertlocally=true;
 					$downloadfilename = $filenamebase . ".flv";
 				}else{
@@ -943,7 +1006,6 @@ $return=fetchReturnArray(true);
 	$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
 						":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" . 
 						$CFG->filter_poodll_serverid . "&filename=" . $downloadfilename . "&caller=" . urlencode($CFG->wwwroot);
-	
 	//download options
 	$options = array();
 	$options['headers']=null;
@@ -972,12 +1034,10 @@ $return=fetchReturnArray(true);
 		}
 		//actually make the file on disk so FFMPEG can get it
 		$mediastring = file_get_contents($red5_fileurl);
-		$ret = file_put_contents($tempdir . $filename, $mediastring);
-		
+		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
 		//if successfully saved to disk, convert
 		if($ret){
-		
-			$stored_file = convert_with_ffmpeg($file_record,$tempdir,$filename,$filenamebase, $ext );
+			$stored_file = convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
 			if($stored_file){
 				$filename=$stored_file->get_filename();
 				

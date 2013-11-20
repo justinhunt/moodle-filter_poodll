@@ -8,6 +8,8 @@
  */
 
 M.filter_poodll = {}
+M.filter_poodll.whiteboardcanvas=null;
+M.filter_poodll.timeouthandle=null;
 
 // Replace poodll_flowplayer divs with flowplayers
 M.filter_poodll.loadflowplayer = function(Y,opts) {
@@ -215,13 +217,167 @@ theconfig = { plugins:
 
 	//for debugging
 //	console.log(theconfig);
-
-	
 }
 
+// load drawingboard whiteboard for Moodle
+M.filter_poodll.loaddrawingboard = function(Y,opts) {
+
+		if(opts['bgimage'] ){
+			var erasercolor = 'transparent';
+		}else{
+			var erasercolor = 'background';
+			opts['bgimage'] = '#FFF';
+		}
+
+       // load the whiteboard and save the canvas reference
+       var db = new DrawingBoard.Board('drawing-board-id',{
+				size: 3,
+				background: opts['bgimage'],
+				controls: ['Color',
+							{ Size: { type: 'auto' } },
+							{ DrawingMode: { filler: false,eraser: false,pencil: false } },
+							'Navigation'
+						],
+				webStorage: false,
+				enlargeYourContainer: true,
+				eraserColor: erasercolor
+			});
+			
+			
+		if(opts['autosave']){		
+				//autosave, clear messages and save callbacks on start drawing
+				db.ev.bind('board:startDrawing', function(e) {
+						// update messages
+						var m = $id('p_messages');
+						m.innerHTML = 'File has not been saved.';
+						
+						var savebutton = $id('p_btn_upload_whiteboard');
+						savebutton.disabled=false;
+						
+						clearTimeout(M.filter_poodll.timeouthandle);
+					});
+					
+				//autosave, clear previous callbacks,set new save callbacks on stop drawing
+				db.ev.bind('board:stopDrawing', function(e) {
+						clearTimeout(M.filter_poodll.timeouthandle);
+						M.filter_poodll.timeouthandle = setTimeout(WhiteboardUploadHandler,3000);
+					});
+					
+				//set up the upload/save button
+			   var uploadbutton = $id('p_btn_upload_whiteboard');
+				if(uploadbutton){
+					uploadbutton.addEventListener("click", WhiteboardUploadHandler, false);
+					M.filter_poodll.whiteboardcanvas = db.canvas;
+				}
+		
+		}else{
+			db.ev.bind('board:startDrawing', function(e) {
+						// update messages
+						var m = $id('p_messages');
+						m.innerHTML = 'File has not been saved.';
+			});
+			
+			//set up the upload/save button
+		   var uploadbutton = $id('p_btn_upload_whiteboard');
+			if(uploadbutton){
+				uploadbutton.addEventListener("click", CallFileUpload, false);
+				M.filter_poodll.whiteboardcanvas = db.canvas;
+			}
+		}
+			
+			
+		
+}
+
+// handle literallycanvas whiteboard saves for Moodle
+M.filter_poodll.loadliterallycanvas = function(Y,opts) {
+
+		// disable scrolling on touch devices so we can actually draw
+        $(document).bind('touchmove', function(e) {
+          if (e.target === document.documentElement) {
+            return e.preventDefault();
+          }
+        });
+
+       // load the whiteboard and save the canvas reference
+       var lc =  $('.literally').literallycanvas({imageURLPrefix: '/filter/poodll/js/literallycanvas.js/img'});
+	   M.filter_poodll.whiteboardcanvas = lc.canvasForExport();
+	   
+	   //loads a background image .. but LC ignores in redrawing stack :(
+	  // setCanvasBackgroundImage(opts['bgimage']);
+	  
+	//autosave if we have to. We get no events from LC so we make it 5 seconds
+	if(opts['autosave']){	
+		setInterval(WhiteboardUploadHandlerLC,10000);
+	}
+
+	//set up the upload/save button
+	var uploadbutton = $id('p_btn_upload_whiteboard');
+	if(uploadbutton){
+		uploadbutton.addEventListener("click", WhiteboardUploadHandlerLC, false);
+	}
+}
+
+	/**
+	 * Image method: Force a background image, LC ignores when redrawing
+	 */
+	function setCanvasBackgroundImage (src) {
+		var cvs = M.filter_poodll.whiteboardcanvas;
+		var ctx = cvs && cvs.getContext && cvs.getContext('2d') ? cvs.getContext('2d') : null;
+		var img = new Image();
+		var oldGCO = ctx.globalCompositeOperation;
+		img.onload = function() {
+			ctx.globalCompositeOperation = "source-over";
+			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.width);
+			ctx.drawImage(img, 0, 0);
+			ctx.globalCompositeOperation = oldGCO;
+		};
+		img.src = src;
+		console.log("set bg image:" + src);
+	}
+/*
+	 * Image methods: To download an image to desktop
+	 */
+	function getCanvasBackgroundImage() {
+		return M.filter_poodll.whiteboardcanvas.toDataURL("image/png");
+	}
+
+	function downloadCanvasBackgroundImage() {
+		var img = this.getImg();
+		img = img.replace("image/png", "image/octet-stream");
+		window.location.href = img;
+	}
 
 
-// handle file uploads for Mobile
+// Call Upload file from literallycanvas, 
+function WhiteboardUploadHandlerLC(e) {
+		//clear the saved message
+		setTimeout(function(){
+			Output('')
+		},3000);
+		//call the file upload
+		CallFileUpload(e);
+}//end of WhiteboardUploadHandler
+
+// Call Upload file from drawingboard a, first handle autosave bits and pieces
+function WhiteboardUploadHandler(e) {
+		// Save button disabling a little risky db perm. fails publish "startdrawing" after mode change
+		var savebutton = $id('p_btn_upload_whiteboard');
+		savebutton.disabled=true;
+		clearTimeout(M.filter_poodll.timeouthandle);
+		//call the file upload
+		CallFileUpload(e);
+
+}//end of WhiteboardUploadHandler
+
+// Cal Upload file from whiteboard canvas
+function CallFileUpload(e) {
+		var filedata =  M.filter_poodll.whiteboardcanvas.toDataURL().split(',')[1];
+		var file = {type:  'image/jpeg'};
+		UploadFile(file, filedata);
+}//end of WhiteboardUploadHandler
+
+// handle audio/video/image file uploads for Mobile
 M.filter_poodll.loadmobileupload = function(Y,opts) {
 	var fileselect = $id('poodllfileselect');
 	if(fileselect){
@@ -297,29 +453,36 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 		}
 		
 		if(true){
-			// create progress bar
+			// create progress bar if we have a container for it
 			var o = $id("p_progress");
-			var progress = o.firstChild;
-			if(progress==null){
-				progress = o.appendChild(document.createElement("p"));
+			if(o!=null){
+				var progress = o.firstChild;
+				if(progress==null){
+					progress = o.appendChild(document.createElement("p"));
+				}
+				//reset/set background position to 0, and label to "uploading
+				progress.className="";
+				progress.style.display = "block";
+				progress.style.backgroundPosition = "100% 0";
+				
+				// progress bar
+				xhr.upload.addEventListener("progress", function(e) {
+					var pc = parseInt(100 - (e.loaded / e.total * 100));
+					progress.style.backgroundPosition = pc + "% 0";
+				}, false);
+			}else{
+				var progress=false;
 			}
-			//reset/set background position to 0, and label to "uploading
-			progress.className="";
-			progress.style.display = "block";
-			progress.style.backgroundPosition = "100% 0";
 			Output("Uploading.");
 
-			// progress bar
-			xhr.upload.addEventListener("progress", function(e) {
-				var pc = parseInt(100 - (e.loaded / e.total * 100));
-				progress.style.backgroundPosition = pc + "% 0";
-			}, false);
 
 			// file received/failed
 			xhr.onreadystatechange = function(e) {
 				
 				if (xhr.readyState == 4 ) {
-					progress.className = (xhr.status == 200 ? "success" : "failure");
+					if(progress){
+						progress.className = (xhr.status == 200 ? "success" : "failure");
+					}
 					if(xhr.status==200){
 						var resp = xhr.responseText;
 						var start= resp.indexOf("success<error>");
@@ -327,7 +490,7 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 						var end = resp.indexOf("</error>");
 						var filename= resp.substring(start+14,end);
 						//Output("gotten filename:" + filename);
-						Output("File uploaded successfully.");
+						Output("File saved successfully.");
 						var upc = $id($id("p_updatecontrol").value);
 						if(!upc){upc = $parentid($id("p_updatecontrol").value);}
 						upc.value=filename;
@@ -338,10 +501,6 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 				}
 			};
 
-	
-		
-			
-		
 			var params = "datatype=uploadfile";
 			//We must URI encode the base64 filedata, because otherwise the "+" characters get turned into spaces
 			//spent hours tracking that down ...justin 20121012

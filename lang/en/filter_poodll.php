@@ -1,6 +1,8 @@
 <?PHP // $Id: filter_poodll.php ,v 1.3 2012/05/16 12:47:13 Justin Hunt Exp $ 
       // PoodLl Filter
 $string['filtername'] = 'PoodLL Filter';
+//officially its not needed, but "new version available" email doesn't know to look for filtername
+$string['pluginname'] = 'PoodLL Filter';
 
 $string['settings'] = 'PoodLL Filter Settings';
 $string['activate'] = 'Activate PoodLL?';
@@ -84,8 +86,8 @@ $string['smallgallheight'] = 'Vid. Gallery (small) Height';
 $string['newpairwidth'] = 'Pairwork Widget Width ';
 $string['newpairheight'] = 'Pairwork Widget Height';
 
-$string['wboardwidth'] = 'Whiteboard Width ';
-$string['wboardheight'] = 'Whiteboard Height';
+$string['wboardwidth'] = 'Whiteboard Default Width ';
+$string['wboardheight'] = 'Whiteboard Default Height';
 
 //video capture settings
 $string['capturewidth'] = 'Video Recorder Capture Size';
@@ -137,5 +139,10 @@ $string['mp3opts_details'] ='Leave this empty if you wish to let FFMPEG make the
 $string['mobile_os_version_warning'] ='<p>Your OS Version is too low</p>
 		<p>Android requires version 4 or greater.</p>
 		<p>iOS requires version 6 or greater.</p>';
+
+$string['defaultwhiteboard'] = 'Default whiteboard';
+$string['autosavewhiteboard'] = 'Autosave whiteboard';
+$string['whiteboardsave'] = 'Save Picture';
+		
 
 ?>
