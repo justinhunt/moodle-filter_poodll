@@ -3682,54 +3682,60 @@ function fetchVideoSplash($src){
 		global $CFG;
 
 	 $src = urldecode($src);
-	 
+
 	 //if this is not a local file , quit.
 	 $possy = strpos($src,"pluginfile.php");
-	 if(!$possy){return false;}
-	 
+	 if(!$possy){return false;} 
 	 //get relative path
 	 //e.g http://m23.poodll.com/pluginfile.php/59/mod_page/content/20/360332574229687.flv
 	 //should become /59/mod_page/content/20/360332574229687.flv
 	 $relpath = substr($src,$possy + 14);
-	 
 
-//These are two paths from testing, they can be deleted	 
-//$relpath="/22/mod_assignment/submission/1/230358740780502.flv";
-//$relpath="/21/mod_page/content/0/808474302291870.flv";
-
-//like everything file related with questions, it doesn't work
-//it looks in general like getting a hash from a url is dodgey anyway
-//this is the seed of a way we might do it for qs, but really for qs its not v imp.
-//we can come back on it
-/*
-$relarray = explode('/',$relpath);
-$len = $count($relarray);
-$qitemid = $relarray($len-2);
-$qfilename = $relarray($len-1);
-*/
-
-//remove any pesky forcedownload params
-$relpath=str_replace("?forcedownload=1","", $relpath);
+	//remove any pesky forcedownload params
+	$relpath=str_replace("?forcedownload=1","", $relpath);
 
 	 //if something went wrong, and we can't confirm get a handle on the file, 
-	 //set the item id to zero. If it still fails, quit
+	 //muddle with the itemid. Some mods don't bother to use it if it is a certain filearea
+	 //eg assignment intro, others use it strangely,eg mod_page, and we need to set it to 0 
+	 //quiz questions have extra stuff between filearea and itemid
 	 $fs = get_file_storage();
 	 $file = $fs->get_file_by_hash(sha1($relpath));
      if (!$file) {
-			
-			//try again, and set the item id to 0, for mod_page the itemid is stored as 0, but refed as 
-			//something else. Why? The answer is blowing in the wind.....
-			//but we may get weirdness like this in quiz questions too
 			 $relarray = explode('/',$relpath);
-			 $relarray[4]='0';
-			 $relpath = implode('/',$relarray);
-			 $file = $fs->get_file_by_hash(sha1($relpath));
-			 
-			 if(!$file){
+			 //index 1 = contextid, 2 =component,3=filearea
+			 //itemid can change, filename is last
+			
+			switch($relarray[2]){
+				case 'question':
+					$qitemid = $relarray[count($relarray)-2];
+					$qfilename = $relarray[count($relarray)-1];
+					$relpath = '/' . $relarray[1] . '/' . $relarray[2] . '/' . $relarray[3];
+					$relpath .= '/' . $qitemid . '/' . $qfilename;
+					break;
+				
+				case 'mod_page':
+					//1st we set itemid to 0
+					$originalitemid = $relarray[4];
+					$relarray[4]='0';
+					$relpath = implode('/',$relarray);
+					break;
+				
+				case 'mod_assign':
+					array_splice($relarray, 4, 0, '0');
+					$relpath = implode('/',$relarray);
+					break;
+			}
+			
+			
+			//Then hash the path and try to get the file
+			$file = $fs->get_file_by_hash(sha1($relpath));
+
+			//if we still don't have a file, give up
+			if(!$file){
 				return false;
-				//return "no video file found @ " . $relpath;
 			}
 	}
+
 	
 	//check if we really can have/make a splash for this file
 	//if name is too short, we didn't make it, it wont be on our red5 server
@@ -3737,7 +3743,7 @@ $relpath=str_replace("?forcedownload=1","", $relpath);
 	if(strlen($filename)<5){
 		return false;
 	}
-	
+
 	//if we are NOT using FFMPEG, we can only take snaps from Red5, so ...
 	//if name is not numeric, it is not a video file we recorded on red5.it wont be there
 	if(!$CFG->filter_poodll_ffmpeg && !is_numeric(substr($filename,0,strlen($filename)-4))){
@@ -3776,7 +3782,7 @@ $relpath=str_replace("?forcedownload=1","", $relpath);
 					"99999",
 					$file->get_filepath()
 					);
-		
+	
 		if(strpos($result,"success")){
 			return $fullimagepath;
 		}else{

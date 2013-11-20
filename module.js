@@ -8,7 +8,7 @@
  */
 
 M.filter_poodll = {}
-M.filter_poodll.whiteboardcanvas=null;
+M.filter_poodll.getwhiteboardcanvas=null;
 M.filter_poodll.timeouthandle=null;
 
 // Replace poodll_flowplayer divs with flowplayers
@@ -267,7 +267,7 @@ M.filter_poodll.loaddrawingboard = function(Y,opts) {
 			   var uploadbutton = $id('p_btn_upload_whiteboard');
 				if(uploadbutton){
 					uploadbutton.addEventListener("click", WhiteboardUploadHandler, false);
-					M.filter_poodll.whiteboardcanvas = db.canvas;
+					M.filter_poodll.getwhiteboardcanvas = function(){ return db.canvas;};
 				}
 		
 		}else{
@@ -281,7 +281,7 @@ M.filter_poodll.loaddrawingboard = function(Y,opts) {
 		   var uploadbutton = $id('p_btn_upload_whiteboard');
 			if(uploadbutton){
 				uploadbutton.addEventListener("click", CallFileUpload, false);
-				M.filter_poodll.whiteboardcanvas = db.canvas;
+				M.filter_poodll.getwhiteboardcanvas = function(){ return db.canvas;};
 			}
 		}
 			
@@ -301,7 +301,7 @@ M.filter_poodll.loadliterallycanvas = function(Y,opts) {
 
        // load the whiteboard and save the canvas reference
        var lc =  $('.literally').literallycanvas({imageURLPrefix: '/filter/poodll/js/literallycanvas.js/img'});
-	   M.filter_poodll.whiteboardcanvas = lc.canvasForExport();
+	   M.filter_poodll.getwhiteboardcanvas = function(){ return lc.canvasForExport();};
 	   
 	   //loads a background image .. but LC ignores in redrawing stack :(
 	  // setCanvasBackgroundImage(opts['bgimage']);
@@ -322,7 +322,7 @@ M.filter_poodll.loadliterallycanvas = function(Y,opts) {
 	 * Image method: Force a background image, LC ignores when redrawing
 	 */
 	function setCanvasBackgroundImage (src) {
-		var cvs = M.filter_poodll.whiteboardcanvas;
+		var cvs = M.filter_poodll.getwhiteboardcanvas();
 		var ctx = cvs && cvs.getContext && cvs.getContext('2d') ? cvs.getContext('2d') : null;
 		var img = new Image();
 		var oldGCO = ctx.globalCompositeOperation;
@@ -339,7 +339,8 @@ M.filter_poodll.loadliterallycanvas = function(Y,opts) {
 	 * Image methods: To download an image to desktop
 	 */
 	function getCanvasBackgroundImage() {
-		return M.filter_poodll.whiteboardcanvas.toDataURL("image/png");
+		var cvs = M.filter_poodll.getwhiteboardcanvas();
+		return cvs.toDataURL("image/png");
 	}
 
 	function downloadCanvasBackgroundImage() {
@@ -372,8 +373,9 @@ function WhiteboardUploadHandler(e) {
 
 // Cal Upload file from whiteboard canvas
 function CallFileUpload(e) {
-		var filedata =  M.filter_poodll.whiteboardcanvas.toDataURL().split(',')[1];
-		var file = {type:  'image/jpeg'};
+		var cvs = M.filter_poodll.getwhiteboardcanvas();
+		var filedata =  cvs.toDataURL().split(',')[1];
+		var file = {type:  'image/png'};
 		UploadFile(file, filedata);
 }//end of WhiteboardUploadHandler
 
