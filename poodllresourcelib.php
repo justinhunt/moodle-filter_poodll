@@ -901,6 +901,8 @@ global $CFG, $USER, $COURSE,$PAGE;
 	if($CFG->filter_poodll_autosavewhiteboard && $forsubmission){
 		$opts['autosave'] = $CFG->filter_poodll_autosavewhiteboard;
 	}
+	//imageurlprefix, that LC requires
+	$opts['imageurlprefix']= $CFG->httpswwwroot . '/filter/poodll/js/literallycanvas.js/img';
 	$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false);
 
 	//removed from params to make way for moodle 2 filesystem params Justin 20120213

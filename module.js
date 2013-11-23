@@ -293,14 +293,16 @@ M.filter_poodll.loaddrawingboard = function(Y,opts) {
 M.filter_poodll.loadliterallycanvas = function(Y,opts) {
 
 		// disable scrolling on touch devices so we can actually draw
+		/*
         $(document).bind('touchmove', function(e) {
           if (e.target === document.documentElement) {
             return e.preventDefault();
           }
         });
+        */
 
        // load the whiteboard and save the canvas reference
-       var lc =  $('.literally').literallycanvas({imageURLPrefix: '/filter/poodll/js/literallycanvas.js/img'});
+       var lc =  $('.literally').literallycanvas({imageURLPrefix: opts['imageurlprefix']});
 	   M.filter_poodll.getwhiteboardcanvas = function(){ return lc.canvasForExport();};
 	   
 	   //loads a background image .. but LC ignores in redrawing stack :(
