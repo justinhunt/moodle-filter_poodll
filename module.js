@@ -247,20 +247,13 @@ M.filter_poodll.loaddrawingboard = function(Y,opts) {
 		if(opts['autosave']){		
 				//autosave, clear messages and save callbacks on start drawing
 				db.ev.bind('board:startDrawing', function(e) {
-						// update messages
-						var m = $id('p_messages');
-						m.innerHTML = 'File has not been saved.';
-						
-						var savebutton = $id('p_btn_upload_whiteboard');
-						savebutton.disabled=false;
-						
-						clearTimeout(M.filter_poodll.timeouthandle);
+						//kill all pending save timeouts
+						stopSaveCountdown();
 					});
 					
 				//autosave, clear previous callbacks,set new save callbacks on stop drawing
 				db.ev.bind('board:stopDrawing', function(e) {
-						clearTimeout(M.filter_poodll.timeouthandle);
-						M.filter_poodll.timeouthandle = setTimeout(WhiteboardUploadHandler,3000);
+						startSaveCountdown();
 					});
 					
 				//set up the upload/save button
@@ -272,9 +265,7 @@ M.filter_poodll.loaddrawingboard = function(Y,opts) {
 		
 		}else{
 			db.ev.bind('board:startDrawing', function(e) {
-						// update messages
-						var m = $id('p_messages');
-						m.innerHTML = 'File has not been saved.';
+						 setUnsavedWarning();
 			});
 			
 			//set up the upload/save button
@@ -300,43 +291,66 @@ M.filter_poodll.loadliterallycanvas = function(Y,opts) {
           }
         });
         */
+        
 
-       // load the whiteboard and save the canvas reference
-       var lc =  $('.literally').literallycanvas({imageURLPrefix: opts['imageurlprefix']});
-	   M.filter_poodll.getwhiteboardcanvas = function(){ return lc.canvasForExport();};
-	   
-	   //loads a background image .. but LC ignores in redrawing stack :(
-	  // setCanvasBackgroundImage(opts['bgimage']);
-	  
-	//autosave if we have to. We get no events from LC so we make it 5 seconds
-	if(opts['autosave']){	
-		setInterval(WhiteboardUploadHandlerLC,10000);
-	}
+        // load the whiteboard and save the canvas reference
+    	//logic a bit diff if we have a background image
+    	if(opts['bgimage']){
+    		var bgimg = new Image();
+			bgimg.src = opts['bgimage'];
+		}else{
+			var bgimg = null;
+		}
+		
+		//init the whiteboard	
+		var lc =  $('.literally').literallycanvas({imageURLPrefix: opts['imageurlprefix'], 
+		backgroundColor: 'whiteSmoke', 
+		watermarkImage: bgimg,
+		 onInit: function(lc) {
+				M.filter_poodll.getwhiteboardcanvas = function(){ return lc.canvasForExport();};
+				if(opts['autosave']){
+					lc.on('drawStart',stopSaveCountdown);
+					lc.on('drawingChange',startSaveCountdown);
+				}else{
+					lc.on('drawingChange',setUnsavedWarning);
+				}
+			}
+		});
 
 	//set up the upload/save button
 	var uploadbutton = $id('p_btn_upload_whiteboard');
 	if(uploadbutton){
-		uploadbutton.addEventListener("click", WhiteboardUploadHandlerLC, false);
+		if(opts['autosave']){
+			uploadbutton.addEventListener("click", WhiteboardUploadHandler, false);
+		}else{
+			uploadbutton.addEventListener("click", CallFileUpload, false);
+		}
 	}
+	
 }
 
-	/**
-	 * Image method: Force a background image, LC ignores when redrawing
-	 */
-	function setCanvasBackgroundImage (src) {
-		var cvs = M.filter_poodll.getwhiteboardcanvas();
-		var ctx = cvs && cvs.getContext && cvs.getContext('2d') ? cvs.getContext('2d') : null;
-		var img = new Image();
-		var oldGCO = ctx.globalCompositeOperation;
-		img.onload = function() {
-			ctx.globalCompositeOperation = "source-over";
-			ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.width);
-			ctx.drawImage(img, 0, 0);
-			ctx.globalCompositeOperation = oldGCO;
-		};
-		img.src = src;
-		console.log("set bg image:" + src);
+	function setUnsavedWarning(){
+		var m = $id('p_messages');
+		m.innerHTML = 'File has not been saved.';
 	}
+	
+	function stopSaveCountdown(){
+		// update messages
+		var m = $id('p_messages');
+		m.innerHTML = 'File has not been saved.';
+		
+		var savebutton = $id('p_btn_upload_whiteboard');
+		savebutton.disabled=false;
+		
+		clearTimeout(M.filter_poodll.timeouthandle);
+	
+	}
+	
+	function startSaveCountdown(){
+		clearTimeout(M.filter_poodll.timeouthandle);
+		M.filter_poodll.timeouthandle = setTimeout(WhiteboardUploadHandler,2000);
+	}
+
 /*
 	 * Image methods: To download an image to desktop
 	 */

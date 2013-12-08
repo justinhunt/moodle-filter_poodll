@@ -771,13 +771,19 @@
 }).call(this);
 
 (function() {
-    var buttonIsDown, coordsForTouchEvent, position;
+     var buttonIsDown, coordsForTouchEvent, position;
     coordsForTouchEvent = function($el, e) {
         var p, t;
-        t = e.originalEvent.changedTouches[0];
+       // t = e.originalEvent.changedTouches[0];
+       //p = $el.offset();
+       //return [ t.clientX - p.left, t.clientY - p.top ];
+        tx = e.originalEvent.changedTouches[0].pageX;
+        ty = e.originalEvent.changedTouches[0].pageY;
         p = $el.offset();
-        return [ t.clientX - p.left, t.clientY - p.top ];
+       return [ tx - p.left, ty - p.top ];
+
     };
+
     position = function(e) {
         var p;
         if (e.offsetX != null) {
@@ -1679,4 +1685,62 @@
         };
         return EyeDropperWidget;
     }(LC.ToolWidget);
+}).call(this);
+
+(function() {
+    var slice, _ref;
+    window.LC = (_ref = window.LC) != null ? _ref : {};
+    slice = Array.prototype.slice;
+    LC._last = function(array, n) {
+        if (n == null) n = null;
+        if (n) {
+            return slice.call(array, Math.max(array.length - n, 0));
+        } else {
+            return array[array.length - 1];
+        }
+    };
+    LC.init = function(el, opts) {
+        var $el, $tbEl, lc, resize, tb;
+        if (opts == null) opts = {};
+        if (opts.primaryColor == null) opts.primaryColor = "#000";
+        if (opts.secondaryColor == null) opts.secondaryColor = "#fff";
+        if (opts.backgroundColor == null) opts.backgroundColor = "transparent";
+        if (opts.imageURLPrefix == null) opts.imageURLPrefix = "lib/img";
+        if (opts.keyboardShortcuts == null) opts.keyboardShortcuts = true;
+        if (opts.preserveCanvasContents == null) opts.preserveCanvasContents = false;
+        if (opts.sizeToContainer == null) opts.sizeToContainer = true;
+        if (opts.watermarkImage == null) opts.watermarkImage = null;
+        if (!("toolClasses" in opts)) {
+            opts.toolClasses = [ LC.PencilWidget, LC.EraserWidget, LC.LineWidget, LC.RectangleWidget, LC.PanWidget, LC.EyeDropperWidget ];
+        }
+        $el = $(el);
+        $el.addClass("literally");
+        $tbEl = $('<div class="toolbar">');
+        $el.append($tbEl);
+        if (!$el.find("canvas").length) $el.append("<canvas>");
+        lc = new LC.LiterallyCanvas($el.find("canvas").get(0), opts);
+        tb = new LC.Toolbar(lc, $tbEl, opts);
+        tb.selectTool(tb.tools[0]);
+        resize = function() {
+            if (opts.sizeToContainer) {
+                lc.$canvas.css("height", "" + ($el.height() - $tbEl.height()) + "px");
+            }
+            return lc.updateSize();
+        };
+        $el.resize(resize);
+        $(window).resize(resize);
+        resize();
+        if ("onInit" in opts) opts.onInit(lc);
+        return [ lc, tb ];
+    };
+    $.fn.literallycanvas = function(opts) {
+        var _this = this;
+        if (opts == null) opts = {};
+        this.each(function(ix, el) {
+            var _ref2;
+            return _ref2 = LC.init(el, opts), el.literallycanvas = _ref2[0], el.literallycanvasToolbar = _ref2[1], 
+            _ref2;
+        });
+        return this;
+    };
 }).call(this);

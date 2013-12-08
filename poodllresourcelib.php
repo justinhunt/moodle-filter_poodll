@@ -155,7 +155,7 @@ function fetch_poodllconsole($runtime ){
 	
 	//Show the buttons window if we are admin
 	//Also won't receive messages intended for students if we are admin. Be aware.
-	if (has_capability('mod/quiz:preview', get_context_instance(CONTEXT_COURSE, $COURSE->id))){		
+	if (has_capability('mod/quiz:preview', context_course::instance($courseid))){		
 		$am="admin";
 	}else{
 		$am="0";
@@ -211,7 +211,7 @@ function fetch_poodllheader($runtime){
 	
 	//Show the buttons window if we are admin
 	//Also won't receive messages intended for students if we are admin. Be aware.
-	if (has_capability('mod/quiz:preview', get_context_instance(CONTEXT_COURSE, $COURSE->id))){		
+	if (has_capability('mod/quiz:preview', context_course::instance($COURSE->id))){		
 		$am="admin";
 	}else{
 		$am="0";
@@ -513,7 +513,7 @@ if($standalone == 'true'){
 
 
 //Determine if we are admin, if necessary , for slave/master mode
-	if ($slave && has_capability('mod/quiz:preview', get_context_instance(CONTEXT_COURSE, $COURSE->id))){		
+	if ($slave && has_capability('mod/quiz:preview', context_course::instance($COURSE->id))){		
 		$slave=false;
 	}
 
@@ -933,8 +933,9 @@ global $CFG, $USER, $COURSE,$PAGE;
 	}
 	
 	//include other needed libraries
-	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/underscore-1.4.2.js");
-	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.js");
+	//$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.js");
+	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.jquery.js");
+	
 
 
 	//save button 
@@ -945,7 +946,11 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$savebutton .= "<input type=\"hidden\" id=\"p_filearea\" value=\"$filearea\" />";
 	$savebutton .= "<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />";
 	$savebutton .= "<input type=\"hidden\" id=\"p_fileliburl\" value=\"$poodllfilelib\" />";
-	$buttonclass="p_btn";
+	if(array_key_exists('autosave',$opts)){
+		$buttonclass="w_btn";
+	}else{
+		$buttonclass="p_btn";
+	}
 	$savebutton .= "<button type=\"button\" id=\"p_btn_upload_whiteboard\" class=\"$buttonclass\">" 
 				. get_string('whiteboardsave', 'filter_poodll'). 
 				"</button>";
@@ -1082,14 +1087,22 @@ switch($useboard){
 }
 
 
+
 //head off to HTML5 logic if mobile
 if(isMobile($CFG->filter_poodll_html5widgets)){
+	
+	$forsubmission = true;
+	return fetchDrawingBoard($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid); 
+	//the old logic follows but using drawingboard.js is probably better.
+	//if the sky falls in, we will revert though. Justin 20131202
+	/*	
 	if(!canDoUpload()){
 		$ret ="<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
 	}else{	
 		$ret = fetch_HTML5RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid, "image");
 	}
 	return $ret;
+	*/
 
 }
 
@@ -1271,7 +1284,7 @@ $userid = $USER->username;
 
 	
 	//Determine if we are admin, if necessary , for slave/master mode
-	if (has_capability('mod/quiz:preview', get_context_instance(CONTEXT_COURSE, $COURSE->id))){		
+	if (has_capability('mod/quiz:preview', context_course::instance($COURSE->id))){		
 		$isadmin=true;
 	}else{
 		$isadmin=false;
@@ -1461,7 +1474,7 @@ $userid = $USER->username;
 
 	
 	//Determine if we are admin, if necessary , for slave/master mode
-	if (has_capability('mod/quiz:preview', get_context_instance(CONTEXT_COURSE, $COURSE->id))){		
+	if (has_capability('mod/quiz:preview', context_course::instance($COURSE->id))){		
 		$isadmin=true;
 	}else{
 		$isadmin=false;
@@ -2515,7 +2528,7 @@ $useplayer=$CFG->filter_poodll_defaultplayer;
 				}
 				
 				//regardless of swf player, add a download icon if appropriate
-				$context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+				$context = context_course::instance($COURSE->id);
 				$has_permission = has_capability('filter/poodll:candownloadmedia', $context);
 				if($CFG->filter_poodll_download_media_ok && $has_permission){
 					$returnString .=  "<a href='" . urldecode($rtmp_file) . "'>" 
@@ -2555,7 +2568,7 @@ $ismobile=isMobile($CFG->filter_poodll_html5play);
 	$rtmp_file = str_replace( "@@username@@",$USER->username,$rtmp_file);
 	
 	//Determine if we are admin, admins can always fullscreen
-	if (has_capability('mod/quiz:preview', get_context_instance(CONTEXT_COURSE, $COURSE->id))){		
+	if (has_capability('mod/quiz:preview', context_course::instance($COURSE->id))){		
 		$permitfullscreen='true';
 	}
 
@@ -2725,7 +2738,7 @@ $ismobile=isMobile($CFG->filter_poodll_html5play);
 								$params,$width,$height,'#FFFFFF');
 				}
 				
-				$context = get_context_instance(CONTEXT_COURSE, $COURSE->id);
+				$context = context_course::instance($COURSE->id);
 				$has_permission = has_capability('filter/poodll:candownloadmedia', $context);
 				if($CFG->filter_poodll_download_media_ok && $has_permission){
 					$returnString .=  "<a href='" . urldecode($rtmp_file) . "'>" 
@@ -2760,7 +2773,7 @@ if ($width==''){$width=$CFG->filter_poodll_smallgallwidth;}
 if ($height==''){$height=$CFG->filter_poodll_smallgallheight;}
 
 //Determine if we are admin, admins can always fullscreen
-	if (has_capability('mod/quiz:preview', get_context_instance(CONTEXT_COURSE, $COURSE->id))){		
+	if (has_capability('mod/quiz:preview', context_course::instance($COURSE->id))){		
 		$permitfullscreen='true';
 	}
 
@@ -3031,7 +3044,7 @@ global $CFG, $DB, $COURSE;
 	$fs = get_file_storage();
 
 	//get a handle on the module context
-	$thiscontext = get_context_instance(CONTEXT_MODULE,$moduleid);
+	$thiscontext = context_module::instance($moduleid);
 	$contextid = $thiscontext->id;
 	
 	//fetch a list of files in this area, and sort them alphabetically
@@ -3754,7 +3767,8 @@ function fetchVideoSplash($src){
 	
 	//check if we have an image file here already, if so return that URL
 	$relimagepath = substr($relpath,0,strlen($relpath)-3) . 'png';
-	$fullimagepath = substr($src,0,strlen($src)-3) . 'png';
+	$trimsrc = str_replace("?forcedownload=1","", $src);
+	$fullimagepath = substr($trimsrc,0,strlen($trimsrc)-3) . 'png';
 	$imagefilename = substr($filename,0,strlen($filename)-3) . 'png';
 	if ($imagefile = $fs->get_file_by_hash(sha1($relimagepath))) {
             return $fullimagepath;
