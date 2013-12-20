@@ -10,6 +10,19 @@
 M.filter_poodll = {}
 M.filter_poodll.getwhiteboardcanvas=null;
 M.filter_poodll.timeouthandle=null;
+M.filter_poodll.opts =Array();
+
+// Called by PoodLL recorders to update filename field on page
+M.filter_poodll.updatepage = function(args) {
+		//record the url on the html page,							
+		var filenamecontrol = document.getElementById(args[3]);
+		if(filenamecontrol==null){ filenamecontrol = parent.document.getElementById(args[3]);} 			
+		if(filenamecontrol){
+			filenamecontrol.value = args[2];
+		}
+		console.log("just  updated: " + args[3] + ' with ' + args[2]);
+}
+
 
 // Replace poodll_flowplayer divs with flowplayers
 M.filter_poodll.loadflowplayer = function(Y,opts) {
@@ -221,6 +234,8 @@ theconfig = { plugins:
 
 // load drawingboard whiteboard for Moodle
 M.filter_poodll.loaddrawingboard = function(Y,opts) {
+	//stash our opts array
+	M.filter_poodll.opts = opts;
 
 		if(opts['bgimage'] ){
 			var erasercolor = 'transparent';
@@ -282,6 +297,8 @@ M.filter_poodll.loaddrawingboard = function(Y,opts) {
 
 // handle literallycanvas whiteboard saves for Moodle
 M.filter_poodll.loadliterallycanvas = function(Y,opts) {
+	//stash our opts array
+	M.filter_poodll.opts = opts;
 
 		// disable scrolling on touch devices so we can actually draw
 		/*
@@ -331,24 +348,33 @@ M.filter_poodll.loadliterallycanvas = function(Y,opts) {
 
 	function setUnsavedWarning(){
 		var m = $id('p_messages');
-		m.innerHTML = 'File has not been saved.';
+		if(m){
+			m.innerHTML = 'File has not been saved.';
+		}
 	}
 	
 	function stopSaveCountdown(){
 		// update messages
 		var m = $id('p_messages');
-		m.innerHTML = 'File has not been saved.';
+		if(m){
+			m.innerHTML = 'File has not been saved.';
 		
-		var savebutton = $id('p_btn_upload_whiteboard');
-		savebutton.disabled=false;
+			var savebutton = $id('p_btn_upload_whiteboard');
+			savebutton.disabled=false;
 		
-		clearTimeout(M.filter_poodll.timeouthandle);
+			clearTimeout(M.filter_poodll.timeouthandle);
+		}
 	
 	}
 	
 	function startSaveCountdown(){
-		clearTimeout(M.filter_poodll.timeouthandle);
-		M.filter_poodll.timeouthandle = setTimeout(WhiteboardUploadHandler,2000);
+		// we use the presence of p_messages to check if this is a 
+		//submittable whiteboard, or just a static one.
+		var m = $id('p_messages');
+		if(m){
+			clearTimeout(M.filter_poodll.timeouthandle);
+			M.filter_poodll.timeouthandle = setTimeout(WhiteboardUploadHandler,1200);
+		}
 	}
 
 /*
@@ -392,33 +418,39 @@ function CallFileUpload(e) {
 		var cvs = M.filter_poodll.getwhiteboardcanvas();
 		var filedata =  cvs.toDataURL().split(',')[1];
 		var file = {type:  'image/png'};
-		UploadFile(file, filedata);
+		UploadFile(file, filedata,M.filter_poodll.opts);
 }//end of WhiteboardUploadHandler
 
 // handle audio/video/image file uploads for Mobile
 M.filter_poodll.loadmobileupload = function(Y,opts) {
+	
+	//stash our opts array
+	M.filter_poodll.opts = opts;
+
 	var fileselect = $id('poodllfileselect');
 	if(fileselect){
-		fileselect.addEventListener("change", FileSelectHandler, false);
+		fileselect.addEventListener("change", function(theopts) {
+				return function(e) {FileSelectHandler(e, theopts); };
+				} (opts) , false);
 	}
 }
 
 	// file selection
-	function FileSelectHandler(e) {
+	function FileSelectHandler(e,opts) {
 
 		// fetch FileList object
 		var files = e.target.files || e.dataTransfer.files;
 
 		// process all File objects
 		for (var i = 0, f; f = files[i]; i++) {
-			ParseFile(f);
+			ParseFile(f,opts);
 			//UploadFile(f);
 		}
 
 	}//end of FileSelectHandler
 	
 	// output file information
-	function ParseFile(file) {
+	function ParseFile(file,opts) {
 			
 			// start upload
 			var filedata ="";
@@ -426,7 +458,7 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 			//reader.onloadend = UploadFile;
 			reader.onloadend = function(e) {
 						filedata = e.target.result;
-						UploadFile(file, filedata);
+						UploadFile(file, filedata, opts);
 			}
 			reader.readAsDataURL(file);
 
@@ -450,7 +482,7 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 	}
 
 	// upload Media files
-	function UploadFile(file, filedata) {
+	function UploadFile(file, filedata,opts) {
 
 
 		var xhr = new XMLHttpRequest();
@@ -507,12 +539,24 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 						if (start<1){return;}
 						var end = resp.indexOf("</error>");
 						var filename= resp.substring(start+14,end);
-						//Output("gotten filename:" + filename);
-						Output("File saved successfully.");
-						var upc = $id($id("p_updatecontrol").value);
-						if(!upc){upc = $parentid($id("p_updatecontrol").value);}
-						upc.value=filename;
-						//$id("saveflvvoice").value=filename;
+						
+						//invoke callbackjs if we have one, otherwise just update the control(default behav.)
+						if(opts['callbackjs'] && opts['callbackjs']!=''){ 
+							var callbackargs  = new Array();
+							callbackargs[0]=opts['recorderid'];
+							callbackargs[1]='filesubmitted';
+							callbackargs[2]=filename;
+							callbackargs[3]=opts['updatecontrol'];
+							//window[opts['callbackjs']](callbackargs);
+							Output("File saved successfully.");
+							M.filter_poodll.executeFunctionByName(opts['callbackjs'],window,callbackargs);
+							
+						}else{
+							Output("File saved successfully.");
+							var upc = $id($id("p_updatecontrol").value);
+							if(!upc){upc = $parentid($id("p_updatecontrol").value);}
+							upc.value=filename;
+						}
 					}else{
 						Output("File could not be uploaded.");
 					}
@@ -544,6 +588,18 @@ M.filter_poodll.loadmobileupload = function(Y,opts) {
 		}
 
 	}//end of upload file
+	
+//function to call the callback function with arguments	
+M.filter_poodll.executeFunctionByName = function(functionName, context , args ) {
+  //var args = Array.prototype.slice.call(arguments).splice(2);
+  var namespaces = functionName.split(".");
+  var func = namespaces.pop();
+  for(var i = 0; i < namespaces.length; i++) {
+    context = context[namespaces[i]];
+  }
+  return context[func].call(this, args);
+}
+	
 	
 	//===============================
 	// Start of text scroller

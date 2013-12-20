@@ -143,6 +143,4 @@ $string['mobile_os_version_warning'] ='<p>Your OS Version is too low</p>
 $string['defaultwhiteboard'] = 'Default whiteboard';
 $string['autosavewhiteboard'] = 'Autosave whiteboard';
 $string['whiteboardsave'] = 'Save Picture';
-		
-
-?>
+$string['poodll:candownloadmedia'] = 'Can download media'; 

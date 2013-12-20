@@ -250,11 +250,12 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	
 	
 	//in most cases we will be storing files in a draft area and lettign Moodle do the rest
-	//one condition of using this function is that only one file can be here,
-	//attachment limits in question. could be bypassed if reason enough
+	//previously we only allowed one file in draft, but we removed that limit
+	/*
 	if($farea=='draft'){
 		$fs->delete_area_files($contextid,$comp,$farea,$itemid);
 	}
+	*/
 	
 	//if file already exists, raise an error
 	if($fs->file_exists($contextid,$comp,$farea,$itemid,$filepath,$filename)){
