@@ -991,7 +991,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 }
 
 /*
-* The literally canvas whiteboard
+* The Drawingboard whiteboard
 *
 */
 function fetchDrawingBoard($forsubmission=true,$width=0,$height=0,$backimage="",$updatecontrol="", $contextid=0,$component="",$filearea="",$itemid=0,$callbackjs=false){
@@ -1164,7 +1164,7 @@ $height = $height + 20;
 			$params['callbackjs'] = $callbackjs;
 		}
 		if($CFG->filter_poodll_autosavewhiteboard ){
-			$params['autosave'] = 'true';
+			$params['autosave'] = $CFG->filter_poodll_autosavewhiteboard;
 		}
 		
 		//normal mode is a standard scribble with a cpanel

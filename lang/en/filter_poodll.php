@@ -88,6 +88,8 @@ $string['newpairheight'] = 'Pairwork Widget Height';
 
 $string['wboardwidth'] = 'Whiteboard Default Width ';
 $string['wboardheight'] = 'Whiteboard Default Height';
+$string['wboardautosave'] = 'Autosave(milliseconds)';
+$string['wboardautosave_details'] = 'Saves the drawing when the user has paused drawing after X milliseconds. 0 = no autosave';
 
 //video capture settings
 $string['capturewidth'] = 'Video Recorder Capture Size';
@@ -141,6 +143,5 @@ $string['mobile_os_version_warning'] ='<p>Your OS Version is too low</p>
 		<p>iOS requires version 6 or greater.</p>';
 
 $string['defaultwhiteboard'] = 'Default whiteboard';
-$string['autosavewhiteboard'] = 'Autosave whiteboard';
 $string['whiteboardsave'] = 'Save Picture';
 $string['poodll:candownloadmedia'] = 'Can download media'; 
