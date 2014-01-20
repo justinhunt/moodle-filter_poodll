@@ -1008,9 +1008,11 @@ $return=fetchReturnArray(true);
 
 		//one condition of using this function is that only one file can be here,
 		//attachment limits
+		/*
 		if($filearea=='draft'){
 			$fs->delete_area_files($contextid,$component,$filearea,$itemid);
 		}
+		*/
 		
 		//if file already exists, delete it
 		//we could use fileinfo, but it don&'t work
@@ -1100,6 +1102,7 @@ $return=fetchReturnArray(true);
 				//if we could get a fileinfo object, return the url of the object
 				 if($fileinfo){
 						//$returnfilepath  = $fileinfo->get_url();
+						//echo "boo:" . $red5_fileurl;
 						$returnfilepath = $filename;
 						array_push($return['messages'],$returnfilepath );
 				}else{

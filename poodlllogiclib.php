@@ -644,6 +644,20 @@ global $CFG;
 
 }
 
+function poodllizeCardFace($cardtext,$urlbase){
+	//try to extract the url for any audio or images and replace the @@poodlldataimage@@ holder
+		$startpos = strpos($cardtext,'@@poodlldataimage@@');
+		$newtext=$cardtext;
+		if($startpos!==false){
+			 $url = str_replace( '@@poodlldataimage@@',$urlbase,strip_tags(substr($cardtext,$startpos)));
+			 $starttext = substr($cardtext,0,$startpos);
+			 $starttext = strip_tags($starttext); 
+			$imagetext='<p><img src="' .$url. '" alt="" width="50" align="middle" /></p>';
+			$newtext = $starttext . $imagetext;
+		}	
+		return $newtext;
+}
+
 //Fetch a deck of flashcards  
 function fetch_poodllflashcards($courseid, $cardsetid=-1,$cardsetname="",$frontcolor=-1, $backcolor=-1){
 global $CFG, $DB;	
@@ -684,14 +698,9 @@ global $CFG, $DB;
 	//loop through card data amd make xml doc.
 	//see for poodllflashcards freeplayview for extending this with media etc
 	foreach ($subquestions as $card) {
-		//insert courseid info into path for image tags
-		if(strpos($card->questiontext,'@@poodlldataimage@@')!==false){
-			$card->questiontext = strip_tags($card->questiontext); 
-			 $url = str_replace( '@@poodlldataimage@@',$urlbase,$card->questiontext);
-			$newtext='<p><img src="' .$url. '" alt="" width="50" align="middle" /></p>';
-		}else{
-			$newtext= str_replace( "src=\"","src=\"/file.php/" . $courseid . "/",$card->questiontext);
-		}
+		//try to extract the url for any audio or images and replace the @@poodlldataimage@@ holder
+
+		$newtext=poodllizeCardFace($card->questiontext,$urlbase);
 
 		$qinnerheight=" ";
 		if($newtext != $card->questiontext){
@@ -699,13 +708,8 @@ global $CFG, $DB;
 			$qinnerheight=" innerheight=\"0.8\" ";
 		}
 		
-		if(strpos($card->answertext,'@@poodlldataimage@@')!==false){
-			$card->answertext = strip_tags($card->answertext); 
-			 $url = str_replace( '@@poodlldataimage@@',$urlbase,$card->answertext);
-			$newtext='<p><img src="' .$url. '" alt="" width="50" align="middle" /></p>';
-		}else{
-			$newtext  = str_replace( "src=\"","src=\"/file.php/" . $courseid . "/",$card->answertext);
-		}
+		$newtext=poodllizeCardFace($card->answertext,$urlbase);
+		
 		$ainnerheight=" ";
 		if($newtext != $card->answertext){
 			$card->answertext = $newtext;
@@ -727,7 +731,6 @@ global $CFG, $DB;
 
 
 }
-
 
 
 //Fetch a deck of flashcards  

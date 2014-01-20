@@ -1944,10 +1944,17 @@ $micloopback = $CFG->filter_poodll_micloopback;
 
 //removed from params to make way for moodle 2 filesystem params Justin 20120213
 $userid="dummy";
-$width="350";
-$height="400";
 $filename="12345"; 
 $poodllfilelib= $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+switch($assigname){
+	case 'poodllrepository':
+		$width="298";
+		$height="340";
+		break;
+	default:
+		$width="350";
+		$height="400";
+}
 
 //If we are using course ids then lets do that
 //else send -1 to widget (ignore flag)
@@ -2604,7 +2611,9 @@ $ismobile=isMobile($CFG->filter_poodll_html5play);
 
 	//Massage the media file name if we have a username variable passed in.	
 	//This allows us to show different video to each student
-	$rtmp_file = str_replace( "@@username@@",$USER->username,$rtmp_file);
+	if(isset($USER->username)){
+		$rtmp_file = str_replace( "@@username@@",$USER->username,$rtmp_file);
+	}
 	
 	//Determine if we are admin, admins can always fullscreen
 	if (has_capability('mod/quiz:preview', context_course::instance($COURSE->id))){		
