@@ -189,7 +189,8 @@ function filter_poodll_callback(array $link){
 				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'rtmp',
 				!empty($filterprops['width']) ? $filterprops['width'] : 400,
 				!empty($filterprops['height']) ? $filterprops['height'] : 50,
-				!empty($filterprops['filearea']) ? $filterprops['filearea'] : 'content');
+				!empty($filterprops['filearea']) ? $filterprops['filearea'] : 'content',
+				!empty($filterprops['usepoodlldata']) ? $filterprops['usepoodlldata']=='true' : false);
 			break;	
 			
 		case 'talkback':

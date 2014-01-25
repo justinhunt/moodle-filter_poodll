@@ -2261,7 +2261,7 @@ global  $CFG, $COURSE;
 }
 
 //Audio playlisttest player with defaults, for use with directories of audio files
-function fetchAudioTestPlayer($runtime, $playlist,$protocol="", $width="400",$height="150",$filearea="content"){
+function fetchAudioTestPlayer($runtime, $playlist,$protocol="", $width="400",$height="150",$filearea="content",$usepoodlldata=true){
 global $CFG, $USER, $COURSE;
 
 $moduleid = optional_param('id', 0, PARAM_INT);    // The ID of the current module (eg moodleurl/view.php?id=X )
@@ -2269,6 +2269,8 @@ $moduleid = optional_param('id', 0, PARAM_INT);    // The ID of the current modu
 //Set our servername .
 $flvserver = $CFG->poodll_media_server;
 
+////if usepoodlldata, then set that to filearea
+if($usepoodlldata){$filearea="poodlldata";}
 
 
 //determine which of, automated or manual playlists to use
@@ -2297,8 +2299,6 @@ if(strlen($playlist) > 4 && substr($playlist,-4)==".xml"){
     						
     	return $returnString;
 
-
-	
 }
 
 //Audio playlist player with defaults, for use with directories of audio files
