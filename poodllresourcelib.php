@@ -3013,10 +3013,7 @@ global $CFG, $DB, $COURSE;
 	//FIlter could submit submission/draft/content/intro as options here
 	if($filearea == "") {$filearea ="content";}
 	
-	//fetch info and ids about the module calling this data
-	$course = $DB->get_record('course', array('id'=>$courseid));
-	$modinfo = get_fast_modinfo($course);
-	$cm = $modinfo->get_cm($moduleid);
+
 	
 	//make sure we have a trailing slash
 	if(strlen($path)>0){
@@ -3084,6 +3081,11 @@ global $CFG, $DB, $COURSE;
 	//=============================================
 	//end of PoodLL Data Dir
 	}else{
+	
+	//fetch info and ids about the module calling this data
+	$course = $DB->get_record('course', array('id'=>$courseid));
+	$modinfo = get_fast_modinfo($course);
+	$cm = $modinfo->get_cm($moduleid);
 	
 	//If we are using Moodle 2 file handling, we build a list of files here:
 	//=============================================
