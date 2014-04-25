@@ -469,7 +469,8 @@ function filter_poodll_pdl_callback($link) {
 global $CFG;
 	//strip the .pdl extension
 	$len = strlen($link[2]);
-	$key=substr($link[2],0,$len-4);
+	$trimpoint = strpos($link[2], ".pdl");
+	$key=substr($link[2],0,$trimpoint);
 	
 	//see if there is a parameter to this widget
 	$pos = strpos($key, "_");
