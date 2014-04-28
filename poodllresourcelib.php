@@ -944,8 +944,8 @@ global $CFG, $USER, $COURSE,$PAGE;
 	}
 	
 	//include other needed libraries
-	//$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.js");
 	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.jquery.js");
+	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/filter/poodll/js/literallycanvas.js/css/literally.css'));
 	
 
 
