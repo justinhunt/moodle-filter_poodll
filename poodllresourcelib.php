@@ -945,7 +945,9 @@ global $CFG, $USER, $COURSE,$PAGE;
 	
 	//include other needed libraries
 	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.jquery.js");
-	$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/filter/poodll/js/literallycanvas.js/css/literally.css'));
+	//this won't work in a quiz, and throws an error about trying to add to page head, 
+	//when page head has already been output. So copy contents of this file to styles.css in poodllfilter
+	//$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/filter/poodll/js/literallycanvas.js/css/literally.css'));
 	
 
 

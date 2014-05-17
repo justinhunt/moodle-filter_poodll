@@ -412,12 +412,6 @@ left: -50%;
   cursor: pointer;
   width: 16px;
   height: 16px; }
-  
-  .jswhiteboard {
-     border:4px solid #00ff00;
-     display: inline-block;
-     margin-bottom: 10px;
-	}
 
 .literally {
   position: relative;
@@ -427,6 +421,7 @@ left: -50%;
   -khtml-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none;
+  -ms-touch-action: none;
   user-select: none; }
   .literally canvas {
     position: absolute;
@@ -597,4 +592,11 @@ left: -50%;
         border-left: none; }
       .literally .button-group .button:last-child {
         border-radius: 0px 5px 5px 0px; }
+
+.tool-options-text {
+  font-size: 12px; }
+  .tool-options-text .instructions {
+    margin-left: 2em; }
+  .tool-options-text #font-size {
+    width: 30px; }
 
