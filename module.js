@@ -325,6 +325,14 @@ M.filter_poodll.loadliterallycanvas = function(Y,opts) {
 		watermarkImage: bgimg,
 		 onInit: function(lc) {
 				M.filter_poodll.getwhiteboardcanvas = function(){ return lc.canvasForExport();};
+				
+				//justin 20140521 vectordata
+				M.filter_poodll.getwhiteboard = function(){ return lc;};
+				var vectordata = M.filter_poodll.opts['vectordata'];
+				if(vectordata){
+					lc.loadSnapshotJSON(vectordata);
+				}
+				
 				if(opts['autosave']){
 					lc.on('drawStart',stopSaveCountdown);
 					lc.on('drawingChange',startSaveCountdown);
@@ -416,6 +424,12 @@ function WhiteboardUploadHandler(e) {
 // Cal Upload file from whiteboard canvas
 function CallFileUpload(e) {
 		var cvs = M.filter_poodll.getwhiteboardcanvas();
+		var wboard =  M.filter_poodll.getwhiteboard();
+		
+		//justin 20140521 vectordata
+		var vectordata = wboard.getSnapshotJSON();
+		$id($id("p_vectorcontrol").value).value = vectordata;
+		
 		var filedata =  cvs.toDataURL().split(',')[1];
 		var file = {type:  'image/png'};
 		UploadFile(file, filedata,M.filter_poodll.opts);

@@ -898,7 +898,7 @@ $params = array();
 * The literally canvas whiteboard
 *
 */
-function fetchLiterallyCanvas($forsubmission=true,$width=0,$height=0,$backimage="",$updatecontrol="", $contextid=0,$component="",$filearea="",$itemid=0,$callbackjs=false){
+function fetchLiterallyCanvas($forsubmission=true,$width=0,$height=0,$backimage="",$updatecontrol="", $contextid=0,$component="",$filearea="",$itemid=0,$callbackjs=false,$vectorcontrol="",$vectordata=""){
 global $CFG, $USER, $COURSE,$PAGE;
 
 	//javascript upload handler
@@ -914,6 +914,9 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$opts['recorderid']= 'literallycanvas_01';
 	$opts['callbackjs']= $callbackjs;
 	$opts['updatecontrol']= $updatecontrol;
+	
+	opts['vectordata'] = $vectordata;
+	
 	$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false);
 
 	//removed from params to make way for moodle 2 filesystem params Justin 20120213
@@ -958,6 +961,10 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$savebutton .= "<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />";
 	$savebutton .= "<input type=\"hidden\" id=\"p_filearea\" value=\"$filearea\" />";
 	$savebutton .= "<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />";
+	
+	//justin 20140521 vectordata
+	$savebutton .= "<input type=\"hidden\" id=\"p_vectorcontrol\" value=\"$vectorcontrol\" />";
+	
 	$savebutton .= "<input type=\"hidden\" id=\"p_fileliburl\" value=\"$poodllfilelib\" />";
 	if(array_key_exists('autosave',$opts)){
 		$buttonclass="w_btn";
@@ -1080,7 +1087,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 
 
 
-function fetchWhiteboardForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid,$width=0,$height=0,$backimage="",$prefboard="",$callbackjs=false){
+function fetchWhiteboardForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid,$width=0,$height=0,$backimage="",$prefboard="",$callbackjs=false, $vectorcontrol,$vectordata){
 global $CFG, $USER, $COURSE;
 
 //head off to the correct whiteboard as defined in config
@@ -1095,7 +1102,7 @@ if($prefboard==""){
 switch($useboard){
 	case 'literallycanvas':
 		$forsubmission = true;
-		return fetchLiterallyCanvas($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs);
+		return fetchLiterallyCanvas($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs,$vectorcontrol,$vectordata);
 		break;
 	case 'drawingboard':
 		$forsubmission = true;
