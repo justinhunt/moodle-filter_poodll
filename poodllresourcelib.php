@@ -898,7 +898,10 @@ $params = array();
 * The literally canvas whiteboard
 *
 */
-function fetchLiterallyCanvas($forsubmission=true,$width=0,$height=0,$backimage="",$updatecontrol="", $contextid=0,$component="",$filearea="",$itemid=0,$callbackjs=false,$vectorcontrol="",$vectordata=""){
+function fetchLiterallyCanvas($forsubmission=true,$width=0,$height=0,$backimage="",
+	$updatecontrol="", $contextid=0,$component="",$filearea="",$itemid=0,
+	$callbackjs=false,$vectorcontrol="",$vectordata=""){
+	
 global $CFG, $USER, $COURSE,$PAGE;
 
 	//javascript upload handler
@@ -911,11 +914,12 @@ global $CFG, $USER, $COURSE,$PAGE;
 	}
 	//imageurlprefix, that LC requires
 	$opts['imageurlprefix']= $CFG->httpswwwroot . '/filter/poodll/js/literallycanvas.js/img';
-	$opts['recorderid']= 'literallycanvas_01';
+	$opts['recorderid']= 'literallycanvas_' . time();
 	$opts['callbackjs']= $callbackjs;
 	$opts['updatecontrol']= $updatecontrol;
-	
-	opts['vectordata'] = $vectordata;
+	$opts['vectorcontrol'] = $vectorcontrol;
+	$opts['base64control'] = '';//do this later
+	$opts['vectordata'] = $vectordata;
 	
 	$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false);
 
@@ -955,35 +959,35 @@ global $CFG, $USER, $COURSE,$PAGE;
 
 
 	//save button 
-	$savebutton = "<input type=\"hidden\" id=\"p_updatecontrol\" value=\"$updatecontrol\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_contextid\" value=\"$contextid\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_component\" value=\"$component\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_filearea\" value=\"$filearea\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />";
+	$savebutton = "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_updatecontrol\" value=\"$updatecontrol\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_contextid\" value=\"$contextid\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_component\" value=\"$component\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_mediatype\" value=\"$mediatype\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_filearea\" value=\"$filearea\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_itemid\" value=\"$itemid\" />";
 	
 	//justin 20140521 vectordata
-	$savebutton .= "<input type=\"hidden\" id=\"p_vectorcontrol\" value=\"$vectorcontrol\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_vectorcontrol\" value=\"$vectorcontrol\" />";
 	
-	$savebutton .= "<input type=\"hidden\" id=\"p_fileliburl\" value=\"$poodllfilelib\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_fileliburl\" value=\"$poodllfilelib\" />";
 	if(array_key_exists('autosave',$opts)){
 		$buttonclass="w_btn";
 	}else{
 		$buttonclass="p_btn";
 	}
-	$savebutton .= "<button type=\"button\" id=\"p_btn_upload_whiteboard\" class=\"$buttonclass\">" 
+	$savebutton .= "<button type=\"button\" id=\"". $opts['recorderid'] . "_btn_upload_whiteboard\" class=\"$buttonclass\">" 
 				. get_string('whiteboardsave', 'filter_poodll'). 
 				"</button>";
 	
 	
 	//message container
-	$progresscontrols ="<div id=\"p_messages\"></div>";
+	$progresscontrols ="<div id=\"". $opts['recorderid'] . "_messages\"></div>";
 
 		
 	//container of whiteboard and other controls
 	$lcOpen = "<div class='whiteboard-wrapper' style='width:".$width."px; height:" . $height ."px;'>
 		<div class='fs-container' style='width:".$width."px; height:" . $height ."px;'>
-		<div class='literally'><canvas></canvas></div></div>";
+		<div id='" . $opts['recorderid']  . "_literally' class='literally'><canvas></canvas></div></div>";
 	$lcClose = "</div>";
 
 	//add save control and return string
@@ -2044,7 +2048,7 @@ global $CFG,$PAGE;
 	//configure our options array for the JS Call
 	$fileliburl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 	$opts = array();
-	$opts['recorderid']=$mediatype .'recorder_01';
+	$opts['recorderid']=$mediatype .'recorder_' . time();
 	$opts['callbackjs']=$callbackjs;
 	$opts['updatecontrol']=$updatecontrol;
 		
@@ -2083,21 +2087,21 @@ global $CFG,$PAGE;
 	if($fancybutton){ $returnString .= "<div class=\"p_btn_wrapper\">";}
 	$returnString .="
 			$savecontrol
-			<input type=\"hidden\" id=\"p_updatecontrol\" value=\"$updatecontrol\" />
-			<input type=\"hidden\" id=\"p_contextid\" value=\"$contextid\" />
-			<input type=\"hidden\" id=\"p_component\" value=\"$component\" />
-			<input type=\"hidden\" id=\"p_filearea\" value=\"$filearea\" />
-			<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />
-			<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />
-			<input type=\"hidden\" id=\"p_fileliburl\" value=\"$fileliburl\" />
-			<input type=\"file\" id=\"poodllfileselect\" name=\"poodllfileselect[]\" $acceptmedia />
+			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_updatecontrol\" value=\"$updatecontrol\" />
+			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_contextid\" value=\"$contextid\" />
+			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_component\" value=\"$component\" />
+			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_filearea\" value=\"$filearea\" />
+			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_itemid\" value=\"$itemid\" />
+			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_mediatype\" value=\"$mediatype\" />
+			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_fileliburl\" value=\"$fileliburl\" />
+			<input type=\"file\" id=\"" . $opts['recorderid'] . "_poodllfileselect\" name=\"poodllfileselect[]\" $acceptmedia />
 			";
 	if($fancybutton){ $returnString .= 
 			"<button type=\"button\" class=\"p_btn\">Record or Choose a File</button>
 		</div>";}
 	$returnString .= 
-		"<div id=\"p_progress\"><p></p></div>
-		<div id=\"p_messages\"></div>";
+		"<div id=\"" . $opts['recorderid'] . "_progress\"><p></p></div>
+		<div id=\"" . $opts['recorderid'] . "_messages\"></div>";
 
 	return $returnString;
 }
