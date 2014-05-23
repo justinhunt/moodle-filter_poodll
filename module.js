@@ -303,6 +303,12 @@ M.filter_poodll = {
 	},
 
 	// handle literallycanvas whiteboard saves for Moodle
+	setliterallycanvas: function(Y,opts) {
+		//stash our opts array
+		this.whiteboardopts[opts['recorderid']] = opts;
+	},
+	
+	// handle literallycanvas whiteboard saves for Moodle
 	loadliterallycanvas: function(Y,opts) {
 	
 		//stash our opts array
@@ -327,10 +333,10 @@ M.filter_poodll = {
 				var bgimg = null;
 			}
 
+			//old style for erasable bg = watermarkImage: bgimg, 
 			//init the whiteboard	
-			var lc =  $('.literally').literallycanvas({imageURLPrefix: opts['imageurlprefix'], 
-				backgroundColor: 'whiteSmoke', 
-				watermarkImage: bgimg,
+			var lc =  $('#' + opts['recorderid'] + '_literally').literallycanvas({imageURLPrefix: opts['imageurlprefix'], 
+				backgroundColor: opts['backgroundcolor'],
 				recorderid: opts['recorderid'],
 			
 				 onInit: function(lc) {
@@ -475,10 +481,12 @@ M.filter_poodll = {
 	// Call Upload file from whiteboard canvas
 	CallFileUpload: function(recid) {
 	
-	
 		var wboard = this.whiteboards[recid];
-		console.log(wboard);
-		var cvs = wboard.canvasForExport();
+		if(this.whiteboardopts[recid]['bgimage']){
+			var cvs = wboard.canvasWithBackground($('#' + recid + '_separate-background-image').get(0))
+		}else{
+			var cvs = wboard.canvasForExport();
+		}
 
 	
 	

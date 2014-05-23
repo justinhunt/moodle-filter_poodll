@@ -908,13 +908,17 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$opts =Array();
 	if($backimage !=''){
 		$opts['bgimage'] = $backimage;
+		$opts['backgroundcolor'] = 'transparent';
+	}else{
+		$opts['backgroundcolor'] = 'whiteSmoke';
 	}
+	
 	if($CFG->filter_poodll_autosavewhiteboard && $forsubmission){
 		$opts['autosave'] = $CFG->filter_poodll_autosavewhiteboard;
 	}
 	//imageurlprefix, that LC requires
 	$opts['imageurlprefix']= $CFG->httpswwwroot . '/filter/poodll/js/literallycanvas.js/img';
-	$opts['recorderid']= 'literallycanvas_' . time();
+	$opts['recorderid']= 'literallycanvas_' . time() .  rand(10000,999999);
 	$opts['callbackjs']= $callbackjs;
 	$opts['updatecontrol']= $updatecontrol;
 	$opts['vectorcontrol'] = $vectorcontrol;
@@ -929,7 +933,9 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$poodllfilelib= $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 	
 	//add the height of the control area, so that the user spec dimensions are the canvas size
+	$canvasheight = $height;
 	$height=$height + 61;
+	
 
 
 	//the control to put the filename of our picture
@@ -984,10 +990,17 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$progresscontrols ="<div id=\"". $opts['recorderid'] . "_messages\"></div>";
 
 		
-	//container of whiteboard and other controls
-	$lcOpen = "<div class='whiteboard-wrapper' style='width:".$width."px; height:" . $height ."px;'>
-		<div class='fs-container' style='width:".$width."px; height:" . $height ."px;'>
-		<div id='" . $opts['recorderid']  . "_literally' class='literally'><canvas></canvas></div></div>";
+	//container of whiteboard, bgimage and other bits and pieces.
+	if($backimage !=''){
+		$lcOpen = "<div class='whiteboard-wrapper' style='width:".$width."px; height:" . $height ."px;'>
+			<div class='fs-container separate-backgrounds' style='width:".$width."px; height:" . $height ."px;'>
+			<img id='" . $opts['recorderid']  . "_separate-background-image' class='separate-background-image' src='" . $opts['bgimage'] . "'/>
+			<div id='" . $opts['recorderid']  . "_literally' class='literally separate-backgrounds'><canvas></canvas></div></div>";
+	}else{
+		$lcOpen = "<div class='whiteboard-wrapper' style='width:".$width."px; height:" . $height ."px;'>
+			<div class='fs-container' style='width:".$width."px; height:" . $height ."px;'>
+			<div id='" . $opts['recorderid']  . "_literally' class='literally'><canvas></canvas></div></div>";
+	}
 	$lcClose = "</div>";
 
 	//add save control and return string
@@ -2048,7 +2061,7 @@ global $CFG,$PAGE;
 	//configure our options array for the JS Call
 	$fileliburl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 	$opts = array();
-	$opts['recorderid']=$mediatype .'recorder_' . time();
+	$opts['recorderid']=$mediatype .'recorder_' . time() .  rand(10000,999999);
 	$opts['callbackjs']=$callbackjs;
 	$opts['updatecontrol']=$updatecontrol;
 		

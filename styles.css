@@ -317,6 +317,19 @@ left: -50%;
 	Licensed under the Apache License v2.0
 	http://www.apache.org/licenses/LICENSE-2.0
 */
+.separate-backgrounds {
+	width: 100%;
+	position: relative;
+	/* height: 240px; */
+}
+
+.literally.separate-backgrounds {
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: transparent:
+}
+
 .colorpicker-saturation {
   width: 200px;
   height: 200px;
@@ -415,7 +428,6 @@ left: -50%;
 
 .literally {
   position: relative;
-  background-color: white;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   -khtml-user-select: none;
