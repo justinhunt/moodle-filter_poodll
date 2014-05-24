@@ -244,8 +244,9 @@ M.filter_poodll = {
 
 	// load drawingboard whiteboard for Moodle
 	loaddrawingboard: function(Y,opts) {
+		
 		//stash our opts array
-		this.poodllopts = opts;
+		this.whiteboardopts[opts['recorderid']] = opts;
 
 			if(opts['bgimage'] ){
 				var erasercolor = 'transparent';
@@ -255,7 +256,8 @@ M.filter_poodll = {
 			}
 
 		   // load the whiteboard and save the canvas reference
-		   var db = new DrawingBoard.Board('drawing-board-id',{
+		   var db = new DrawingBoard.Board(opts['recorderid'] + '_drawing-board-id',{
+		   			recorderid: opts['recorderid'],
 					size: 3,
 					background: opts['bgimage'],
 					controls: ['Color',
@@ -267,47 +269,68 @@ M.filter_poodll = {
 					enlargeYourContainer: true,
 					eraserColor: erasercolor
 				});
+				
+			//stash our whiteboard	
+			M.filter_poodll.whiteboards[opts['recorderid']] = db;
 			
-			
+			//register events. if autosave we need to do more.
 			if(opts['autosave']){		
 					//autosave, clear messages and save callbacks on start drawing
-					db.ev.bind('board:startDrawing', function(e) {
-							//kill all pending save timeouts
-							this.stopSaveCountdown();
-						});
-					
+					db.ev.bind('board:startDrawing', (function(mfp,recid){
+								return function(){
+									var m = document.getElementById(recid + '_messages');
+									if(m){
+										m.innerHTML = 'File has not been saved.';
+										var savebutton = document.getElementById(recid + '_btn_upload_whiteboard');
+										savebutton.disabled=false;
+										var th = M.filter_poodll.timeouthandles[recid];
+										if(th){clearTimeout(th);}
+									}
+								}
+							})(this,opts['recorderid'])							
+					);
+						
+
 					//autosave, clear previous callbacks,set new save callbacks on stop drawing
-					db.ev.bind('board:stopDrawing', function(e) {
-							this.startSaveCountdown();
-						});
-					
-					//set up the upload/save button
-				   var uploadbutton = this.getbyid('p_btn_upload_whiteboard');
-					if(uploadbutton){
-						uploadbutton.addEventListener("click", this.WhiteboardUploadHandler, false);
-						this.getwhiteboardcanvas = function(){ return db.canvas;};
-					}
+					db.ev.bind('board:stopDrawing', (function(mfp,recid){
+								return function(){
+									var m = document.getElementById(recid + '_messages');
+									if(m){
+										var th = M.filter_poodll.timeouthandles[recid];
+										if(th){clearTimeout(th);}
+										M.filter_poodll.timeouthandles[recid] = setTimeout(
+															function(){ M.filter_poodll.WhiteboardUploadHandler(recid);},
+															M.filter_poodll.whiteboardopts[recid]['autosave']);
+									}
+								}
+							})(this,opts['recorderid'])
+					);
+
 		
 			}else{
-				db.ev.bind('board:startDrawing', function(e) {
-							 this.setUnsavedWarning();
-				});
-			
-				//set up the upload/save button
-			   var uploadbutton = this.getbyid('p_btn_upload_whiteboard');
-				if(uploadbutton){
-					uploadbutton.addEventListener("click",function(){M.filter_poodll.CallFileUpload(opts['recorderid']);}, false);
-					this.getwhiteboardcanvas = function(){ return db.canvas;};
-				}
+				db.ev.bind('board:stopDrawing', (function(mfp,recid){
+								return function(){
+									var m = document.getElementById(recid + '_messages');
+									if(m){
+										m.innerHTML = 'File has not been saved.';
+									}
+								}
+							})(this,opts['recorderid'])
+				);
 			}
+			
+		//set up the upload/save button
+		var uploadbutton = this.getbyid(opts['recorderid'] + '_btn_upload_whiteboard');
+		if(uploadbutton){
+			if(opts['autosave']){
+				uploadbutton.addEventListener("click", function(){M.filter_poodll.WhiteboardUploadHandler(opts['recorderid']);}, false);
+			}else{
+				uploadbutton.addEventListener("click", function(){M.filter_poodll.CallFileUpload(opts['recorderid']);}, false);
+			}
+		}
+	
 	},
 
-	// handle literallycanvas whiteboard saves for Moodle
-	setliterallycanvas: function(Y,opts) {
-		//stash our opts array
-		this.whiteboardopts[opts['recorderid']] = opts;
-	},
-	
 	// handle literallycanvas whiteboard saves for Moodle
 	loadliterallycanvas: function(Y,opts) {
 	
@@ -482,25 +505,29 @@ M.filter_poodll = {
 	CallFileUpload: function(recid) {
 	
 		var wboard = this.whiteboards[recid];
-		if(this.whiteboardopts[recid]['bgimage']){
-			var cvs = wboard.canvasWithBackground($('#' + recid + '_separate-background-image').get(0))
+		var cvs = null;
+		var vectordata = "";
+		if(recid.indexOf('drawingboard_')==0){
+			cvs = wboard.canvas;		
 		}else{
-			var cvs = wboard.canvasForExport();
+			if(this.whiteboardopts[recid]['bgimage']){
+				cvs = wboard.canvasWithBackground($('#' + recid + '_separate-background-image').get(0))
+			}else{
+				cvs = wboard.canvasForExport();
+			}
+			//only LC has vector data it seems
+			var vectordata = wboard.getSnapshotJSON();
 		}
 
-	
-	
-		//var cvs = this.getwhiteboardcanvas[recid]();
-		//var wboard =  this.getwhiteboard[recid]();
+		//stash vectordata
+		if(this.whiteboardopts[recid]['vectorcontrol']){
+			var vc = this.getbyid(this.whiteboardopts[recid]['vectorcontrol']);
+			if (vc){
+				vc.value = vectordata;
+			}
+		}
 		
-		//var cvs = this.getwhiteboardcanvas();
-		//var wboard =  this.getwhiteboard();
-		//console.log(recid);
-		///console.log(cvs);
-		//justin 20140521 vectordata
-		var vectordata = wboard.getSnapshotJSON();
-		this.getbyid(this.whiteboardopts[recid]['vectorcontrol']).value = vectordata;
-		
+		//prepare the upload
 		var filedata =  cvs.toDataURL().split(',')[1];
 		var file = {type:  'image/png'};
 		this.UploadFile(file, filedata,recid);

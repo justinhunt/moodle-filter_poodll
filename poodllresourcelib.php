@@ -1020,14 +1020,16 @@ global $CFG, $USER, $COURSE,$PAGE;
 * The Drawingboard whiteboard
 *
 */
-function fetchDrawingBoard($forsubmission=true,$width=0,$height=0,$backimage="",$updatecontrol="", $contextid=0,$component="",$filearea="",$itemid=0,$callbackjs=false){
+function fetchDrawingBoard($forsubmission=true,$width=0,$height=0,$backimage="",$updatecontrol="", $contextid=0,$component="",$filearea="",$itemid=0,$callbackjs=false,$vectorcontrol='',$vectordata=''){
 global $CFG, $USER, $COURSE,$PAGE;
 
 	//javascript upload handler
 	$opts =Array();
-	$opts['recorderid']= 'drawingboard_01';
+	$opts['recorderid']= 'drawingboard_' . time() .  rand(10000,999999);
 	$opts['callbackjs']= $callbackjs;
 	$opts['updatecontrol']= $updatecontrol;
+	$opts['vectorcontrol'] = $vectorcontrol;
+	$opts['vectordata'] = $vectordata;
 	if($backimage !=''){
 		$opts['bgimage'] = $backimage;
 	}
@@ -1066,28 +1068,28 @@ global $CFG, $USER, $COURSE,$PAGE;
 
 
 	//save button 
-	$savebutton = "<input type=\"hidden\" id=\"p_updatecontrol\" value=\"$updatecontrol\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_contextid\" value=\"$contextid\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_component\" value=\"$component\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_mediatype\" value=\"$mediatype\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_filearea\" value=\"$filearea\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_itemid\" value=\"$itemid\" />";
-	$savebutton .= "<input type=\"hidden\" id=\"p_fileliburl\" value=\"$poodllfilelib\" />";
+	$savebutton = "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_updatecontrol\" value=\"$updatecontrol\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_contextid\" value=\"$contextid\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_component\" value=\"$component\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_mediatype\" value=\"$mediatype\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_filearea\" value=\"$filearea\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_itemid\" value=\"$itemid\" />";
+	$savebutton .= "<input type=\"hidden\" id=\"". $opts['recorderid'] . "_fileliburl\" value=\"$poodllfilelib\" />";
 	if(array_key_exists('autosave',$opts)){
 		$buttonclass="w_btn";
 	}else{
 		$buttonclass="p_btn";
 	}
-	$savebutton .= "<button type=\"button\" id=\"p_btn_upload_whiteboard\" class=\"$buttonclass\">" 
+	$savebutton .= "<button type=\"button\" id=\"". $opts['recorderid'] . "_btn_upload_whiteboard\" class=\"$buttonclass\">" 
 				. get_string('whiteboardsave', 'filter_poodll'). 
 				"</button>";
 	
 	//message container		
-	$progresscontrols = "<div id=\"p_messages\"></div>";
+	$progresscontrols = "<div id=\"". $opts['recorderid'] . "_messages\"></div>";
 
 	//init return string with container of whiteboard	
 	$dbOpen = "<div class='whiteboard-wrapper' style='width:".$width."px; height:" . $height ."px;'>
-		<div class='board drawing-board' id='drawing-board-id' style='width:".$width."px; height:" . $height ."px;'></div>";
+		<div class='board drawing-board' id='". $opts['recorderid'] . "_drawing-board-id' style='width:".$width."px; height:" . $height ."px;'></div>";
 	$dbClose ="</div>";
 		
 	//add save control and return string
@@ -2113,8 +2115,8 @@ global $CFG,$PAGE;
 			"<button type=\"button\" class=\"p_btn\">Record or Choose a File</button>
 		</div>";}
 	$returnString .= 
-		"<div id=\"" . $opts['recorderid'] . "_progress\"><p></p></div>
-		<div id=\"" . $opts['recorderid'] . "_messages\"></div>";
+		"<div id=\"" . $opts['recorderid'] . "_progress\" class=\"p_progress\"><p></p></div>
+		<div id=\"" . $opts['recorderid'] . "_messages\" class=\"p_messages\"></div>";
 
 	return $returnString;
 }

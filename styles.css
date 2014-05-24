@@ -191,7 +191,7 @@ div.poodllplaylist a em {
 }
 
 /* For HTML5 Uploads */
-#p_progress p
+.p_progress p
 {
 	display: none;
 	width: 240px;
@@ -202,17 +202,17 @@ div.poodllplaylist a em {
 	background: #eee url("/filter/poodll/progress.png") 100% 0 repeat-y;
 }
 
-#p_progress p.success
+.p_progress p.success
 {
 	background: #0c0 none 0 0 no-repeat;
 }
 
-#p_progress p.failed
+.p_progress p.failed
 {
 	background: #c00 none 0 0 no-repeat;
 }
 
-#p_messages 
+.p_messages 
 {
 	float: left;
 }
