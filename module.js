@@ -262,7 +262,7 @@ M.filter_poodll = {
 					background: opts['bgimage'],
 					controls: ['Color',
 								{ Size: { type: 'auto' } },
-								{ DrawingMode: { filler: false,eraser: true,pencil: false } },
+								{ DrawingMode: { filler: false,eraser: true,pencil: true } },
 								'Navigation'
 							],
 					droppable: true,
