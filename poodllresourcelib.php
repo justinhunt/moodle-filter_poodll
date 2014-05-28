@@ -1030,7 +1030,11 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$opts['updatecontrol']= $updatecontrol;
 	$opts['vectorcontrol'] = $vectorcontrol;
 	$opts['vectordata'] = $vectordata;
-	if($backimage !=''){
+	
+	//be careful here, only set the background IF
+	//(a) we have an image and (b) we have no vectordata
+	//if we have vector data, it will contain the image
+	if($backimage !='' && $vectordata==''){
 		$opts['bgimage'] = $backimage;
 	}
 	if($CFG->filter_poodll_autosavewhiteboard && $forsubmission){
@@ -1089,7 +1093,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 
 	//init return string with container of whiteboard	
 	$dbOpen = "<div class='whiteboard-wrapper' style='width:".$width."px; height:" . $height ."px;'>
-		<div class='board drawing-board' id='". $opts['recorderid'] . "_drawing-board-id' style='width:".$width."px; height:" . $height ."px;'></div>";
+		<div class='board drawing-board' id='". $opts['recorderid'] . "_drawing-board-id' style='width:".$width."px; height:" . $height ."px;'></div>";	
 	$dbClose ="</div>";
 		
 	//add save control and return string
@@ -1125,7 +1129,7 @@ switch($useboard){
 		break;
 	case 'drawingboard':
 		$forsubmission = true;
-		return fetchDrawingBoard($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs); 
+		return fetchDrawingBoard($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs,$vectorcontrol,$vectordata);
 		break;
 	default:
 }
@@ -1136,7 +1140,7 @@ switch($useboard){
 if(isMobile($CFG->filter_poodll_html5widgets)){
 	
 	$forsubmission = true;
-	return fetchDrawingBoard($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs); 
+	return fetchDrawingBoard($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs,$vectorcontrol,$vectordata);
 	//the old logic follows but using drawingboard.js is probably better.
 	//if the sky falls in, we will revert though. Justin 20131202
 	/*	

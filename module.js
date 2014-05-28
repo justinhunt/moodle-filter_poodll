@@ -262,9 +262,10 @@ M.filter_poodll = {
 					background: opts['bgimage'],
 					controls: ['Color',
 								{ Size: { type: 'auto' } },
-								{ DrawingMode: { filler: false,eraser: false,pencil: false } },
+								{ DrawingMode: { filler: false,eraser: true,pencil: false } },
 								'Navigation'
 							],
+					droppable: true,
 					webStorage: false,
 					enlargeYourContainer: true,
 					eraserColor: erasercolor
@@ -272,6 +273,16 @@ M.filter_poodll = {
 				
 			//stash our whiteboard	
 			M.filter_poodll.whiteboards[opts['recorderid']] = db;
+			
+			//restore vectordata
+			var vectordata = opts['vectordata'];
+			if(vectordata){
+				//dont do anything if its not JSON (ie it coule be from LC)
+				if(vectordata.indexOf('{"shapes"')!=0){
+					db.history = JSON.parse(vectordata);
+					db.setImg(db.history.values[db.history.position-1]);
+				}
+			}
 			
 			//register events. if autosave we need to do more.
 			if(opts['autosave']){		
@@ -289,7 +300,6 @@ M.filter_poodll = {
 								}
 							})(this,opts['recorderid'])							
 					);
-						
 
 					//autosave, clear previous callbacks,set new save callbacks on stop drawing
 					db.ev.bind('board:stopDrawing', (function(mfp,recid){
@@ -318,6 +328,7 @@ M.filter_poodll = {
 							})(this,opts['recorderid'])
 				);
 			}
+			
 			
 		//set up the upload/save button
 		var uploadbutton = this.getbyid(opts['recorderid'] + '_btn_upload_whiteboard');
@@ -366,7 +377,10 @@ M.filter_poodll = {
 						
 						var vectordata = M.filter_poodll.whiteboardopts[lc.opts.recorderid]['vectordata'];
 						if(vectordata){
-							lc.loadSnapshotJSON(vectordata);
+							//don't restore drawingboardjs vector if its there, goes to error
+							if(vectordata.indexOf('{"shapes"')==0){
+								lc.loadSnapshotJSON(vectordata);
+							}
 						}
 						//handle autosave
 						if(opts['autosave']){
@@ -397,8 +411,7 @@ M.filter_poodll = {
 									}
 								}
 							})(this,lc.opts.recorderid));
-							//lc.on('drawStart',this.stopSaveCountdown);
-							//lc.on('drawingChange',this.startSaveCountdown);
+
 						}else{
 							//lc.on('drawingChange',(function(mfp){return function(){mfp.setUnsavedWarning;}})(this));
 							//if user has drawn, alert to unsaved state
@@ -416,12 +429,6 @@ M.filter_poodll = {
 						M.filter_poodll.whiteboards[lc.opts.recorderid] = lc;
 					}
 			});
-
-			//this.getwhiteboardcanvas[opts['recorderid']] = function(){return lc.canvasForExport();};
-			//this.getwhiteboard[opts['recorderid']] = function(){ return lc;};
-	
-			//this.whiteboards[opts['recorderid']] = lc;
-		
 			
 		//set up the upload/save button
 		var uploadbutton = this.getbyid(opts['recorderid'] + '_btn_upload_whiteboard');
@@ -433,38 +440,6 @@ M.filter_poodll = {
 			}
 		}
 	
-	},
-
-	setUnsavedWarning: function(){
-		var m = this.getbyid('p_messages');
-		if(m){
-			m.innerHTML = 'File has not been saved.';
-		}
-
-	},
-	
-	stopSaveCountdown: function(){
-		// update messages
-		var m = this.getbyid('p_messages');
-		if(m){
-			m.innerHTML = 'File has not been saved.';
-		
-			var savebutton = this.getbyid('p_btn_upload_whiteboard');
-			savebutton.disabled=false;
-		
-			clearTimeout(this.timeouthandle);
-		}
-	
-	},
-	
-	startSaveCountdown: function(){
-		// we use the presence of p_messages to check if this is a 
-		//submittable whiteboard, or just a static one.
-		var m = this.getbyid('p_messages');
-		if(m){
-			clearTimeout(this.timeouthandle);
-			this.timeouthandle = setTimeout(this.WhiteboardUploadHandler,this.poodllopts['autosave']);
-		}
 	},
 
 /*
@@ -479,16 +454,6 @@ M.filter_poodll = {
 		var img = this.getImg();
 		img = img.replace("image/png", "image/octet-stream");
 		window.location.href = img;
-	},
-
-	// Call Upload file from literallycanvas, 
-	WhiteboardUploadHandlerLC: function(e) {
-		//clear the saved message
-		setTimeout(function(){
-			this.Output('')
-		},3000);
-		//call the file upload
-		this.CallFileUpload();
 	},
 
 	// Call Upload file from drawingboard a, first handle autosave bits and pieces
@@ -508,7 +473,8 @@ M.filter_poodll = {
 		var cvs = null;
 		var vectordata = "";
 		if(recid.indexOf('drawingboard_')==0){
-			cvs = wboard.canvas;		
+			cvs = wboard.canvas;	
+			var vectordata = JSON.stringify(wboard.history , null,2);	
 		}else{
 			if(this.whiteboardopts[recid]['bgimage']){
 				cvs = wboard.canvasWithBackground($('#' + recid + '_separate-background-image').get(0))
