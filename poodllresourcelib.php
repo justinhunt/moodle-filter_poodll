@@ -1110,7 +1110,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 
 
 
-function fetchWhiteboardForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid,$width=0,$height=0,$backimage="",$prefboard="",$callbackjs=false, $vectorcontrol,$vectordata){
+function fetchWhiteboardForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid,$width=0,$height=0,$backimage="",$prefboard="",$callbackjs=false, $vectorcontrol="",$vectordata=""){
 global $CFG, $USER, $COURSE;
 
 //head off to the correct whiteboard as defined in config
