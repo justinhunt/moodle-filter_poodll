@@ -244,7 +244,13 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
         
   
 	//make filename and set it
-	$filenamebase = "upfile_" . rand(100,32767) . rand(100,32767) . "." ;
+	//we are trying to remove useless junk in the draft area here
+	//when we know its stable, we will do the same for non images too
+	if($mediatype=='image'){
+		$filenamebase = "upfile_" . $actionid . "." ;
+	}else{
+		$filenamebase = "upfile_" . rand(100,32767) . rand(100,32767) . "." ;
+	}
 	$filename = $filenamebase . $fileextension;
 	$record->filename = $filename;
 	
@@ -259,8 +265,27 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	
 	//if file already exists, raise an error
 	if($fs->file_exists($contextid,$comp,$farea,$itemid,$filepath,$filename)){
-		$return['success']=false;
-		array_push($return['messages'],"Already exists, file with filename:" . $filename );
+		if($mediatype=='image'){
+			//delete any existing draft files.
+			$file = $fs->get_file($contextid,$comp,$farea,$itemid,$filepath,$filename);
+			$file->delete();
+			
+			//check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes
+			$metapos = strPos($filedata,",");
+			if($metapos >10 && $metapos <30){
+				$filedata = substr($filedata,$metapos+1);
+			}
+	
+			//decode the data and store it 
+			$xfiledata = base64_decode($filedata);
+			//create the file
+			$stored_file = $fs->create_file_from_string($record, $xfiledata);
+
+		}else{
+			$stored_file = false;
+			$return['success']=false;
+			array_push($return['messages'],"Already exists, file with filename:" . $filename );
+		}
 	}else{
 		
 		//check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes
@@ -324,18 +349,17 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		}else{
 			$stored_file = $fs->create_file_from_string($record, $xfiledata);
 		}
-		
-		//if successful return filename
-		if($stored_file){
-			array_push($return['messages'],$filename );
-			//array_push($return['messages'],$filedata );
-			//array_push($return['messages'],$stored_file->get_itemid() );
-		//if unsuccessful, return error
-		}else{
-			$return['success']=false;
-			array_push($return['messages'],"unable to save file with filename:" . $filename );
-		}
 	
+	}
+	
+	//if successful return filename
+	if($stored_file){
+		array_push($return['messages'],$filename );
+
+	//if unsuccessful, return error
+	}else{
+		$return['success']=false;
+		array_push($return['messages'],"unable to save file with filename:" . $filename );
 	}
 		
 	//we process the result for return to browser

@@ -1192,6 +1192,10 @@ $height = $height + 20;
 		$params['component'] = $component;
 		$params['filearea'] = $filearea;
 		$params['itemid'] = $itemid;
+		$params['vectordata'] = $vectordata;
+		$params['vectorcontrol'] = $vectorcontrol;
+		$params['recorderid'] ='pwboard_' . time() .  rand(10000,999999);
+		
 		if($callbackjs){
 			$params['callbackjs'] = $callbackjs;
 		}
@@ -1767,6 +1771,9 @@ $params = array();
 		$params['component'] = $component;
 		$params['filearea'] = $filearea;
 		$params['itemid'] = $itemid;
+		
+		//recorder id
+		$params['recorderid'] = "sshot_" . time() .  rand(10000,999999);
 		
 		//set to auto submit
 		$params['autosubmit'] = 'true';

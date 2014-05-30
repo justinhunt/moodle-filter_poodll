@@ -643,7 +643,7 @@ M.filter_poodll = {
 			params += "&paramone=" + encodeURIComponent(filedata);
 			params += "&paramtwo=" + ext;
 			params += "&paramthree=" + this.getbyid(recid + "_mediatype").value;
-			params += "&requestid=12345";
+			params += "&requestid=" + recid;
 			params += "&contextid=" + this.getbyid(recid + "_contextid").value;
 			params += "&component=" + this.getbyid(recid + "_component").value;
 			params += "&filearea=" + this.getbyid(recid + "_filearea").value;
