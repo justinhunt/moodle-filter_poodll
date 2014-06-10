@@ -853,6 +853,12 @@ if ($CFG->filter_poodll_usecourseid){
 	$courseid = -1;
 } 
 
+//can we pause or not
+if ($CFG->filter_poodll_miccanpause == 1){
+	$canpause = 'true';
+}else{
+	$canpause = 'false';
+} 
 
 if ($updatecontrol == "saveflvvoice"){
 	$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
@@ -879,6 +885,7 @@ $params = array();
 		$params['itemid'] = $itemid;
 		$params['autosubmit'] = $autosubmit;
 		$params['timelimit'] = $timelimit;
+		$params['canpause'] = $canpause;
 		
 		//callbackjs
 		if($callbackjs){

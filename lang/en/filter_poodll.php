@@ -108,6 +108,7 @@ $string['micgain'] = 'Mic. Gain';
 $string['micsilencelevel'] = 'Mic. Silence Level';
 $string['micecho'] = 'Mic. Echo';
 $string['micloopback'] = 'Mic. Loopback';
+$string['miccanpause'] = 'Allow pause (MP3 recorder only)';
 
 
 //fpembedtype
