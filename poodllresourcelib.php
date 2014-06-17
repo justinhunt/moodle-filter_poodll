@@ -932,7 +932,16 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$opts['base64control'] = '';//do this later
 	$opts['vectordata'] = $vectordata;
 	
-	$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false);
+	//We need this so that we can require the JSON , for json stringify
+	$jsmodule = array(
+		'name'     => 'filter_poodll',
+		'fullpath' => '/filter/poodll/module.js',
+		'requires' => array('json')
+	);
+		
+	//setup our JS call
+	$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false,$jsmodule);
+	//$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false);
 
 	//removed from params to make way for moodle 2 filesystem params Justin 20120213
 	if($width==0){ $width=$CFG->filter_poodll_whiteboardwidth;}
@@ -1047,7 +1056,17 @@ global $CFG, $USER, $COURSE,$PAGE;
 	if($CFG->filter_poodll_autosavewhiteboard && $forsubmission){
 		$opts['autosave'] = $CFG->filter_poodll_autosavewhiteboard;
 	}
-	$PAGE->requires->js_init_call('M.filter_poodll.loaddrawingboard', array($opts),false);
+	
+	//We need this so that we can require the JSON , for json stringify
+	$jsmodule = array(
+		'name'     => 'filter_poodll',
+		'fullpath' => '/filter/poodll/module.js',
+		'requires' => array('json')
+	);
+		
+	//setup our JS call
+	$PAGE->requires->js_init_call('M.filter_poodll.loaddrawingboard', array($opts),false,$jsmodule);
+	//$PAGE->requires->js_init_call('M.filter_poodll.loaddrawingboard', array($opts),false);
 
 	//removed from params to make way for moodle 2 filesystem params Justin 20120213
 	if($width==0){ $width=$CFG->filter_poodll_whiteboardwidth;}
