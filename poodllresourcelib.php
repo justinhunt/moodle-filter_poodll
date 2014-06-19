@@ -1489,7 +1489,7 @@ if($start){
 	
 	//the clickable "start" button
   	$returnString .= "<div class='p_scroll_btn_wrapper'>";
-	$returnString .= "<button type='button' onclick='ScrollBoxStart($uniqueid)' id='p_scrollstartbutton" . $uniqueid .  "' class='p_btn'>Start</button>";
+	$returnString .= "<button type='button' onclick='M.filter_poodll.ScrollBoxStart($uniqueid)' id='p_scrollstartbutton" . $uniqueid .  "' class='p_btn'>Start</button>";
 	$returnString .= "</div>";
 	
 	

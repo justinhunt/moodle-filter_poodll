@@ -21,6 +21,8 @@ M.filter_poodll = {
 	
 	poodllopts: Array(),
 	
+	gyui: null,
+	
 
 // Called by PoodLL recorders to update filename field on page
 	updatepage: function(args) {
@@ -79,6 +81,9 @@ M.filter_poodll = {
 			} ;
 		
 		var splash=false;
+		
+		//stash our Y for later use
+		this.gyui = Y;
 
 		//the params are different depending on the playertype
 		//we need to specify provider for audio if the clips are not MP3 or mp3
@@ -247,6 +252,9 @@ M.filter_poodll = {
 		
 		//stash our opts array
 		this.whiteboardopts[opts['recorderid']] = opts;
+		
+		//stash our Y for later use
+		this.gyui = Y;
 
 			if(opts['bgimage'] ){
 				var erasercolor = 'transparent';
@@ -279,7 +287,7 @@ M.filter_poodll = {
 			if(vectordata){
 				//dont do anything if its not JSON (ie it coule be from LC)
 				if(vectordata.indexOf('{"shapes"')!=0){
-					db.history = JSON.parse(vectordata);
+					db.history = Y.JSON.parse(vectordata);
 					db.setImg(db.history.values[db.history.position-1]);
 				}
 			}
@@ -347,6 +355,9 @@ M.filter_poodll = {
 	
 		//stash our opts array
 		this.whiteboardopts[opts['recorderid']] = opts;
+		
+		//stash our Y for later use
+		this.gyui = Y;
 
 			// disable scrolling on touch devices so we can actually draw
 			/*
@@ -474,7 +485,7 @@ M.filter_poodll = {
 		var vectordata = "";
 		if(recid.indexOf('drawingboard_')==0){
 			cvs = wboard.canvas;	
-			var vectordata = JSON.stringify(wboard.history , null,2);	
+			var vectordata = this.gyui.JSON.stringify(wboard.history , null,2);	
 		}else{
 			if(this.whiteboardopts[recid]['bgimage']){
 				cvs = wboard.canvasWithBackground($('#' + recid + '_separate-background-image').get(0))
@@ -501,6 +512,9 @@ M.filter_poodll = {
 
 	// handle audio/video/image file uploads for Mobile
 	loadmobileupload: function(Y,opts) {
+	
+		//stash our Y for later use
+		this.gyui = Y;
 	
 		//stash our opts array
 		this.whiteboardopts[opts['recorderid']] = opts;
@@ -673,6 +687,8 @@ M.filter_poodll = {
 	
 	// Start of text scroller
 	loadscroller: function(Y,opts) {
+		//stash our Y for later use
+		this.gyui = Y;
 	
 		if(typeof window.scrollopts== 'undefined'){
 				window.scrollopts = new Array();
@@ -721,8 +737,12 @@ M.filter_poodll = {
 				startbutton.style.display='';
 			}
 		}else {
-			//setTimeout("DoScrollAxisY()",scrollopts['scrollspeed']);
-			setTimeout(function() {DoScrollAxisY(scrollerid);},opts['scrollspeed']);
+
+			//setTimeout(function() {DoScrollAxisY(scrollerid);},opts['scrollspeed']);
+			
+			setTimeout(function(thescrollerid) {return function() {
+						M.filter_poodll.DoScrollAxisY(thescrollerid);}}(scrollerid),
+						opts['scrollspeed']);
 		}
 	},
 	
@@ -737,8 +757,12 @@ M.filter_poodll = {
 				startbutton.style.display='';
 			}
 		}else {
-			//setTimeout("DoScrollAxisX()",scrollopts['scrollspeed']);
-			setTimeout(function() {DoScrollAxisX(scrollerid);},opts['scrollspeed']);
+			//setTimeout(function() {DoScrollAxisX(scrollerid);},opts['scrollspeed']);
+			
+			setTimeout(function(thescrollerid) {return function() {
+						M.filter_poodll.DoScrollAxisX(thescrollerid);}}(scrollerid),
+						opts['scrollspeed']);
+			
 		}
 	}
 }//end of M.filter_poodll
