@@ -42,7 +42,7 @@ M.filter_poodll = {
 			//the standard config. change backgroundcolor to go from blue to something else	
 			theconfig = { plugins:
                                 { controls:
-                                        { fullscreen: false,
+                                        { fullscreen: true,
                                                 height: 40,
                                                 autoHide: false,
                                                 buttonColor: '#ffffff',
@@ -163,7 +163,7 @@ M.filter_poodll = {
 				}else{
 					theconfig.clip.autoPlay=false;
 				}
-				break;
+				break; 
 		
 			case "videolist":
 				theconfig.plugins.controls.fullscreen = false;
@@ -206,6 +206,7 @@ M.filter_poodll = {
 		   var configstring=Y.JSON.stringify(theconfig);
 		   //we need to convert double to single quotes, for IE's benefit
 		   configstring= configstring.replace(/"/g,"'");
+		   var params = {allowfullscreen: "true"};  
 		   if(splash){
 				//console.log("playerid:" + opts['playerid']);
 				// get flash container and assign click handler for it
@@ -215,7 +216,8 @@ M.filter_poodll = {
 							opts['height'] , 
 							"9.0.0", 
 							null, 
-							{config: configstring}
+							{config: configstring},
+							params
 						);
 				}
 			
@@ -225,7 +227,8 @@ M.filter_poodll = {
 						opts['height'] , 
 						"9.0.0", 
 						null, 
-						{config: configstring}
+						{config: configstring},
+						params
 					);
 			}
 

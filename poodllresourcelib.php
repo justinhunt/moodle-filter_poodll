@@ -2749,7 +2749,7 @@ $ismobile=isMobile($CFG->filter_poodll_html5play);
 			return $returnString;
 
 	}else{		
-	
+
  		$params = array();
 		$params['red5url'] = urlencode($flvserver);
 		$params['playertype'] = $type;

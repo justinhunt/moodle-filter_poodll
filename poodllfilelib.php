@@ -369,6 +369,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	return $xml_output;
 }
 
+
 /*
 * Extract an image from the video for use as splash
 * image stored in same location with same name (diff ext)
@@ -408,8 +409,17 @@ global $CFG, $USER;
 			$ffmpegpath = 'ffmpeg';
 		}
 		
-		shell_exec($ffmpegpath . " -i " . $tempvideofilepath . " " . $ffmpegopts . " " . $tempsplashfilepath . " >/dev/null 2>/dev/null ");
+		//branch logic if windows
+		$iswindows =(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+		$command = $ffmpegpath . " -i " . $tempvideofilepath . " " . $ffmpegopts . " " . $tempsplashfilepath;
 
+		if($iswindows){
+			$output = system($command, $fv);
+		}else{
+			shell_exec($command . " >/dev/null 2>/dev/null ");
+		}
+		
+		
 		//add the play button
 		//this can be done from ffmpeg, but probably not on all installs, so we do in php
 		if(is_readable(realpath($tempsplashfilepath))){	
@@ -500,7 +510,16 @@ global $CFG;
 		}else{
 			$ffmpegpath = 'ffmpeg';
 		}
-		shell_exec($ffmpegpath . " -i " . $tempdir . $tempfilename . " " . $ffmpegopts . " " . $tempdir . $convfilename . " >/dev/null 2>/dev/null ");
+		
+		//branch logic depending on if windows or nopt
+		$iswindows =(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+		$command = $ffmpegpath . " -i " . $tempdir . $tempfilename . " " . $ffmpegopts . " " . $tempdir . $convfilename;
+
+		if($iswindows){
+			$output = system($command, $fv);
+		}else{
+			shell_exec($command . " >/dev/null 2>/dev/null ");
+		}
 		
 		/* About FFMPEG conv
 		it would be better to do the conversion in the background not here.
