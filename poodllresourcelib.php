@@ -952,7 +952,9 @@ global $CFG, $USER, $COURSE,$PAGE;
 	
 	//add the height of the control area, so that the user spec dimensions are the canvas size
 	$canvasheight = $height;
-	$height=$height + 61;
+	$canvaswidth = $width;
+	$height=$height + 65;
+	$width = $width + 60;
 	
 
 
