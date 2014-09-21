@@ -914,7 +914,8 @@ global $CFG, $USER, $COURSE,$PAGE;
 	//javascript upload handler
 	$opts =Array();
 	if($backimage !=''){
-		$opts['bgimage'] = $backimage;
+		$opts['backgroundimage'] = $backimage;
+		//$opts['bgimage'] = $backimage;
 		$opts['backgroundcolor'] = 'transparent';
 	}else{
 		$opts['backgroundcolor'] = 'whiteSmoke';
@@ -931,6 +932,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$opts['vectorcontrol'] = $vectorcontrol;
 	$opts['base64control'] = '';//do this later
 	$opts['vectordata'] = $vectordata;
+	
 	
 	//We need this so that we can require the JSON , for json stringify
 	$jsmodule = array(
@@ -968,12 +970,16 @@ global $CFG, $USER, $COURSE,$PAGE;
 	//if($CFG->version < 2013051400){
 	if(true){
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/jquery-1.8.2.js");
+		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/react-0.10.0.js");
+		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/fastclick.js");
+		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/ie_customevent.js");
 	}else{
 		$PAGE->requires->jquery();
 	}
 	
 	//include other needed libraries
-	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.jquery.js");
+	//$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.jquery.js");
+	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.min.js");
 	//this won't work in a quiz, and throws an error about trying to add to page head, 
 	//when page head has already been output. So copy contents of this file to styles.css in poodllfilter
 	//$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/filter/poodll/js/literallycanvas.js/css/literally.css'));
@@ -1007,7 +1013,8 @@ global $CFG, $USER, $COURSE,$PAGE;
 
 		
 	//container of whiteboard, bgimage and other bits and pieces.
-	if($backimage !=''){
+	//old backimage logic, showed it under LC and combined it later
+	if(false && $backimage !=''){
 		$lcOpen = "<div class='whiteboard-wrapper' style='width:".$width."px; height:" . $height ."px;'>
 			<div class='fs-container separate-backgrounds' style='width:".$width."px; height:" . $height ."px;'>
 			<img id='" . $opts['recorderid']  . "_separate-background-image' class='separate-background-image' src='" . $opts['bgimage'] . "'/>

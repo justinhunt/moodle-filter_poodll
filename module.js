@@ -362,16 +362,7 @@ M.filter_poodll = {
 		//stash our Y for later use
 		this.gyui = Y;
 
-			// disable scrolling on touch devices so we can actually draw
-			/*
-			$(document).bind('touchmove', function(e) {
-			  if (e.target === document.documentElement) {
-				return e.preventDefault();
-			  }
-			});
-			*/
-		
-
+			
 			// load the whiteboard and save the canvas reference
 			//logic a bit diff if we have a background image
 			if(opts['bgimage']){
@@ -381,68 +372,81 @@ M.filter_poodll = {
 				var bgimg = null;
 			}
 
-			//old style for erasable bg = watermarkImage: bgimg, 
-			//init the whiteboard	
-			var lc =  $('#' + opts['recorderid'] + '_literally').literallycanvas({imageURLPrefix: opts['imageurlprefix'], 
-				backgroundColor: opts['backgroundcolor'],
-				recorderid: opts['recorderid'],
-			
-				 onInit: function(lc) {
-						
-						var vectordata = M.filter_poodll.whiteboardopts[lc.opts.recorderid]['vectordata'];
-						if(vectordata){
-							//don't restore drawingboardjs vector if its there, goes to error
-							if(vectordata.indexOf('{"shapes"')==0){
-								lc.loadSnapshotJSON(vectordata);
-							}
-						}
-						//handle autosave
-						if(opts['autosave']){
-							//if user starts drawing, cancel the countdown to save
-							lc.on('drawingStart',(function(mfp,recid){
-								return function(){
-									var m = document.getElementById(recid + '_messages');
-									if(m){
-										m.innerHTML = 'File has not been saved.';
-										var savebutton = document.getElementById(recid + '_btn_upload_whiteboard');
-										savebutton.disabled=false;
-										var th = M.filter_poodll.timeouthandles[recid];
-										if(th){clearTimeout(th);}
-									}
-								}
-							})(this,lc.opts.recorderid));
-							
-							//if user has drawn commence countdown to save
-							lc.on('drawingChange',(function(mfp,recid){
-								return function(){
-									var m = document.getElementById(recid + '_messages');
-									if(m){
-										var th = M.filter_poodll.timeouthandles[recid];
-										if(th){clearTimeout(th);}
-										M.filter_poodll.timeouthandles[recid] = setTimeout(
-															function(){ M.filter_poodll.WhiteboardUploadHandler(recid);},
-															M.filter_poodll.whiteboardopts[recid]['autosave']);
-									}
-								}
-							})(this,lc.opts.recorderid));
 
-						}else{
-							//lc.on('drawingChange',(function(mfp){return function(){mfp.setUnsavedWarning;}})(this));
-							//if user has drawn, alert to unsaved state
-							lc.on('drawingChange',(function(mfp,recid){
-								return function(){
-									var m = document.getElementById(recid + '_messages');
-									if(m){
-										m.innerHTML = 'File has not been saved.';
-									}
-								}
-							})(this,lc.opts.recorderid));
-						}//end of handling autosave
+			//init the whiteboard	(diff logic if have a background image)
+			var lc_element = $('#' + opts['recorderid'] + '_literally').get(0);
+			
+			if(opts['backgroundimage']){
+				var backgroundimage= new Image();
+				backgroundimage.src = opts['backgroundimage'];
+				
+				var lc = LC.init(lc_element,{imageURLPrefix: opts['imageurlprefix'], 
+					backgroundColor: opts['backgroundcolor'],
+					recorderid: opts['recorderid'],
+					backgroundShapes: [LC.createShape('Image', {x: 0, y: 0, image: backgroundimage, scale: 1})]
+					});
+			}else{
+				var lc = LC.init(lc_element,{imageURLPrefix: opts['imageurlprefix'], 
+					backgroundColor: opts['backgroundcolor'],
+					recorderid: opts['recorderid']
+					});
+			}
+		
+			//restore previous drawing if any
+			var vectordata = M.filter_poodll.whiteboardopts[opts['recorderid']]['vectordata'];
+			if(vectordata){
+				//don't restore drawingboardjs vector if its there, goes to error
+				if(vectordata.indexOf('{"shapes"')==0){
+					lc.loadSnapshotJSON(vectordata);
+				}
+			}
 						
-						//store our whiteboard globally
-						M.filter_poodll.whiteboards[lc.opts.recorderid] = lc;
+			//handle autosave
+			if(opts['autosave']){
+				//if user starts drawing, cancel the countdown to save
+				lc.on('drawingStart',(function(mfp,recid){
+					return function(){
+						var m = document.getElementById(recid + '_messages');
+						if(m){
+							m.innerHTML = 'File has not been saved.';
+							var savebutton = document.getElementById(recid + '_btn_upload_whiteboard');
+							savebutton.disabled=false;
+							var th = M.filter_poodll.timeouthandles[recid];
+							if(th){clearTimeout(th);}
+						}
 					}
-			});
+				})(this,opts['recorderid']));
+				
+				//if user has drawn commence countdown to save
+				lc.on('drawingChange',(function(mfp,recid){
+					return function(){
+						var m = document.getElementById(recid + '_messages');
+						if(m){
+							var th = M.filter_poodll.timeouthandles[recid];
+							if(th){clearTimeout(th);}
+							M.filter_poodll.timeouthandles[recid] = setTimeout(
+												function(){ M.filter_poodll.WhiteboardUploadHandler(recid);},
+												M.filter_poodll.whiteboardopts[recid]['autosave']);
+						}
+					}
+				})(this,opts['recorderid']));
+			
+			//if no autosave
+			}else{
+				//lc.on('drawingChange',(function(mfp){return function(){mfp.setUnsavedWarning;}})(this));
+				//if user has drawn, alert to unsaved state
+				lc.on('drawingChange',(function(mfp,recid){
+					return function(){
+						var m = document.getElementById(recid + '_messages');
+						if(m){
+							m.innerHTML = 'File has not been saved.';
+						}
+					}
+				})(this,opts['recorderid']));
+			}//end of handling autosave
+			
+			//store a handle to this whiteboard			
+			M.filter_poodll.whiteboards[opts['recorderid']] = lc;
 			
 		//set up the upload/save button
 		var uploadbutton = this.getbyid(opts['recorderid'] + '_btn_upload_whiteboard');
@@ -490,6 +494,7 @@ M.filter_poodll = {
 			cvs = wboard.canvas;	
 			var vectordata = this.gyui.JSON.stringify(wboard.history , null,2);	
 		}else{
+			//we no longer use this LC technique, and will soon remove the css background logic
 			if(this.whiteboardopts[recid]['bgimage']){
 				cvs = wboard.canvasWithBackground($('#' + recid + '_separate-background-image').get(0))
 			}else{
