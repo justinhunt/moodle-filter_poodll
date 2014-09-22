@@ -3546,6 +3546,7 @@ function isMobile($profile='mobile'){
 		case Browser::BROWSER_IPOD:
 		case Browser::BROWSER_IPHONE:
 		case Browser::BROWSER_ANDROID:
+		case Browser::BROWSER_WINDOWS_PHONE:
 		return true;
 	}
 
@@ -3559,6 +3560,7 @@ function isMobile($profile='mobile'){
 			case Browser::PLATFORM_NOKIA:
 			case Browser::PLATFORM_ANDROID:
 			case Browser::PLATFORM_WINDOWS_CE:
+			case Browser::PLATFORM_WINDOWS_PHONE:
 			//case Browser::PLATFORM_MICROSOFT_SURFACE:
 			return true;
 	}//end of switch

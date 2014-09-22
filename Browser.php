@@ -163,6 +163,7 @@
 		const BROWSER_LYNX = 'Lynx';                              // http://en.wikipedia.org/wiki/Lynx
 		const BROWSER_SAFARI = 'Safari';                          // http://apple.com
 		const BROWSER_IPHONE = 'iPhone';                          // http://apple.com
+		const BROWSER_WINDOWS_PHONE = 'Windows';                          // http://apple.com
 		const BROWSER_IPOD = 'iPod';                              // http://apple.com
 		const BROWSER_IPAD = 'iPad';                              // http://apple.com
 		const BROWSER_CHROME = 'Chrome';                          // http://www.google.com/chrome
@@ -187,6 +188,8 @@
 		const PLATFORM_WINDOWS = 'Windows';
 		//added Justin 20121208
 		const PLATFORM_MICROSOFT_SURFACE = 'Microsoft Surface';
+		//added Justin 20140923
+		const PLATFORM_WINDOWS_PHONE = 'Windows Phone';
 		
 		const PLATFORM_WINDOWS_CE = 'Windows CE';
 		const PLATFORM_APPLE = 'Apple';
@@ -415,6 +418,7 @@
 				$this->checkBrowseriPhone() ||
 				$this->checkBrowserBlackBerry() ||
 				$this->checkBrowserNokia() ||
+				$this->checkBrowserWindowsPhone() ||
 
 				// common bots
 				$this->checkBrowserGoogleBot() ||
@@ -599,6 +603,20 @@
 			    }
 			    return true;
 		    }
+		    else if( stripos($this->_agent,'Windows Phone') !== false ) {
+			    $aresult = explode('/',stristr($this->_agent,'IEMobile'));
+			    if( isset($aresult[1]) ) {
+				    $aversion = explode(' ',$aresult[1]);
+				    $this->setVersion($aversion[0]);
+			    }
+			    else {
+				    $this->setVersion(self::VERSION_UNKNOWN);
+			    }
+			    $this->setMobile(true);
+			    $this->setBrowser(self::BROWSER_WINDOWS_PHONE);
+			    return true;
+		    }
+
 			return false;
 	    }
 
@@ -969,6 +987,27 @@
 		    }
 		    return false;
 	    }
+	    
+	     /**
+	     * Determine if the browser is iPhone or not (last updated 1.7)
+	     * @return boolean True if the browser is iPhone otherwise false
+	     */
+	    protected function checkBrowserWindowsPhone() {
+		    if( stripos($this->_agent,'Windows Phone') !== false ) {
+			    $aresult = explode('/',stristr($this->_agent,'IEMobile'));
+			    if( isset($aresult[1]) ) {
+				    $aversion = explode(' ',$aresult[1]);
+				    $this->setVersion($aversion[0]);
+			    }
+			    else {
+				    $this->setVersion(self::VERSION_UNKNOWN);
+			    }
+			    $this->setMobile(true);
+			    $this->setBrowser(self::BROWSER_WINDOWS_PHONE);
+			    return true;
+		    }
+		    return false;
+	    }
 
 	    /**
 	     * Determine if the browser is iPod or not (last updated 1.7)
@@ -1038,7 +1077,10 @@
 	     */
 	    // Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; ARM; Trident/6.0)
 	    protected function checkPlatform() {
-		    if( stripos($this->_agent, 'windows') !== false ) {
+	    	if( stripos($this->_agent, 'Windows Phone') !== false ) {
+			    $this->_platform = self::PLATFORM_WINDOWS_PHONE;
+		    }
+		    elseif( stripos($this->_agent, 'windows') !== false ) {
 			    $this->_platform = self::PLATFORM_WINDOWS;
 		    }
 		    else if( stripos($this->_agent, 'iPad') !== false ) {
