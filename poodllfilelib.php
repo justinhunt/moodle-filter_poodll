@@ -208,7 +208,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 
 	//setup our return object
 	$return=fetchReturnArray(true);
-	
+        
 	//make sure nobodyapassed in a bogey file extension
 	switch($fileextension){
 		case "mp3": 
@@ -217,8 +217,20 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		case "png":
 		case "xml":
 		case "mov":
+		case "wav":
 		case "mp4":
+		case "3gpp":
+		case "3gp":
+		case "3g2":
+		case "aac":
+		case "wma":
+		case "wmv":
+		case "smf":
+		case "amr":
+		case "ogg":
+                case "":
 			break;
+                        
 		default: $fileextension="mp3";
 	}
 	
@@ -308,11 +320,11 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		}else if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_videotranscode && $fileextension!="mp4" && $mediatype=="video"){
 			$convext = "mp4";
 		}else{
-			$convext="";
+			$convext=false;
 		}
 		
 		//if we need to convert with ffmpeg, get on with it
-		if($convext!=""){
+		if($convext){
 		
 			//determine the temp directory
 			if (isset($CFG->tempdir)){
