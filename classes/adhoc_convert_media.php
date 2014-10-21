@@ -83,6 +83,10 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 		if($convertedfile){
 			//error_log("replacing with:" . $convertedfile->filename);
 			$origfile->replace_file_with($convertedfile);
+			
+			//now we need to replace the splash if it had one
+			$imagefilename = substr($cd->filename,0,strlen($cd->filename)-3) . 'png';
+			$imagefile = get_splash_ffmpeg($origfile, $imagefilename);
 			return;
 		}else{
 		  throw new \file_exception('storedfileproblem', 'unable to convert ' . $cd->tempfilename);

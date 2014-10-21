@@ -330,7 +330,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		
 		//if we need to convert with ffmpeg, get on with it
 		if($convext){
-		error_log('convextwww');
+		//error_log('convextwww');
 			//determine the temp directory
 			if (isset($CFG->tempdir)){
 				$tempdir =  $CFG->tempdir . "/";	
@@ -343,11 +343,11 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			
 			//if successfully saved to disk, convert
 			if($ret){
-				if($CFG->filter_poodll_bgtranscode){
+				if($CFG->filter_poodll_bgtranscode && $CFG->version>=2014051200){
 					//error_log('oooowewwwww');
 					$stored_file = convert_with_ffmpeg_bg($record,$tempdir,$filename,$filenamebase, $convext );
 				}else{
-					error_log('conveerrrrt');
+					//error_log('conveerrrrt');
 					$stored_file = convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );
 				}
 				if($stored_file){
@@ -482,6 +482,18 @@ global $CFG, $USER;
 		
 			//set the image filename and call on Moodle to make a stored file from the image
 			$record->filename = $newfilename;
+			
+			//delete the existing file if we had one
+			$hash  = $fs->get_pathname_hash($record->contextid, 
+				$record->component, 
+				$record->filearea, 
+				$record->itemid, 
+				$record->filepath, 
+				$record->filename);
+			$stored_file = $fs->get_file_by_hash($hash);
+			if($stored_file){$stored_file->delete();}
+			
+			//create the new file
 			$stored_file = 	$fs->create_file_from_pathname($record, $tempsplashfilepath );
 
 			//need to kill the two temp files here
@@ -1165,11 +1177,11 @@ $return=fetchReturnArray(true);
 		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
 		//if successfully saved to disk, convert
 		if($ret){
-			if($CFG->filter_poodll_bgtranscode){
-					error_log('oooowewwwww');
+			if($CFG->filter_poodll_bgtranscode && $CFG->version>=2014051200){
+					//error_log('oooowewwwww');
 					$stored_file = convert_with_ffmpeg_bg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
 				}else{
-					error_log('conveerrrrt');
+					//error_log('conveerrrrt');
 					$stored_file = convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
 				}
 		
