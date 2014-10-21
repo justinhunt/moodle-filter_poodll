@@ -33,16 +33,15 @@ require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
 class adhoc_convert_media extends \core\task\adhoc_task {
                                                                      
     public function execute() {   
+    	//NB: seems any exceptions not thrown HERE, kill subsequent tasks
+    	//so wrap some function calls in try catch to prevent that happening
+    	
     	global $DB,$CFG;
-    	//return;
     	//get passed in data we need to perform conversion
     	$cd =  $this->get_custom_data();
-    	//error_log(print_r($cd,true));
-    	//error_log("arrived:" . $cd->filename);
     	
     	//find the file in the files database
     	$fs = get_file_storage();
-    	$dbf = $DB->get_record('files',array('filename'=>$cd->filename));
     	switch($cd->convext){
     		case '.mp3': $contenthash = POODLL_AUDIO_PLACEHOLDER_HASH;break;
     		case '.mp4': $contenthash = POODLL_VIDEO_PLACEHOLDER_HASH;break;
@@ -55,38 +54,50 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);
     	if(!$dbfiles){
     		throw new \file_exception('storedfileproblem', 'could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet');
-    		return;
     	}
     	
     	//get the file we will replace
     	$origfilerecord = array_shift($dbfiles);	
     	$origfile = $fs->get_file_by_id($origfilerecord->id);
-		//error_log("got orig file:" . $cd->filename);
+    	if(!$origfile){
+			throw new \file_exception('storedfileproblem', 'something wrong with sf:' . $cd->filename);
+		}
 
 		//get the original draft record that we will delete and reuse
 		$draftfilerecord = $cd->filerecord;
 		$draftfile =  $fs->get_file_by_id($draftfilerecord->id);
-		//error_log("deleting:" . $draftfilerecord->filename);
-		//error_log(print_r($draftfilerecord,true));
-		$draftfile->delete();
+
+		//we used to delete the draft file and reuse it. It is just our placeholder.
+		//but it didn't seem to always delete, so we use another tempfilename (throwawayfilename) 
+		//we still delete it, because some draft areas have file limits right?
+		if($draftfile){
+			$draftfile->delete();
+		}
 
 		//do the conversion
-		//error_log("going in:" . $draftfilerecord->filename);
-		$convertedfile = convert_with_ffmpeg($draftfilerecord, 
-			 $cd->tempdir, 
-			 $cd->tempfilename, 
-			 $cd->convfilenamebase, 
-			$cd->convext,
-			'temp_' . $cd->filename);
+		$throwawayfilename = 'temp_' . $cd->filename;
+		try{
+			$convertedfile = convert_with_ffmpeg($draftfilerecord, 
+				 $cd->tempdir, 
+				 $cd->tempfilename, 
+				 $cd->convfilenamebase, 
+				$cd->convext,
+				$throwawayfilename);
+		} catch (Exception $e) {
+			throw new \file_exception('storedfileproblem', 'could not get convert:' . $cd->filename . ':' . $e->getMessage());
+		}
 		
 		//replace the placeholder(original) file with the converted one
 		if($convertedfile){
-			//error_log("replacing with:" . $convertedfile->filename);
 			$origfile->replace_file_with($convertedfile);
 			
 			//now we need to replace the splash if it had one
 			$imagefilename = substr($cd->filename,0,strlen($cd->filename)-3) . 'png';
-			$imagefile = get_splash_ffmpeg($origfile, $imagefilename);
+			try{
+				$imagefile = get_splash_ffmpeg($origfile, $imagefilename);
+			} catch (Exception $e) {
+				throw new \file_exception('storedfileproblem', 'could not get splash:' . $cd->filename . ':' . $e->getMessage());
+			}
 			return;
 		}else{
 		  throw new \file_exception('storedfileproblem', 'unable to convert ' . $cd->tempfilename);
