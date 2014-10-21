@@ -264,10 +264,11 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	//we are trying to remove useless junk in the draft area here
 	//when we know its stable, we will do the same for non images too
 	if($mediatype=='image'){
-		$filenamebase = "upfile_" . $actionid . "." ;
+		$filenamebase = "upfile_" . $actionid ;
 	}else{
-		$filenamebase = "upfile_" . rand(100,32767) . rand(100,32767) . "." ;
+		$filenamebase = "upfile_" . rand(100,32767) . rand(100,32767)  ;
 	}
+	$fileextension =  "." . $fileextension;
 	$filename = $filenamebase . $fileextension;
 	$record->filename = $filename;
 	
@@ -320,17 +321,16 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		$xfiledata = base64_decode($filedata);
 		
 		//Determine if we need to convert and what format the conversions should take
-		if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_audiotranscode && $fileextension!="mp3" && $mediatype=="audio"){
-			$convext = "mp3";	
-		}else if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_videotranscode && $fileextension!="mp4" && $mediatype=="video"){
-			$convext = "mp4";
+		if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_audiotranscode && $fileextension!=".mp3" && $mediatype=="audio"){
+			$convext = ".mp3";	
+		}else if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_videotranscode && $fileextension!=".mp4" && $mediatype=="video"){
+			$convext = ".mp4";
 		}else{
 			$convext=false;
 		}
 		
 		//if we need to convert with ffmpeg, get on with it
 		if($convext){
-		//error_log('convextwww');
 			//determine the temp directory
 			if (isset($CFG->tempdir)){
 				$tempdir =  $CFG->tempdir . "/";	
@@ -344,10 +344,8 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			//if successfully saved to disk, convert
 			if($ret){
 				if($CFG->filter_poodll_bgtranscode && $CFG->version>=2014051200){
-					//error_log('oooowewwwww');
 					$stored_file = convert_with_ffmpeg_bg($record,$tempdir,$filename,$filenamebase, $convext );
 				}else{
-					//error_log('conveerrrrt');
 					$stored_file = convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );
 				}
 				if($stored_file){
@@ -1100,24 +1098,6 @@ $return=fetchReturnArray(true);
 	//setup our file manipulators
 		$fs = get_file_storage();
 		$browser = get_file_browser();
-		
-
-	/*	
-	//create the file record for our new file
-		$file_record = array(
-		'userid' => $USER->id,
-		'contextid'=>$contextid, 
-		'component'=>$component, 
-		'filearea'=>$filearea,
-        'itemid'=>$itemid, 
-		'filepath'=>$filepath, 
-		'filename'=>$filename,
-		'author'=>'moodle user',
-		'license'=>'allrighttsreserved',		
-		'timecreated'=>time(), 
-		'timemodified'=>time()
-		);
-		*/
 		
 	//create the file record for our new file
 	 $file_record = new stdClass();
