@@ -491,11 +491,15 @@ global $CFG, $USER;
 				$record->filepath, 
 				$record->filename);
 			$stored_file = $fs->get_file_by_hash($hash);
-			if($stored_file){$stored_file->delete();}
-			
-			//create the new file
-			$stored_file = 	$fs->create_file_from_pathname($record, $tempsplashfilepath );
-
+			if($stored_file){
+				$record->filename = 'temp_' . $record->filename;
+				$temp_file = $fs->create_file_from_pathname($record, $tempsplashfilepath );
+				$stored_file->replace_file_with($temp_file);
+				$temp_file->delete();
+			}else{
+				//create the new file
+				$stored_file = 	$fs->create_file_from_pathname($record, $tempsplashfilepath );
+			}
 			//need to kill the two temp files here
 			if(is_readable(realpath($tempsplashfilepath ))){
 				unlink(realpath($tempsplashfilepath ));
@@ -554,7 +558,7 @@ function convert_with_ffmpeg_bg($filerecord, $tempdir, $tempfilename, $convfilen
 * Convert a video file to a different format using ffmpeg
 *
 */
-function convert_with_ffmpeg($filerecord, $tempdir, $tempfilename, $convfilenamebase, $convext){
+function convert_with_ffmpeg($filerecord, $tempdir, $tempfilename, $convfilenamebase, $convext, $throwawayname = false){
 
 global $CFG;
 
@@ -607,7 +611,11 @@ global $CFG;
 		
 		//Check if conversion worked
 		if(is_readable(realpath($tempdir . $convfilename))){
-			$filerecord->filename = $convfilename;
+			if($throwawayname){
+				$filerecord->filename = $throwawayname;
+			}else{
+				$filerecord->filename = $convfilename;
+			}
 			//error_log('we converted successfully');
 			$stored_file = 	$fs->create_file_from_pathname($filerecord, $tempdir . $convfilename);
 			//error_log('we stashed successfully');

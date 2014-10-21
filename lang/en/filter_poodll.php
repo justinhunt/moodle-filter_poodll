@@ -148,4 +148,4 @@ $string['whiteboardsave'] = 'Save Picture';
 $string['poodll:candownloadmedia'] = 'Can download media'; 
 
 $string['bgtranscode'] = 'Perform Conversions in Background'; 
-$string['bgtranscodedetails'] = 'This is more reliable than performing them while user waits. But the user will not see their video immediately after saving.'; 
+$string['bgtranscodedetails'] = 'This is more reliable than performing them while user waits. But the user will not get their recording till cron has run after saving.'; 
