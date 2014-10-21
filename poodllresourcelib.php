@@ -36,10 +36,9 @@ if (array_key_exists("filter_poodll",$filters)){
 	//these are required by poodll filter
 	require_once($CFG->dirroot . '/filter/poodll/poodllinit.php');
 	require_once($CFG->dirroot . '/filter/poodll/Browser.php');
-	
-	//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject.js'));
+
 	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject_22.js'));
-	//$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/javascript.php'));
+
 	
 	
 	//we need this for  embedding widgets it only works in head (hence the 'true' flag)
@@ -50,7 +49,6 @@ if (array_key_exists("filter_poodll",$filters)){
 		$EMBEDJSLOADED=true;
 		
 	}else{
-		//$FPLAYERJSLOADED=false;
 		$EMBEDJSLOADED=false;
 	}
 

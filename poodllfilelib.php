@@ -16,6 +16,10 @@
 //ob_start();
 global $CFG;
 
+
+define('POODLL_VIDEO_PLACEHOLDER_HASH','c2a342a0a664f2f1c4ea5387554a67caf3dd158e');
+define('POODLL_AUDIO_PLACEHOLDER_HASH','e118549e4fc88836f418b6da6028f1fec571cd43');
+
 //we need to do this, because when called from a widet, cfg is not set
 //but the relative path fails from a quiz but it has already been set in that case
 //, so we check before we call it, to cover both bases
@@ -25,6 +29,7 @@ require_once("../../config.php");
 }
 //require_once('../filter/poodll/poodllinit.php');
 require_once($CFG->dirroot . "/filter/poodll/poodllinit.php");
+
 
 //commented just while getting other mods working
 
@@ -325,7 +330,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		
 		//if we need to convert with ffmpeg, get on with it
 		if($convext){
-		
+		error_log('convextwww');
 			//determine the temp directory
 			if (isset($CFG->tempdir)){
 				$tempdir =  $CFG->tempdir . "/";	
@@ -338,8 +343,13 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			
 			//if successfully saved to disk, convert
 			if($ret){
-			
-				$stored_file = convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );
+				if($CFG->filter_poodll_bgtranscode){
+					//error_log('oooowewwwww');
+					$stored_file = convert_with_ffmpeg_bg($record,$tempdir,$filename,$filenamebase, $convext );
+				}else{
+					error_log('conveerrrrt');
+					$stored_file = convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );
+				}
 				if($stored_file){
 					$filename=$stored_file->get_filename();
 		
@@ -435,12 +445,19 @@ global $CFG, $USER;
 		//add the play button
 		//this can be done from ffmpeg, but probably not on all installs, so we do in php
 		if(is_readable(realpath($tempsplashfilepath))){	
-			$bg = imagecreatefrompng($tempsplashfilepath);
-			$btn = imagecreatefrompng($CFG->wwwroot . '/filter/poodll/pix/playbutton.png');
-			imagealphablending($bg, 1);
-			imagealphablending($btn, 1);
-			imagecopy($bg, $btn, (imagesx($bg)-imagesx($btn)) / 2, (imagesy($bg)-imagesy($btn)) / 2, 0 , 0,imagesx($btn) , imagesy($btn));			
-			$btnok = imagepng($bg, $tempsplashfilepath, 7);
+			//provided this is not a place holder. We don't really want to confuse even more
+			if($videofile->get_contenthash()!=POODLL_VIDEO_PLACEHOLDER_HASH){
+				$bg = imagecreatefrompng($tempsplashfilepath);
+				$btn = imagecreatefrompng($CFG->dirroot . '/filter/poodll/pix/playbutton.png');
+				imagealphablending($bg, 1);
+				imagealphablending($btn, 1);
+				//bail if we failed here
+				if(!($bg && $btn)){return false;}
+			
+				//put the button on the bg picture
+				imagecopy($bg, $btn, (imagesx($bg)-imagesx($btn)) / 2, (imagesy($bg)-imagesy($btn)) / 2, 0 , 0,imagesx($btn) , imagesy($btn));			
+				$btnok = imagepng($bg, $tempsplashfilepath, 7);
+			}//end of if place holder
 		}else{
 			return false;
 		}
@@ -484,6 +501,41 @@ global $CFG, $USER;
 		//return the stored file
 		return $stored_file;
 
+}
+
+/*
+* Convert a video file to a different format using ffmpeg
+*
+*/
+function convert_with_ffmpeg_bg($filerecord, $tempdir, $tempfilename, $convfilenamebase, $convext){
+	global $CFG;
+	
+   //init our fs object
+	$fs = get_file_storage();
+   $convfilename = $convfilenamebase . $convext;
+   $placeholderfilename= "convertingmessage" . $convext;
+   $filerecord->filename = $convfilename;
+   $stored_file = 	$fs->create_file_from_pathname($filerecord, $CFG->dirroot . '/filter/poodll/' .  $placeholderfilename);
+   
+   //we need this id later, to find the old draft file and remove it, in ad hoc task
+   $filerecord->id = $stored_file->get_id();
+   
+    // set up task and add custom data
+   $conv_task = new \filter_poodll\task\adhoc_convert_media();
+   $qdata = array(
+       'filerecord' => $filerecord,
+       'filename' => $convfilename,
+       'tempdir' => $tempdir,
+       'tempfilename' => $tempfilename,
+       'convfilenamebase' => $convfilenamebase,
+       'convext' => $convext
+   );
+   $conv_task->set_custom_data($qdata);
+   // queue it
+   \core\task\manager::queue_adhoc_task($conv_task);
+   //error_log('queeued:' . $convfilename);
+	//error_log(print_r($qdata,true));   
+   return $stored_file;
 }
 
 /*
@@ -544,7 +596,9 @@ global $CFG;
 		//Check if conversion worked
 		if(is_readable(realpath($tempdir . $convfilename))){
 			$filerecord->filename = $convfilename;
+			//error_log('we converted successfully');
 			$stored_file = 	$fs->create_file_from_pathname($filerecord, $tempdir . $convfilename);
+			//error_log('we stashed successfully');
 			//need to kill the two temp files here
 			if(is_readable(realpath($tempdir . $convfilename))){
 				unlink(realpath($tempdir . $convfilename));
@@ -1111,7 +1165,16 @@ $return=fetchReturnArray(true);
 		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
 		//if successfully saved to disk, convert
 		if($ret){
-			$stored_file = convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
+			if($CFG->filter_poodll_bgtranscode){
+					error_log('oooowewwwww');
+					$stored_file = convert_with_ffmpeg_bg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
+				}else{
+					error_log('conveerrrrt');
+					$stored_file = convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
+				}
+		
+		
+			
 			if($stored_file){
 				$filename=$stored_file->get_filename();
 				

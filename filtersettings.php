@@ -101,6 +101,7 @@ $items[] = new admin_setting_configcheckbox('filter_poodll_audiotranscode', get_
 $items[] = new admin_setting_configcheckbox('filter_poodll_ffmpeg', get_string('ffmpeg', 'filter_poodll'), get_string('ffmpeg_details', 'filter_poodll'), 0);
 $items[] = new admin_setting_configtext('filter_poodll_ffmpeg_mp3opts', get_string('mp3opts', 'filter_poodll'), get_string('mp3opts_details', 'filter_poodll'), '');
 $items[] = new admin_setting_configtext('filter_poodll_ffmpeg_mp4opts', get_string('mp4opts', 'filter_poodll'), get_string('mp4opts_details', 'filter_poodll'), '');
+$items[] = new admin_setting_configcheckbox('filter_poodll_bgtranscode', get_string('bgtranscode', 'filter_poodll'), get_string('bgtranscodedetails', 'filter_poodll'), 1);
 
 
 //PoodLL Whiteboard
