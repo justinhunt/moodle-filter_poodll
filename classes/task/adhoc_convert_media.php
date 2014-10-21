@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
 
+
 /**
  *
  * This is an adhoc task for converting media with FFMPEG
@@ -30,48 +31,66 @@ require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class adhoc_convert_media extends \core\task\adhoc_task {
-
-                                                                            
+                                                                     
     public function execute() {   
     	global $DB,$CFG;
-    	
+    	//return;
+    	//get passed in data we need to perform conversion
     	$cd =  $this->get_custom_data();
+    	//error_log(print_r($cd,true));
+    	//error_log("arrived:" . $cd->filename);
+    	
+    	//find the file in the files database
     	$fs = get_file_storage();
     	$dbf = $DB->get_record('files',array('filename'=>$cd->filename));
-    	$origfile = $fs->get_file_by_id($dbf->id);
-    	if($dbf){
-    		$filerecord = $cd->filerecord;
-    		$filerecord->filename = 'converted_' .$filerecord->filename;
-    		/*
-			$filerecord->filearea = 'draft';
-			$filerecord->component = $dbf->component;
-			$filerecord->filepath = $dbf->filepath;
-			$filerecord->itemid   = $dbf->itemid;
-			$filerecord->license  = $CFG->sitedefaultlicense;
-			$filerecord->author   = 'Moodle User';
-			$filerecord->contextid = $dbf->contextid;
-			$filerecord->userid    = $dbf->userid;
-			//$filerecord->source    = '';
-			*/
-    		
-    		
-    		
-			$storedfile = convert_with_ffmpeg($filerecord, 
+    	switch($cd->convext){
+    		case '.mp3': $contenthash = POODLL_AUDIO_PLACEHOLDER_HASH;break;
+    		case '.mp4': $contenthash = POODLL_VIDEO_PLACEHOLDER_HASH;break;
+    		default:$contenthash = '';
+    	
+    	}
+    	$select = "filename='$cd->filename' AND filearea <> 'draft' AND contenthash='$contenthash'";
+    	$params = null;
+    	$sort = "id DESC";
+    	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);
+    	if(!$dbfiles){
+    		throw new \file_exception('storedfileproblem', 'could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet');
+    		return;
+    	}
+    	
+    	//get the file we will replace
+    	$origfilerecord = array_shift($dbfiles);	
+    	$origfile = $fs->get_file_by_id($origfilerecord->id);
+		//error_log("got orig file:" . $cd->filename);
+
+		//get the original draft record that we will delete and reuse
+		$draftfilerecord = $cd->filerecord;
+		$draftfile =  $fs->get_file_by_id($draftfilerecord->id);
+		//error_log("deleting:" . $draftfilerecord->filename);
+		//error_log(print_r($draftfilerecord,true));
+		$draftfile->delete();
+
+		//do the conversion
+		//error_log("going in:" . $draftfilerecord->filename);
+		$convertedfile = convert_with_ffmpeg($draftfilerecord, 
 			 $cd->tempdir, 
 			 $cd->tempfilename, 
 			 $cd->convfilenamebase, 
-			$cd->convext);
-		}else{
-			throw new file_exception('storedfileproblem', 'could not find ' . $cd->filename . ' in the DB.');
-		}
+			$cd->convext,
+			'temp_' . $cd->filename);
 		
-		if($storedfile){
-			$origfile->replace_file_with($storedfile);
+		//replace the placeholder(original) file with the converted one
+		if($convertedfile){
+			//error_log("replacing with:" . $convertedfile->filename);
+			$origfile->replace_file_with($convertedfile);
+			
+			//now we need to replace the splash if it had one
+			$imagefilename = substr($cd->filename,0,strlen($cd->filename)-3) . 'png';
+			$imagefile = get_splash_ffmpeg($origfile, $imagefilename);
 			return;
 		}else{
-		  throw new file_exception('storedfileproblem', 'unable to convert ' . $cd->tempfilename);
+		  throw new \file_exception('storedfileproblem', 'unable to convert ' . $cd->tempfilename);
 		}
 		
     }                                                                                                                               
 } 
-  
