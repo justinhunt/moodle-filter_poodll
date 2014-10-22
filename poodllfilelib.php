@@ -343,8 +343,8 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			
 			//if successfully saved to disk, convert
 			if($ret){
-				$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $mediatype=="audio") ||
-					($CFG->filter_poodll_bgtranscode_video && $mediatype=="video");
+				$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $convext==".mp3") ||
+					($CFG->filter_poodll_bgtranscode_video && $convext==".mp4");
 				if($do_bg_encoding && $CFG->version>=2014051200){
 					$stored_file = convert_with_ffmpeg_bg($record,$tempdir,$filename,$filenamebase, $convext );
 				}else{
@@ -1167,8 +1167,8 @@ $return=fetchReturnArray(true);
 		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
 		//if successfully saved to disk, convert
 		if($ret){
-			$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $mediatype=="audio") ||
-					($CFG->filter_poodll_bgtranscode_video && $mediatype=="video");
+			$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $ext==".mp3") ||
+					($CFG->filter_poodll_bgtranscode_video && $ext==".mp4");
 			if($do_bg_encoding && $CFG->version>=2014051200){
 					$stored_file = convert_with_ffmpeg_bg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
 				}else{
