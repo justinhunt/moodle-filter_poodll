@@ -147,5 +147,7 @@ $string['defaultwhiteboard'] = 'Default whiteboard';
 $string['whiteboardsave'] = 'Save Picture';
 $string['poodll:candownloadmedia'] = 'Can download media'; 
 
-$string['bgtranscode'] = 'Perform Conversions in Background'; 
-$string['bgtranscodedetails'] = 'This is more reliable than performing them while user waits. But the user will not get their recording till cron has run after saving.'; 
+$string['bgtranscode_video'] = 'Perform Conversions to MP4 Background'; 
+$string['bgtranscodedetails_video'] = 'This is more reliable than performing them while user waits. But the user will not get their video till cron has run after saving. Only works if you are using FFMPEG and Moodle 2.7 or higher.'; 
+$string['bgtranscode_audio'] = 'Perform Conversions to MP3 Background'; 
+$string['bgtranscodedetails_audio'] = 'This is more reliable than performing them while user waits. But the user will not get their audio till cron has run after saving. Only works if you are using FFMPEG and Moodle 2.7 or higher. For recordings in MP3 with the MP3 recorder, conversion takes place in the browser, not on the server. So server side conversion (FFMPEG) will not be used.'; 
