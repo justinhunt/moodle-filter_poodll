@@ -48,7 +48,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     		default:$contenthash = '';
     	
     	}
-    	$select = "filename='$cd->filename' AND filearea <> 'draft' AND contenthash='$contenthash'";
+    	$select = "filename='" . $cd->filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
     	$params = null;
     	$sort = "id DESC";
     	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);

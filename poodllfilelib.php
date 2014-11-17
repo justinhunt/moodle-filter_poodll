@@ -51,7 +51,26 @@ require_once($CFG->libdir . '/filelib.php');
 	$paramone  = optional_param('paramone', "", PARAM_TEXT);  // nature of value depends on datatype, maybe path
 	$paramtwo  = optional_param('paramtwo', "", PARAM_TEXT);  // nature of value depends on datatype, maybe protocol
 	$paramthree  = optional_param('paramthree', "", PARAM_TEXT);  // nature of value depends on datatype, maybe filearea
-
+	
+	//from the general recorder (mp3)
+	$p1  =  optional_param('p1', "", PARAM_TEXT);
+	$p2 =  optional_param('p2', "", PARAM_TEXT);
+	$p3 =  optional_param('p3', "", PARAM_TEXT);
+	$p4  = optional_param('p4', "", PARAM_TEXT);
+	$p5  = optional_param('p5', "", PARAM_TEXT);
+	$filedata  = optional_param('filedata', "", PARAM_TEXT);
+	$fileext  = optional_param('fileext', "", PARAM_TEXT);
+	//map general recorder upload data to what we expect otherwise
+	if($p1!=''){
+		$contextid = $p2;
+		$comp = $p3;
+		$farea = $p4;
+		$itemid=$p5;
+		$paramone = $filedata;
+		$paramtwo = $fileext;
+		$paramthree = 'audio';
+	}
+	
 	switch($datatype){
 		
 		case "uploadfile":

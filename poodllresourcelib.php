@@ -726,7 +726,7 @@ if ($updatecontrol == "saveflvvoice"){
 //auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
  $autotryports = $CFG->filter_poodll_autotryports==1 ? "yes" : "no" ;
 
-$params = array();
+		$params = array();
 		$params['red5url'] = urlencode($flvserver);
 		$params['overwritefile'] = $overwritemediafile;
 		$params['rate'] = $micrate;
@@ -743,6 +743,11 @@ $params = array();
 		$params['uid'] = $userid;
 		$params['timelimit'] = $timelimit;
 		$params['autotryports'] = $autotryports;
+
+		//fetch and merge lang params
+		$langparams = filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);	
+	
 	
     	$returnString=  fetchSWFWidgetCode('PoodLLAudioRecorder.lzx.swf9.swf',
     						$params,$width,$height,'#CFCFCF');
@@ -752,66 +757,8 @@ $params = array();
     	return $returnString ;
 
 }
-/*
-
-function fetchMP3RecorderForRepo($updatecontrol){
-global $CFG, $USER, $COURSE;
-
-//Set the microphone config params
-$micrate = $CFG->filter_poodll_micrate;
-$micgain = $CFG->filter_poodll_micgain;
-$micsilence = $CFG->filter_poodll_micsilencelevel;
-$micecho = $CFG->filter_poodll_micecho;
-$micloopback = $CFG->filter_poodll_micloopback;
-$micdevice = $CFG->filter_poodll_studentmic;
-
-//removed from params to make way for moodle 2 filesystem params Justin 20120213
-$width="350";
-$height="200";
-$poodllfilelib= $CFG->wwwroot . '/repository/poodll/uploadHandler.php';
-
-//If we are using course ids then lets do that
-//else send -1 to widget (ignore flag)
-if ($CFG->filter_poodll_usecourseid){
-	$courseid = $COURSE->id;
-}else{
-	$courseid = -1;
-} 
 
 
-if ($updatecontrol == "saveflvvoice"){
-	$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
-}else{
-	$savecontrol = "";
-}
-
-$params = array();
-
-		$params['rate'] = $micrate;
-		$params['gain'] = $micgain;
-		$params['prefdevice'] = $micdevice;
-		$params['loopback'] = $micloopback;
-		$params['echosupression'] = $micecho;
-		$params['silencelevel'] = $micsilence;
-		$params['course'] = $courseid;
-		$params['updatecontrol'] = $updatecontrol;
-		$params['uid'] = $USER->id;
-		//for file system in moodle 2
-		$params['poodllfilelib'] = $poodllfilelib;
-		$params['contextid'] = "0";
-		$params['component'] = "0";
-		$params['filearea'] = "0";
-		$params['itemid'] = "0";
-	
-    	$returnString=  fetchSWFWidgetCode('PoodLLMP3Recorder.lzx.swf10.swf',
-    						$params,$width,$height,'#CFCFCF');
-    						
-    	$returnString .= 	 $savecontrol;
-    						
-    	return $returnString ;
-
-}
-*/
 function fetchMP3RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid,$timelimit="0",$callbackjs=false){
 global $CFG, $USER, $COURSE;
 
@@ -863,9 +810,8 @@ if ($updatecontrol == "saveflvvoice"){
 }else{
 	$savecontrol = "";
 }
-
-$params = array();
-
+		//setup config for recirder
+		$params = array();
 		$params['rate'] = $micrate;
 		$params['gain'] = $micgain;
 		$params['prefdevice'] = $micdevice;
@@ -876,21 +822,43 @@ $params = array();
 		$params['updatecontrol'] = $updatecontrol;
 		$params['uid'] = $USER->id;
 		//for file system in moodle 2
+		/*
 		$params['poodllfilelib'] = $poodllfilelib;
 		$params['contextid'] = $contextid;
 		$params['component'] = $component;
 		$params['filearea'] = $filearea;
 		$params['itemid'] = $itemid;
+		*/
+		//using generic mp3 recorder these dats
+		$params['posturl'] = $poodllfilelib;
+		$params['p1'] = $updatecontrol;
+		$params['p2'] = $contextid;
+		$params['p3'] = $component;
+		$params['p4'] = $filearea;
+		$params['p5'] = $itemid;
+		//$params['chipmunk'] = 'yes';
+		
+		
+		
 		$params['autosubmit'] = $autosubmit;
 		$params['timelimit'] = $timelimit;
 		$params['canpause'] = $canpause;
+		
+		//fetch and merge lang params
+		$langparams = filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
 		
 		//callbackjs
 		if($callbackjs){
 			$params['callbackjs'] = $callbackjs;
 		}
 	
+	//this is the old recorder. (if it has MP3Recorder ie er, its old)
+	/*
     	$returnString=  fetchSWFWidgetCode('PoodLLMP3Recorder.lzx.swf10.swf',
+    						$params,$width,$height,'#CFCFCF');
+    */
+    $returnString=  fetchSWFWidgetCode('PoodllMP3Record.lzx.swf10.swf',
     						$params,$width,$height,'#CFCFCF');
     						
     	$returnString .= 	 $savecontrol;
@@ -1319,8 +1287,8 @@ if ($updatecontrol == "saveflvvoice"){
 //auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
  $autotryports = $CFG->filter_poodll_autotryports==1 ? "yes" : "no" ;
 
-$params = array();
-
+		//set up our params for recorder
+		$params = array();
 		$params['red5url'] = urlencode($flvserver);
 		$params['overwritefile'] = $overwritemediafile;
 		$params['rate'] = $micrate;
@@ -1343,6 +1311,12 @@ $params = array();
 		$params['itemid'] = $itemid;
 		$params['timelimit'] = $timelimit;
 		$params['autotryports'] = $autotryports;
+		
+		//fetch and merge lang params
+		$langparams = filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
+		
+		
 		if($callbackjs){
 			$params['callbackjs']=$callbackjs;
 		}
@@ -1353,8 +1327,6 @@ $params = array();
     	$returnString .= 	 $savecontrol;
     						
     	return $returnString ;
-	
-
 }
 
 
@@ -1741,7 +1713,7 @@ $picqual=$CFG->filter_poodll_picqual;
 
 
 
-$params = array();
+		$params = array();
 		$params['capturefps'] = $capturefps;
 		$params['filename'] = $filename;
 		$params['captureheight'] = $captureheight;
@@ -1751,6 +1723,10 @@ $params = array();
 		$params['prefcam'] = $prefcam;
 		$params['updatecontrol'] = $updatecontrol;
 		$params['moodlewww'] = $CFG->wwwroot;
+		
+		//fetch and merge lang params
+		$langparams = filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
 	
     	$returnString=  fetchSWFWidgetCode('PoodLLSnapshot.lzx.swf9.swf',
     						$params,$width,$height,'#FFFFFF');
@@ -1810,6 +1786,10 @@ $params = array();
 		
 		//set to auto submit
 		$params['autosubmit'] = 'true';
+		
+		//fetch and merge lang params
+		$langparams = filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
 		
 		//callbackjs
 		if($callbackjs){
@@ -1942,7 +1922,8 @@ if ($updatecontrol == "saveflvvoice"){
 //auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
  $autotryports = $CFG->filter_poodll_autotryports==1 ? "yes" : "no" ;
 
-$params = array();
+		//set up config for recorders
+		$params = array();
 		$params['red5url'] = urlencode($flvserver);
 		$params['overwritefile'] = $overwritemediafile;
 		$params['rate'] = $micrate;
@@ -1965,6 +1946,10 @@ $params = array();
 		$params['uid'] = $userid;
 		$params['timelimit'] = $timelimit;
 		$params['autotryports'] = $autotryports;
+		
+		//fetch and merge lang params
+		$langparams = filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
 		
 	
     	$returnString=  fetchSWFWidgetCode('PoodLLVideoRecorder.lzx.swf9.swf',
@@ -2053,7 +2038,8 @@ if ($updatecontrol == "saveflvvoice"){
 //auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
  $autotryports = $CFG->filter_poodll_autotryports==1 ? "yes" : "no" ;
 
-$params = array();
+		//set up config for recorders
+		$params = array();
 		$params['red5url'] = urlencode($flvserver);
 		$params['overwritefile'] = $overwritemediafile;
 		$params['rate'] = $micrate;
@@ -2082,6 +2068,10 @@ $params = array();
 		$params['itemid'] = $itemid;
 		$params['timelimit'] = $timelimit;
 		$params['autotryports'] = $autotryports;
+		
+		//fetch and merge lang params
+		$langparams = filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
 		
 		//callbackjs
 		if($callbackjs){
@@ -2853,7 +2843,7 @@ $ismobile=isMobile($CFG->filter_poodll_html5play);
 				
 				//PoodLL Player
 				}else{
-					
+					$params['playerbackcolor']=$CFG->filter_poodll_fp_bgcolor;
 					$returnString=  fetchSWFWidgetCode('poodllvideoplayer.lzx.swf9.swf',
 								$params,$width,$height,'#FFFFFF');
 				}
@@ -2981,6 +2971,30 @@ if(strlen($playlist) > 4 && substr($playlist,-4)==".xml"){
 
 }
 
+
+function filter_poodll_fetch_recorder_strings(){
+	$params = array();
+
+	//Get localised labels: 
+	$params['ui_record'] = get_string('recui_record', 'filter_poodll');
+	$params['ui_play'] = get_string('recui_play', 'filter_poodll');
+	$params['ui_stop'] = get_string('recui_pause', 'filter_poodll');
+	$params['ui_stop'] = get_string('recui_stop', 'filter_poodll');
+	$params['ui_time'] = get_string('recui_time', 'filter_poodll');
+	$params['ui_audiogain'] = get_string('recui_audiogain', 'filter_poodll');
+	$params['ui_silencelevel'] = get_string('recui_silencelevel', 'filter_poodll');
+	$params['ui_echo'] = get_string('recui_echo', 'filter_poodll');
+	$params['ui_loopback'] = get_string('recui_loopback', 'filter_poodll');
+	$params['ui_audiorate'] = get_string('recui_audiorate', 'filter_poodll');
+	$params['ui_on'] = get_string('recui_on', 'filter_poodll');
+	$params['ui_off'] = get_string('recui_off', 'filter_poodll');
+	$params['ui_ok'] = get_string('recui_ok', 'filter_poodll');
+	$params['ui_close'] = get_string('recui_close', 'filter_poodll');
+	$params['ui_timeouterror'] = get_string('recui_timeouterror', 'filter_poodll');
+	$params['ui_uploaderror'] = get_string('recui_uploaderror', 'filter_poodll');
+	
+	return $params;
+}
 
 //WMV player with defaults, for use with PoodLL filter
 function fetchWMVPlayer($runtime,$wmv_file, $width="400",$height="380"){
