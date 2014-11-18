@@ -2978,7 +2978,8 @@ function filter_poodll_fetch_recorder_strings(){
 	//Get localised labels: 
 	$params['ui_record'] = get_string('recui_record', 'filter_poodll');
 	$params['ui_play'] = get_string('recui_play', 'filter_poodll');
-	$params['ui_stop'] = get_string('recui_pause', 'filter_poodll');
+	$params['ui_continue'] = get_string('recui_continue', 'filter_poodll');
+	$params['ui_pause'] = get_string('recui_pause', 'filter_poodll');
 	$params['ui_stop'] = get_string('recui_stop', 'filter_poodll');
 	$params['ui_time'] = get_string('recui_time', 'filter_poodll');
 	$params['ui_audiogain'] = get_string('recui_audiogain', 'filter_poodll');
@@ -2990,8 +2991,11 @@ function filter_poodll_fetch_recorder_strings(){
 	$params['ui_off'] = get_string('recui_off', 'filter_poodll');
 	$params['ui_ok'] = get_string('recui_ok', 'filter_poodll');
 	$params['ui_close'] = get_string('recui_close', 'filter_poodll');
+	$params['ui_uploading'] = get_string('recui_uploading', 'filter_poodll');
+	$params['ui_converting'] = get_string('recui_converting', 'filter_poodll');
 	$params['ui_timeouterror'] = get_string('recui_timeouterror', 'filter_poodll');
 	$params['ui_uploaderror'] = get_string('recui_uploaderror', 'filter_poodll');
+	$params['ui_inaudibleerror'] = get_string('recui_inaudibleerror', 'filter_poodll');
 	
 	return $params;
 }
