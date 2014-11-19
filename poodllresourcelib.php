@@ -3389,7 +3389,7 @@ function fetchSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFF
 	}
 	
 	$retcode = "
-        <table><tr><td>
+        <table><tr><td class=\"fitvidsignore\">
         <script type=\'text/javascript\'>
             lzOptions = { ServerRoot: \'\'};
         </script> 
@@ -3996,7 +3996,7 @@ function fetchIFrameSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor=
 	$pathtoSWF= $CFG->wwwroot . '/filter/poodll/flash/';
 	
 	
-	$retframe="<iframe scrolling=\"no\" frameBorder=\"0\" src=\"{$pathtoSWF}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}\" width=\"{$fwidth}\" height=\"{$fheight}\"></iframe>"; 
+	$retframe="<iframe scrolling=\"no\" class=\"fitvidsignore\" frameBorder=\"0\" src=\"{$pathtoSWF}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}\" width=\"{$fwidth}\" height=\"{$fheight}\"></iframe>"; 
 	return $retframe;
 
 
