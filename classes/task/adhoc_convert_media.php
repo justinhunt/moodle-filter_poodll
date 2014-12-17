@@ -48,19 +48,32 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     		default:$contenthash = '';
     	
     	}
+		if(!property_exists($cd,'filename')){
+			$this->handle_error('missing filename in custom data:' , $cd);
+			return;
+		}
     	$select = "filename='" . $cd->filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
     	$params = null;
     	$sort = "id DESC";
     	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);
     	if(!$dbfiles){
-    		throw new \file_exception('storedfileproblem', 'could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet');
+			if(!$cd->filerecord || !$cd->filerecord->id || !$fs->get_file_by_id($cd->filerecord->id)){
+				//the draft file is messed up, or gone, and its not in another area, possibly the user never saved it
+				//anyway lets just forget about this task. And move on.
+				return;
+			}
+			$nofilefoundmessage='could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet';
+    		$this->handle_error($nofilefoundmessage,$cd);
+			throw new \file_exception('storedfileproblem', $nofilefoundmessage);
+			return;
     	}
     	
     	//get the file we will replace
     	$origfilerecord = array_shift($dbfiles);	
     	$origfile = $fs->get_file_by_id($origfilerecord->id);
     	if(!$origfile){
-			throw new \file_exception('storedfileproblem', 'something wrong with sf:' . $cd->filename);
+			$this->handle_error( 'something wrong with sf:' . $cd->filename,$cd);
+			return;
 		}
 
 		//get the original draft record that we will delete and reuse
@@ -84,7 +97,8 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 				$cd->convext,
 				$throwawayfilename);
 		} catch (Exception $e) {
-			throw new \file_exception('storedfileproblem', 'could not get convert:' . $cd->filename . ':' . $e->getMessage());
+			$this->handle_error('could not get convert:' . $cd->filename . ':' . $e->getMessage(),$cd);
+			return;
 		}
 		
 		//replace the placeholder(original) file with the converted one
@@ -96,12 +110,27 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 			try{
 				$imagefile = get_splash_ffmpeg($origfile, $imagefilename);
 			} catch (Exception $e) {
-				throw new \file_exception('storedfileproblem', 'could not get splash:' . $cd->filename . ':' . $e->getMessage());
+				$this->handle_error('could not get create splash file from:' . $cd->filename . ':' . $e->getMessage(),$cd);
+				return;
 			}
 			return;
 		}else{
-		  throw new \file_exception('storedfileproblem', 'unable to convert ' . $cd->tempfilename);
+		 $this->handle_error('unable to convert ' . $cd->tempfilename,$cd);
+		 return;
 		}
 		
-    }                                                                                                                               
+    }
+
+	private function handle_error($errorstring,$cd){
+		//throwing errors will see the process retrying. 
+		//however there is little point in retrying.
+		$throwerrors = false;
+		
+		if($throwerrors){
+			throw new \file_exception('storedfileproblem', $errorstring);
+		}else{
+			error_log('storedfileproblem:' . $errorstring);
+			error_log(print_r($cd,true));
+		}
+	}
 } 
