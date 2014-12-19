@@ -96,11 +96,19 @@ require_once($CFG->libdir . '/filelib.php');
 			}
 			break;
 		
-		case "poodllrsslist": 
+		case "xpoodllrsslist": 
 			header("Content-type: application/rss+xml");
 			echo "<rss version=\"2.0\" 
 				xmlns:media=\"http://search.yahoo.com/mrss/\"
 				xmlns:fp=\"http://flowplayer.org/fprss/\">";
+			//moduleid/courseid/path/playerype/filearea
+			$returnxml=fetch_poodllaudiolist($moduleid, $courseid, $paramone, $paramtwo, $paramthree,"rss",$paramfour=="true");
+			$returnxml .="</rss>";
+			break;
+		case "poodllrsslist": 
+			header("Content-type: application/rss+xml");
+			echo "<rss version=\"2.0\" 
+				xmlns:media=\"http://search.yahoo.com/mrss/\">";
 			//moduleid/courseid/path/playerype/filearea
 			$returnxml=fetch_poodllaudiolist($moduleid, $courseid, $paramone, $paramtwo, $paramthree,"rss",$paramfour=="true");
 			$returnxml .="</rss>";

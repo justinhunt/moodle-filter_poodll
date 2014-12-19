@@ -3148,7 +3148,10 @@ global $CFG, $DB, $COURSE;
 				case "xml":
 					$ret_output .= "\t<audio audioname='" . basename($filename) ."' playertype='" . $playertype . "' url='" . $urltofile . "'/>\n";
 					break;
-				case "rss":
+					
+				//"type" was necessary for flowplayer ??? but it breaks JWPlayer
+				// justin 20141220
+				case "xrss":
 					$ext = substr($filename,-4);
 					switch($ext){
 							case ".mp3": $mimetype="audio/mpeg3"; break;
@@ -3160,6 +3163,13 @@ global $CFG, $DB, $COURSE;
 						trim($urltofile) . "\" type=\"" . $mimetype .
 						"\"/></item>";
 					break;
+				
+				case "rss":
+					$ret_output .=  "\t<item><title>" . 
+						basename($filename) ."</title><media:content url=\"" .
+						trim($urltofile) . "\" /></item>";
+					break;
+					
 				case "alist":
 					$ret_output  .= "<a href=\"" . trim($urltofile) . "\"><span>" . basename($filename). "</span></a>";
 					break;
