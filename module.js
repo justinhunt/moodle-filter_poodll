@@ -368,6 +368,7 @@ M.filter_poodll = {
 			if(opts['bgimage']){
 				var bgimg = new Image();
 				bgimg.src = opts['bgimage'];
+				bgimg.crossOrigin = "Anonymous";
 			}else{
 				var bgimg = null;
 			}
@@ -379,6 +380,7 @@ M.filter_poodll = {
 			if(opts['backgroundimage']){
 				var backgroundimage= new Image();
 				backgroundimage.src = opts['backgroundimage'];
+				backgroundimage.crossOrigin = "Anonymous";
 				
 				var lc = LC.init(lc_element,{imageURLPrefix: opts['imageurlprefix'], 
 					backgroundColor: opts['backgroundcolor'],
