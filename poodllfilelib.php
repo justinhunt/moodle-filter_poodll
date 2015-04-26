@@ -258,6 +258,8 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		default: 
 			if($mediatype=='video'){
 				$fileextension="mp4";
+			}elseif($mediatype=='image'){
+				$fileextension="jpg";
 			}else{
 				$fileextension="mp3";
 			}
