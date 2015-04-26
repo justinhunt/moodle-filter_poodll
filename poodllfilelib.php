@@ -256,12 +256,19 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			
         case "":               
 		default: 
-			if($mediatype=='video'){
-				$fileextension="mp4";
-			}elseif($mediatype=='image'){
-				$fileextension="jpg";
+			//if we are set to FFMPEG convert,lets  not muddle with the file extension
+			if($CFG->filter_poodll_ffmpeg && $mediatype=='audio' && $CFG->filter_poodll_audiotranscode){
+				//do nothing
+			if($CFG->filter_poodll_ffmpeg && $mediatype=='video' && $CFG->filter_poodll_videotranscode){
+				//do nothing
 			}else{
-				$fileextension="mp3";
+				if($mediatype=='video'){
+					$fileextension="mp4";
+				}elseif($mediatype=='image'){
+					$fileextension="jpg";
+				}else{
+					$fileextension="mp3";
+				}
 			}
 	}
 	
