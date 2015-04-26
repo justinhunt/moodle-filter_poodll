@@ -259,7 +259,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			//if we are set to FFMPEG convert,lets  not muddle with the file extension
 			if($CFG->filter_poodll_ffmpeg && $mediatype=='audio' && $CFG->filter_poodll_audiotranscode){
 				//do nothing
-			if($CFG->filter_poodll_ffmpeg && $mediatype=='video' && $CFG->filter_poodll_videotranscode){
+			}elseif($CFG->filter_poodll_ffmpeg && $mediatype=='video' && $CFG->filter_poodll_videotranscode){
 				//do nothing
 			}else{
 				if($mediatype=='video'){
