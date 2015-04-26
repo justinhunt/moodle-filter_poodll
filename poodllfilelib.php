@@ -251,11 +251,16 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		case "wmv":
 		case "smf":
 		case "amr":
-		case "ogg":
-                case "":
+		case "ogg":        
 			break;
-                        
-		default: $fileextension="mp3";
+			
+        case "":               
+		default: 
+			if($mediatype=='video'){
+				$fileextension="mp4";
+			}else{
+				$fileextension="mp3";
+			}
 	}
 	
 	//init our fs object
