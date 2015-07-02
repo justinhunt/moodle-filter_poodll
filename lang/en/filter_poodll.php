@@ -176,3 +176,4 @@ $string['neverhtml5'] = 'Never use HTML5';
 $string['mobileonly'] = 'Mobile devices only';
 $string['mobileandwebkit'] = 'Mobile + Webkit browsers(Safari,Chrome etc)';
 $string['alwayshtml5'] = 'Always use HTML5';
+$string['wboard29problem_details'] = 'The Literally Canvas whiteboard does not work in Moodle 2.9 (or greater) yet. On Moodle 2.9, even if selected, DrawingBoard will be displayed in its place';

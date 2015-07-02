@@ -37,7 +37,7 @@ if (array_key_exists("filter_poodll",$filters)){
 	require_once($CFG->dirroot . '/filter/poodll/poodllinit.php');
 	require_once($CFG->dirroot . '/filter/poodll/Browser.php');
 
-	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject_22.js'));
+//	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject_22.js'));
 
 	
 	
@@ -45,7 +45,7 @@ if (array_key_exists("filter_poodll",$filters)){
 	//adn we set theglobal to try to ensure it is only loaded once. Later we could try to optimize this and call it from footer
 	if(!$PAGE->requires->is_head_done()){
 
-		$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'),true);
+//		$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'),true);
 		$EMBEDJSLOADED=true;
 		
 	}else{
@@ -937,6 +937,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 	//include jquery
 	//if($CFG->version < 2013051400){
 	if(true){
+		//$PAGE->requires->jquery();
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/jquery-1.8.2.js");
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/react-0.10.0.js");
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/fastclick.js");
@@ -946,8 +947,10 @@ global $CFG, $USER, $COURSE,$PAGE;
 	}
 	
 	//include other needed libraries
-	//$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.jquery.js");
+//$PAGE->requires->js_amd_inline('require(["jquery","filter_poodll/literallycanvas.js/js/literallycanvas"],null);');
+//$PAGE->requires->js_call_amd("filter_poodll/literallycanvas.js/js/literallycanvas",'init',array());
 	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.min.js");
+	
 	//this won't work in a quiz, and throws an error about trying to add to page head, 
 	//when page head has already been output. So copy contents of this file to styles.css in poodllfilter
 	//$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/filter/poodll/js/literallycanvas.js/css/literally.css'));
@@ -1126,7 +1129,13 @@ if($prefboard==""){
 switch($useboard){
 	case 'literallycanvas':
 		$forsubmission = true;
-		return fetchLiterallyCanvas($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs,$vectorcontrol,$vectordata);
+		//unable to get literally canvas going on Moodle 2.9
+		//so temporarily using drawingboard
+		if($CFG->version < 2015051100){
+			return fetchLiterallyCanvas($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs,$vectorcontrol,$vectordata);
+		}else{
+			return fetchDrawingBoard($forsubmission,$width,$height,$backimage,$updatecontrol, $contextid,$component,$filearea,$itemid,$callbackjs,$vectorcontrol,$vectordata);
+		}
 		break;
 	case 'drawingboard':
 		$forsubmission = true;
