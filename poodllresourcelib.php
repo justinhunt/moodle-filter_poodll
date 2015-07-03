@@ -489,7 +489,13 @@ if(!isOldIE()){
 	switch($CFG->filter_poodll_defaultwhiteboard){
 		case 'literallycanvas':
 			$forsubmission = false;
-			return fetchLiterallyCanvas($forsubmission,$width,$height,$imageurl);
+			//unable to get literally canvas going on Moodle 2.9
+			//so temporarily using drawingboard
+			if($CFG->version < 2015051100){
+				return fetchLiterallyCanvas($forsubmission,$width,$height,$imageurl);
+			}else{
+				return fetchDrawingBoard($forsubmission,$width,$height,$imageurl); 
+			}
 			break;
 		case 'drawingboard':
 			$forsubmission = false;
@@ -909,7 +915,6 @@ global $CFG, $USER, $COURSE,$PAGE;
 		
 	//setup our JS call
 	$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false,$jsmodule);
-	//$PAGE->requires->js_init_call('M.filter_poodll.loadliterallycanvas', array($opts),false);
 
 	//removed from params to make way for moodle 2 filesystem params Justin 20120213
 	if($width==0){ $width=$CFG->filter_poodll_whiteboardwidth;}
@@ -934,23 +939,30 @@ global $CFG, $USER, $COURSE,$PAGE;
 	//set media type
 	$mediatype ="image";
 	
-	//include jquery
-	//if($CFG->version < 2013051400){
-	if(true){
-		//$PAGE->requires->jquery();
+	//do what we have to do for moodle 2.9 and lower
+	if($CFG->version < 2013051400){
+
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/jquery-1.8.2.js");
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/react-0.10.0.js");
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/fastclick.js");
 		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/ie_customevent.js");
+		$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.min.js");
 	}else{
-		$PAGE->requires->jquery();
+		/* The story here is that LC require REACT. Both detect requirejs and do anon defines
+		/ So it should work. But LC doesn't load react properly. It uses a shim and has checks for react with a certain name and stuff
+		/ so I had to hack react to disable its requirejs/amd check at the top. then I load as per a usual js
+		/ below. Then LC freaks out somwhere in first.js because it cant load the children of something
+		// I think thats a jquery issue, because global $ didn't work in module.js wither	J
+		// to compile js go to amd folder and: grunt --force
+		// 
+		/
+		*/
+		//$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/jquery-1.8.2.js");
+		$PAGE->requires->js("/filter/poodll/amd/build/react-with-addons.min.js");
+		//$PAGE->requires->js("/filter/poodll/amd/build/filterpoodll_literallycanvas.min.js");
+		$PAGE->requires->js_call_amd("filter_poodll/filterpoodll_literallycanvas",'init',array());
 	}
-	
-	//include other needed libraries
-//$PAGE->requires->js_amd_inline('require(["jquery","filter_poodll/literallycanvas.js/js/literallycanvas"],null);');
-//$PAGE->requires->js_call_amd("filter_poodll/literallycanvas.js/js/literallycanvas",'init',array());
-	$PAGE->requires->js("/filter/poodll/js/literallycanvas.js/js/literallycanvas.min.js");
-	
+
 	//this won't work in a quiz, and throws an error about trying to add to page head, 
 	//when page head has already been output. So copy contents of this file to styles.css in poodllfilter
 	//$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/filter/poodll/js/literallycanvas.js/css/literally.css'));

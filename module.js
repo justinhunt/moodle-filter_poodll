@@ -375,7 +375,7 @@ M.filter_poodll = {
 
 
 			//init the whiteboard	(diff logic if have a background image)
-			var lc_element = $('#' + opts['recorderid'] + '_literally').get(0);
+			var lc_element = document.getElementById('#' + opts['recorderid'] + '_literally');
 			
 			if(opts['backgroundimage']){
 				var backgroundimage= new Image();
