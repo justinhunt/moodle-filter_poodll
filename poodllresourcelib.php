@@ -37,7 +37,7 @@ if (array_key_exists("filter_poodll",$filters)){
 	require_once($CFG->dirroot . '/filter/poodll/poodllinit.php');
 	require_once($CFG->dirroot . '/filter/poodll/Browser.php');
 
-//	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject_22.js'));
+	$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/swfobject_22.js'));
 
 	
 	
@@ -45,7 +45,7 @@ if (array_key_exists("filter_poodll",$filters)){
 	//adn we set theglobal to try to ensure it is only loaded once. Later we could try to optimize this and call it from footer
 	if(!$PAGE->requires->is_head_done()){
 
-//		$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'),true);
+		$PAGE->requires->js(new moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'),true);
 		$EMBEDJSLOADED=true;
 		
 	}else{
