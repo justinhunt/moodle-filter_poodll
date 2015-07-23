@@ -82,6 +82,11 @@ $items[] = new admin_setting_configtext('filter_poodll_capturefps', get_string('
 $items[] = new admin_setting_configtext('filter_poodll_bandwidth', get_string('bandwidth', 'filter_poodll'), '', '0', PARAM_INT);
 $items[] = new admin_setting_configtext('filter_poodll_picqual', get_string('picqual', 'filter_poodll'), '', '7', PARAM_INT);
 
+//mp3 recorder settings.
+$items[] = new admin_setting_heading('filter_poodll_mp3recorder_settings', get_string('filter_poodll_mp3recorder_heading', 'filter_poodll'), '');
+$options = array('normal' => get_string('normal', 'filter_poodll'), 'tiny' => get_string('tiny', 'filter_poodll'));
+$items[] = new admin_setting_configselect('filter_poodll_mp3recorder_size', get_string('size', 'filter_poodll'), '', 'normal', $options);
+
 /*
 //HTML5 Recording
 */

@@ -19,6 +19,8 @@ $string['filter_poodll_legacy_heading'] = 'PoodLL Legacy Settings';
 $string['filter_poodll_playertypes_heading'] = 'Default Player Types';
 $string['filter_poodll_intercept_heading'] = 'Filetypes PoodLL Handles by Default';
 $string['filter_poodll_flowplayer_heading'] = 'Flowplayer Settings'; 
+$string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings'; 
+
 
      
 $string['defaultplayer'] = 'Default A/V Player';
@@ -124,6 +126,11 @@ $string['html5rec'] ='HTML5 Recording';
 $string['html5play'] ='HTML5 Playback';
 $string['html5widgets'] ='HTML5 PoodLL Widgets';
 $string['html5fancybutton'] ='Use Fancy Upload Button';
+
+//mp3 recorder settings
+$string['size'] ='Size';
+$string['tiny'] ='Tiny';
+$string['normal'] ='Normal';
 
 
 //transcode settings

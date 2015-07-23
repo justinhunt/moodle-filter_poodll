@@ -787,9 +787,18 @@ $micecho = $CFG->filter_poodll_micecho;
 $micloopback = $CFG->filter_poodll_micloopback;
 $micdevice = $CFG->filter_poodll_studentmic;
 
+$size =$CFG->filter_poodll_mp3recorder_size;
+//$size='tiny';
+//$size='normal';
+
 //removed from params to make way for moodle 2 filesystem params Justin 20120213
-$width="350";
-$height="200";
+if($size=='normal'){
+	$width="350";
+	$height="200";
+}else{
+	$width="240";
+	$height="170";
+}
 $poodllfilelib= $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 
 //we can add or remove this, but right now, testing how good it works
@@ -849,6 +858,7 @@ if ($updatecontrol == "saveflvvoice"){
 		$params['autosubmit'] = $autosubmit;
 		$params['timelimit'] = $timelimit;
 		$params['canpause'] = $canpause;
+		$params['size'] = $size;
 		
 		//fetch and merge lang params
 		$langparams = filter_poodll_fetch_recorder_strings();
