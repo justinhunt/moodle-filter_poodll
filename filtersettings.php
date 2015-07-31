@@ -47,6 +47,8 @@ $items[] = new admin_setting_configtext('filter_poodll_micgain', get_string('mic
 $items[] = new admin_setting_configtext('filter_poodll_micecho', get_string('micecho', 'filter_poodll'), '', 'yes');
 $items[] = new admin_setting_configtext('filter_poodll_micloopback', get_string('micloopback', 'filter_poodll'), '', 'no');
 $items[] = new admin_setting_configcheckbox('filter_poodll_miccanpause', get_string('miccanpause', 'filter_poodll'), '', 0);
+$items[] = new admin_setting_configtext('filter_poodll_mp3skin', get_string('mp3skin', 'filter_poodll'), 
+		get_string('mp3skin_details', 'filter_poodll'), 'none');
 //This is a hack for Juan. Later we can remove it
 //Justin 2012/11/23
 //$items[] = new admin_setting_configtext('filter_poodll_audiotimelimit', "Audio Rec. Time Limit(secs)", '', '0', PARAM_INT);	

@@ -765,6 +765,20 @@ if ($updatecontrol == "saveflvvoice"){
 }
 
 
+function fetchMP3SkinnedRecorderForSubmission($params,$skin){
+global $CFG;
+		$poodll_audio_url = $CFG->wwwroot . "/filter/poodll/mp3recorderskins"; 
+		$params['poodll_audio_url'] = $poodll_audio_url;
+		$width="240";
+		$height="170";
+		//$params['callbackjs']= 'poodll_audiosdk.audiohelper.poodllcallback';
+		$iframe_src_url = new Moodle_URL("/filter/poodll/mp3recorderskins/$skin/index.php",$params); 
+		$ret = html_writer::tag('iframe','',array('src'=>$iframe_src_url->out(false),'frameBorder'=>0,'scrolling'=>'none','class'=>'filter_poodll_mp3skinned_recorder'));
+		return $ret;
+		
+
+}
+
 function fetchMP3RecorderForSubmission($updatecontrol, $contextid,$component,$filearea,$itemid,$timelimit="0",$callbackjs=false){
 global $CFG, $USER, $COURSE;
 
@@ -786,6 +800,9 @@ $micsilence = $CFG->filter_poodll_micsilencelevel;
 $micecho = $CFG->filter_poodll_micecho;
 $micloopback = $CFG->filter_poodll_micloopback;
 $micdevice = $CFG->filter_poodll_studentmic;
+
+//get the recorder skin
+$skin=$CFG->filter_poodll_mp3skin;
 
 $size =$CFG->filter_poodll_mp3recorder_size;
 //$size='tiny';
@@ -874,12 +891,17 @@ if ($updatecontrol == "saveflvvoice"){
     	$returnString=  fetchSWFWidgetCode('PoodLLMP3Recorder.lzx.swf10.swf',
     						$params,$width,$height,'#CFCFCF');
     */
-    $returnString=  fetchSWFWidgetCode('PoodllMP3Record.lzx.swf10.swf',
-    						$params,$width,$height,'#CFCFCF');
-    						
-    	$returnString .= 	 $savecontrol;
-    						
-    	return $returnString ;
+	
+	if($skin && $skin != 'none'){
+		$returnString = fetchMP3SkinnedRecorderForSubmission($params,$skin);
+	}else{
+		
+		$returnString=  fetchSWFWidgetCode('PoodllMP3Record.lzx.swf10.swf',
+								$params,$width,$height,'#CFCFCF');
+	}
+								
+	$returnString .= 	 $savecontrol;						
+    return $returnString ;
 
 }
 

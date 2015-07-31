@@ -1,3 +1,12 @@
+.filter_poodll_mp3skinned_recorder {
+	width: 240px;
+	height: 205px;
+}
+ .filter_poodll_mp3skinned_recorder_small_80 {
+	height: 80px;
+}
+
+
 /* playlist style */
 div.poodllplaylist {
     width:397px;

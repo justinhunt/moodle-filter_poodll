@@ -111,6 +111,8 @@ $string['micsilencelevel'] = 'Mic. Silence Level';
 $string['micecho'] = 'Mic. Echo';
 $string['micloopback'] = 'Mic. Loopback';
 $string['miccanpause'] = 'Allow pause (MP3 recorder only)';
+$string['mp3skin'] = 'MP3 Skin';
+$string['mp3skin_details'] = 'If you want to use a recorder skin, ala theme, enter its name here. Otherwise enter: none.';
 
 
 //fpembedtype
