@@ -773,7 +773,7 @@ global $CFG;
 		$height="170";
 		//$params['callbackjs']= 'poodll_audiosdk.audiohelper.poodllcallback';
 		$iframe_src_url = new Moodle_URL("/filter/poodll/mp3recorderskins/$skin/index.php",$params); 
-		$ret = html_writer::tag('iframe','',array('src'=>$iframe_src_url->out(false),'frameBorder'=>0,'scrolling'=>'none','class'=>'filter_poodll_mp3skinned_recorder'));
+		$ret = html_writer::tag('iframe','',array('src'=>$iframe_src_url->out(false),'frameBorder'=>0,'scrolling'=>'none','allowTransparency'=>'true','class'=>'filter_poodll_mp3skinned_recorder'));
 		return $ret;
 		
 

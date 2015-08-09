@@ -1,4 +1,6 @@
-
+body {
+	background: none transparent;
+}
 .poodll_audiosdk_actionbuttons {
 	display: flex;
 	float: right;
