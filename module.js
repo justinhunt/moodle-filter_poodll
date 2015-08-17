@@ -34,7 +34,12 @@ M.filter_poodll = {
 				filenamecontrol.value = args[2];
 			}
 	},
-
+	
+	init_revealjs: function(args){
+		// Required, even if empty.
+		Reveal.initialize({});
+	
+	},
 
 	// Replace poodll_flowplayer divs with flowplayers
 	loadflowplayer: function(Y,opts) {
