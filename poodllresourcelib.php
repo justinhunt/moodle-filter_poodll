@@ -1498,7 +1498,8 @@ if($start){
 		//The JS array for passing in options
 		$jsmodule = array(
 			'name'     => 'filter_poodll',
-			'fullpath' => '/filter/poodll/module.js'
+			'fullpath' => '/filter/poodll/module.js',
+			'requires' => array('json')
 		);
 		
 		
