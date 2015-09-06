@@ -942,7 +942,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$jsmodule = array(
 		'name'     => 'filter_poodll',
 		'fullpath' => '/filter/poodll/module.js',
-		'requires' => array('json')
+		'requires' => array('json','json-parse','json-stringify')
 	);
 		
 	//setup our JS call
@@ -1083,7 +1083,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$jsmodule = array(
 		'name'     => 'filter_poodll',
 		'fullpath' => '/filter/poodll/module.js',
-		'requires' => array('json')
+		'requires' => array('json','json-parse','json-stringify')
 	);
 		
 	//setup our JS call
@@ -1705,7 +1705,37 @@ global $CFG;
 
 }
 
+function fetch_flashcards_revealjs($cardset,$cardsetname){
+global $CFG,$COURSE,$PAGE;
+	//this won't work in a quiz, and throws an error about trying to add to page head, 
+	//when page head has already been output. So copy contents of this file to styles.css in poodllfilter
+	//$PAGE->requires->css(new moodle_url($CFG->wwwroot . '/filter/poodll/reveal.js/css/reveal.min.css'));
+	
+	//JS
+	$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/filter/poodll/reveal.js/lib/js/head.min.js'));
+	//$PAGE->requires->js(new moodle_url($CFG->wwwroot . '/filter/poodll/reveal.js/js/reveal.js'));
+	//$PAGE->requires->js_init_call('M.filter_poodll.init_revealjs');
+	
+	//for AMD
+	$proparray  = array();
+	$proparray['CSS_INJECT']=true;
+	$proparray['CSS_REVEAL']=$CFG->wwwroot . '/filter/poodll/reveal.js/css/reveal.css';
+	$proparray['CSS_THEME']=$CFG->wwwroot . '/filter/poodll/reveal.js/css/theme/sky.css';
+	
+	$PAGE->requires->js_call_amd('filter_poodll/reveal_amd','loadrevealjs', array($proparray));
+	
+	$dm = new \filter_poodll\dataset_manager();
+	$renderer = $PAGE->get_renderer('filter_poodll');
+	$carddata = $dm->fetch_revealjs_flashcards($cardset,$cardsetname); 
+	echo $renderer->fetch_revealjs_flashcards($carddata);
+}
+
+
 function fetch_flashcards($runtime, $cardset,$cardsetname, $frontcolor,$backcolor, $cardwidth,$cardheight,$randomize,$width,$height){
+
+fetch_flashcards_revealjs($cardset,$cardsetname);
+return;
+
 global $CFG,$COURSE;
 
 
@@ -3879,7 +3909,7 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 		$jsmodule = array(
 			'name'     => 'filter_poodll',
 			'fullpath' => '/filter/poodll/module.js',
-			'requires' => array('json')
+			'requires' => array('json','json-parse','json-stringify')
 		);
 		
 	//setup our JS call
