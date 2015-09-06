@@ -695,10 +695,12 @@ M.filter_poodll = {
 		  return context[func].call(this, args);
 	},
 	
-	// Start of text scroller
+	// Start of text 
 	loadscroller: function(Y,opts) {
 		//stash our Y for later use
-		this.gyui = Y;
+		if(!this.gyui){
+			this.gyui = Y;
+		}
 	
 		if(typeof window.scrollopts== 'undefined'){
 				window.scrollopts = new Array();

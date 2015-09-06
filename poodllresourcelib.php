@@ -942,7 +942,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$jsmodule = array(
 		'name'     => 'filter_poodll',
 		'fullpath' => '/filter/poodll/module.js',
-		'requires' => array('json','json-parse','json-stringify')
+		'requires' => array('json')
 	);
 		
 	//setup our JS call
@@ -1083,7 +1083,7 @@ global $CFG, $USER, $COURSE,$PAGE;
 	$jsmodule = array(
 		'name'     => 'filter_poodll',
 		'fullpath' => '/filter/poodll/module.js',
-		'requires' => array('json','json-parse','json-stringify')
+		'requires' => array('json')
 	);
 		
 	//setup our JS call
@@ -3909,7 +3909,7 @@ function fetchFlowPlayerCode($width,$height,$path,$playertype="audio",$ismobile=
 		$jsmodule = array(
 			'name'     => 'filter_poodll',
 			'fullpath' => '/filter/poodll/module.js',
-			'requires' => array('json','json-parse','json-stringify')
+			'requires' => array('json')
 		);
 		
 	//setup our JS call
