@@ -1734,8 +1734,8 @@ global $CFG,$COURSE,$PAGE;
 
 function fetch_flashcards($runtime, $cardset,$cardsetname, $frontcolor,$backcolor, $cardwidth,$cardheight,$randomize,$width,$height){
 
-fetch_flashcards_revealjs($cardset,$cardsetname);
-return;
+//fetch_flashcards_revealjs($cardset,$cardsetname);
+//return;
 
 global $CFG,$COURSE;
 
