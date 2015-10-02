@@ -23,7 +23,7 @@ require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
 
 /**
  *
- * This is an adhoc task for converting media with FFMPEG
+ * This is a dataset manager for things like PoodLL flashcards
  *
  * @package   filter_poodll
  * @since      Moodle 2.7
@@ -39,15 +39,17 @@ class dataset_manager {
 	global $CFG,$DB;
 
 		
-		//fetch user objects for all users in course
-		$coursecontext = get_context_instance(CONTEXT_COURSE, $courseid);	
-		
 		//get course and require requester is logged in
 		if (! $course = $DB->get_record('course', array('id' => $courseid))) {
 			print_error('invalidcourseid');
 		}
 		require_course_login($course);
-		
+
+
+		//fetch course context
+		$coursecontext =  \context_course::instance($courseid);
+
+        //fetch user objects for all users in course
 		//'u.id, u.username, u.firstname, u.lastname, u.picture'
 		$users = get_users_by_capability($coursecontext, 'moodle/user:viewdetails');
 
@@ -509,8 +511,11 @@ class dataset_manager {
 
 		//Get question index from db if a question name was specified
 		if($cardsetname != ""){
-			$question = $DB->get_record('question', array('name'=>$cardsetname,'qtype'=>'match'));
-			if($question){$cardsetid=$question->id;}
+			$questions = $DB->get_records('question', array('name'=>$cardsetname,'qtype'=>'match'));
+			if($questions){
+                $question = array_shift($questions);
+                $cardsetid=$question->id;
+            }
 		}
 		
 		//get card data from db
