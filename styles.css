@@ -2,12 +2,29 @@
 	height: 400px;
 }
 
+.filter_poodll_revealjs_next, .filter_poodll_revealjs_previous{
+	width: 45%;
+}
+.filter_poodll_revealjs_buttons{
+	width: 100%;
+	margin: auto;
+}
 .filter_poodll_mp3skinned_recorder {
 	width: 240px;
 	height: 205px;
 }
  .filter_poodll_mp3skinned_recorder_small_80 {
 	height: 80px;
+}
+
+.filter_poodll_revealjs_section{
+	border-radius: 15px;
+}
+.filter_poodll_revealjs_section_front{
+	background: #8AC007;
+}
+.filter_poodll_revealjs_section_back{
+	background: #8A07C0;
 }
 
 

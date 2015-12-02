@@ -511,7 +511,25 @@ body {
 }
 
 /*********************************************
- * CONCAVE TRANSITION
+ * FLIP TRANSITION
+ *********************************************/
+
+@include transition-horizontal-past(concave) {
+	transform: rotateY(180deg);
+}
+@include transition-horizontal-future(concave) {
+	transform: rotateY(180deg);
+}
+@include transition-vertical-past(concave) {
+	transform: rotateY(180deg);
+}
+@include transition-vertical-future(concave) {
+	transform: rotateY(180deg);
+}
+
+/*********************************************
+ * 
+ CONCAVE TRANSITION
  *********************************************/
 
 @include transition-horizontal-past(concave) {

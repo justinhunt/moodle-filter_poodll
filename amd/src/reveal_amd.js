@@ -32,8 +32,37 @@ define(['jquery','core/log', 'filter_poodll/reveal'], function($, log, revealjs)
 			embedded: true, 
 			loop: true,
 			width: 600,
-			heigh: 400
+			height: 400,
+			transition: 'slide',
+			flipped: false
 			});
+			
+			//initialise buttons
+			$('.filter_poodll_revealjs_previous').click(
+				function(){
+					Reveal.right();
+					//log.debug('right');
+				}
+			);
+			$('.filter_poodll_revealjs_next').click(
+				function(){
+					Reveal.left();
+					//log.debug('left');
+				}
+			);
+			
+			Reveal.addEventListener( 'click', function() {
+					if(Reveal.flipped){
+    				 Reveal.up();
+    			 	 Reveal.flipped = false;
+    			 	 log.debug('up');
+    				}else{
+    				 Reveal.flipped = true;
+					 Reveal.down();
+					 log.debug('down');
+    				}
+				}, false );
+				
 		}//end of function
 	}
 });

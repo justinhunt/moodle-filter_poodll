@@ -445,6 +445,26 @@ body {
           transform: translate3d(0, 80%, 0) rotateX(70deg) translate3d(0, 80%, 0); }
 
 /*********************************************
+
+/*********************************************
+ * FLIP TRANSITION
+ *********************************************/
+.reveal .slides > section[data-transition=flip].past, .reveal .slides > section[data-transition~=flip-out].past, .reveal.concave .slides > section:not([data-transition]).past {
+  -webkit-transform: rotateY(180deg);
+          transform: rotateY(180deg); }
+
+.reveal .slides > section[data-transition=flip].future, .reveal .slides > section[data-transition~=flip-in].future, .reveal.concave .slides > section:not([data-transition]).future {
+  -webkit-transform: rotateY(180deg);
+          transform: rotateY(180deg); }
+
+.reveal .slides > section > section[data-transition=flip].past, .reveal .slides > section > section[data-transition~=flip-out].past, .reveal.concave .slides > section > section:not([data-transition]).past {
+  -webkit-transform: rotateY(180deg);
+          transform: rotateY(180deg); }
+
+.reveal .slides > section > section[data-transition=flip].future, .reveal .slides > section > section[data-transition~=flip-in].future, .reveal.concave .slides > section > section:not([data-transition]).future {
+  -webkit-transform: rotateY(180deg);
+          transform: rotateY(180deg); }
+          
  * ZOOM TRANSITION
  *********************************************/
 .reveal .slides > section[data-transition=zoom], .reveal.zoom .slides > section:not([data-transition]) {
