@@ -1721,7 +1721,7 @@ global $CFG,$COURSE,$PAGE;
 	$proparray  = array();
 	$proparray['CSS_INJECT']=true;
 	$proparray['CSS_REVEAL']=$CFG->wwwroot . '/filter/poodll/reveal.js/css/reveal.css';
-	$proparray['CSS_THEME']=$CFG->wwwroot . '/filter/poodll/reveal.js/css/theme/sky.css';
+	$proparray['CSS_THEME']='';//$CFG->wwwroot . '/filter/poodll/reveal.js/css/theme/sky.css';
 	
 	$PAGE->requires->js_call_amd('filter_poodll/reveal_amd','loadrevealjs', array($proparray));
 	
@@ -1736,6 +1736,7 @@ function fetch_flashcards($runtime, $cardset,$cardsetname, $frontcolor,$backcolo
 
 //fetch_flashcards_revealjs($cardset,$cardsetname);
 //return;
+
 
 global $CFG,$COURSE;
 
