@@ -294,7 +294,7 @@ M.filter_poodll = {
 			var vectordata = opts['vectordata'];
 			if(vectordata){
 				//dont do anything if its not JSON (ie it coule be from LC)
-				if(vectordata.indexOf('{"shapes"')!=0){
+				if(vectordata.indexOf('{"shapes"')!=0 && vectordata.indexOf('{"colors"')!=0){
 					db.history = Y.JSON.parse(vectordata);
 					db.setImg(db.history.values[db.history.position-1]);
 				}
@@ -782,6 +782,12 @@ M.filter_poodll = {
 			
 		}
 	}
-}//end of M.filter_poodll
-	 
+};//end of M.filter_poodll
+
+M.filter_poodll.laszlohelper = {
+
+	init: function (Y, opts) {
+		lz.embed.swf(Y.JSON.parse(opts['widgetjson']));
+	}
+};
  

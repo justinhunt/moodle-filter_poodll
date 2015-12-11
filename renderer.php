@@ -48,5 +48,5 @@ class filter_poodll_renderer extends plugin_renderer_base {
       	return $reveal . $buttons;
 	
 	}
-  
+
 }

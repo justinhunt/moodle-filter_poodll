@@ -27,48 +27,23 @@ global $CFG;
 	echo "<html><head>";
 	echo "<!--[if IE]><script type=\"text/javascript\" src=\"" . $CFG->wwwroot . "/filter/poodll/js/lps/includes/excanvas.js\" ></script><![endif]-->";
 	echo "</head><body>";
-	echo fetchJSWidgetCode($widget,$paramstring,$width,$height, $bgcolor, $usemastersprite);
+	echo fetchJSWidgetCode($widget,$paramstring,$width,$height, $bgcolor);
 	echo "</body></html>";
 	return;
 
 
-function fetchJSWidgetCode($widget,$params,$width,$height, $bgcolor="#FFFFFF", $usemastersprite="false"){
+function fetchJSWidgetCode($widget,$params,$width,$height, $bgcolor="#FFFFFF"){
 	global $CFG;
-	
-	//add in any common params
-	$params .= '&debug=false&lzproxied=false'; 
-	
-	//path to our js idgets folder
+
+	$widgetid = html_writer::random_id('laszlobase');
+	$widgetjson = \filter_poodll\poodlltools::fetchJSWidgetJSON($widget,$params,$width,$height, $bgcolor="#FFFFFF", $widgetid);
+
+	$retcode = html_writer::div('','',array('id'=>$widgetid . 'Container'));
 	$pathtoJS = $CFG->wwwroot . '/filter/poodll/js/';
-	$pathtowidgetfolder = $CFG->wwwroot . '/filter/poodll/js/' . $widget . '/';
-	
-	//if we wish to pass in more common params, here is the place
-	//eg. $params .= '&modulename=' . $PAGE->cm->modname;
-	
+	$retcode .=   '<script type="text/javascript" src="'. $pathtoJS . 'lps/includes/embed-compressed.js"></script>
+        <script type="text/javascript"> lz.embed.dhtml(' . $widgetjson . ')</script>';
 
-
-     $retcode =   "<script type=\"text/javascript\" src=\"{$pathtoJS}lps/includes/embed-compressed.js\"></script>
-        <script type=\"text/javascript\" >
-" . '	lz.embed.dhtml({url: \'' . $pathtowidgetfolder . $widget . $params . 
-		 '\', bgcolor: \'' . $bgcolor . '\', width: \'' .$width . '\', usemastersprite: ' . $usemastersprite . ', ' . 
-		 'approot: \'' . $pathtowidgetfolder  . '\', ' .
-		 'height: \'' . $height . '\', ' .
-		 'lfcurl: \'' . $pathtoJS . 'lps/includes/lfc/LFCdhtml.js\', ' .
-		 'serverroot: \'' . $pathtoJS . 'lps/resources/\', ' .
-		 'accessible: \'false\', cancelmousewheel: false, cancelkeyboardcontrol: false, skipchromeinstall: false, ' .
-		 ' id: \'lzapp_' . rand(100000, 999999) . '\' ,accessible: \'false\'});	
-		 
-		 
-		
-' . "
-        </script>
-        <noscript>
-            Please enable JavaScript in order to use this application.
-        </noscript>
-";
-		
-		return $retcode;
-
+	return $retcode;
 
 }
 

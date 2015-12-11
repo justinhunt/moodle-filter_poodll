@@ -27,8 +27,6 @@ define('POODLL_AUDIO_PLACEHOLDER_HASH','e118549e4fc88836f418b6da6028f1fec571cd43
 if(!isset($CFG)){
 require_once("../../config.php");
 }
-//require_once('../filter/poodll/poodllinit.php');
-require_once($CFG->dirroot . "/filter/poodll/poodllinit.php");
 
 
 //commented just while getting other mods working
@@ -87,7 +85,26 @@ require_once($CFG->libdir . '/filelib.php');
 			//lets hard code this for now, very very mild security
 			poodllpluginfile($contextid,"mod_assignment","submission",$itemid,"/",$paramone);
 			return;
-	
+
+
+		case "instancedownload":
+			//paramone=mimetype paramtwo=path paramthree=hash
+			instance_download($paramone,$paramtwo,$hash,$requestid);
+
+		case "instanceremotedownload":
+			//($contextid,$filename,$component, $filearea,$itemid, $requestid)
+			//e.g (15, '123456789.flv','user','draft','746337947',777777)
+			$returnxml=instance_remotedownload($contextid, $paramone,$paramtwo,$paramthree,$itemid,$requestid);
+
+			//move the output to here so that there is no trace of stray characters entering output before file downloaded
+			header("Content-type: text/xml");
+			echo "<?xml version=\"1.0\"?>";
+
+			break;
+
+		default:
+			return;
+/*
 		case "getlast20files":
 			header("Content-type: text/html");
 			$returnxml="";
@@ -184,58 +201,37 @@ require_once($CFG->libdir . '/filelib.php');
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
 			$returnxml=getmoddata($courseid, $requestid);
-			break;	
+			break;
+
 		
 		case "fetchrealurl": 
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
 			$returnxml=fetchrealurl($moduleid,$courseid, $itemid, $paramone, $paramtwo, $requestid);
 			break;
-			
-		case "instancedownload":
-			//paramone=mimetype paramtwo=path paramthree=hash
-			instance_download($paramone,$paramtwo,$hash,$requestid);
-			
-		case "instanceremotedownload":
-			//($contextid,$filename,$component, $filearea,$itemid, $requestid)
-			//e.g (15, '123456789.flv','user','draft','746337947',777777)
-			$returnxml=instance_remotedownload($contextid, $paramone,$paramtwo,$paramthree,$itemid,$requestid);
-			
-			//move the output to here so that there is no trace of stray characters entering output before file downloaded
-			header("Content-type: text/xml");
-			echo "<?xml version=\"1.0\"?>";
-			
-			//$returnxml="<hello />";
-			//instance_remotedownload('930884190835059.flv','user','draft',746337947);
-			break;			
 
-		default:
-			return;
-			/*
-			header("Content-type: text/xml");
-			echo "<?xml version=\"1.0\"?>\n";
-			$returnxml="";
-			break;	
-		*/
+*/
 
-	}
+
+	}//enf od switch
 
 
 	echo $returnxml;
 	return;
 
 
+
 //For uploading a file diorect from an HTML5 or SWF widget
 function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid, $comp, $farea,$itemid){
 	global $CFG,$USER;
-	
+
 
 	//setup our return object
 	$return=fetchReturnArray(true);
-        
+
 	//make sure nobodyapassed in a bogey file extension
 	switch($fileextension){
-		case "mp3": 
+		case "mp3":
 		case "flv":
 		case "jpg":
 		case "png":
@@ -251,11 +247,11 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		case "wmv":
 		case "smf":
 		case "amr":
-		case "ogg":        
+		case "ogg":
 			break;
-			
-        case "":               
-		default: 
+
+		case "":
+		default:
 			//if we are set to FFMPEG convert,lets  not muddle with the file extension
 			if($CFG->filter_poodll_ffmpeg && $mediatype=='audio' && $CFG->filter_poodll_audiotranscode){
 				//do nothing
@@ -271,28 +267,28 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 				}
 			}
 	}
-	
+
 	//init our fs object
 	$fs = get_file_storage();
 	//assume a root level filepath
 	$filepath="/";
-	
 
-		
-	
+
+
+
 	//make our filerecord
-	 $record = new stdClass();
-     $record->filearea = $farea;
-    $record->component = $comp;
-    $record->filepath = $filepath;
-    $record->itemid   = $itemid;
-    $record->license  = $CFG->sitedefaultlicense;
-    $record->author   = 'Moodle User';
+	$record = new stdClass();
+	$record->filearea = $farea;
+	$record->component = $comp;
+	$record->filepath = $filepath;
+	$record->itemid   = $itemid;
+	$record->license  = $CFG->sitedefaultlicense;
+	$record->author   = 'Moodle User';
 	$record->contextid = $contextid;
-    $record->userid    = $USER->id;
-    $record->source    = '';
-        
-  
+	$record->userid    = $USER->id;
+	$record->source    = '';
+
+
 	//make filename and set it
 	//we are trying to remove useless junk in the draft area here
 	//when we know its stable, we will do the same for non images too
@@ -304,8 +300,8 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	$fileextension =  "." . $fileextension;
 	$filename = $filenamebase . $fileextension;
 	$record->filename = $filename;
-	
-	
+
+
 	//in most cases we will be storing files in a draft area and lettign Moodle do the rest
 	//previously we only allowed one file in draft, but we removed that limit
 	/*
@@ -313,21 +309,21 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		$fs->delete_area_files($contextid,$comp,$farea,$itemid);
 	}
 	*/
-	
+
 	//if file already exists, raise an error
 	if($fs->file_exists($contextid,$comp,$farea,$itemid,$filepath,$filename)){
 		if($mediatype=='image'){
 			//delete any existing draft files.
 			$file = $fs->get_file($contextid,$comp,$farea,$itemid,$filepath,$filename);
 			$file->delete();
-			
+
 			//check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes
 			$metapos = strPos($filedata,",");
 			if($metapos >10 && $metapos <30){
 				$filedata = substr($filedata,$metapos+1);
 			}
-	
-			//decode the data and store it 
+
+			//decode the data and store it
 			$xfiledata = base64_decode($filedata);
 			//create the file
 			$stored_file = $fs->create_file_from_string($record, $xfiledata);
@@ -338,7 +334,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 			array_push($return['messages'],"Already exists, file with filename:" . $filename );
 		}
 	}else{
-		
+
 		//check there is no metadata prefixed to the base 64. From OL widgets, none, from JS yes
 		//if so it will look like this: data:image/png;base64,iVBORw0K
 		//we remove it, there must be a better way of course ...
@@ -347,33 +343,33 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		if($metapos >10 && $metapos <30){
 			//$trunced = substr($filedata,0,$metapos+8);
 			$filedata = substr($filedata,$metapos+1);
-		
+
 		}
-	
+
 		//decode the data and store it in memory
 		$xfiledata = base64_decode($filedata);
-		
+
 		//Determine if we need to convert and what format the conversions should take
 		if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_audiotranscode && $fileextension!=".mp3" && $mediatype=="audio"){
-			$convext = ".mp3";	
+			$convext = ".mp3";
 		}else if($CFG->filter_poodll_ffmpeg && $CFG->filter_poodll_videotranscode && $fileextension!=".mp4" && $mediatype=="video"){
 			$convext = ".mp4";
 		}else{
 			$convext=false;
 		}
-		
+
 		//if we need to convert with ffmpeg, get on with it
 		if($convext){
 			//determine the temp directory
 			if (isset($CFG->tempdir)){
-				$tempdir =  $CFG->tempdir . "/";	
+				$tempdir =  $CFG->tempdir . "/";
 			}else{
 				//moodle 2.1 users have no $CFG->tempdir
 				$tempdir =  $CFG->dataroot . "/temp/";
 			}
 			//actually make the file on disk so FFMPEG can get it
 			$ret = file_put_contents($tempdir . $filename, $xfiledata);
-			
+
 			//if successfully saved to disk, convert
 			if($ret){
 				$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $convext==".mp3") ||
@@ -385,45 +381,44 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 				}
 				if($stored_file){
 					$filename=$stored_file->get_filename();
-		
-				//if failed, default to using the original uploaded data
-				//and delete the temp file we made
+
+					//if failed, default to using the original uploaded data
+					//and delete the temp file we made
 				}else{
 					$stored_file = $fs->create_file_from_string($record, $xfiledata);
 					if(is_readable(realpath($tempdir . $filename))){
 						unlink(realpath($tempdir . $filename));
 					}
-				}				
-				
-			//if couldn't create on disk fall back to the original data
+				}
+
+				//if couldn't create on disk fall back to the original data
 			}else{
 				$stored_file = $fs->create_file_from_string($record, $xfiledata);
 			}
-			
-		//if we are not converting, then just create our moodle file entry with original file data 		
+
+			//if we are not converting, then just create our moodle file entry with original file data
 		}else{
 			$stored_file = $fs->create_file_from_string($record, $xfiledata);
 		}
-	
+
 	}
-	
+
 	//if successful return filename
 	if($stored_file){
 		array_push($return['messages'],$filename );
 
-	//if unsuccessful, return error
+		//if unsuccessful, return error
 	}else{
 		$return['success']=false;
 		array_push($return['messages'],"unable to save file with filename:" . $filename );
 	}
-		
+
 	//we process the result for return to browser
-	$xml_output=prepareXMLReturn($return, $actionid);	
-	
+	$xml_output=prepareXMLReturn($return, $actionid);
+
 	//we return to widget/client the result of our file operation
 	return $xml_output;
 }
-
 
 /*
 * Extract an image from the video for use as splash
@@ -672,6 +667,412 @@ global $CFG;
 
 }//end of convert with FFMPEG
 
+
+
+//this turns our results array into an xml string for returning to browser
+function prepareXMLReturn($resultArray, $requestid){
+	//set up xml to return
+	$xml_output = "<result requestid='" . $requestid . "'>";
+
+	if($resultArray['success']){
+		$xml_output .= 'success';
+		//not sure how this will impact attachment explorer .. (expects no messages here, but recorder expects..)
+		foreach ($resultArray['messages'] as $message) {
+			$xml_output .= '<error>' . $message . '</error>';
+		}
+	}else{
+		$xml_output .= 'failure';
+		foreach ($resultArray['messages'] as $message) {
+			$xml_output .= '<error>' . $message . '</error>';
+		}
+	}
+
+
+	//close off xml to return
+	$xml_output .= "</result>";
+	return $xml_output;
+}
+
+
+//this merges two result arrays, mostly for use with actions across recursive directories.
+function mergeReturnArrays($return1,$return2){
+	$return1['success'] = $return1['success'] && $return2['success'];
+	//process return values
+	if(!$return1['success'] && !$return2['success']){
+		foreach ($return2['messages'] as $message) {
+			array_push($return1['messages'],$message);
+		}
+	}
+	return $return1;
+}
+
+//this initialises and returns a results array
+function fetchReturnArray($initsuccess=false){
+	//new filearray
+	$return = array();
+	$return['messages'] = array();
+	$return['success'] = $initsuccess;
+	return $return;
+}
+
+//The basename function is unreliable with multibyte strings
+//This is a cobbled together, dodgey alternative
+function poodllBasename($filepath){
+	//return basename($filepath,'/');
+	//if it is a directory then we should remove the trailing slash because it will
+	//get exploded into an empty string
+	if(substr($filepath,-1)==DIRECTORY_SEPARATOR){
+		$filepath = substr($filepath,0,-1);
+	}
+	return end(explode(DIRECTORY_SEPARATOR,$filepath));
+
+}
+
+//This is a convenience function for checking that a storedfile is writeable
+//
+function fileIsWritable($f){
+	//get the file brower object
+
+	$browser = get_file_browser();
+	$thecontext = context::instance_by_id($f->get_contextid());//get_context_instance_by_id($f->get_contextid());
+	$fileinfo = $browser->get_file_info($thecontext, $f->get_component(),$f->get_filearea(), $f->get_itemid(), $f->get_filepath(), $f->get_filename());
+	//if we have insuff permissions to delete. Exit.
+	if(!$fileinfo || !$fileinfo->is_writable()){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+//This is a convenience function for checking that a storedfile is readable
+//
+function fileIsReadable($f){
+	//get the file brower object
+	$browser = get_file_browser();
+	$thecontext = context::instance_by_id($f->get_contextid());//get_context_instance_by_id($f->get_contextid());
+	$fileinfo = $browser->get_file_info($thecontext, $f->get_component(),$f->get_filearea(), $f->get_itemid(), $f->get_filepath(), $f->get_filename());
+	//if we have insuff permissions to delete. Exit.
+	if(!$fileinfo || !$fileinfo->is_readable()){
+		return false;
+	}else{
+		return true;
+	}
+}
+
+
+//This tells us if the path can be written to
+//dirs should have a trailing slash and root is / . if dir, filename should be blank
+function pathIsWritable($moduleid, $courseid, $itemid, $filearea,$filepath=DIRECTORY_SEPARATOR,$filename=""){
+	global $DB;
+
+
+	//get a handle on the module context
+	$thiscontext = context_module::instance($moduleid);//get_context_instance(CONTEXT_MODULE,$moduleid);
+
+	//fetch info and ids about the module calling this data
+	$course = $DB->get_record('course', array('id'=>$courseid));
+	$modinfo = get_fast_modinfo($course);
+	$cm = $modinfo->get_cm($moduleid);
+	$component = "mod_" . $cm->modname;
+
+	//FIlter could submit submission/draft/content/intro as options here
+	if($filearea == "") {$filearea ="content";}
+
+
+	//get our file object
+	$filepath=DIRECTORY_SEPARATOR;
+	$filename="";
+	$browser = get_file_browser();
+	$fileinfo = $browser->get_file_info($thiscontext, $component,$filearea, $itemid, $filepath, $filename);
+
+	//return writeable or not
+	if($fileinfo && $fileinfo->is_writable()){
+		return true;
+	}else{
+		return false;
+	}
+}
+
+
+//This is used to sort an array of filenames alphabetically
+function compareFilenames($a, $b)
+{
+	return strcasecmp($a->get_filename(), $b->get_filename());
+}
+
+//This is used to sort an array of directory names alphabetically
+function compareDirnames($a, $b)
+{
+	return strcasecmp(poodllBasename($a['dirfile']->get_filepath()), poodllBasename($b['dirfile']->get_filepath()));
+}
+
+
+
+
+/*
+* This function is a simple replacement for pluginfile.php when called from assignemnets
+* There is whitespace, newline chars, added at present(20120306) so need to bypass
+*
+*/
+function poodllpluginfile($contextid,$component,$filearea,$itemid,$filepath,$filename){
+
+	$fs = get_file_storage();
+	$br = get_file_browser();
+	$f = $fs->get_file($contextid, $component, $filearea, $itemid, $filepath, $filename);
+
+	//if no file we just quit.
+	if(!$f){return;}
+
+	//get permission info for this file: but it doesn't work oh no.....another moodle bug?
+	/*
+	$thecontext = get_context_instance_by_id($contextid);
+	$fileinfo = $br->get_file_info($thecontext, $component,$filearea, $itemid, $filepath, $filename);
+
+	//if we don't have permission to read, exit
+	if(!$fileinfo || !$fileinfo->is_readable()){echo "crap"; return;}
+		*/
+
+	//send_stored_file also works: but we are using send file, for no reason really
+	//send_stored_file($f, 0, 0, true); // download MUST be forced - security!
+
+	$fcontent = $f->get_content();
+	send_file($fcontent, $filename, 0, 0, true, true, "video/x-flv");
+	return;
+}
+
+/* download file from remote server and stash it in our file area */
+//15,'123456789.flv','user','draft','746337947','99999'
+function instance_remotedownload($contextid,$filename,$component, $filearea,$itemid, $requestid, $filepath='/'){
+	global $CFG,$USER;
+//set up return object
+//set up return object
+
+	$return=fetchReturnArray(true);
+
+	//set up auto transcoding (mp3 or mp4) or not
+	//The jsp to call is different.
+	$jsp="download.jsp";
+	$convertlocally=false;
+	$downloadfilename = $filename;
+	$ext = substr($filename,-4);
+	$filenamebase = substr($filename,0,-4);
+	switch($ext){
+
+		case ".mp4":
+			if ($CFG->filter_poodll_ffmpeg){
+				$convertlocally=true;
+				$downloadfilename = $filenamebase . ".flv";
+			}else{
+				$jsp="convert.jsp";
+			}
+			break;
+
+		case ".mp3":
+			if ($CFG->filter_poodll_ffmpeg){
+				$convertlocally=true;
+				$downloadfilename = $filenamebase . ".flv";
+			}else{
+				$jsp="convert.jsp";
+			}
+			break;
+
+		case ".png":
+			$jsp="snapshot.jsp";
+			break;
+
+		default:
+			$jsp="download.jsp";
+			break;
+
+
+
+	}
+
+	//setup our file manipulators
+	$fs = get_file_storage();
+	$browser = get_file_browser();
+
+	//create the file record for our new file
+	$file_record = new stdClass();
+	$file_record->userid    = $USER->id;
+	$file_record->contextid = $contextid;
+	$file_record->component = $component;
+	$file_record->filearea = $filearea;
+	$file_record->itemid   = $itemid;
+	$file_record->filepath = $filepath;
+	$file_record->filename = $filename;
+	$file_record->license  = $CFG->sitedefaultlicense;
+	$file_record->author   = 'Moodle User';
+	$file_record->source    = '';
+	$file_record->timecreated = time();
+	$file_record->timemodified= time();
+
+
+	//one condition of using this function is that only one file can be here,
+	//attachment limits
+	/*
+    if($filearea=='draft'){
+        $fs->delete_area_files($contextid,$component,$filearea,$itemid);
+    }
+    */
+
+	//if file already exists, delete it
+	//we could use fileinfo, but it don&'t work
+	if($fs->file_exists($contextid,$component,$filearea,$itemid,$filepath,$filename)){
+		//delete here ---
+	}
+
+
+	//setup download information
+	$red5_fileurl= "http://" . $CFG->filter_poodll_servername .
+		":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" .
+		$CFG->filter_poodll_serverid . "&filename=" . $downloadfilename . "&caller=" . urlencode($CFG->wwwroot);
+	//download options
+	$options = array();
+	$options['headers']=null;
+	$options['postdata']=null;
+	$options['fullresponse']=false;
+	$options['timeout']=300;
+	$options['connecttimeout']=20;
+	$options['skipcertverify']=false;
+	$options['calctimeout']=false;
+
+	//clear the output buffer, otherwise strange characters can get in to our file
+	//seems to have no effect though ...
+	while (ob_get_level()) {
+		ob_end_clean();
+	}
+
+
+	//branch logic depending on whether (converting locally) or (not conv||convert on server)
+	if($convertlocally){
+		//determine the temp directory
+		if (isset($CFG->tempdir)){
+			$tempdir =  $CFG->tempdir . "/";
+		}else{
+			//moodle 2.1 users have no $CFG->tempdir
+			$tempdir =  $CFG->dataroot . "/temp/";
+		}
+		//actually make the file on disk so FFMPEG can get it
+		$mediastring = file_get_contents($red5_fileurl);
+		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
+		//if successfully saved to disk, convert
+		if($ret){
+			$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $ext==".mp3") ||
+				($CFG->filter_poodll_bgtranscode_video && $ext==".mp4");
+			if($do_bg_encoding && $CFG->version>=2014051200){
+				$stored_file = convert_with_ffmpeg_bg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
+			}else{
+				$stored_file = convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
+			}
+
+
+
+			if($stored_file){
+				$filename=$stored_file->get_filename();
+
+				//setup our return object
+				$returnfilepath = $filename;
+				array_push($return['messages'],$returnfilepath );
+
+				//if failed, default to using the original uploaded data
+				//and delete the temp file we made
+			}else{
+				$return['success']=false;
+				array_push($return['messages'],"Unable to convert file locally." );
+
+				if(is_readable(realpath($tempdir . $filename))){
+					unlink(realpath($tempdir . $filename));
+				}
+			}
+		}else{
+			$return['success']=false;
+			array_push($return['messages'],"Unable to create local temp file." );
+		}
+
+		//we process the result for return to browser
+		$xml_output=prepareXMLReturn($return, $requestid);
+
+		//we return to browser the result of our file operation
+		return $xml_output;
+	}
+
+
+	//If get here we are downloading from JSP only, ie not converting locally
+	//actually copy over the file from remote server
+	if(!$fs->create_file_from_url($file_record, $red5_fileurl,$options, false)){
+		//	echo "boo:" . $red5_fileurl;
+		$return['success']=false;
+		array_push($return['messages'],"Unable to create file from url." );
+	}else{
+		// echo "yay:" . $red5_fileurl;
+		//get a file object if successful
+		$thecontext = context::instance_by_id($contextid);//get_context_instance_by_id($contextid);
+		$fileinfo = $browser->get_file_info($thecontext, $component,$filearea, $itemid, $filepath, $filename);
+
+		//if we could get a fileinfo object, return the url of the object
+		if($fileinfo){
+			//$returnfilepath  = $fileinfo->get_url();
+			//echo "boo:" . $red5_fileurl;
+			$returnfilepath = $filename;
+			array_push($return['messages'],$returnfilepath );
+		}else{
+			//if we couldn't get an url and it is a draft file, guess the URL
+			//<p><a href="http://m2.poodll.com/draftfile.php/5/user/draft/875191859/IMG_0594.MOV">IMG_0594.MOV</a></p>
+			if($filearea == 'draft'){
+
+				$returnfilepath = $filename;
+				array_push($return['messages'],$returnfilepath );
+			}else{
+				$return['success']=false;
+				array_push($return['messages'],"Unable to get URL for file." );
+			}
+		}//end of if fileinfo
+
+
+	}//end of if could create_file_from_url
+
+
+	//we process the result for return to browser
+	$xml_output=prepareXMLReturn($return, $requestid);
+
+	//we return to browser the result of our file operation
+	return $xml_output;
+
+
+}
+
+function instance_download($mimetype,$filename,$filehash,$requestid){
+//paramone=mimetype paramtwo=filename paramthree=filehash requestid,
+	header("Cache-Control: public");
+	header("Content-Description: File Transfer");
+	header("Content-Disposition: attachment;filename='" . $filename . "'");
+	header("Content-Type: " . $mimetype);
+	header("Content-Transfer-Encoding: binary");
+//header('Accept-Ranges: bytes');
+
+	$fs = get_file_storage();
+	$f = $fs->get_file_by_hash($filehash);
+	if($f){
+		//$content = $f->get_content();
+		//echo $content;
+		$f->readfile();
+	}else{
+		//set up return object
+		$return=fetchReturnArray(false);
+		array_push($return['messages'],"file not found." );
+		$xml_output=prepareXMLReturn($return, $requestid);
+		header("Content-type: text/xml");
+		echo "<?xml version=\"1.0\"?>\n";
+		echo $xml_output;
+		return;
+	}
+}
+
+
+
+
+/*
 //Fetch a sub directory list for file explorer  
 //calls itself recursively, dangerous
 function fetch_repodircontents($dir,  $recursive=false){
@@ -711,9 +1112,9 @@ function fetch_repodircontents($dir,  $recursive=false){
 	}
 	return $xml_output;
 }
+*/
 
-
-
+/*
 //Fetch a directory list from the repo
 function fetch_repodirlist($startpath=''){
 	global $CFG;	
@@ -732,7 +1133,7 @@ function fetch_repodirlist($startpath=''){
 	
 	
 	
-	/* New way which works with php5, but not is_dir : Justin */
+	// New way which works with php5, but not is_dir : Justin
 	$files = scandir($fullpath);
 	if (!empty($files)) {
 		$xml_output .= fetch_repodircontents($fullpath,true);
@@ -748,8 +1149,9 @@ function fetch_repodirlist($startpath=''){
 	
 	
 }
+*/
 
-
+/*
 //Fetch a directory list from the repo
 function fetch_repos(){
 	global $CFG, $DB;	
@@ -794,21 +1196,6 @@ function fetch_repos(){
 	
 	
 
-/* This way just got all the sub directories of repository
-	$files = scandir($fullpath);
-	if (!empty($files)) {
-		
-		foreach ($files as $afile){
-			$afile =  htmlspecialchars( $afile,ENT_QUOTES);
-			if(is_dir($fullpath . DIRECTORY_SEPARATOR .  $afile)){
-				if($afile != "." && $afile != ".."){
-					$xml_output .="<repo name='" . $afile . "' path='" . $fullpath . DIRECTORY_SEPARATOR .  $afile . "'/>";
-				}
-			}
-		}
-		
-	}
-	*/
 	
 	//close xml to return
 	$xml_output .= "</repositories>";
@@ -818,8 +1205,9 @@ function fetch_repos(){
 	
 	
 }
+*/
 
-
+/*
 
 //This will fetch the contents of a module instance directory, can be recursively called
 function fetch_instancedir_contents($thedir, &$thecontext, $recursive=false){
@@ -840,11 +1228,7 @@ function fetch_instancedir_contents($thedir, &$thecontext, $recursive=false){
 			//$filename =$f->get_filename();
 			$filename=poodllBasename($f->get_filepath());
 			//$filename=basename($f->get_filepath(),"/");
-			/*
-			if ($filename == "." || $filename == "..") {
-				continue;
-			}
-			*/
+
 			
 			
 					
@@ -855,14 +1239,7 @@ function fetch_instancedir_contents($thedir, &$thecontext, $recursive=false){
 				//so we don't reveal it
 				if($fileinfo){
 					$urltofile = $fileinfo->get_url();
-				/* if(true){
-					if(!$fileinfo){
-							$urltofile="denied";
-						}else{
-							$urltofile = $fileinfo->get_url();
-						}
-			
-					*/
+
 					
 					//filehash for any delete/edit manipulations we wish to do
 					$hash= $f->get_pathnamehash();	
@@ -898,13 +1275,7 @@ function fetch_instancedir_contents($thedir, &$thecontext, $recursive=false){
 				//get the url to the file
 				if($fileinfo){
 					$urltofile = $fileinfo->get_url();
-			/*	 if(true){
-					if(!$fileinfo){
-							$urltofile="denied";
-						}else{
-							$urltofile = $fileinfo->get_url();
-						}
-						*/
+
 						
 					
 					//filehash for any delete/edit manipulations we wish to do
@@ -927,7 +1298,9 @@ function fetch_instancedir_contents($thedir, &$thecontext, $recursive=false){
 	return $xml_output;
 
 }
+*/
 
+/*
 //This is just so we can get a list of stuff in the old course legacy files area
 //we can try if it works but it might not.
 function fetch_legacydirlist($courseid){
@@ -966,6 +1339,11 @@ $contextid = $thiscontext->id;
 	return $xml_output;
 	
 }
+*/
+
+
+
+/*
 
 //This will fetch the directory list of all the files
 //available in a module instance (ie added from repository)
@@ -1006,310 +1384,10 @@ global $CFG, $DB;
 	return $xml_output;
 
 }
-
-
-//This will delete all files attached to a module instance
-//this works but it should no really be used by joe user.
-//commented because unsecure. Justin 20111103
-/*
-function instance_deleteall($moduleid, $courseid, $filearea, $requestid){
-	global $CFG, $DB;
-
-	//FIlter could submit submission/draft/content/intro as options here
-	if($filearea == "") {$filearea ="content";}
-	
-	//fetch info and ids about the module calling this data
-	$course = $DB->get_record('course', array('id'=>$courseid));
-	$modinfo = get_fast_modinfo($course);
-	$cm = $modinfo->get_cm($moduleid);
-	$component = "mod_" . $cm->modname;
-	
-	//get a handle on the module context
-	$thiscontext = get_context_instance(CONTEXT_MODULE,$moduleid);
-	$contextid = $thiscontext->id;
-
-	//get filehandling objects
-	$browser = get_file_browser();
-	$fs = get_file_storage();
-
-	
-	//set up xml to return	
-	$xml_output = "<result requestid='" . $requestid . "'>\n";
-	
-	
-	if($fs->delete_area_files($contextid, $component, $filearea, $itemid)){
-		$xml_output .= "success";
-	}else{
-		$xml_output .= "failure";
-	}
-	
-	$xml_output .= "</result>\n";	
-	
-	//Return the data
-	return $xml_output;
-
-}
 */
 
+
 /*
-* This function is a simple replacement for pluginfile.php when called from assignemnets
-* There is whitespace, newline chars, added at present(20120306) so need to bypass
-*
-*/
-function poodllpluginfile($contextid,$component,$filearea,$itemid,$filepath,$filename){
-	
-	$fs = get_file_storage();
-	$br = get_file_browser();
-	$f = $fs->get_file($contextid, $component, $filearea, $itemid, $filepath, $filename);
-	
-	//if no file we just quit.
-	if(!$f){return;}
-	
-	//get permission info for this file: but it doesn't work oh no.....another moodle bug?
-	/*
-	$thecontext = get_context_instance_by_id($contextid);
-	$fileinfo = $br->get_file_info($thecontext, $component,$filearea, $itemid, $filepath, $filename);	
-
-	//if we don't have permission to read, exit
-	if(!$fileinfo || !$fileinfo->is_readable()){echo "crap"; return;}
-		*/
-	
-	//send_stored_file also works: but we are using send file, for no reason really
-	//send_stored_file($f, 0, 0, true); // download MUST be forced - security!
-	
-	$fcontent = $f->get_content();
-	send_file($fcontent, $filename, 0, 0, true, true, "video/x-flv");
-	return;
-}
-
-/* download file from remote server and stash it in our file area */
-//15,'123456789.flv','user','draft','746337947','99999'
-function instance_remotedownload($contextid,$filename,$component, $filearea,$itemid, $requestid, $filepath='/'){
-global $CFG,$USER;
-//set up return object	
-//set up return object	
-
-$return=fetchReturnArray(true);
-
-	//set up auto transcoding (mp3 or mp4) or not
-	//The jsp to call is different.
-	$jsp="download.jsp";
-	$convertlocally=false;
-	$downloadfilename = $filename;
-	$ext = substr($filename,-4);
-	$filenamebase = substr($filename,0,-4); 	
-	switch($ext){
-	
-		case ".mp4":
-				if ($CFG->filter_poodll_ffmpeg){
-					$convertlocally=true;
-					$downloadfilename = $filenamebase . ".flv";
-				}else{
-					$jsp="convert.jsp";
-				}
-				break;
-				
-		case ".mp3":
-				if ($CFG->filter_poodll_ffmpeg){	
-					$convertlocally=true;
-					$downloadfilename = $filenamebase . ".flv";
-				}else{
-					$jsp="convert.jsp";
-				}
-				break;
-				
-		case ".png":
-				$jsp="snapshot.jsp";
-				break;
-				
-		default:
-				$jsp="download.jsp";
-				break;
-	
-	
-	
-	}
-	
-	//setup our file manipulators
-		$fs = get_file_storage();
-		$browser = get_file_browser();
-		
-	//create the file record for our new file
-	 $file_record = new stdClass();
-	 $file_record->userid    = $USER->id;
-	 $file_record->contextid = $contextid;
-	 $file_record->component = $component;
-     $file_record->filearea = $filearea;
-	 $file_record->itemid   = $itemid;
-     $file_record->filepath = $filepath;
-	 $file_record->filename = $filename;
-	 $file_record->license  = $CFG->sitedefaultlicense;
-     $file_record->author   = 'Moodle User';
-	 $file_record->source    = '';
-	 $file_record->timecreated = time(); 
-	 $file_record->timemodified= time();
-
-
-		//one condition of using this function is that only one file can be here,
-		//attachment limits
-		/*
-		if($filearea=='draft'){
-			$fs->delete_area_files($contextid,$component,$filearea,$itemid);
-		}
-		*/
-		
-		//if file already exists, delete it
-		//we could use fileinfo, but it don&'t work
-		if($fs->file_exists($contextid,$component,$filearea,$itemid,$filepath,$filename)){
-			//delete here ---
-		}
-	
-	
-	//setup download information
-	$red5_fileurl= "http://" . $CFG->filter_poodll_servername . 
-						":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" . 
-						$CFG->filter_poodll_serverid . "&filename=" . $downloadfilename . "&caller=" . urlencode($CFG->wwwroot);
-	//download options
-	$options = array();
-	$options['headers']=null;
-	$options['postdata']=null;
-	$options['fullresponse']=false;
-	$options['timeout']=300;
-	$options['connecttimeout']=20;
-	$options['skipcertverify']=false;
-	$options['calctimeout']=false;
-	
-	//clear the output buffer, otherwise strange characters can get in to our file
-	//seems to have no effect though ...
-	while (ob_get_level()) {
-					ob_end_clean();
-			} 
-				
-				
-	//branch logic depending on whether (converting locally) or (not conv||convert on server)
-	if($convertlocally){
-		//determine the temp directory
-		if (isset($CFG->tempdir)){
-			$tempdir =  $CFG->tempdir . "/";	
-		}else{
-			//moodle 2.1 users have no $CFG->tempdir
-			$tempdir =  $CFG->dataroot . "/temp/";
-		}
-		//actually make the file on disk so FFMPEG can get it
-		$mediastring = file_get_contents($red5_fileurl);
-		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
-		//if successfully saved to disk, convert
-		if($ret){
-			$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $ext==".mp3") ||
-					($CFG->filter_poodll_bgtranscode_video && $ext==".mp4");
-			if($do_bg_encoding && $CFG->version>=2014051200){
-					$stored_file = convert_with_ffmpeg_bg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
-				}else{
-					$stored_file = convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
-				}
-		
-		
-			
-			if($stored_file){
-				$filename=$stored_file->get_filename();
-				
-				//setup our return object
-				$returnfilepath = $filename;		
-				array_push($return['messages'],$returnfilepath );
-	
-			//if failed, default to using the original uploaded data
-			//and delete the temp file we made
-			}else{
-				$return['success']=false;
-				array_push($return['messages'],"Unable to convert file locally." );
-				
-				if(is_readable(realpath($tempdir . $filename))){
-					unlink(realpath($tempdir . $filename));
-				}
-			}
-		}else{
-			$return['success']=false;
-			array_push($return['messages'],"Unable to create local temp file." );
-		}
-		
-		//we process the result for return to browser
-		$xml_output=prepareXMLReturn($return, $requestid);	
-		
-		//we return to browser the result of our file operation
-		return $xml_output;
-	}
-	
-	
-	//If get here we are downloading from JSP only, ie not converting locally
-		//actually copy over the file from remote server
-		if(!$fs->create_file_from_url($file_record, $red5_fileurl,$options, false)){
-		//	echo "boo:" . $red5_fileurl;
-			$return['success']=false;
-			array_push($return['messages'],"Unable to create file from url." );
-		}else{
-			// echo "yay:" . $red5_fileurl;
-				 //get a file object if successful
-				 $thecontext = context::instance_by_id($contextid);//get_context_instance_by_id($contextid);
-				 $fileinfo = $browser->get_file_info($thecontext, $component,$filearea, $itemid, $filepath, $filename);
-			
-				//if we could get a fileinfo object, return the url of the object
-				 if($fileinfo){
-						//$returnfilepath  = $fileinfo->get_url();
-						//echo "boo:" . $red5_fileurl;
-						$returnfilepath = $filename;
-						array_push($return['messages'],$returnfilepath );
-				}else{
-					//if we couldn't get an url and it is a draft file, guess the URL
-					//<p><a href="http://m2.poodll.com/draftfile.php/5/user/draft/875191859/IMG_0594.MOV">IMG_0594.MOV</a></p>
-					if($filearea == 'draft'){
-						
-						$returnfilepath = $filename;		
-						array_push($return['messages'],$returnfilepath );
-					}else{
-						$return['success']=false;
-						array_push($return['messages'],"Unable to get URL for file." );
-					}
-				}//end of if fileinfo
-	
-				
-		}//end of if could create_file_from_url
-		
-
-		//we process the result for return to browser
-		$xml_output=prepareXMLReturn($return, $requestid);	
-		
-		//we return to browser the result of our file operation
-		return $xml_output;
-
-		
-}
-
-function instance_download($mimetype,$filename,$filehash,$requestid){
-//paramone=mimetype paramtwo=filename paramthree=filehash requestid, 
-header("Cache-Control: public");
-header("Content-Description: File Transfer");
-header("Content-Disposition: attachment;filename='" . $filename . "'");
-header("Content-Type: " . $mimetype);
-header("Content-Transfer-Encoding: binary");
-//header('Accept-Ranges: bytes');
-
-			$fs = get_file_storage();
-			$f = $fs->get_file_by_hash($filehash);
-			if($f){
-				//$content = $f->get_content();
-				//echo $content;
-				$f->readfile();
-			}else{
-				//set up return object	
-				$return=fetchReturnArray(false);
-				array_push($return['messages'],"file not found." );
-				$xml_output=prepareXMLReturn($return, $requestid);	
-				header("Content-type: text/xml");
-				echo "<?xml version=\"1.0\"?>\n";
-				echo $xml_output;
-				return;
-			}
-}
 
 //This will delete a single file/dir from a module instance
 function instance_deletefile($filehash, $requestid){
@@ -1337,7 +1415,9 @@ function instance_deletefile($filehash, $requestid){
 	$xml_output=prepareXMLReturn($return, $requestid);		   
 	return $xml_output;
 }
+*/
 
+/*
 //This will delete a single file/dir from a module instance
 function instance_fetchfileinfo($filehash, $requestid){
 	$fs = get_file_storage();
@@ -1365,8 +1445,9 @@ function instance_fetchfileinfo($filehash, $requestid){
 	$xml_output=prepareXMLReturn($return, $requestid);		   
 	return $xml_output;
 }
+*/
 
-
+/*
 //it is called by instance_delete, and instance_rename/copyas file
 //BOGUS BOGUS BOGUS
 function bogus_instance_deletefile_internal($f){
@@ -1399,6 +1480,10 @@ function bogus_instance_deletefile_internal($f){
 			}
 			return $return;
 }
+
+*/
+
+/*
 //This will delete the contents of a directory in a module instance
 //it may be called recursively if the dir contains sub dirs
 function bogus_instance_deletedircontents($sfdir){
@@ -1458,7 +1543,9 @@ function bogus_instance_deletedircontents($sfdir){
 	
 	return $return;
 }
+*/
 
+/*
 //This will delete a file or directory(by calling a recursive function), 
 //it is called by instance_delete, and instance_rename/copyas file
 function instance_deletefile_internal($f){
@@ -1492,6 +1579,9 @@ function instance_deletefile_internal($f){
 			}
 			return $return;
 }
+*/
+
+/*
 
 //This will delete the contents of a directory in a module instance
 //it may be called recursively if the dir contains sub dirs
@@ -1565,7 +1655,9 @@ function instance_deletedircontents($sfdir){
 	
 	return $return;
 }
+*/
 
+/*
 
 //This creates an empty dir in 
 //available in a module instance (ie added from repository)
@@ -1582,7 +1674,9 @@ function instance_createdir($moduleid, $courseid, $itemid, $filearea, $newdir, $
 	$xml_return = prepareXMLReturn($return,$requestid);
 	return $xml_return;
 }
+*/
 
+/*
 function do_createdir($moduleid, $courseid, $itemid, $filearea, $newdir){
 		global $CFG, $DB;
 
@@ -1639,11 +1733,18 @@ function do_createdir($moduleid, $courseid, $itemid, $filearea, $newdir){
 	return $return;	
 
 }
+*/
+
+/*
 
 //Returns boolean true if file at passed in path exists.
 function instance_exists($pathname){
 	return file_exists_by_hash($pathname);
 }
+*/
+
+
+/*
 
 //Copies over a single file from rep to module instance
 //workhorse function, is called internally
@@ -1736,7 +1837,9 @@ function do_copyfilein($moduleid, $courseid, $itemid, $filearea, $filepath,$newp
 	}
 	
 }
+*/
 
+/*
 
 //Copy a single file into an instance file area
 function instance_copyfilein($moduleid, $courseid, $itemid, $filearea, $filepath,$newpath, $requestid){
@@ -1752,9 +1855,9 @@ function instance_copyfilein($moduleid, $courseid, $itemid, $filearea, $filepath
 	return $xml_output;
 	
 }
+*/
 
-
-
+/*
 
 //Fetch a sub directory list for file explorer  
 //calls itself recursively
@@ -1789,7 +1892,9 @@ function instance_copydircontents($moduleid, $courseid, $itemid, $filearea, $dir
 
 	return $dirreturn;
 }
+*/
 
+/*
 
 //Copy an entire directory from rep over to module instance
 function instance_copydirin($moduleid, $courseid, $itemid, $filearea, $filepath,$newpath, $requestid){
@@ -1831,7 +1936,9 @@ function instance_copydirin($moduleid, $courseid, $itemid, $filearea, $filepath,
 	//$xml_output = "<result>I love you</result>";
 	return $xml_output;
 }
+*/
 
+/*
 function instance_duplicatefile($moduleid, $courseid, $itemid, $filearea, $filepath, $originalhash, $requestid){
 	
 	//set up return object	
@@ -1858,6 +1965,9 @@ function instance_duplicatefile($moduleid, $courseid, $itemid, $filearea, $filep
 	return $xml_output;
 
 }
+*/
+
+/*
 
 
 function instance_duplicatefilecontents($f, $moduleid, $courseid, $itemid, $filearea, $filepath , $requestid, $filename=''){
@@ -1965,6 +2075,9 @@ function instance_duplicatefilecontents($f, $moduleid, $courseid, $itemid, $file
 	return $return;
 
 }
+*/
+
+/*
 
 //here we rename a file or directory
 function instance_renamefile($moduleid, $courseid, $originalhash,$newfilename, $copyas, $requestid){
@@ -2025,6 +2138,9 @@ function instance_renamefile($moduleid, $courseid, $originalhash,$newfilename, $
 	return $xml_output;
 
 }
+*/
+
+/*
 
 function xinstance_renamefile($moduleid, $courseid, $itemid, $filearea,  $filepath,$newfilename, $copyas, $requestid){
 	global $CFG, $DB;
@@ -2115,7 +2231,9 @@ function xinstance_renamefile($moduleid, $courseid, $itemid, $filearea,  $filepa
 	return $xml_output;
 
 }
+*/
 
+/*
 
 //this initialises and returns a results array
 //But I think it may misguided, because we need more info at use time
@@ -2184,7 +2302,9 @@ function fetchRealUrl($moduleid,$courseid, $itemid, $filearea, $filepath, $reque
 
 
 }
+*/
 
+/*
 function getmoddata($courseid,$requestid){
 	global $DB;
 	
@@ -2195,11 +2315,7 @@ function getmoddata($courseid,$requestid){
  	$modinfo =& get_fast_modinfo($course);   
     get_all_mods($courseid, $mods, $modnames, $modnamesplural, $modnamesused);
     $sections = get_all_sections($courseid);
-     /* Displays the type of mod name - assignment/ quiz etc 
-    foreach($modnames as $modname) {
-	   array_push($return['messages'],$modname);
-    }
-    */
+
     
     $sectionarray = array();
     foreach($sections as $section){
@@ -2244,7 +2360,9 @@ function getmoddata($courseid,$requestid){
 	//$xml_output = prepareXMLReturn($return,$requestid);
 	return $xml_output;
 }
+*/
 
+/*
 function getLast20Files(){
 global $DB;
 	$sql = "select * from {files} order by id desc limit 20;";
@@ -2259,140 +2377,4 @@ global $DB;
 		
 	}
 }
-
-//this turns our results array into an xml string for returning to browser
-function prepareXMLReturn($resultArray, $requestid){
-	//set up xml to return	
-	$xml_output = "<result requestid='" . $requestid . "'>";
-
-		if($resultArray['success']){
-			$xml_output .= 'success';
-			//not sure how this will impact attachment explorer .. (expects no messages here, but recorder expects..)
-			foreach ($resultArray['messages'] as $message) {
-				$xml_output .= '<error>' . $message . '</error>';
-			}
-		}else{
-			$xml_output .= 'failure';
-			foreach ($resultArray['messages'] as $message) {
-				$xml_output .= '<error>' . $message . '</error>';
-			}
-		}
-	
-	
-	//close off xml to return	
-	$xml_output .= "</result>";	
-	return $xml_output;
-}
-
-
-//this merges two result arrays, mostly for use with actions across recursive directories.
-function mergeReturnArrays($return1,$return2){
-	$return1['success'] = $return1['success'] && $return2['success']; 
-	//process return values
-	if(!$return1['success'] && !$return2['success']){
-		foreach ($return2['messages'] as $message) {
-			array_push($return1['messages'],$message);
-		}
-	}
-	return $return1;
-}
-
-//this initialises and returns a results array
-function fetchReturnArray($initsuccess=false){
-	//new filearray
-	$return = array();
-	$return['messages'] = array();
-	$return['success'] = $initsuccess;
-	return $return;
-}
-
-//The basename function is unreliable with multibyte strings
-//This is a cobbled together, dodgey alternative
-function poodllBasename($filepath){
-		//return basename($filepath,'/');
-	//if it is a directory then we should remove the trailing slash because it will
-	//get exploded into an empty string
-	if(substr($filepath,-1)==DIRECTORY_SEPARATOR){
-		$filepath = substr($filepath,0,-1);
-	}
-	return end(explode(DIRECTORY_SEPARATOR,$filepath));
-	
-}
-
-//This is a convenience function for checking that a storedfile is writeable
-//
-function fileIsWritable($f){
-	//get the file brower object
-	
-	$browser = get_file_browser();
-	$thecontext = context::instance_by_id($f->get_contextid());//get_context_instance_by_id($f->get_contextid());
-	$fileinfo = $browser->get_file_info($thecontext, $f->get_component(),$f->get_filearea(), $f->get_itemid(), $f->get_filepath(), $f->get_filename());
-	//if we have insuff permissions to delete. Exit.
-	if(!$fileinfo || !$fileinfo->is_writable()){
-		return false;
-	}else{
-		return true;
-	}
-}
-
-//This is a convenience function for checking that a storedfile is readable
-//
-function fileIsReadable($f){
-	//get the file brower object
-	$browser = get_file_browser();
-	$thecontext = context::instance_by_id($f->get_contextid());//get_context_instance_by_id($f->get_contextid());
-	$fileinfo = $browser->get_file_info($thecontext, $f->get_component(),$f->get_filearea(), $f->get_itemid(), $f->get_filepath(), $f->get_filename());
-	//if we have insuff permissions to delete. Exit.
-	if(!$fileinfo || !$fileinfo->is_readable()){
-		return false;
-	}else{
-		return true;
-	}
-}
-
-
-//This tells us if the path can be written to
-//dirs should have a trailing slash and root is / . if dir, filename should be blank
-function pathIsWritable($moduleid, $courseid, $itemid, $filearea,$filepath=DIRECTORY_SEPARATOR,$filename=""){
-	global $DB;
-
-
-	//get a handle on the module context
-	$thiscontext = context_module::instance($moduleid);//get_context_instance(CONTEXT_MODULE,$moduleid);
-	
-	//fetch info and ids about the module calling this data
-	$course = $DB->get_record('course', array('id'=>$courseid));
-	$modinfo = get_fast_modinfo($course);
-	$cm = $modinfo->get_cm($moduleid);
-	$component = "mod_" . $cm->modname;
-	
-	//FIlter could submit submission/draft/content/intro as options here
-	if($filearea == "") {$filearea ="content";}
-
-	
-	//get our file object
-	$filepath=DIRECTORY_SEPARATOR;
-	$filename="";
-	$browser = get_file_browser();
-	$fileinfo = $browser->get_file_info($thiscontext, $component,$filearea, $itemid, $filepath, $filename);
-	
-	//return writeable or not
-	if($fileinfo && $fileinfo->is_writable()){
-		return true;
-	}else{
-		return false;
-	}
-}
-
-
-//This is used to sort an array of filenames alphabetically
-function compareFilenames($a, $b)
-{
-    return strcasecmp($a->get_filename(), $b->get_filename());
-}
-
-//This is used to sort an array of directory names alphabetically
-function compareDirnames($a, $b)
-{
-    return strcasecmp(poodllBasename($a['dirfile']->get_filepath()), poodllBasename($b['dirfile']->get_filepath()));
-}
+*/

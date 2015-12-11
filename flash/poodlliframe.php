@@ -30,42 +30,17 @@ global $CFG;
 	echo "</body></html>";
 	return;
 
-//This is used for all the flash widgets
 function fetchSWFWidgetCode($widget,$params,$width,$height, $bgcolor="#FFFFFF"){
 	global $CFG;
-	
-	//build the parameter string out of the passed in array
 
-	
-	//add in any common params
-	$params .= '&debug=false&lzproxied=false'; 
-	
-	//if we wish to pass in more common params, here is the place
-	//eg. $params .= '&modulename=' . $PAGE->cm->modname;
+	$widgetid = html_writer::random_id('laszlobase');
+	$widgetjson = \filter_poodll\poodlltools::fetchSWFWidgetJSON($widget,$params,$width,$height, $bgcolor="#FFFFFF", $widgetid);
 
-	//embed js library for OpenLaszlo
-	$embedcode = "<script type=\"text/javascript\" src=\"{$CFG->wwwroot}/filter/poodll/flash/embed-compressed.js\"></script> ";
+	$retcode = html_writer::div('','',array('id'=>$widgetid . 'Container'));
+	$retcode .=   '<script type="text/javascript" src="'. $CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js"></script>
+        <script type="text/javascript"> lz.embed.swf(' . $widgetjson . ')</script>';
 
-	
-	$retcode = "
-        <table><tr><td>
-        <script type=\'text/javascript\'>
-            lzOptions = { ServerRoot: \'\'};
-        </script> 
-       " . $embedcode . "
-        <script type=\"text/javascript\">
-" . '	lz.embed.swf({url: \'' . $CFG->wwwroot . '/filter/poodll/flash/' . $widget . $params . 
-		 '\', bgcolor: \'' . $bgcolor . '\', cancelmousewheel: true, allowfullscreen: true, width: \'' .$width . '\', height: \'' . $height . '\', id: \'lzapp_' . rand(100000, 999999) . '\', accessible: \'false\'});	
-		
-' . "
-        </script>
-        <noscript>
-            Please enable JavaScript in order to use this application.
-        </noscript>
-        </td></tr>
-		</table>";
-		
-		return $retcode;
+	return $retcode;
 
 }
 	

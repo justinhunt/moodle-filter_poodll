@@ -1,4 +1,4 @@
-<?php  //$Id: filtersettings.php,v 0.0.0.1 2010/01/15 22:40:00 thomw Exp $
+<?php  //$Id: settings.php,v 0.0.0.1 2010/01/15 22:40:00 thomw Exp $
 
 
 defined('MOODLE_INTERNAL') || die;
@@ -131,29 +131,10 @@ $items[] = new admin_setting_configtext('filter_poodll_smallgallheight', get_str
 
 //Legacy headings
 $items[] = new admin_setting_heading('filter_poodll_legacy_setting', get_string('filter_poodll_legacy_heading', 'filter_poodll'), '');
-$items[] = new admin_setting_configcheckbox('filter_poodll_usecourseid', get_string('usecourseid', 'filter_poodll'), '', 0);
-$items[] = new admin_setting_configtext('filter_poodll_filename', get_string('filename', 'filter_poodll'), '', 'poodll_file.flv');
-$items[] = new admin_setting_configcheckbox('filter_poodll_overwrite', get_string('overwrite', 'filter_poodll'), '', 1);
 $items[] = new admin_setting_configtext('filter_poodll_datadir', get_string('datadir', 'filter_poodll'), get_string('datadirdetails', 'filter_poodll'), 'poodlldata');
 
-$items[] = new admin_setting_configtext('filter_poodll_screencapturedevice', get_string('screencapturedevice', 'filter_poodll'), '', 'none');
-$items[] = new admin_setting_configtext('filter_poodll_talkbackwidth', get_string('talkbackwidth', 'filter_poodll'), '', '760', PARAM_INT);
-$items[] = new admin_setting_configtext('filter_poodll_talkbackheight', get_string('talkbackheight', 'filter_poodll'), '', '380', PARAM_INT);
 $items[] = new admin_setting_configtext('filter_poodll_newpairwidth', get_string('newpairwidth', 'filter_poodll'), '', '750', PARAM_INT);
 $items[] = new admin_setting_configtext('filter_poodll_newpairheight', get_string('newpairheight', 'filter_poodll'), '', '480', PARAM_INT);
-
-//screencast
-$items[] = new admin_setting_configtext('filter_poodll_showwidth', get_string('showwidth', 'filter_poodll'), '', '322', PARAM_INT);
-$items[] = new admin_setting_configtext('filter_poodll_showheight', get_string('showheight', 'filter_poodll'), '', '242', PARAM_INT);
-
-//$items[] = new admin_setting_configcheckbox('filter_poodll_forum_recording', get_string('forum_recording', 'filter_poodll'), '', 0);
-//$items[] = new admin_setting_configcheckbox('filter_poodll_forum_audio', get_string('forum_audio', 'filter_poodll'), '', 1);
-//$items[] = new admin_setting_configcheckbox('filter_poodll_forum_video', get_string('forum_video', 'filter_poodll'), '', 1);
-
-//$items[] = new admin_setting_configcheckbox('filter_poodll_journal_recording', get_string('journal_recording', 'filter_poodll'), '', 0);
-//$items[] = new admin_setting_configcheckbox('filter_poodll_journal_audio', get_string('journal_audio', 'filter_poodll'), '', 1);
-//$items[] = new admin_setting_configcheckbox('filter_poodll_journal_video', get_string('journal_video', 'filter_poodll'), '', 1);
-//bandwidth settings (how close is the poodll server ...) / pic qual 1 - 100
 
 
 foreach ($items as $item) {

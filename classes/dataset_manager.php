@@ -65,7 +65,7 @@ class dataset_manager {
 		foreach ($users as $user) {
 					 $xml_output .= "\t\t<pairelement username='" . $user->username. 
 										"' showname='" .  fullname($user) .
-										"' pictureurl='" . fetch_user_picture($user,120) . 
+										"' pictureurl='" . \filter_poodll\poodlltools::fetch_user_picture($user,120) .
 										"' />\n";
 					if ($usersummary == ""){
 							$usersummary .=  $user->username;					

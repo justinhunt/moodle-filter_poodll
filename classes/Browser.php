@@ -1,7 +1,13 @@
 <?php
+
+namespace filter_poodll;
+
+defined('MOODLE_INTERNAL') || die();
+
 	/**
 	 * File: Browser.php
 	 * Author: Chris Schuld (http://chrisschuld.com/)
+	 * Modified: Justin Hunt
 	 * Last Modified: August 20th, 2010
 	 * @version 1.9
 	 * @package PegasusPHP
@@ -22,7 +28,7 @@
 	 *
 	 * Typical Usage:
 	 *
-	 *   $browser = new Browser();
+	 *   $browser = new \filter_poodll\Browser();
 	 *   if( $browser->getBrowser() == Browser::BROWSER_FIREFOX && $browser->getVersion() >= 2 ) {
 	 *   	echo 'You have FireFox version 2 or greater';
 	 *   }
