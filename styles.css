@@ -26,6 +26,13 @@
 .filter_poodll_revealjs_section_back{
 	background: #8A07C0;
 }
+.filter_poodll_unregistered{
+    font-weight: bold;
+    border-style: double;
+    border-width: thin;
+    border-color: red;
+    padding: 3px;
+}
 
 
 /* playlist style */

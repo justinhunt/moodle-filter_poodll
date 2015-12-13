@@ -49,4 +49,92 @@ class filter_poodll_renderer extends plugin_renderer_base {
 	
 	}
 
+	public function fetchLiterallyCanvas($html)
+	{
+		return $html;
+
+	}
+
+	public function fetchDrawingBoard($html)
+	{
+		return $html;
+
+	}
+
+	public function fetchAudioPlayer($html)
+	{
+		return $html;
+
+	}
+
+	public function fetchVideoPlayer($html)
+	{
+		return $html;
+
+	}
+
+	public function fetchIFrameSWFWidgetCode($widget,$paramsArray,$width,$height, $bgcolor="#FFFFFF"){
+		global $CFG;
+
+		//There seems to be an internal margin on the iframe
+		//which I could not cancel entirely. So we compensate here to show all the widget
+		$marginadjust = 5;
+		$fwidth = $marginadjust + $width;
+		$fheight = $marginadjust + $height;
+
+		//build the parameter string out of the passed in array
+		$params="?";
+		foreach ($paramsArray as $key => $value) {
+			$params .= '&' . $key . '=' . $value;
+		}
+
+		//add in any common params
+		$params .= '&debug=false&lzproxied=false';
+
+		//path to our js idgets folder
+		$pathtoSWF= $CFG->wwwroot . '/filter/poodll/flash/';
+
+
+		$retframe="<iframe scrolling=\"no\" class=\"fitvidsignore\" frameBorder=\"0\" src=\"{$pathtoSWF}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}\" width=\"{$fwidth}\" height=\"{$fheight}\"></iframe>";
+		return $retframe;
+
+
+	}
+
+	public function fetchJSWidgetiFrame($widget,$rawparams,$width,$height, $bgcolor="#FFFFFF", $usemastersprite="false")
+	{
+		global $CFG;
+
+		//build the parameter string out of the passed in array
+		$params = "?";
+		foreach ($rawparams as $key => $value) {
+			$params .= '&' . $key . '=' . $value;
+		}
+
+		//add in any common params
+		$params .= '&debug=false&lzproxied=false';
+
+		//path to our js idgets folder
+		$pathtoJS = $CFG->wwwroot . '/filter/poodll/js/';
+		$pathtowidgetfolder = $CFG->wwwroot . '/filter/poodll/js/' . $widget . '/';
+
+
+		$retframe = "<iframe scrolling=\"no\" frameBorder=\"0\" src=\"{$pathtoJS}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}&usemastersprite={$usemastersprite}\" width=\"{$width}\" height=\"{$height}\"></iframe>";
+		return $retframe;
+	}
+
+
+//This is used for all the flash widgets
+	public function fetchLazloEmbedCode($widgetopts,$widgetid,$jsmodule)
+	{
+		global $CFG, $PAGE;
+
+		//this init the M.mod_readaloud thingy, after the page has loaded.
+		$PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
+		$PAGE->requires->js_init_call('M.filter_poodll.laszlohelper.init', array($widgetopts), false, $jsmodule);
+		$returnhtml = html_writer::div('', '', array('id' => $widgetid . 'Container'));
+		return $returnhtml;
+	}
+
+
 }

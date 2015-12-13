@@ -121,11 +121,12 @@ class filter_poodll extends moodle_text_filter {
 */
 function filter_poodll_callback(array $link){
 	global $CFG, $COURSE, $USER;
-	
-	
-	///$PAGE->requires->js_init_call('M.filter_poodll.init', array());
-	
-	
+
+		$lm = new \filter_poodll\licensemanager();
+		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
+			return $lm->fetch_unregistered_content();
+		}
+
 	//get our filter props
 	//we use a function in the poodll poodllresourcelib, because
 	//parsing will also need to be done by the html editor
@@ -420,6 +421,12 @@ function filter_poodll_callback(array $link){
  */
 function filter_poodll_pdl_callback($link) {
 global $CFG;
+
+	$lm = new \filter_poodll\licensemanager();
+	if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
+		return $lm->fetch_unregistered_content();
+	}
+
 	//strip the .pdl extension
 	$len = strlen($link[2]);
 	$trimpoint = strpos($link[2], ".pdl");
@@ -466,7 +473,12 @@ global $CFG;
  */
 function filter_poodll_mp3_callback($link) {
 global $CFG;
-	
+
+	$lm = new \filter_poodll\licensemanager();
+	if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
+		return $lm->fetch_unregistered_content();
+	}
+
 	//get the url and massage it a little
     $url = $link[1];
     $rawurl = str_replace('&amp;', '&', $url);
@@ -502,6 +514,12 @@ global $CFG;
  */
 function filter_poodll_mp4flv_callback($link) {
 global $CFG;
+
+	$lm = new \filter_poodll\licensemanager();
+	if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
+		return $lm->fetch_unregistered_content();
+	}
+
 	//clean up url
 	$url = $link[1];
     $url = str_replace('&amp;', '&', $url);
