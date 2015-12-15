@@ -10,9 +10,11 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
         loadliterallycanvas: function(opts) {
 
             //pick up opts from html
-            var optscontrol = $('#amdopts_' + opts['recorderid']).get(0);
+            var theid='#amdopts_' + opts['recorderid'];
+            var optscontrol = $(theid).get(0);
             if(optscontrol){
                 opts = JSON.parse(optscontrol.value);
+                $(theid).remove();
             }
 
             //stash our opts array
