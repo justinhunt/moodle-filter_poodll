@@ -1,5 +1,7 @@
 Change List
 =========
+Version 2015121102
+Removed drawingboard.js related javascript files that were breaking require.js
 
 Version 2015121101
 Lots of refacoring and support for Moodle 3.0
