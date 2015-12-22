@@ -618,6 +618,7 @@ class poodlltools
 			//$opts['bgimage'] = $backimage;
 			$opts['backgroundcolor'] = 'transparent';
 		} else {
+			$opts['backgroundimage'] = false;
 			$opts['backgroundcolor'] = 'whiteSmoke';
 		}
 
