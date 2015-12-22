@@ -216,7 +216,7 @@ defined('MOODLE_INTERNAL') || die();
 		
 		const OPERATING_SYSTEM_UNKNOWN = 'unknown';
 
-		public function Browser($useragent="") {
+		function __construct($useragent="") {
 			$this->reset();
 			if( $useragent != "" ) {
 				$this->setUserAgent($useragent);
@@ -247,7 +247,7 @@ defined('MOODLE_INTERNAL') || die();
 		* @return True if the browser is the specified browser
 		*/
 		function isBrowser($browserName) { return( 0 == strcasecmp($this->_browser_name, trim($browserName))); }
-		
+
 		/**
 		* Check to see if this is a nexus 7
 		* @return True if this is a nexus 7
@@ -284,12 +284,12 @@ defined('MOODLE_INTERNAL') || die();
 		* @param $version The version of the Browser
 		*/
 		public function setVersion($version) { $this->_version = preg_replace('/[^0-9,.,a-z,A-Z-]/','',$version); }
-		
+
 		/**
 		* Get Major Version of Android.
-		* @return Major Version of the browser 
+		* @return Major Version of the browser
 		*/
-		public function getAndroidMajorVersion() { 
+		public function getAndroidMajorVersion() {
 			$androidPos = stripos($this->_agent,'Android') ;
 			if( $androidPos !== false ) {
 			    $aversion = substr($this->_agent, $androidPos+8,1);
@@ -299,9 +299,9 @@ defined('MOODLE_INTERNAL') || die();
 		}
 		/**
 		* Get Major Version of iOS.
-		* @return Major Version of the browser 
+		* @return Major Version of the browser
 		*/
-		public function getIOSMajorVersion() { 
+		public function getIOSMajorVersion() {
 			$iosPos = stripos($this->_agent,' OS') ;
 			if( $iosPos !== false ) {
 			    $iosversion = substr($this->_agent, $iosPos+4,1);
@@ -309,7 +309,7 @@ defined('MOODLE_INTERNAL') || die();
 		    }
 		    return false;
 		}
-		
+
 		/**
 		* The version of AOL.
 		* @return string Version of AOL (will only contain alpha-numeric characters and a period)
@@ -433,7 +433,7 @@ defined('MOODLE_INTERNAL') || die();
 
 				// WebKit base check (post mobile and others)
 				$this->checkBrowserSafari() ||
-				
+
 				// everyone else
 				$this->checkBrowserNetPositive() ||
 				$this->checkBrowserFirebird() ||
@@ -512,8 +512,8 @@ defined('MOODLE_INTERNAL') || die();
 				return true;
 			}
 			return false;
-		}	    
-	    
+		}
+
 	    /**
 	     * Determine if the browser is the W3C Validator or not (last updated 1.7)
 	     * @return boolean True if the browser is the W3C Validator otherwise false
@@ -993,7 +993,7 @@ defined('MOODLE_INTERNAL') || die();
 		    }
 		    return false;
 	    }
-	    
+
 	     /**
 	     * Determine if the browser is iPhone or not (last updated 1.7)
 	     * @return boolean True if the browser is iPhone otherwise false

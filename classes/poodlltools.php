@@ -1507,7 +1507,7 @@ class poodlltools
 			if (!self::canDoUpload()) {
 				$ret = "<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
 			} else {
-				$ret = fetch_HTML5RecorderForSubmission($updatecontrol, $contextid, $component, $filearea, $itemid, "image", false, $callbackjs);
+				$ret = self::fetch_HTML5RecorderForSubmission($updatecontrol, $contextid, $component, $filearea, $itemid, "image", false, $callbackjs);
 			}
 			return $ret;
 		}
