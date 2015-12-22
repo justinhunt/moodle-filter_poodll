@@ -2,6 +2,7 @@ Change List
 =========
 Version 2015121104
 Fixed a bug preventing LiterallyCanvas from saving images properly in questions
+Fixed bug that prevented mobile devices being detected properly
 
 Version 2015121103
 Fixed bug that affected repository and atto file inserts
