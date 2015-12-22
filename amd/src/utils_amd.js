@@ -14,7 +14,7 @@ define(['jquery','core/log'], function($, log) {
        // Call Upload file from drawingboard a, first handle autosave bits and pieces
         WhiteboardUploadHandler: function(recid) {
             // Save button disabling a little risky db perm. fails publish "startdrawing" after mode change
-            var savebutton = $('#' + recid + '_btn_upload_whiteboard')[0];
+            var savebutton = this.getbyid(recid + '_btn_upload_whiteboard');
             savebutton.disabled=true;
             clearTimeout(this.timeouthandle);
             //call the file upload
@@ -33,7 +33,7 @@ define(['jquery','core/log'], function($, log) {
             }else{
                 //we no longer use this LC technique, and will soon remove the css background logic
                 if(this.whiteboardopts[recid]['bgimage']){
-                    cvs = wboard.canvasWithBackground($('#' + recid + '_separate-background-image')[0]);
+                    cvs = wboard.canvasWithBackground(this.getbyid(recid + '_separate-background-image'));
                 }else{
                    cvs = wboard.getImage({});
 
@@ -44,11 +44,12 @@ define(['jquery','core/log'], function($, log) {
 
             //stash vectordata
             if(this.whiteboardopts[recid]['vectorcontrol']){
-                var vectorcontrol = $('#' + this.whiteboardopts[recid]['vectorcontrol']);
+                var vectorcontrol = this.getbyid( this.whiteboardopts[recid]['vectorcontrol']);
                 if (vectorcontrol){
-                    vectorcontrol[0].value = vectordata;
+                    vectorcontrol.value = vectordata;
                 }else{
-                    log.debug('No vector control');
+                   // log.debug('No vector control');
+                   // log.debug(this.whiteboardopts[recid]['vectorcontrol']);
                 }
             }
 
@@ -69,8 +70,9 @@ define(['jquery','core/log'], function($, log) {
 
             var fileselect = this.getbyid(opts['recorderid'] + '_poodllfileselect');
             if(fileselect){
+                var M =this;
                 fileselect.addEventListener("change", function(theopts) {
-                    return function(e) {M.filter_poodll.FileSelectHandler(e, theopts); };
+                    return function(e) {M.FileSelectHandler(e, theopts); };
                 } (opts) , false);
             }
         },
@@ -93,9 +95,10 @@ define(['jquery','core/log'], function($, log) {
             // start upload
             var filedata ="";
             var reader = new FileReader();
+            var M = this;
             reader.onloadend = function(e) {
                 filedata = e.target.result;
-                M.filter_poodll.UploadFile(file, filedata, opts['recorderid']);
+                M.UploadFile(file, filedata, opts['recorderid']);
             }
             reader.readAsDataURL(file);
 
@@ -104,30 +107,27 @@ define(['jquery','core/log'], function($, log) {
 
         // output information
         Output: function(recid,msg) {
-            var m = $('#' + recid + '_messages')[0];
+            var m = this.getbyid(recid + '_messages');
             //m.innerHTML = msg + m.innerHTML;
             m.innerHTML = msg;
         },
 
         // getElementById
         getbyid: function(id) {
-            var ret =$('#'+ id);
+            id = "#" + id.replace( /(:|\.|\[|\]|,)/g, "\\$1" );
+            var ret =$(id);
             if (ret && ret.length > 0){
                 return ret[0];
             }else{
-                return false;
+                ret =parent.$(id);
+                if (ret && ret.length > 0) {
+                    return ret[0];
+                }else{
+                    return null;
+                }
             }
         },
 
-        // getElementById
-        getbyidinparent: function(id) {
-            var ret =parent.$('#'+ id);
-            if (ret && ret.length > 0){
-                return ret[0];
-            }else{
-                return false;
-            }
-        },
 
         // upload Media files
         UploadFile: function(file, filedata,recid) {
@@ -150,7 +150,7 @@ define(['jquery','core/log'], function($, log) {
 
             if(true){
                 // create progress bar if we have a container for it
-                var o = $('#' + recid + "_progress")[0];
+                var o = this.getbyid(recid + "_progress");
                 if(o!=null){
                     var progress = o.firstChild;
                     if(progress==null){
@@ -202,17 +202,11 @@ define(['jquery','core/log'], function($, log) {
                                 var upcnamecontrol = recid + '_updatecontrol';
                                 var upcname = mfp.getbyid(upcnamecontrol);
                                 if(!upcname){
-                                    upcname = mfp.getbyidinparent(upcnamecontrol);
-                                }
-                                if(!upcname){
                                     mfp.Output(recid, "could not fetch by id: " + upcnamecontrol);
                                     return;
                                 }
                                 upcname = upcname.value;
                                 var upc = mfp.getbyid(upcname);
-                                if (!upc) {
-                                    upc = mfp.getbyidinparent(upcname);
-                                }
                                 if (upc) {
                                     upc.value = filename;
                                 }else{
