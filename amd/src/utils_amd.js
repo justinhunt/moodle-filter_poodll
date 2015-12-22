@@ -111,12 +111,22 @@ define(['jquery','core/log'], function($, log) {
 
         // getElementById
         getbyid: function(id) {
-            return document.getElementById(id);
+            var ret =$('#'+ id);
+            if (ret && ret.length > 0){
+                return ret[0];
+            }else{
+                return false;
+            }
         },
 
         // getElementById
         getbyidinparent: function(id) {
-            return parent.document.$('#'+ id);
+            var ret =parent.$('#'+ id);
+            if (ret && ret.length > 0){
+                return ret[0];
+            }else{
+                return false;
+            }
         },
 
         // upload Media files
@@ -189,13 +199,22 @@ define(['jquery','core/log'], function($, log) {
 
                             }else {
                                 mfp.Output(recid, "File saved successfully.");
-                                var upcname = $('#' + recid + '_updatecontrol')[0].value;
-                                var upc = $('#' + upcname);
+                                var upcnamecontrol = recid + '_updatecontrol';
+                                var upcname = mfp.getbyid(upcnamecontrol);
+                                if(!upcname){
+                                    upcname = mfp.getbyidinparent(upcnamecontrol);
+                                }
+                                if(!upcname){
+                                    mfp.Output(recid, "could not fetch by id: " + upcnamecontrol);
+                                    return;
+                                }
+                                upcname = upcname.value;
+                                var upc = mfp.getbyid(upcname);
                                 if (!upc) {
                                     upc = mfp.getbyidinparent(upcname);
                                 }
                                 if (upc) {
-                                    upc[0].value = filename;
+                                    upc.value = filename;
                                 }else{
                                     mfp.Output(recid, "File could not be uploaded.");
                                 }
