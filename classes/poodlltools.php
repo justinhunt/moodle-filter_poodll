@@ -1856,7 +1856,7 @@ class poodlltools
 			";
 		if ($fancybutton) {
 			$returnString .=
-				"<button type=\"button\" class=\"p_btn\">Record or Choose a File</button>
+				"<button type=\"button\" class=\"p_btn\">".get_string('recui_btnupload', 'filter_poodll')."</button>
 		</div>";
 		}
 		$returnString .=
