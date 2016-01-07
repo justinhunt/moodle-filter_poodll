@@ -3669,7 +3669,7 @@ class poodlltools
 
 	public static function fetchIFrameSWFWidgetCode($widget, $paramsArray, $width, $height, $bgcolor = "#FFFFFF")
 	{
-		global $PAGE;
+		global $PAGE, $CFG;
 
 		$lm = new \filter_poodll\licensemanager();
 		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
