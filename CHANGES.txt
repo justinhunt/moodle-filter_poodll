@@ -1,5 +1,10 @@
 Change List
 =========
+Version 2015121105
+Fixed a bug that caused widgets(once player etc) to never evaluate registration properly, and fail to load with a registration error.
+Removed erroneous message from settings that talked about a literally canvas issue that no longer exists
+Made the default whiteboard literally canvas again
+
 Version 2015121104
 Fixed a bug preventing LiterallyCanvas from saving images properly in questions
 Fixed bug that prevented mobile devices being detected properly
