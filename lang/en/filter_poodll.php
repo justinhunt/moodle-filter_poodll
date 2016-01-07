@@ -184,6 +184,7 @@ $string['recui_converting'] ='converting';
 $string['recui_inaudibleerror'] ='We can not hear you. Please check flash and browser permissions.';
 $string['recui_timeouterror'] ='The request timed out. Sorry.';
 $string['recui_uploaderror'] ='An error occurred and your file has NOT been uploaded.';
+$string['recui_btnupload'] ='Record or Choose a File';
 
 $string['neverhtml5'] = 'Never use HTML5';
 $string['mobileonly'] = 'Mobile devices only';
