@@ -1,0 +1,10 @@
+{
+    "name": "justinhunt/moodle-filter_poodll",
+    "type": "moodle-filter",
+    "require": {
+        "composer/installers": "~1.0"
+    },
+    "extra": {
+        "installer-name": "poodll"
+    }
+}
