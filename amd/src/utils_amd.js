@@ -119,7 +119,7 @@ define(['jquery','core/log'], function($, log) {
             if (ret && ret.length > 0){
                 return ret[0];
             }else{
-                ret =parent.$(id);
+                ret =$(id,window.parent.document);
                 if (ret && ret.length > 0) {
                     return ret[0];
                 }else{

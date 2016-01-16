@@ -1,5 +1,8 @@
 Change List
 =========
+Version 2015121106
+Fixed a bug that caused the whiteboard and recorders to fail to submit their media, when jquery was not present.
+
 Version 2015121105
 Fixed a bug that caused widgets(once player etc) to never evaluate registration properly, and fail to load with a registration error.
 Removed erroneous message from settings that talked about a literally canvas issue that no longer exists
