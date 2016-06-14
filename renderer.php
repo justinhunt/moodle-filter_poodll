@@ -153,15 +153,44 @@ class filter_poodll_renderer extends plugin_renderer_base {
 		$retframe = "<iframe scrolling=\"no\" frameBorder=\"0\" src=\"{$pathtoJS}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}&usemastersprite={$usemastersprite}\" width=\"{$width}\" height=\"{$height}\"></iframe>";
 		return $retframe;
 	}
+	
+	/* TO DO: make this more generic. ie not just poodllrecorder */
+	public function fetchAMDRecorderEmbedCode($widgetopts,$widgetid)
+	{
+		global $CFG, $PAGE;
+		
+		//this init the M.mod_readaloud thingy, after the page has loaded.
+		$PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
+		
+		$widgetopts->widgetid=$widgetid;
+		
+		//recorder order of preference
+		$rec_order = array('upload','flash','media');
+		$widgetopts->rec_order=$rec_order;
+		
+		//The CSS selector string
+		$container = $widgetid .'Container';
+		$selector = '#' . $container ;
+		$widgetopts->selector = $selector;
+		
+		//convert opts to json
+		$jsonstring = json_encode($widgetopts);
+		//we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
+		$opts_html = html_writer::tag('input', '', array('id' => 'amdopts_' . $widgetopts->widgetid, 'type' => 'hidden', 'value' => $jsonstring));
+		$PAGE->requires->js_call_amd("filter_poodll/poodllrecorder", 'init', array(array('widgetid' => $widgetid)));
+		$returnhtml = $opts_html . html_writer::div('', '', array('id' => $container));
+		return $returnhtml;
+	}
 
 
 //This is used for all the flash widgets
 	public function fetchLazloEmbedCode($widgetopts,$widgetid,$jsmodule)
 	{
 		global $CFG, $PAGE;
-
+		
 		//this init the M.mod_readaloud thingy, after the page has loaded.
 		$PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
+		
 		$PAGE->requires->js_init_call('M.filter_poodll.laszlohelper.init', array($widgetopts), false, $jsmodule);
 		$returnhtml = html_writer::div('', '', array('id' => $widgetid . 'Container'));
 		return $returnhtml;

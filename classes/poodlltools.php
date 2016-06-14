@@ -476,127 +476,7 @@ class poodlltools
 
 	public static function fetchMP3RecorderForSubmission($updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
 	{
-		global $CFG, $USER, $COURSE;
-
-//get our HTML5 Uploader if we have a mobile device
-		if (self::isMobile($CFG->filter_poodll_html5rec)) {
-			if (!self::canDoUpload()) {
-				$ret = "<div class='mobile_os_version_warning'>" . get_string('mobile_os_version_warning', 'filter_poodll') . "</div>";
-			} else {
-				$ret = self::fetch_HTML5RecorderForSubmission($updatecontrol, $contextid, $component, $filearea, $itemid, "audio", false, $callbackjs);
-			}
-			return $ret;
-
-		}
-
-//Set the microphone config params
-		$micrate = $CFG->filter_poodll_micrate;
-		$micgain = $CFG->filter_poodll_micgain;
-		$micsilence = $CFG->filter_poodll_micsilencelevel;
-		$micecho = $CFG->filter_poodll_micecho;
-		$micloopback = $CFG->filter_poodll_micloopback;
-		$micdevice = $CFG->filter_poodll_studentmic;
-
-//get the recorder skin
-		$skin = $CFG->filter_poodll_mp3skin;
-
-		$size = $CFG->filter_poodll_mp3recorder_size;
-//$size='tiny';
-//$size='normal';
-
-//removed from params to make way for moodle 2 filesystem params Justin 20120213
-		if ($size == 'normal') {
-			$width = "350";
-			$height = "200";
-		} else {
-			$width = "240";
-			$height = "170";
-		}
-		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
-
-//we can add or remove this, but right now, testing how good it works
-		$autosubmit = "true";
-
-
-//If we are using course ids then lets do that
-//else send -1 to widget (ignore flag)
-		if ($CFG->filter_poodll_usecourseid) {
-			$courseid = $COURSE->id;
-		} else {
-			$courseid = -1;
-		}
-
-//can we pause or not
-		if ($CFG->filter_poodll_miccanpause == 1) {
-			$canpause = 'true';
-		} else {
-			$canpause = 'false';
-		}
-
-		if ($updatecontrol == "saveflvvoice") {
-			$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
-		} else {
-			$savecontrol = "";
-		}
-		//setup config for recirder
-		$params = array();
-		$params['rate'] = $micrate;
-		$params['gain'] = $micgain;
-		$params['prefdevice'] = $micdevice;
-		$params['loopback'] = $micloopback;
-		$params['echosupression'] = $micecho;
-		$params['silencelevel'] = $micsilence;
-		$params['course'] = $courseid;
-		$params['updatecontrol'] = $updatecontrol;
-		$params['uid'] = $USER->id;
-		//for file system in moodle 2
-		/*
-    $params['poodllfilelib'] = $poodllfilelib;
-    $params['contextid'] = $contextid;
-    $params['component'] = $component;
-    $params['filearea'] = $filearea;
-    $params['itemid'] = $itemid;
-    */
-		//using generic mp3 recorder these dats
-		$params['posturl'] = $poodllfilelib;
-		$params['p1'] = $updatecontrol;
-		$params['p2'] = $contextid;
-		$params['p3'] = $component;
-		$params['p4'] = $filearea;
-		$params['p5'] = $itemid;
-		//$params['chipmunk'] = 'yes';
-
-
-		$params['autosubmit'] = $autosubmit;
-		$params['timelimit'] = $timelimit;
-		$params['canpause'] = $canpause;
-		$params['size'] = $size;
-
-		//fetch and merge lang params
-		$langparams = self::filter_poodll_fetch_recorder_strings();
-		$params = array_merge($params, $langparams);
-
-		//callbackjs
-		if ($callbackjs) {
-			$params['callbackjs'] = $callbackjs;
-		}
-
-		//this is the old recorder. (if it has MP3Recorder ie er, its old)
-		/*
-    	$returnString=  self::fetchSWFWidgetCode('PoodLLMP3Recorder.lzx.swf10.swf',
-    						$params,$width,$height,'#CFCFCF');
-    */
-
-		if ($skin && $skin != 'none') {
-			$returnString = self::fetchMP3SkinnedRecorderForSubmission($params, $skin);
-		} else {
-
-			$returnString = self::fetchSWFWidgetCode('PoodllMP3Record.lzx.swf10.swf',
-				$params, $width, $height, '#CFCFCF');
-		}
-
-		$returnString .= $savecontrol;
-		return $returnString;
+		return self::fetchAMDRecorderCode('audio', $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
 
 	}
 
@@ -1837,79 +1717,7 @@ class poodlltools
 
 	public static function fetch_HTML5RecorderForSubmission($updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $mediatype = "image", $fromrepo = false, $callbackjs = false)
 	{
-		global $CFG, $PAGE;
-
-		//Get our browser object for determining HTML5 options
-		$browser = new Browser();
-
-		//configure our options array for the JS Call
-		$fileliburl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
-		$opts = array();
-		$opts['recorderid'] = $mediatype . 'recorder_' . time() . rand(10000, 999999);
-		$opts['callbackjs'] = $callbackjs;
-		$opts['updatecontrol'] = $updatecontrol;
-
-		//setup our JS call
-		if (!$fromrepo) {
-			$PAGE->requires->js_init_call('M.filter_poodll.loadmobileupload', array($opts), false);
-		}
-
-		//the control to put the filename of our data. The saveflvvoice is a legacy, needs to be changed
-		//check at least poodllrecordingquestion and poodll online assignment and poodll database field for it
-		if ($updatecontrol == "saveflvvoice") {
-			$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
-		} else {
-			$savecontrol = "";
-		}
-
-		//depending on our media type, tell the mobile device what kind of file we want
-		//we need to check for audio, because iOS still needs video (can't direct rec audio)
-		switch ($mediatype) {
-			case "image":
-				$acceptmedia = "accept=\"image/*\"";
-				break;
-			case "audio":
-				if (self::canSpecAudio($browser)) {
-					$acceptmedia = "accept=\"audio/*\"";
-				} else {
-					$acceptmedia = "accept=\"video/*\"";
-				}
-				break;
-			case "video":
-				$acceptmedia = "accept=\"video/*\"";
-				break;
-			default:
-				$acceptmedia = "";
-		}
-
-		//Output our HTML
-		$fancybutton = self::showFancyButton($browser);
-		$returnString = "";
-
-		if ($fancybutton) {
-			$returnString .= "<div class=\"p_btn_wrapper\">";
-		}
-		$returnString .= "
-			$savecontrol
-			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_updatecontrol\" value=\"$updatecontrol\" />
-			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_contextid\" value=\"$contextid\" />
-			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_component\" value=\"$component\" />
-			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_filearea\" value=\"$filearea\" />
-			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_itemid\" value=\"$itemid\" />
-			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_mediatype\" value=\"$mediatype\" />
-			<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_fileliburl\" value=\"$fileliburl\" />
-			<input type=\"file\" id=\"" . $opts['recorderid'] . "_poodllfileselect\" name=\"poodllfileselect[]\" $acceptmedia />
-			";
-		if ($fancybutton) {
-			$returnString .=
-				"<button type=\"button\" class=\"p_btn\">".get_string('recui_btnupload', 'filter_poodll')."</button>
-		</div>";
-		}
-		$returnString .=
-			"<div id=\"" . $opts['recorderid'] . "_progress\" class=\"p_progress\"><p></p></div>
-		<div id=\"" . $opts['recorderid'] . "_messages\" class=\"p_messages\"></div>";
-
-		return $returnString;
+		return self::fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, 0, $callbackjs);
 	}
 
 //Audio playltest player with defaults, for use with directories of audio files
@@ -3754,5 +3562,126 @@ class poodlltools
 
 
 	}
+	
+	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the recorders
+	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
+	{
+		global $CFG, $PAGE;
+
+		$lm = new \filter_poodll\licensemanager();
+		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
+			return $lm->fetch_unregistered_content();
+		}
+
+		//generate a (most likely) unique id for the recorder, if one was not passed in
+		$widgetid = \html_writer::random_id('laszlobase');
+
+		$widgetopts = new \stdClass();
+		$widgetopts->id = $widgetid;
+		$widgetopts->widgetid = $widgetid;
+		$widgetopts->posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		$widgetopts->updatecontrol = $updatecontrol;
+		$widgetopts->mediatype=$mediatype;
+		$widgetopts->p1 = '';
+		$widgetopts->p2 = $contextid;
+		$widgetopts->p3 = $component;
+		$widgetopts->p4 = $filearea;
+		$widgetopts->p5 = $itemid;
+
+		
+		//per recorder props
+		//audio mp3
+		$rawparams = self::fetchMP3RecorderAMDParams($timelimit, $callbackjs);
+		if (is_array($rawparams)) {
+			$params = "?";
+			foreach ($rawparams as $key => $value) {
+				$params .= '&' . $key . '=' . $value;
+			}
+		} else {
+			$params = $rawparams;
+		}
+		//add in any common params
+		$params .= '&debug=false&lzproxied=false';
+		$widgetopts->audiomp3_url =  $CFG->wwwroot . '/filter/poodll/flash/PoodllMP3Record.lzx.swf10.swf' . $params;
+		$widgetopts->audiomp3_skin='none';
+		//removed from params to make way for moodle 2 filesystem params Justin 20120213
+		if ($CFG->filter_poodll_mp3recorder_size =='normal') {
+			$widgetopts->audiomp3_width = "350";
+			$widgetopts->audiomp3_height = "200";
+		} else {
+			$widgetopts->audiomp3_width = "240";
+			$widgetopts->audiomp3_height  = "170";
+		}
+
+		
+		$renderer = $PAGE->get_renderer('filter_poodll');
+		return $renderer->fetchAMDRecorderEmbedCode($widgetopts,$widgetid);
+
+	}
+
+ /*
+ * Fetch any special parameters required by the MP3 recorder
+ *
+ */
+  public static function fetchMP3RecorderAMDParams($timelimit = "0", $callbackjs = false)
+	{
+		global $CFG, $USER, $COURSE;
+
+		//Set the microphone config params
+		$micrate = $CFG->filter_poodll_micrate;
+		$micgain = $CFG->filter_poodll_micgain;
+		$micsilence = $CFG->filter_poodll_micsilencelevel;
+		$micecho = $CFG->filter_poodll_micecho;
+		$micloopback = $CFG->filter_poodll_micloopback;
+		$micdevice = $CFG->filter_poodll_studentmic;
+
+		//we can add or remove this,
+		$autosubmit = "true";
+
+		//can we pause or not
+		if ($CFG->filter_poodll_miccanpause == 1) {
+			$canpause = 'true';
+		} else {
+			$canpause = 'false';
+		}
+
+	
+		//setup config for recirder
+		$params = array();
+		$params['rate'] = $micrate;
+		$params['gain'] = $micgain;
+		$params['prefdevice'] = $micdevice;
+		$params['loopback'] = $micloopback;
+		$params['echosupression'] = $micecho;
+		$params['silencelevel'] = $micsilence;
+		$params['uid'] = $USER->id;
+		$params['autosubmit'] = $autosubmit;
+		$params['timelimit'] = $timelimit;
+		$params['canpause'] = $canpause;
+
+		
+
+		//fetch and merge lang params
+		$langparams = self::filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
+
+		//callbackjs
+		if ($callbackjs) {
+			$params['callbackjs'] = $callbackjs;
+		}
+
+		return $params;
+	}
+	
+	/*
+ * Fetch any special parameters required by the Upload Recorder
+ *
+ */
+	public static function fetchUploadRecorderAMDParams()
+	{
+		return '';
+	}
+
+
 
 }//end of class

@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd', 'filter_poodll/literallycanvas'], function($, log, utils, React, LC) {
+define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd', 'filter_poodll/uploader', 'filter_poodll/literallycanvas'], function($, log, utils, React, uploader, LC) {
 
     "use strict"; // jshint ;_;
 
@@ -20,9 +20,12 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
             //stash our opts array
             utils.whiteboardopts[opts['recorderid']] = opts;
 
-
             //init the whiteboard	(diff logic if have a background image)
-            var lc_element = $('#' + opts['recorderid'] + '_literally')[0];
+            var element = '#' + opts['recorderid'] + '_literally';
+            var lc_element = $('#' + element)[0];
+            
+            //init uploader
+        	uploader.init(element, opts);
 
             if(opts['backgroundimage']){
                 //simple using opts['backgroundimage'] as src would be better than using a buffer image, but LC won't show it.
