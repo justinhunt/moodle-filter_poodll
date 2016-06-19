@@ -3701,7 +3701,7 @@ class poodlltools
 
 	public static function fetchJSWidgetiFrame($widget, $rawparams, $width, $height, $bgcolor = "#FFFFFF", $usemastersprite = "false")
 	{
-		global $PAGE;
+		global $PAGE, $CFG;
 
 		$lm = new \filter_poodll\licensemanager();
 		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
