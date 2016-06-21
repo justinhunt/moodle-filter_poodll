@@ -225,10 +225,9 @@ require_once($CFG->libdir . '/filelib.php');
 function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid, $comp, $farea,$itemid){
 	global $CFG,$USER;
 
-
 	//setup our return object
 	$return=fetchReturnArray(true);
-
+error_log('FE:' . $fileextension);
 	//make sure nobodyapassed in a bogey file extension
 	switch($fileextension){
 		case "mp3":
@@ -248,6 +247,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 		case "smf":
 		case "amr":
 		case "ogg":
+		case "webm":
 			break;
 
 		case "":
@@ -272,9 +272,6 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 	$fs = get_file_storage();
 	//assume a root level filepath
 	$filepath="/";
-
-
-
 
 	//make our filerecord
 	$record = new stdClass();
@@ -377,7 +374,7 @@ function uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid
 				if($do_bg_encoding && $CFG->version>=2014051200){
 					$stored_file = convert_with_ffmpeg_bg($record,$tempdir,$filename,$filenamebase, $convext );
 				}else{
-					$stored_file = convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );
+					$stored_file = convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );				
 				}
 				if($stored_file){
 					$filename=$stored_file->get_filename();

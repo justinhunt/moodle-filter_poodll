@@ -7,6 +7,8 @@ $string['pluginname'] = 'PoodLL Filter';
 $string['settings'] = 'PoodLL Filter Settings';
 $string['activate'] = 'Activate PoodLL?';
 
+$string['generalsettings'] = 'General Settings';
+
 //headings
 $string['filter_poodll_network_heading'] = 'PoodLL Network Settings';
 $string['filter_poodll_audioplayer_heading'] = 'Audio Player Settings';
@@ -26,6 +28,13 @@ $string['filter_poodll_registration_explanation'] ="From PoodLL version 2.8.0 yo
 
 $string['registrationkey'] = 'Registration Key';
 $string['registrationkey_explanation'] ="Enter your PoodLL registration key here. It is free, but PoodLL won't work without it. You can obtain a key from <a href='http://poodll.com/registration'>http://poodll.com/registration</a>";
+
+$string['uploadkey'] = 'Upload key';
+$string['uploadkey_desc'] = 'PoodLL requires 2 separate credentials for uploading. Enter the upload key here.';
+$string['uploadsecret'] = 'Upload secret';
+$string['uploadsecret_desc'] = 'PoodLL requires 2 separate credentials for uploading. Enter the upload secret here.';
+
+
 $string['unregistered'] = 'PoodLL not displayed because it has not been registered. Registration is free. Ask your teacher/administrator to visit the PoodLL filter settings page and complete the registration process.';
 
 $string['flashcardstype'] ='Flashcards Type';
@@ -193,4 +202,48 @@ $string['neverhtml5'] = 'Never use HTML5';
 $string['mobileonly'] = 'Mobile devices only';
 $string['mobileandwebkit'] = 'Mobile + Webkit browsers(Safari,Chrome etc)';
 $string['alwayshtml5'] = 'Always use HTML5';
-//$string['wboard29problem_details'] = 'The Literally Canvas whiteboard does not work in Moodle 2.9 (or greater) yet. On Moodle 2.9, even if selected, DrawingBoard will be displayed in its place';
+
+//template strings
+$string['templatepageheading'] = 'Template: {$a}';
+$string['templateheading'] = 'Settings for Poodll Template {$a}';
+$string['template'] = 'The body of template {$a}';
+$string['template_desc'] = 'Put the template here, define variables by surrounding them with @@ marks at either e. eg @@variable@@';
+$string['templatekey'] = 'The key that identifies template {$a}';
+$string['templatekey_desc'] = 'The key should be one word and only contain numbers and letters, underscores, hyphens and dots .';
+$string['templateinstructions'] = 'Instructions (template {$a})';
+$string['templateinstructions_desc'] = 'Any instructions entered here will be displayed on the Generic atto form for this template is displayed. Keep them short or it will look bad.';
+$string['templateend'] = 'End tags(template {$a})';
+$string['templateend_desc'] = 'If your template encloses user content, eg an info box, put the closing tags here. The user will enter something like {POODLL:mytag_end} to close out the filter.';
+$string['templatescript'] = 'Custom JS (template {$a})';
+$string['templatescript_desc'] = 'If your template needs to run custom javascript, enter that here. It will be run once all the elements have loaded on the page.';
+$string['templatedefaults'] = 'variable defaults (template {$a})';
+$string['templatedefaults_desc'] = 'Define the defaults in comma delimited sets of name=value pairs. eg width=800,height=900,feeling=joy';
+$string['templaterequire_css'] = 'Requires CSS (template {$a})';
+$string['templaterequire_js'] = 'Requires JS (template {$a})';
+$string['templaterequire_jquery'] = 'Requires JQuery (template {$a})';
+$string['templaterequire_css_desc'] = 'A link(1 only) to an external CSS file that this template requires. optional.';
+$string['templaterequire_js_desc'] = 'A link(1 only) to an external JS file that this template requires. optional.';
+$string['templaterequire_jquery_desc'] = 'Its best NOT to check this. Many non AMD templates require JQuery. Checking here will load JQuery, but not very well. Your theme may already load JQuery anyway. If not, add this string to Site Administration -> Appearance -> Additional HTML (within HEAD):<br/> &lt;script src="https://code.jquery.com/jquery-1.11.2.min.js"&gt;&lt;/script&gt;';
+$string['templatecount'] = 'Template Count';
+$string['templatecount_desc'] = 'The number of templates you can have. Default is 20.';
+$string['templateheadingjs'] = 'Javascript Settings.';
+$string['templateheadingcss'] = 'CSS/Style Settings.';
+$string['templatestyle'] = 'Custom CSS (template {$a})';
+$string['templatestyle_desc'] = 'Enter any custom CSS that your template uses here. Template variables will not work here. Just plain old css.';
+$string['templaterequire_amd'] = 'Load via AMD';
+$string['templaterequire_amd_desc'] = 'AMD is a javascript loading mechanism. If you upload or link to javascript libraries in your template, you might have to uncheck this. It only applies if on Moodle 2.9 or greater';
+$string['extensions'] = 'File Extensions';
+$string['extensions_desc'] = 'A CSV (comma separated value) list of file extensions this filter can parse.';
+$string['presets'] = 'Autofill template with a Preset';
+$string['presets_desc'] = 'VideoEasy comes with some default presets you can use out of the box, or to help you get started with your own template. Choose one of those here, or just create your own template from scratch. You can export a template as a bundle by clicking on the green box above. You can import a bundle by dragging it onto the green box.';
+$string['bundle'] = 'Bundle';
+$string['useplayer'] = '{$a} Player';
+$string['useplayerdesc'] = "The player selected will use the information from the appropriate template.";
+$string['handle'] = 'Handle {$a}';
+$string['widgetsettings'] = 'Widget Settings';
+$string['extensionsettings'] = 'File Extension Settings';
+$string['dataset'] = 'Dataset';
+$string['dataset_desc'] = 'Poodll allows you to pull a dataset from the database for use in your template. This is an advanced feature. Enter the sql portion of a $DB->get_records_sql call here.';
+$string['datasetvars'] = 'Dataset Variables';
+$string['datasetvars_desc'] = 'Put a comma separated list of variables that make up the vars for the SQL. You can and probably will want to use variables here.';
+
