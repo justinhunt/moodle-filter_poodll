@@ -180,7 +180,9 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                 ConcatenateBlobs(self.blobs, self.blobs[0].type, function(concatenatedBlob) {
 					uploader.uploadBlob(concatenatedBlob,self.blobs[0].type);
 				}); //end of concatenate blobs
-self.mediaRecorder.save();
+				
+				//download the file right away
+				//self.mediaRecorder.save();
                 //uploader.UploadFile(self.currentBlob);
                 //self.mediaRecorder.save();
                 // alert('Drop WebM file on Chrome or Firefox. Both can play entire file. VLC player or other players may not work.');

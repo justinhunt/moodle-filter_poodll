@@ -3541,8 +3541,29 @@ public static function fetch_filter_properties($filterstring){
 		//return the html that the Flowplayer JS will swap out
 		return $retcode;
 	}
+	
+	/*
+	* Convert a video file to a different format using ffmpeg
+	*
+	*/
+	function convert_with_ffmpeg_bg($filerecord, $originalfilename, $convfilenamebase, $convext){
+		global $CFG;
+	
+		//store placeholder audio or video to display until conversion is finished
+		$filerecord->filename = $convfilenamebase . $convext;
+		$stored_file =\filter_poodll\poodlltools::store_placeholder_file($filerecord,$convfilenamebase,$convext);
+		//we need this id later, to find the old draft file and remove it, in ad hoc task
+		$filerecord->id = $stored_file->get_id();
+	
+		// register task
+	   $success = \filter_poodll\poodlltools::register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext);
+	 
+	   return $stored_file;
+	}
 
-
+	/*
+	* Fetch a splash image for video
+	**/
 	public static function fetchVideoSplash($src)
 	{
 		global $CFG;
@@ -3640,7 +3661,7 @@ public static function fetch_filter_properties($filterstring){
 		//if we are using FFMPEG, try to get the splash image
 		if ($CFG->filter_poodll_ffmpeg) {
 
-			$imagefile = get_splash_ffmpeg($file, $imagefilename);
+			$imagefile = self::get_splash_ffmpeg($file, $imagefilename);
 			if ($imagefile) {
 				return $fullimagepath;
 			} else {
@@ -3650,7 +3671,7 @@ public static function fetch_filter_properties($filterstring){
 			//if not FFMPEG pick it up from Red5 server
 		} else {
 
-			$result = instance_remotedownload($file->get_contextid(),
+			$result = filter_poodll_instance_remotedownload($file->get_contextid(),
 				$imagefilename,
 				$file->get_component(),
 				$file->get_filearea(),
@@ -3739,9 +3760,264 @@ public static function fetch_filter_properties($filterstring){
 
 		$renderer = $PAGE->get_renderer('filter_poodll');
 		return $renderer->fetchLazloEmbedCode($widgetopts,$widgetid,$jsmodule);
-
-
 	}
+	
+	public static function store_placeholder_file($filerecord,$convfilenamebase, $convext){
+		global $CFG;
+		$placeholder_filename= "convertingmessage" . $convext;
+		$stored_file = 	$fs->create_file_from_pathname($filerecord, 
+			$CFG->dirroot . '/filter/poodll/' .  $placeholderfilename);
+   		return $filerecord;
+	}
+	
+	public static function register_s3_task($mediatype,$filerecord,$convext){
+	 	// set up task and add custom data
+	   $s3_task = new \filter_poodll\task\adhoc_s3_move();
+	   $savedatetime = new DateTime();
+	   $qdata = array(
+		   'filerecord' => $filerecord,
+		   'filename' => $filerecord->filename,
+		   'mediatype'=> $mediatype,
+		   'convext' => $convext,
+		   'savedatetime'=>$savedatetime
+	   );
+	   $conv_task->set_custom_data($qdata);
+	   // queue it
+	   \core\task\manager::queue_adhoc_task($s3_task);
+	}
+	
+	public static function commence_s3_transcode($mediatype,$filename){
+		//does file exist on s3
+		$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
+		if($awstools->does_file_exist($mediatype,$filename,'in' ) && !$awstools->does_file_exist($mediatype,$filename,'out') ){
+			$awstools->create_one_transcoding_job($mediatype,$filename,$filename);
+		}
+	}
+	
+	public static function register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext){
+		 // set up task and add custom data
+	   $conv_task = new \filter_poodll\task\adhoc_convert_media();
+	   $qdata = array(
+		   'filerecord' => $filerecord,
+		   'filename' => $filerecord->filename,
+		   'originalfilename' => $originalfilename,
+		   'convfilenamebase' => $convfilenamebase,
+		   'convext' => $convext
+	   );
+	   $conv_task->set_custom_data($qdata);
+	   // queue it
+	   \core\task\manager::queue_adhoc_task($conv_task);
+	   return true;
+	   
+	}
+	
+	/*
+	* Extract an image from the video for use as splash
+	* image stored in same location with same name (diff ext)
+	* as original video file
+	*
+	*/
+	function get_splash_ffmpeg($videofile, $newfilename){
+
+		global $CFG, $USER;
+
+			$tempdir =  $CFG->tempdir . "/";	
+	
+
+			//init our fs object
+			$fs = get_file_storage();
+			//it would be best if we could use $videofile->get_content_filehandle somehow ..
+			//but this works for now.
+			$tempvideofilepath = $tempdir . $videofile->get_filename();
+			$tempsplashfilepath = $tempdir . $newfilename;
+			$ok = $videofile->copy_content_to($tempvideofilepath);
+		
+			//call on ffmpeg to create the snapshot
+			//$ffmpegopts = "-vframes 1 -an ";
+			//this takes the frame after 1 s
+			$ffmpegopts = "-ss 00:00:01 -vframes 1 -an ";
+		
+			//if there is a version in poodll filter dir, use that
+			//else use ffmpeg version on path
+			if(file_exists($CFG->dirroot . '/filter/poodll/ffmpeg')){
+				$ffmpegpath = $CFG->dirroot . '/filter/poodll/ffmpeg';
+			}else{
+				$ffmpegpath = 'ffmpeg';
+			}
+		
+			//branch logic if windows
+			$iswindows =(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+			$command = $ffmpegpath . " -i " . $tempvideofilepath . " " . $ffmpegopts . " " . $tempsplashfilepath;
+
+			if($iswindows){
+				$output = system($command, $fv);
+			}else{
+				shell_exec($command . " >/dev/null 2>/dev/null ");
+			}
+		
+		
+			//add the play button
+			//this can be done from ffmpeg, but probably not on all installs, so we do in php
+			if(is_readable(realpath($tempsplashfilepath))){	
+				//provided this is not a place holder. We don't really want to confuse even more
+				if($videofile->get_contenthash()!=POODLL_VIDEO_PLACEHOLDER_HASH){
+					$bg = imagecreatefrompng($tempsplashfilepath);
+					$btn = imagecreatefrompng($CFG->dirroot . '/filter/poodll/pix/playbutton.png');
+					imagealphablending($bg, 1);
+					imagealphablending($btn, 1);
+					//bail if we failed here
+					if(!($bg && $btn)){return false;}
+			
+					//put the button on the bg picture
+					imagecopy($bg, $btn, (imagesx($bg)-imagesx($btn)) / 2, (imagesy($bg)-imagesy($btn)) / 2, 0 , 0,imagesx($btn) , imagesy($btn));			
+					$btnok = imagepng($bg, $tempsplashfilepath, 7);
+				}//end of if place holder
+			}else{
+				return false;
+			}
+		
+	
+			//initialize return value
+			$stored_file = false;
+	
+			//Check if we could create the image
+			if(is_readable(realpath($tempsplashfilepath))){			
+				//make our filerecord
+				 $record = new \stdClass();
+				$record->filearea = $videofile->get_filearea();
+				$record->component = $videofile->get_component();
+				$record->filepath = $videofile->get_filepath();
+				$record->itemid   = $videofile->get_itemid();
+				$record->license  = $CFG->sitedefaultlicense;
+				$record->author   = 'Moodle User';
+				$record->contextid = $videofile->get_contextid();
+				$record->userid    = $USER->id;
+				$record->source    = '';
+		
+				//set the image filename and call on Moodle to make a stored file from the image
+				$record->filename = $newfilename;
+			
+				//delete the existing file if we had one
+				$hash  = $fs->get_pathname_hash($record->contextid, 
+					$record->component, 
+					$record->filearea, 
+					$record->itemid, 
+					$record->filepath, 
+					$record->filename);
+				$stored_file = $fs->get_file_by_hash($hash);
+				if($stored_file){
+					$record->filename = 'temp_' . $record->filename;
+					$temp_file = $fs->create_file_from_pathname($record, $tempsplashfilepath );
+					$stored_file->replace_file_with($temp_file);
+					$temp_file->delete();
+				}else{
+					//create the new file
+					$stored_file = 	$fs->create_file_from_pathname($record, $tempsplashfilepath );
+				}
+				//need to kill the two temp files here
+				if(is_readable(realpath($tempsplashfilepath ))){
+					unlink(realpath($tempsplashfilepath ));
+				}
+				if(is_readable(realpath($tempvideofilepath))){
+					unlink(realpath($tempvideofilepath));
+				}
+	
+			//delete the temp file we made, regardless
+			}else{
+				if(is_readable(realpath($tempvideofile))){
+					unlink(realpath($tempvideofile));
+				}
+			}		
+			//return the stored file
+			return $stored_file;
+	}
+	
+	/*
+	* Convert a video file to a different format using ffmpeg
+	*
+	*/
+	public static function convert_with_ffmpeg($filerecord, $tempfilename, $convfilenamebase, $convext, $throwawayname = false){
+
+		global $CFG;
+
+			//init our fs object
+			$fs = get_file_storage();
+			$tempdir = $CFG->tempdir . '/';
+		
+			//if use ffmpeg, then attempt to convert mp3 or mp4
+			$convfilename = $convfilenamebase . $convext;
+			//work out the options we pass to ffmpeg. diff versions supp. dioff switches
+			//has to be this way really.
+
+			switch ($convext){
+				case '.mp4':
+					$ffmpegopts = $CFG->filter_poodll_ffmpeg_mp4opts;
+					break;
+				case '.mp3':
+					$ffmpegopts = $CFG->filter_poodll_ffmpeg_mp3opts;
+					break;
+				default:
+					$ffmpegopts = "";
+			}
+		
+			//if there is a version in poodll filter dir, use that
+			//else use ffmpeg version on path
+			if(file_exists($CFG->dirroot . '/filter/poodll/ffmpeg')){
+				$ffmpegpath = $CFG->dirroot . '/filter/poodll/ffmpeg';
+			}else{
+				$ffmpegpath = 'ffmpeg';
+			}
+		
+			//branch logic depending on if windows or nopt
+			$iswindows =(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
+			$command = $ffmpegpath . " -i " . $tempdir . $tempfilename . " " . $ffmpegopts . " " . $tempdir . $convfilename;
+
+			if($iswindows){
+				$output = system($command, $fv);
+			}else{
+				shell_exec($command . " >/dev/null 2>/dev/null ");
+			}
+		
+			/* About FFMPEG conv
+			it would be better to do the conversion in the background not here.
+			in that case you would place an ampersand at the end .. like this ...
+			" >/dev/null 2>/dev/null &");
+			But you have to get the information back to Moodle, and copy the file over, so the plumbing gets tough.
+			That is why we call the background task convert_with_ffmpeg_bg
+			Right now there is no "converting message" displayed to user, but we need to do this.
+			*/
+		
+			//Check if conversion worked
+			if(is_readable(realpath($tempdir . $convfilename))){
+				if($throwawayname){
+					$filerecord->filename = $throwawayname;
+				}else{
+					$filerecord->filename = $convfilename;
+				}
+				//error_log('we converted successfully');
+				$stored_file = 	$fs->create_file_from_pathname($filerecord, $tempdir . $convfilename);
+				//error_log('we stashed successfully');
+				//need to kill the two temp files here
+				if(is_readable(realpath($tempdir . $convfilename))){
+					unlink(realpath($tempdir . $convfilename));
+				}
+				if(is_readable(realpath($tempdir . $tempfilename))){
+					unlink(realpath($tempdir . $tempfilename));
+				}
+				$filename = $convfilename;
+			//if failed, set return value to FALSE
+			//and delete the temp file we made
+			}else{
+				$stored_file = false;
+				if(is_readable(realpath($tempdir . $tempfilename))){
+					unlink(realpath($tempdir . $tempfilename));
+				}
+			}		
+			return $stored_file;
+
+	}//end of convert with FFMPEG
+
+
 	
 	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the recorders
 	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
@@ -3754,17 +4030,18 @@ public static function fetch_filter_properties($filterstring){
 		}
 
 		// if we are using S3 lets get an upload url
-		if(true){
+		$using_s3 =true;
+		if($using_s3){
+			$filename = \html_writer::random_id($mediatype . 'file');
 			$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
-			$posturl  = $awstools->get_presigned_upload_url('audio');
+			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$filename);
 		}else{
+			$filename = false;
 			$posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 		}
-		echo $posturl;
-		die;
 		
 		//generate a (most likely) unique id for the recorder, if one was not passed in
-		$widgetid = \html_writer::random_id('laszlobase');
+		$widgetid = \html_writer::random_id('recorderbase');
 
 		$widgetopts = new \stdClass();
 		$widgetopts->id = $widgetid;
@@ -3777,7 +4054,9 @@ public static function fetch_filter_properties($filterstring){
 		$widgetopts->p3 = $component;
 		$widgetopts->p4 = $filearea;
 		$widgetopts->p5 = $itemid;
-
+		
+		//store the filename or "not yet decided flag"(ie false)
+		$widgetopts->filename = $filename;
 		
 		//per recorder props
 		//audio mp3

@@ -18,7 +18,8 @@ namespace filter_poodll;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once '../aws_sdk/vendor/autoload.php';
+require_once($CFG->dirroot . '/filter/poodll/vendor/autoload.php');
+
 use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\S3\S3Client;
 
@@ -35,11 +36,12 @@ class awstools
 {
 	protected $transcoder = false; //the single transcoder object
 	protected $s3client = false; //the single transcoder object
-	protected $default_segment_size = 3;
+	protected $default_segment_size = 4;
 	protected $region = 'ap-northeast-1';
     protected $accesskey ='';
     protected $secretkey='';
-	protected $pipeline_standard ='oogieoogie345'; //standard-transcoding-pipeline
+	protected $pipeline_video ='1467090278549-scfvbk'; //standard-transcoding-pipeline
+	protected $pipeline_audio ='1467090404312-4yquey'; //standard-transcoding-pipeline
 	protected $bucket_video_archive ='poodll-video-process-archive'; //video archive bucket
 	protected $bucket_video_in ='poodll-videoprocessing-in'; //video in bucket
 	protected $bucket_video_out ='poodll-videoprocessing-out'; //video out bucket
@@ -48,7 +50,9 @@ class awstools
 	protected $bucket_audio_archive ='poodll-audioprocessing-archive'; //audio archive
 	protected $bucket_thumbnails ='poodll-video-thumbs'; //video thumbs bucket
 	protected $bucket_production ='poodll-pickup'; //web accessible bucket
-	protected $thumbnail_preset = 'oogieoogie123'; //thumbnail size is set to preset size so use 720p preset to get a bigger thumbnail. 
+	protected $preset_mp3 = "1467090564863-tc7k8e";
+	protected $preset_mp4 = "1467090505514-0gibkw";
+	protected $thumbnail_preset = '1467090505514-0gibkw'; //thumbnail size is set to preset size so use 720p preset to get a bigger thumbnail. 
 
 	 /**
      * Constructor
@@ -67,40 +71,43 @@ class awstools
 */
 		
 		
-		//create the set of outputs for an ishine job
-	function fetch_all_presets(){
-		$presets=array();
-		$presets['video.webm'] = $poodll_webm_360p = 'oogywoogy_webm'; 
-		$presets['video.mp4'] = $poodll_mp4_360p = 'oogywoogy_mp4'; 
-		return $presets;
-	}	
-		
+	 //fetch or create the transcoder object 
+	function fetch_transcoder(){
+		if(!$this->transcoder){
+			$this->transcoder = ElasticTranscoderClient::factory(
+			array('region' => $this->region, 'default_caching_config' => '/tmp',
+				'credentials'=>array('key' => $this->accesskey, 'secret' => $this->secretkey)));
+		}
+		return $this->transcoder;
+	}
+	
 	//create a single job
-	function create_one_transcoding_job($input_key) {
+	function create_one_transcoding_job($mediatype, $input_key,$output_key) {
 	
 		$transcoder_client = $this->fetch_transcoder();
-		$pipeline_id= $this->pipeline_standard;
-		$presets = $this->fetch_all_presets();
-	
 	
 		//create the output prefix
-		$output_key_prefix = $this->fetch_video_output_prefix($input_key);
-		echo 'creating job for' . $output_key_prefix . PHP_EOL;
+		$output_key_prefix = '';
+//		echo 'creating transcoding job:' . PHP_EOL;
 
 		
 		  # Setup the job input using the provided input key.
 		  $input = array('Key' => $input_key);
 
-		  #Setup the job outputs using the HLS presets.
-		 //$output_key = hash('sha256', utf8_encode($input_key));
 
 		  # Specify the outputs based on the hls presets array spefified.
-		  $playlist_outputs = array();
 		  $outputs = array();
-		  foreach ($presets as $prefix => $preset_id) {
-				$one_output = array('Key' => $prefix, 'PresetId' => $preset_id);
-				if($preset_id == $this->thumbnail_preset){$one_output['ThumbnailPattern']='thumbnail-{count}';}
-				array_push($outputs, $one_output);
+		  switch($mediatype){
+		  	case 'audio':
+		  		$pipeline_id= $this->pipeline_audio;
+		  		$one_output = array('Key'=> $output_key, 'PresetId' =>$this->preset_mp3);
+		  		$outputs[] = $one_output;
+		  		break;
+		  	case 'video':
+		  		$pipeline_id= $this->pipeline_video;
+		  		$one_output = array('Key'=> $output_key, 'PresetId' =>$this->preset_mp4);
+		  		$outputs[] = $one_output;
+		  		break;
 		  }
 
 		  # Create the job.
@@ -108,7 +115,7 @@ class awstools
 				'PipelineId' => $pipeline_id, 
 				'Input' => $input, 
 				'Outputs' => $outputs, 
-				'OutputKeyPrefix' => "$output_key_prefix"
+				'OutputKeyPrefix' => $output_key_prefix
 		  );
 		  $create_job_result = $transcoder_client->createJob($create_job_request)->toArray();
 		  return $job = $create_job_result['Job'];
@@ -122,10 +129,94 @@ class awstools
 *
 */
 
-	function get_presigned_upload_url($mediatype,$minutes=30,$key=''){
+function does_file_exist($mediatype, $filename, $in_out='in'){
+		$s3client= $fetch_s3client();
+		$bucket='';
+		switch($mediatype){
+		 case 'audio':
+		 	if($in_out == 'out'){
+		 		$bucket =$this->bucket_audio_out;
+		 	}else{
+		 		$bucket =$this->bucket_audio_in;
+		 	}
+		 	break;
+		 
+		 case 'video':
+		 	if($in_out == 'out'){
+		 		$bucket =$this->bucket_video_out;
+		 	}else{
+		 		$bucket =$this->bucket_video_in;
+		 	}
+		 	break;
+		}
+		
+		return $s3client->if_object_exists($bucket,$filename);		
+}
+
+function get_s3_converted_file_url($filename){
+
+	return $url;
+}
+//fetch or create the transcoder object 
+	function fetch_s3client(){
+		if(!$this->s3client){
+			$this->s3client = S3Client::factory(array(
+			'region'=>$this->region,
+			'version'=>'2006-03-01',
+			'credentials' => 
+				array('key' => $this->accesskey, 'secret' => $this->secretkey)));
+		}
+		return $this->s3client;
+	}
+	
+	function save_converted_to_file($mediatype,$filename,$filepath){
+		$s3client = $this->fetch_s3client();
+		$bucket = ''
+		switch($mediatype){
+			case 'audio':
+				$bucket=$this->bucket_audio_out;
+				break;
+			case 'video':
+				$bucket=$this->bucket_video_out;
+				break;
+		}
+		 $s3client->getObject(array(
+   			 'Bucket' => $bucket,
+    		'Key'    => $filename,
+    		'SaveAs' => $filepath
+		));
+		
+	}
+	
+	function get_presigned_download_url($mediatype,$minutes=30,$key){
 		$s3client = $this->fetch_s3client();
 		//Get bucket
 		$bucket='';
+		$key= 'convertedmedia/' . $key;
+		switch($mediatype){
+			case 'audio':
+				$bucket=$this->bucket_audio_out;
+				break;
+			case 'video':
+				$bucket=$this->bucket_video_out;
+				break;
+		}
+		//options
+		$options = array();
+		$options['Bucket']=$bucket;
+		$options['Key']=$key;
+		
+		$cmd = $s3client->getCommand('GetObject', $options);
+		$request = $s3client->createPresignedRequest($cmd, '+' . $minutes .' minutes');
+		$theurl = (string) $request->getUri();
+		return $theurl;
+	}
+
+	function get_presigned_upload_url($mediatype,$minutes=30,$key){
+		$s3client = $this->fetch_s3client();
+		//Get bucket
+		$bucket='';
+		$key= 'uploadedmedia/' . $key;
 		switch($mediatype){
 			case 'audio':
 				$bucket=$this->bucket_audio_in;
@@ -139,11 +230,11 @@ class awstools
 		$options['Bucket']=$bucket;
 		$options['Key']=$key;
 		$options['Body']='';
-		$options['ContentMD5']=false;
-		//$options['ContentType']='audio/mp3';
+		//$options['ContentMD5']=false;
+		$options['ContentType']='application/octet-stream';
 		
 		$cmd = $s3client->getCommand('PutObject', $options);
-		$request = $s3Client->createPresignedRequest($cmd, '+' . $minutes .' minutes');
+		$request = $s3client->createPresignedRequest($cmd, '+' . $minutes .' minutes');
 		$theurl = (string) $request->getUri();
 		return $theurl;
 	}

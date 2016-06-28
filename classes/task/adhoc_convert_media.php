@@ -81,7 +81,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 		$draftfile =  $fs->get_file_by_id($draftfilerecord->id);
 
 		//we used to delete the draft file and reuse it. It is just our placeholder.
-		//but it didn't seem to always delete, so we use another tempfilename (throwawayfilename) 
+		//but it didn't seem to always delete, so we use another temporary filename (throwawayfilename) 
 		//we still delete it, because some draft areas have file limits right?
 		if($draftfile){
 			$draftfile->delete();
@@ -90,9 +90,8 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 		//do the conversion
 		$throwawayfilename = 'temp_' . $cd->filename;
 		try{
-			$convertedfile = convert_with_ffmpeg($draftfilerecord, 
-				 $cd->tempdir, 
-				 $cd->tempfilename, 
+			$convertedfile = \filter_poodll\poodlltools::convert_with_ffmpeg($draftfilerecord, 
+				 $cd->originalfilename, 
 				 $cd->convfilenamebase, 
 				$cd->convext,
 				$throwawayfilename);
@@ -115,7 +114,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 			}
 			return;
 		}else{
-		 $this->handle_error('unable to convert ' . $cd->tempfilename,$cd);
+		 $this->handle_error('unable to convert ' . $cd->originalfilename,$cd);
 		 return;
 		}
 		
