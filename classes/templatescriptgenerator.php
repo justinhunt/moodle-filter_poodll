@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2014 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class template_script_generator
+class templatescriptgenerator
 {
 /** @var mixed int index of template*/
     public $templateindex;
@@ -48,7 +48,7 @@ class template_script_generator
 		$template=$conf->{'template_' . $tindex};
 
 		//are we AMD and Moodle 2.9 or more?
-		$require_amd = $conf->{'template_amd_' . $tindex} && $CFG->version>=2015051100;
+		$require_amd = $conf->{'template_amd_' . $tindex};
 
 		//get presets
 		$thescript=$conf->{'templatescript_' . $tindex};
@@ -56,7 +56,7 @@ class template_script_generator
 
 
 		//fetch all the variables we use (make sure we have no duplicates)
-		$allvariables = \filter_poodll\poodlltools::fetch_variables($thescript. $template);
+		$allvariables = \filter_poodll\filtertools::fetch_variables($thescript. $template);
 		$uniquevariables = array_unique($allvariables);
 
 		//these props are in the opts array in the allopts[] array on the page
@@ -82,6 +82,8 @@ class template_script_generator
 			//this is for loading as dependencies the uploaded or linked files
 			//massage the js URL depending on schemes and rel. links etc. Then insert it
 				$requiredjs = $conf->{'templaterequire_js_' . $tindex};
+				$requiredjs = str_replace('@@WWWROOT@@', $CFG->wwwroot ,$requiredjs);
+				
 				if($requiredjs){
 					if(strpos($requiredjs,'//')===0){
 						$requiredjs = $scheme . $requiredjs;

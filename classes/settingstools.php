@@ -183,7 +183,7 @@ public static function fetch_extension_items($conf){
 		$items = array();
 		
 		//add extensions csv list
-		$defaultexts = implode(',',\filter_poodll\poodlltools::fetch_default_extensions()); 
+		$defaultexts = implode(',',\filter_poodll\filtertools::fetch_default_extensions()); 
 		$items[] = new \admin_setting_configtext('filter_poodll/extensions', 
 					get_string('extensions', 'filter_poodll'),
 					get_string('extensions_desc', 'filter_poodll'), 
@@ -191,14 +191,14 @@ public static function fetch_extension_items($conf){
 
 		//loop though extensions and offer a dropdownlist of players for each
 		//get player option list
-		$playeroptions = \filter_poodll\poodlltools::fetch_players_list($conf);
+		$playeroptions = \filter_poodll\filtertools::fetch_players_list($conf);
 		
 		//if we have no players (could happen ...) provide something
 		if(count($playeroptions) < 1){
 			$playeroptions['']=get_string('none');
 		}
 		
-		$extensions =\filter_poodll\poodlltools::fetch_extensions();
+		$extensions =\filter_poodll\filtertools::fetch_extensions();
 		foreach($extensions as $ext){
 			switch($ext){
 				case 'youtube': $def_player='1';break;
@@ -219,7 +219,7 @@ public static function fetch_widget_items(){
 	$items[]= new \admin_setting_configtext('filter_poodll/templatecount', 
 				get_string('templatecount', 'filter_poodll'),
 				get_string('templatecount_desc', 'filter_poodll'), 
-				 poodlltools::FILTER_POODLL_TEMPLATE_COUNT, PARAM_INT,20);
+				 filtertools::FILTER_POODLL_TEMPLATE_COUNT, PARAM_INT,20);
 	return $items;
 
 }//end of function fetch widget items
@@ -231,7 +231,7 @@ public static function fetch_template_pages($conf){
 		if($conf && property_exists($conf,'templatecount')){
 			$templatecount = $conf->templatecount;
 		}else{
-			$templatecount = poodlltools::FILTER_POODLL_TEMPLATE_COUNT;
+			$templatecount = filtertools::FILTER_POODLL_TEMPLATE_COUNT;
 		}
 		for($tindex=1;$tindex<=$templatecount;$tindex++){
 		 
@@ -265,6 +265,13 @@ public static function fetch_template_pages($conf){
 				get_string('templateinstructions', 'filter_poodll',$tindex),
 				get_string('templateinstructions_desc', 'filter_poodll'),
 				'',PARAM_RAW));
+				
+			//template show in atto editor
+			$yesno = array('0'=>get_string('no'),'1'=>get_string('yes'));
+			 $settings_page->add(new \admin_setting_configselect('filter_poodll/template_showatto_' . $tindex,
+					get_string('template_showatto', 'filter_poodll',$tindex),
+					get_string('template_showatto_desc', 'filter_poodll'), 
+					 0,$yesno));
 		
 			//template body
 			 $settings_page->add(new \admin_setting_configtextarea('filter_poodll/template_' . $tindex,

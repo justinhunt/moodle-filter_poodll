@@ -25,8 +25,6 @@
 
 //define('AJAX_SCRIPT', true);
 require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
-
 $tindex = required_param('t',PARAM_TEXT);
 
 $conf = get_config('filter_poodll');

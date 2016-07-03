@@ -9,17 +9,17 @@ define(['jquery','core/log'], function($, log) {
 
 	  presetdata: false,
 	  
-	  dataitems: ['key', 'instructions','requirecss', 'requirejs', 'defaults', 'jquery',
+	  dataitems: ['key', 'instructions','requirecss', 'requirejs', 'defaults',
 			  'amd', 'body', 'bodyend', 'script', 'style','dataset','datasetvars'],
 
 	  fetchcontrols: function(templateindex) {
 	  	  var controls = {};
 		  controls.key = document.getElementById('id_s_filter_poodll_templatekey_' + templateindex);
 		  controls.instructions = document.getElementById('id_s_filter_poodll_templateinstructions_' + templateindex);
+		  controls.showatto = document.getElementById('id_s_filter_poodll_template_showatto_' + templateindex);
 		  controls.requirecss = document.getElementById('id_s_filter_poodll_templaterequire_css_' + templateindex);
 		  controls.requirejs = document.getElementById('id_s_filter_poodll_templaterequire_js_' + templateindex);
 		  controls.defaults = document.getElementById('id_s_filter_poodll_templatedefaults_' + templateindex);
-		  controls.jquery = document.getElementById('id_s_filter_poodll_templaterequire_jquery_' + templateindex);
 		  controls.amd = document.getElementById('id_s_filter_poodll_template_amd_' + templateindex);
 		  controls.body = document.getElementById('id_s_filter_poodll_template_' + templateindex);
 		  controls.bodyend = document.getElementById('id_s_filter_poodll_templateend_' + templateindex);
