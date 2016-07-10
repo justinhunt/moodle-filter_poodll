@@ -233,6 +233,10 @@ public static function fetch_template_pages($conf){
 		}else{
 			$templatecount = filtertools::FILTER_POODLL_TEMPLATE_COUNT;
 		}
+                
+                //fetch preset data, just once so we do nto need to repeat the call a zillion times
+                $presetdata = poodllpresets::fetch_presets();
+                
 		for($tindex=1;$tindex<=$templatecount;$tindex++){
 		 
 			 //template display name
@@ -252,9 +256,16 @@ public static function fetch_template_pages($conf){
 				
 			//presets
 			$settings_page->add(new poodllpresets('filter_poodll/templatepresets_' . $tindex, 
-					get_string('presets', 'filter_poodll'), get_string('presets_desc', 'filter_poodll'),$tindex));
+					get_string('presets', 'filter_poodll'), get_string('presets_desc', 'filter_poodll'),$tindex,$presetdata));
 
-			//template key
+			
+                        //template name
+			 $settings_page->add(new \admin_setting_configtext('filter_poodll/templatename_' . $tindex , 
+					get_string('templatename', 'filter_poodll',$tindex),
+					get_string('templatename_desc', 'filter_poodll'), 
+					 '', PARAM_ALPHANUMEXT));
+                        
+                         //template key
 			 $settings_page->add(new \admin_setting_configtext('filter_poodll/templatekey_' . $tindex , 
 					get_string('templatekey', 'filter_poodll',$tindex),
 					get_string('templatekey_desc', 'filter_poodll'), 

@@ -38,6 +38,7 @@ class awstools
 	protected $s3client = false; //the single transcoder object
 	protected $default_segment_size = 4;
 	protected $region = 'ap-northeast-1';
+        protected $convfolder = 'transcoded/';
     protected $accesskey ='';
     protected $secretkey='';
 	protected $pipeline_video ='1467090278549-scfvbk'; //standard-transcoding-pipeline
@@ -73,13 +74,26 @@ class awstools
 		
 	 //fetch or create the transcoder object 
 	function fetch_transcoder(){
+            global $CFG;
 		if(!$this->transcoder){
 			$this->transcoder = ElasticTranscoderClient::factory(
-			array('region' => $this->region, 'default_caching_config' => '/tmp',
-				'credentials'=>array('key' => $this->accesskey, 'secret' => $this->secretkey)));
+			array('region' => $this->region, 
+                            'version'=>'2012-09-25',
+                            'default_caching_config' => $CFG->tempdir . '/tmp',
+			   'credentials'=>array('key' => $this->accesskey, 'secret' => $this->secretkey)));
 		}
 		return $this->transcoder;
 	}
+        
+        public static function fetch_s3_filename($mediatype, $filename){
+            global $CFG,$USER;
+            $s3filename =$CFG->wwwroot . '/' . $USER->sesskey . '/' . $mediatype . '/' . $filename;
+            $s3filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $s3filename);
+            // Remove any runs of periods (thanks falstro!)
+            $s3filename = mb_ereg_replace("([\.]{2,})", '', $s3filename);       
+            return $s3filename;
+        }
+
 	
 	//create a single job
 	function create_one_transcoding_job($mediatype, $input_key,$output_key) {
@@ -87,7 +101,7 @@ class awstools
 		$transcoder_client = $this->fetch_transcoder();
 	
 		//create the output prefix
-		$output_key_prefix = '';
+		$output_key_prefix = $this->convfolder;
 //		echo 'creating transcoding job:' . PHP_EOL;
 
 		
@@ -122,15 +136,15 @@ class awstools
 	}   
     
 	
-/**
-*
-*
-*  COMMON CODE STARTS HERE
-*
-*/
+        /**
+        *
+        *
+        *  COMMON CODE STARTS HERE
+        *
+        */
 
-function does_file_exist($mediatype, $filename, $in_out='in'){
-		$s3client= $fetch_s3client();
+        function does_file_exist($mediatype, $filename, $in_out='in'){
+		$s3client= $this->fetch_s3client();
 		$bucket='';
 		switch($mediatype){
 		 case 'audio':
@@ -149,14 +163,27 @@ function does_file_exist($mediatype, $filename, $in_out='in'){
 		 	}
 		 	break;
 		}
-		
-		return $s3client->if_object_exists($bucket,$filename);		
-}
+		//return $s3client->if_object_exists($bucket,$filename);		
+                return $s3client->doesObjectExist($bucket,$filename);		
+        }
 
-function get_s3_converted_file_url($filename){
-
-	return $url;
-}
+        function fetch_s3_converted_file($mediatype,$s3filename,$filename,$filerecord){
+           global $CFG;
+            if($this->does_file_exist($mediatype, $this->convfolder . $s3filename,'out')){
+                $tempfilepath = $CFG->tempdir . "/" . $filename;
+                $this->save_converted_to_file($mediatype,$s3filename, $tempfilepath);
+                return $tempfilepath;
+            }else{
+                if(!$this->does_file_exist($mediatype,$s3filename,'in')){
+                    //if we do not even have an input file then just return, somethings wrong
+                    //but it can not be fixed
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+            
+        }
 //fetch or create the transcoder object 
 	function fetch_s3client(){
 		if(!$this->s3client){
@@ -171,7 +198,7 @@ function get_s3_converted_file_url($filename){
 	
 	function save_converted_to_file($mediatype,$filename,$filepath){
 		$s3client = $this->fetch_s3client();
-		$bucket = ''
+		$bucket = '';
 		switch($mediatype){
 			case 'audio':
 				$bucket=$this->bucket_audio_out;
@@ -182,10 +209,10 @@ function get_s3_converted_file_url($filename){
 		}
 		 $s3client->getObject(array(
    			 'Bucket' => $bucket,
-    		'Key'    => $filename,
+    		'Key'    => $this->convfolder . $filename,
     		'SaveAs' => $filepath
 		));
-		
+                 return true;
 	}
 	
 	function get_presigned_download_url($mediatype,$minutes=30,$key){
@@ -216,7 +243,6 @@ function get_s3_converted_file_url($filename){
 		$s3client = $this->fetch_s3client();
 		//Get bucket
 		$bucket='';
-		$key= 'uploadedmedia/' . $key;
 		switch($mediatype){
 			case 'audio':
 				$bucket=$this->bucket_audio_in;

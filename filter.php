@@ -39,8 +39,8 @@ class filter_poodll extends moodle_text_filter {
 		
 			//No links or poodll curlys then .. bail
 			$havelinks = !(stripos($text, '</a>') ===false);
-			if(!$havelinks){
-				$have_poodll_curlys = (strpos($text,'{POODLL:')!==false);
+                        $have_poodll_curlys = (strpos($text,'{POODLL:')!==false);
+			if(!$havelinks){		
 				if(!$have_poodll_curlys){return $text;}
 			}
 			
@@ -91,6 +91,27 @@ class filter_poodll extends moodle_text_filter {
 		return $newtext;
     }
     
+    private function fetchconf($prop){
+    global $COURSE;
+
+    	//I don't know why we need this whole courseconfig business.
+    	//we are supposed to be able to just call $this->localconfig / $this->localconfig[$propertyname]
+    	//as per here:https://docs.moodle.org/dev/Filters#Local_configuration , but its always empty
+    	//at least at course context, in mod context it works ... 
+    	//I just gave up and do it myself and stuff it in $this->courseconfig . bug?? Justin 20150106
+    	if($this->localconfig && !empty($this->localconfig)){
+    		$this->courseconfig = $this->localconfig;
+    	}
+    	if(!$this->courseconfig){
+    		$this->courseconfig = filter_get_local_config('poodll', context_course::instance($COURSE->id)->id);
+    	}
+    	
+		if($this->courseconfig && isset($this->courseconfig[$prop]) && $this->courseconfig[$prop] != 'sitedefault') {
+			return $this->courseconfig[$prop];
+		}else{
+			return isset($this->adminconfig->{$prop}) ? $this->adminconfig->{$prop} : false;
+		}
+	}
     /**
 	 * Replace youtube links with player
 	 *
@@ -129,7 +150,7 @@ class filter_poodll extends moodle_text_filter {
 	
 		//get our filter props
 		if($ext){
-			$filterprops= \filter_poodll\filtertools::fetch_filter_properties_fromurl($link);
+			$filterprops= \filter_poodll\filtertools::fetch_filter_properties_fromurl($link,$ext);
 		}else{
 			$filterprops= \filter_poodll\filtertools::fetch_filter_properties($link[0]);
 		}
@@ -141,20 +162,38 @@ class filter_poodll extends moodle_text_filter {
 		//to use this, make the last parameter of the filter passthrough=1
 		if (!empty($filterprops['passthrough'])) return str_replace( ",passthrough=1","",$link[0]);
 	
-		//determine which template we are using
+		//set a default end tag of none
 		$endtag=false;
-		for($tempindex=1;$tempindex<=$conf['templatecount'];$tempindex++){
-				if($filterprops['type']==$conf['templatekey_' . $tempindex]){
-					break;
-				}elseif($filterprops['type']==$conf['templatekey_' . $tempindex] . '_end'){
-					$endtag = true;
-					break;
-				}
-		}
+                
+                //determine which template we are using
+                //If we have an extension then it is from link
+                //get our template info
+                if($ext){
+                    $playerkey = $this->fetchconf('useplayer' . $ext);
+                    $tempindex=0;
+                    $templatenumbers = filter_videoeasy_fetch_players();
+                    foreach($templatenumbers as $templatenumber){
+                            if($conf['templatekey_' . $templatenumber]==$playerkey){
+                                    $tempindex=$templatenumber;
+                                    break;
+                            }
+                    }
+                    if(!$tempindex){return;}
+                }else{
+                //else its from a  poodll filter string                
+                    for($tempindex=1;$tempindex<=$conf['templatecount'];$tempindex++){
+                                    if($filterprops['type']==$conf['templatekey_' . $tempindex]){
+                                            break;
+                                    }elseif($filterprops['type']==$conf['templatekey_' . $tempindex] . '_end'){
+                                            $endtag = true;
+                                            break;
+                                    }
+                    }
 
-		//no key could be found if got all the way to 21
-		if($tempindex==$conf['templatecount']+1){return '';}
-	
+                    //no key could be found if got all the way to 21
+                    if($tempindex==$conf['templatecount']+1){return '';}
+                }
+                
 		//fetch our template
 		if($endtag){
 			$poodlltemplate = $conf['templateend_' . $tempindex];

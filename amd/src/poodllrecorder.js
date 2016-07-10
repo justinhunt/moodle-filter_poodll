@@ -57,6 +57,5 @@ define(['jquery',
     		//if we got here no recorder was preferred AND supported the browser
     		log.debug('none of available recorders works on this browser');
     	}
-      
     }//end of returned object
 });//total end

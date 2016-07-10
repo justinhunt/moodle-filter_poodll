@@ -1591,6 +1591,13 @@ class poodlltools
 	public static function fetchVideoRecorderForSubmission($runtime, $assigname, $updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
 	{
 		global $CFG, $USER, $COURSE;
+                
+                
+                return self::fetchAMDRecorderCode('video', $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
+                
+                
+                
+                
 
 //head off to HTML5 logic if mobile
 		if (self::isMobile($CFG->filter_poodll_html5rec)) {
@@ -3551,38 +3558,122 @@ class poodlltools
 		$renderer = $PAGE->get_renderer('filter_poodll');
 		return $renderer->fetchLazloEmbedCode($widgetopts,$widgetid,$jsmodule);
 	}
-	
-	public static function store_placeholder_file($filerecord,$convfilenamebase, $convext){
-		global $CFG;
-		$placeholder_filename= "convertingmessage" . $convext;
-		$stored_file = 	$fs->create_file_from_pathname($filerecord, 
+
+        
+        public static function fetch_placeholder_file_record($mediatype, $filename){
+            global $DB;
+            
+            switch($mediatype){
+                    case 'audio': $contenthash = POODLL_AUDIO_PLACEHOLDER_HASH;break;
+                    case 'video': $contenthash = POODLL_VIDEO_PLACEHOLDER_HASH;break;
+                    default:$contenthash = '';
+
+            }
+                 
+            $select = "filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
+            $params = null;
+            $sort = "id DESC";
+            $dbfiles = $DB->get_records_select('files',$select,$params,$sort);
+            if(!$dbfiles){
+                return false;
+            }
+
+            //get the file we will replace
+            $thefilerecord = array_shift($dbfiles);	
+            return $thefilerecord;
+        }
+        
+        public static function replace_placeholderfile_in_moodle($draftfilerecord,$permfilerecord,$newfilepath){
+               $fs = get_file_storage();
+               $dfr=$draftfilerecord;
+               //TODO: do we really need the use old draft record?
+               $newfilename =$fs->get_unused_filename($dfr->contextid, $dfr->component, $dfr->filearea, $dfr->itemid, $dfr->filepath, $dfr->filename);
+               $draftfilerecord->filename =$newfilename;
+                $newfile = $fs->create_file_from_pathname($draftfilerecord, 
+			$newfilepath);
+                $permanentfile = $fs->get_file_by_id($permfilerecord->id);
+                $permanentfile->replace_file_with($newfile);
+		return true;
+        }//end of function
+            
+        
+        public static function save_placeholderfile_in_moodle($mediatype,$draftfilerecord){
+           global $CFG;
+            
+            $fs=get_file_storage();
+            switch($mediatype){
+                case 'audio':$placeholderfilename = 'convertingmessage.mp3';break;
+                case 'video':$placeholderfilename = 'convertingmessage.mp4';break;
+            }
+            $stored_file = $fs->create_file_from_pathname($draftfilerecord, 
 			$CFG->dirroot . '/filter/poodll/' .  $placeholderfilename);
-   		return $filerecord;
-	}
+            return $stored_file ;
+            
+        }
 	
-	public static function register_s3_task($mediatype,$filerecord,$convext){
+	public static function register_s3_download_task($mediatype,$s3filename,$draftfilerecord){
 	 	// set up task and add custom data
 	   $s3_task = new \filter_poodll\task\adhoc_s3_move();
-	   $savedatetime = new DateTime();
+	   $savedatetime = new \DateTime();
+           $isodate=$savedatetime->format('Y-m-d H:i');
 	   $qdata = array(
-		   'filerecord' => $filerecord,
-		   'filename' => $filerecord->filename,
+		   'filerecord' => $draftfilerecord,
+		   'filename' => $draftfilerecord->filename,
+                   's3filename'=>$s3filename,
 		   'mediatype'=> $mediatype,
-		   'convext' => $convext,
-		   'savedatetime'=>$savedatetime
+		   'isodate'=>$isodate
 	   );
-	   $conv_task->set_custom_data($qdata);
+	   $s3_task->set_custom_data($qdata);
+	   // queue it
+	   \core\task\manager::queue_adhoc_task($s3_task);
+	}
+        
+        public static function register_s3_transcode_task($mediatype,$s3filename){
+	 	// set up task and add custom data
+	   $s3_task = new \filter_poodll\task\adhoc_s3_transcode();
+	   $savedatetime = new \DateTime();
+           $isodate=$savedatetime->format('Y-m-d H:i');
+	   $qdata = array(
+                   's3filename'=>$s3filename,
+		   'mediatype'=> $mediatype,
+		   'isodate'=>$isodate
+	   );
+	   $s3_task->set_custom_data($qdata);
 	   // queue it
 	   \core\task\manager::queue_adhoc_task($s3_task);
 	}
 	
-	public static function commence_s3_transcode($mediatype,$filename){
-		//does file exist on s3
+	public static function commence_s3_transcode($mediatype,$s3filename){
+		global $CFG;
+                //does file exist on s3
 		$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
-		if($awstools->does_file_exist($mediatype,$filename,'in' ) && !$awstools->does_file_exist($mediatype,$filename,'out') ){
-			$awstools->create_one_transcoding_job($mediatype,$filename,$filename);
-		}
+		if($awstools->does_file_exist($mediatype,$s3filename,'in' ) && !$awstools->does_file_exist($mediatype,$s3filename,'out') ){
+			$awstools->create_one_transcoding_job($mediatype,$s3filename,$s3filename);
+		//}else{
+                    //the file has not arrived yet, possibly it was a mobile upload (which will finish later than this funftion)
+                 //   self::register_s3_transcode_task($mediatype,$s3filename);
+                }
 	}
+        
+        public static function confirm_s3_arrival($mediatype,$filename){
+		global $CFG;
+                //does file exist on s3
+		$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
+                $s3filename = $awstools->fetch_s3_filename($mediatype, $filename);
+		if($awstools->does_file_exist($mediatype,$s3filename,'in' )){
+                    return true;
+		}else{
+                   return false;
+                }
+	}
+        
+        public static function postprocess_s3_upload($mediatype,$draftfilerecord){
+            $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype,$draftfilerecord->filename);
+            self::commence_s3_transcode($mediatype,$s3filename);
+            $storedfile = self::save_placeholderfile_in_moodle($mediatype,$draftfilerecord);
+            $draftfilerecord->id = $storedfile->get_id();
+            self::register_s3_download_task($mediatype,$s3filename, $draftfilerecord);
+        }
 	
 	public static function register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext){
 		 // set up task and add custom data
@@ -3806,13 +3897,14 @@ class poodlltools
 			return $stored_file;
 
 	}//end of convert with FFMPEG
-
-
 	
 	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the recorders
 	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
 	{
 		global $CFG, $PAGE;
+                
+                //temp 
+                $timelimit=240;
 
 		$lm = new \filter_poodll\licensemanager();
 		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
@@ -3822,11 +3914,18 @@ class poodlltools
 		// if we are using S3 lets get an upload url
 		$using_s3 =true;
 		if($using_s3){
-			$filename = \html_writer::random_id($mediatype . 'file');
+                        switch($mediatype){
+                            case 'audio': $ext='.mp3';break;
+                            case 'video': $ext='.mp4';break;
+                            default:$ext='.wav';
+                        }
+			$filename = \html_writer::random_id('poodllfile') . $ext;
+                        $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
 			$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
-			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$filename);
+			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$s3filename);
 		}else{
 			$filename = false;
+                        $s3filename = false;
 			$posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 		}
 		
@@ -3844,10 +3943,11 @@ class poodlltools
 		$widgetopts->p3 = $component;
 		$widgetopts->p4 = $filearea;
 		$widgetopts->p5 = $itemid;
+                $widgetopts->timelimit = $timelimit;
 		
 		//store the filename or "not yet decided flag"(ie false)
 		$widgetopts->filename = $filename;
-		
+		$widgetopts->s3filename = $s3filename;
 		//per recorder props
 		//audio mp3
 		$rawparams = self::fetchMP3RecorderAMDParams($timelimit, $callbackjs);
@@ -3870,12 +3970,9 @@ class poodlltools
 		} else {
 			$widgetopts->audiomp3_width = "240";
 			$widgetopts->audiomp3_height  = "170";
-		}
-
-		
+		}	
 		$renderer = $PAGE->get_renderer('filter_poodll');
 		return $renderer->fetchAMDRecorderEmbedCode($widgetopts,$widgetid);
-
 	}
 
  /*

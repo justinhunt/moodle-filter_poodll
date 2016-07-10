@@ -55,10 +55,9 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         
          // handle audio/video/image file uploads for Mobile
         register_events: function() {
-            //stash our opts array JUSTIN Do we need this?????
-           // this.whiteboardopts[config['recorderid']] = config;
-			var self =this;
-			var config = this.config;
+
+            var self =this;
+            var config = this.config;
             $('#' + config.widgetid + '_poodllfileselect').on('change',function(e){
                     self.FileSelectHandler(e); }
                 );

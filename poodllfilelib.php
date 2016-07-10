@@ -55,6 +55,12 @@ require_once($CFG->libdir . '/filelib.php');
 	$p5  = optional_param('p5', "", PARAM_TEXT);
 	$filedata  = optional_param('filedata', "", PARAM_TEXT);
 	$fileext  = optional_param('fileext', "", PARAM_TEXT);
+        
+        //from the universal recorder
+        //from the general recorder (mp3)
+	$mediatype  = optional_param('mediatype', "", PARAM_TEXT);
+	$filename  = optional_param('filename', "", PARAM_TEXT);
+        
 	//map general recorder upload data to what we expect otherwise
 	if($p1!=''){
 		$contextid = $p2;
@@ -67,7 +73,15 @@ require_once($CFG->libdir . '/filelib.php');
 	}
 	
 	switch($datatype){
-		
+		case "confirmarrival":
+			header("Content-type: text/xml");
+			echo "<?xml version=\"1.0\"?>\n";
+			//uploadfile filedata(base64), fileextension (needs to be cleaned), blah blah 
+			//paramone is the file data, paramtwo is the file extension, paramthree is the mediatype (audio,video, image)
+			//requestid is the actionid
+			$returnxml = filter_poodll_confirmarrival($mediatype,$filename);
+			break;
+                    
 		case "uploadfile":
 			header("Content-type: text/xml");
 			echo "<?xml version=\"1.0\"?>\n";
@@ -82,7 +96,10 @@ require_once($CFG->libdir . '/filelib.php');
 			//lets hard code this for now, very very mild security
 			filter_poodll_poodllpluginfile($contextid,"mod_assignment","submission",$itemid,"/",$paramone);
 			return;
-
+                        
+                case "handles3upload":
+                        filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$itemid,$filename);
+                        return;
 
 		case "instancedownload":
 			//paramone=mimetype paramtwo=path paramthree=hash
@@ -364,6 +381,70 @@ function filter_poodll_poodllpluginfile($contextid,$component,$filearea,$itemid,
 	$fcontent = $f->get_content();
 	send_file($fcontent, $filename, 0, 0, true, true, "video/x-flv");
 	return;
+}
+
+/* Here we check if the file has been received over on S3 */
+function filter_poodll_confirmarrival($mediatype, $filename){
+    
+        $return=filter_poodll_fetchReturnArray(true);
+    
+	global $CFG,$USER;
+
+      $return['success']=false;       
+      $ret =  \filter_poodll\poodlltools::confirm_s3_arrival($mediatype, $filename);
+        
+      if($ret){
+          array_push($return['messages'],'file arrived:' . $filename );
+      }else{
+	  array_push($return['messages'],"no file arrival" );
+      }
+      
+        //we process the result for return to browser
+	$xml_output=filter_poodll_prepareXMLReturn($return, '99999');
+
+	//we return to browser the result of our file operation
+	return $xml_output;
+        
+//set up return object
+
+}
+
+/* The alerts us to the fact that the file has been uploaded to S3. We commence handling */
+function filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$itemid,$filename){
+    
+        $return=filter_poodll_fetchReturnArray(true);
+    
+	global $CFG,$USER;
+        $draftfilerecord =new stdClass();
+        $draftfilerecord->userid    = $USER->id;
+        $draftfilerecord->contextid=$contextid;
+        $draftfilerecord->component=$comp;
+        $draftfilerecord->filearea=$farea;
+        $draftfilerecord->itemid=$itemid;
+        $draftfilerecord->filepath='/';
+        $draftfilerecord->filename=$filename;
+        $draftfilerecord->license  = $CFG->sitedefaultlicense;
+	$draftfilerecord->author   = 'Moodle User';
+	$draftfilerecord->source    = '';
+	$draftfilerecord->timecreated = time();
+	$draftfilerecord->timemodified= time();
+        
+             
+      $ret =  \filter_poodll\poodlltools::postprocess_s3_upload($mediatype, $draftfilerecord);
+        
+      if(!$ret){
+          $return['success']=false;
+	  array_push($return['messages'],"Unable to postprocess s3 upload." );
+      }
+      
+        //we process the result for return to browser
+	$xml_output=filter_poodll_prepareXMLReturn($return, '99999');
+
+	//we return to browser the result of our file operation
+	return $xml_output;
+        
+//set up return object
+
 }
 
 /* download file from remote server and stash it in our file area */

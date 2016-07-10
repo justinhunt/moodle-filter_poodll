@@ -22,14 +22,14 @@ require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
 
 /**
  *
- * This is an adhoc task for copying back a file from Amazon S3
+ * This is an adhoc task for transcoding a file with Amazon Elastic Transcoder
  *
  * @package   filter_poodll
  * @since      Moodle 3.1
  * @copyright  2016 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class adhoc_s3_move extends \core\task\adhoc_task {
+class adhoc_s3_transcode extends \core\task\adhoc_task {
 
 
 //cd needs filename, filerecord and mediatype and savedatetime and convext
@@ -44,43 +44,28 @@ class adhoc_s3_move extends \core\task\adhoc_task {
     	$cd =  $this->get_custom_data();
     	$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
         
-        try{
-            $ret= $awstools->fetch_s3_converted_file($cd->mediatype, $cd->s3filename, $cd->filename,$cd->filerecord);
-         }catch (Exception $e) {
-            $giveup =false;
-            $this->handle_s3_error('could not fetch:' . $cd->filename . ':' . $e->getMessage(),$cd,$giveup);
+        //if somehow this trasncoding already ocurred, just exit
+        if($awstools->does_file_exist($cd->mediatype,$cd->s3filename,'out') ){
             return;
-	}
-        
-        
-        if($ret===false){
-            //this indicates no "in" or "out" file, so we should just snuff this task and not repeat it
-            //so we silently return
-            $giveup=true;
-            $this->handle_s3_error('the file ' . $cd->s3filename . ' was not found anywhere on S3. giving up',$cd,$giveup);
-            return;
-        }else if($ret===true){
-            //this indicates we had an "in" file, but no "out" file yet. try again
-           $giveup=false;
-            $this->handle_s3_error('the file ' . $cd->s3filename . ' has not yet been converted.',$cd,$giveup);
-            return;
-        }else{
-            //this indicates the file was found and saved and the path erturned
-            $tempfilepath = $ret;
         }
         
-        //fetch the permanent file record, that currently holds the placeholder file
-        $permfilerecord = \filter_poodll\poodlltools::fetch_placeholder_file_record($cd->mediatype, $cd->filename);
-        //do the replace, if it succeeds yay. If it fails ...give up
-        $success=false;
+       
         try{
-            \filter_poodll\poodlltools::replace_placeholderfile_in_moodle($cd->filerecord, $permfilerecord, $tempfilepath);
-        }catch (Exception $e) {
+             if($awstools->does_file_exist($cd->mediatype,$cd->s3filename,'in' ) ){
+		$awstools->create_one_transcoding_job($cd->mediatype,$cd->s3filename,$cd->s3filename);
+                //successful so far , so just return
+                return;
+             }else{
+                 $giveup =false;
+                $this->handle_s3_error('file not arrived yet:' . $cd->s3filename,$cd,$giveup);
+                return;
+             }
+         }catch (Exception $e) {
             $giveup =true;
-            $this->handle_s3_error('could not get replace placeholder with converted::' . $cd->filename . ':' . $e->getMessage(),$cd,$giveup);
+            $this->handle_s3_error('could not transcode:' . $cd->s3filename . ':' . $e->getMessage(),$cd,$giveup);
             return;
 	}
-        //nothing to do next. If it errors, it will be elsewhere. If it gets here it should be ok.
+          //nothing to do next. If it errors, it will be elsewhere. If it gets here it should be ok.
     }
 
 private function handle_s3_error($errorstring,$cd,$giveup){
