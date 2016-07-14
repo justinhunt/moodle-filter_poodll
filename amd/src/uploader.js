@@ -148,7 +148,7 @@ define(['jquery','core/log'], function($, log) {
             
             
 			//log.debug(config);
-			var using_s3 = true;
+			var using_s3 = config.using_s3;
 
 			// create progress bar if we have a container for it
 			var progress = this.createProgressBar(xhr,uploader);
@@ -157,7 +157,7 @@ define(['jquery','core/log'], function($, log) {
             this.Output("Uploading.");
 
 			xhr.upload.addEventListener("load", function () {
-				console.log("uploaded:");
+				//console.log("uploaded:");
                                 if(using_s3){
                                  //ping Moodle and inform that we have a new file
                                     uploader.postprocess_s3_upload(uploader);

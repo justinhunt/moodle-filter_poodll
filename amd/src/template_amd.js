@@ -46,7 +46,6 @@ define(['jquery','core/log'], function($, log) {
 				//remove the hidden form element, in case it is really part of a form
 				$(theid).remove();
 			}
-			log.debug(opts);
 
 			//load our css in head if required
 			//only do it once per extension though

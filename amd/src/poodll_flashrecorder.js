@@ -9,8 +9,13 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
     
     	// This recorder supports the current browser
         supports_current_browser: function() { 
-        	log.debug('PoodLL Flash Recorder: supports this browser');
-        	return true;//or false
+        	var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        	if (iOS){
+        		return false;
+        	}else{
+        		log.debug('PoodLL Flash Recorder: supports this browser');
+        		return true;
+        	}
         },
         
         // Perform the embed of this recorder on the page

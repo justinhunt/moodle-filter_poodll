@@ -17,10 +17,6 @@ $string['filter_poodll_videoplayer_heading'] = 'Video Player Settings';
 $string['filter_poodll_camera_heading'] = 'Web Camera Settings';
 $string['filter_poodll_videogallery_heading'] = 'Video Gallery Settings';
 $string['filter_poodll_whiteboard_heading'] = 'Whiteboard Settings';
-$string['filter_poodll_legacy_heading'] = 'PoodLL Legacy Settings';
-$string['filter_poodll_playertypes_heading'] = 'Default Player Types';
-$string['filter_poodll_intercept_heading'] = 'Filetypes PoodLL Handles by Default';
-$string['filter_poodll_flowplayer_heading'] = 'Flowplayer Settings'; 
 $string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings';
 $string['filter_poodll_registration_heading'] ='Register your PoodLL';
 $string['filter_poodll_flashcards_heading'] ='Flashcards Settings';
@@ -29,55 +25,22 @@ $string['filter_poodll_registration_explanation'] ="From PoodLL version 2.8.0 yo
 $string['registrationkey'] = 'Registration Key';
 $string['registrationkey_explanation'] ="Enter your PoodLL registration key here. It is free, but PoodLL won't work without it. You can obtain a key from <a href='http://poodll.com/registration'>http://poodll.com/registration</a>";
 
+$string['usecloudrecording'] = 'Cloud recording';
+$string['usecloudrecording_desc'] = 'PoodLL cloud recording. This enables transcoding and other services in the cloud. The PoodLL iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud. Cloud recording is under heavy development and will change. It should not be used in production yet.';
+
 $string['uploadkey'] = 'Upload key';
-$string['uploadkey_desc'] = 'PoodLL requires 2 separate credentials for uploading. Enter the upload key here.';
+$string['uploadkey_desc'] = 'PoodLL cloud recording requires an upload key for recording. You should receive this when you sign up for PoodLL. Enter the upload key here.';
 $string['uploadsecret'] = 'Upload secret';
-$string['uploadsecret_desc'] = 'PoodLL requires 2 separate credentials for uploading. Enter the upload secret here.';
+$string['uploadsecret_desc'] = 'PoodLL cloud recording requires an upload secret for recording.  You should receive this when you sign up for PoodLL. Enter the upload secret here.';
 
 
 $string['unregistered'] = 'PoodLL not displayed because it has not been registered. Registration is free. Ask your teacher/administrator to visit the PoodLL filter settings page and complete the registration process.';
 
 $string['flashcardstype'] ='Flashcards Type';
 
-$string['defaultplayer'] = 'Default A/V Player';
-$string['html5controls'] = 'HTML5 Controls';
-$string['handleflv'] = 'Handle FLV Files';
-$string['handlemp4'] = 'Handle MP4 Files';
-$string['handlemov'] = 'Handle MOV Files';
-$string['handlemp3'] = 'Handle MP3 Files';
-
-
-$string['videowidth'] = 'Video Player Width';
-$string['videoheight'] = 'Video Player Height';
-$string['videosplash'] = 'Show Simple Video Splash';
-$string['videosplashdetails'] = 'Splash screen is shown for Flowplayer only.';
-$string['thumbnailsplash'] = 'Use Preview as Splash';
-$string['thumbnailsplashdetails'] = 'Preview splash uses first frame of video as the splash image. Only use this when using server tokyo.poodll.com.';
-$string['audiowidth'] = 'Audio Player Width';
-$string['audioheight'] = 'Audio Player Height';
-$string['audiosplash'] = 'Show Simple Audio Splash';
-$string['audiosplashdetails'] = 'Splash screen is shown for Flowplayer only.';
-$string['miniplayerwidth'] = 'Mini Player Width';
-$string['wordplayerfontsize'] = 'Word Player Fontsize';
 
 $string['showdownloadicon'] = 'Show download icon under players';
 
-
-$string['talkbackwidth'] = 'Talkback Player Width';
-$string['talkbackheight'] = 'Talkback Player Height';
-$string['showwidth'] = 'Screencast Player Width';
-$string['showheight'] = 'Screencast Player Height';
-
-$string['datadir'] = 'PoodLL Data Dir';
-$string['datadirdetails'] = 'A sub directory of Moodle dir, to allow some components Moodle 1.9 style file access to media resources. Should only be used for non sensitive media resources. PoodLL will not create, or manage access rights for, this folder';
-
-$string['forum_recording'] = 'PoodLL Forum: AV Recording Enabled?';
-$string['forum_audio'] = 'PoodLL Forum: Audio?';
-$string['forum_video'] = 'PoodLL Forum: Video?';
-
-$string['journal_recording'] = 'PoodLL Journal: AV Recording Enabled?';
-$string['journal_audio'] = 'PoodLL Journal: Audio?';
-$string['journal_video'] = 'PoodLL Journal: Video?';
 
 $string['servername'] = 'PoodLL Host Address';
 $string['serverid'] = 'PoodLL Server Id';
@@ -85,24 +48,6 @@ $string['serverport'] = 'PoodLL Server Port (RTMP)';
 $string['serverhttpport'] = 'PoodLL Server Port (HTTP)';
 $string['autotryports'] = 'Try diff. ports if cannot connect';
 
-//$string['useproxy'] = 'Use Moodle Proxy?';
-
-$string['usecourseid'] = 'Use Course ID?';
-$string['filename'] = 'Default Filename';
-$string['overwrite'] = 'Overwrite Same?';
-
-$string['screencapturedevice'] = 'Screencast Capture Device Name';
-
-$string['nopoodllresource'] = '--- Select PoodLL Resource ---';
-
-$string['biggallwidth'] = 'Vid. Gallery (big) Width';
-$string['biggallheight'] = 'Vid. Gallery (big) Height';
-
-$string['smallgallwidth'] = 'Vid. Gallery (small) Width';
-$string['smallgallheight'] = 'Vid. Gallery (small) Height';
-
-$string['newpairwidth'] = 'Pairwork Widget Width ';
-$string['newpairheight'] = 'Pairwork Widget Height';
 
 $string['wboardwidth'] = 'Whiteboard Default Width ';
 $string['wboardheight'] = 'Whiteboard Default Height';
@@ -131,19 +76,6 @@ $string['mp3skin'] = 'MP3 Skin';
 $string['mp3skin_details'] = 'If you want to use a recorder skin, ala theme, enter its name here. Otherwise enter: none.';
 
 
-//fpembedtype
-$string['fpembedtype'] = 'Flowplayer Embed Method';
-$string['fp_embedtypedescr'] = 'SWF Object is the most reliable. Flowplayer JS handles preview splash images better. If you use Flowplayer JS consider turning off Multimedia Plugins filter MP3/FLV/MP4 handling to avoid double-filtering. ';
-$string['fp_bgcolor'] = 'Flowplayer Color';
-$string['fp_enableplaylist'] = 'Enable Flowplayer Audiolist';
-$string['fp_enableplaylistdescr'] = 'This requires the JQuery javascript library and adds about 100kb to the page download size. Moodle will cache it though, so there should be no noticeable slowdown. You should also set the Flowplayer embed setting to Flowplayer js. Purge the cache after changing this or any flowplayer config setting.';
-
-//html5 settings
-$string['html5use_heading'] ='When to use HTML5';
-$string['html5rec'] ='HTML5 Recording';
-$string['html5play'] ='HTML5 Playback';
-$string['html5widgets'] ='HTML5 PoodLL Widgets';
-$string['html5fancybutton'] ='Use Fancy Upload Button';
 
 //mp3 recorder settings
 $string['size'] ='Size';
@@ -203,6 +135,10 @@ $string['mobileonly'] = 'Mobile devices only';
 $string['mobileandwebkit'] = 'Mobile + Webkit browsers(Safari,Chrome etc)';
 $string['alwayshtml5'] = 'Always use HTML5';
 
+//extensions handling and local filter settings
+$string['sitedefault'] = "Site Default";
+$string['player'] = 'Player {$a}';
+
 //template strings
 $string['templatepageheading'] = 'Template: {$a}';
 $string['templateheading'] = 'Settings for Poodll Template {$a}';
@@ -213,7 +149,7 @@ $string['templatename_desc'] = 'The name should  contain numbers and letters, un
 $string['templatekey'] = 'The key that identifies template {$a}';
 $string['templatekey_desc'] = 'The key should be one word and only contain numbers and letters, underscores, hyphens and dots .';
 $string['templateinstructions'] = 'Instructions (template {$a})';
-$string['templateinstructions_desc'] = 'Any instructions entered here will be displayed on the Generic atto form for this template is displayed. Keep them short or it will look bad.';
+$string['templateinstructions_desc'] = 'Any instructions entered here will be displayed on the PoodLL atto form for this template is displayed. Keep them short or it will look bad.';
 $string['template_showatto'] = 'Show in Atto (template {$a})';
 $string['template_showatto_desc'] = 'Display a button and form for this widget in the PoodLL Widgets dialog for Atto.';
 $string['templateend'] = 'End tags(template {$a})';

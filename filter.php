@@ -64,6 +64,11 @@ class filter_poodll extends moodle_text_filter {
 					$search='/<a\s[^>]*href="([^"#\?]+\.(' .  $handleextstring. '))(.*?)"[^>]*>([^>]*)<\/a>/is';
 					$newtext = preg_replace_callback($search, 'self::filter_poodll_allexts_callback', $newtext);
 				}
+                                
+                                //check for legacy pdl links
+                                $search='/<a\s[^>]*href="([^"#\?]+\.(.pdl))(.*?)"[^>]*>([^>]*)<\/a>/is';
+                                $newtext = preg_replace_callback($search, 'self::filter_poodll_pdl_callback', $newtext);
+
 			
 			   //check for youtube
 				if ($this->fetchconf('handleyoutube')) {
@@ -124,7 +129,7 @@ class filter_poodll extends moodle_text_filter {
 	
 	
 	/**
-	 * Replace rss links with player
+	 * Replace links with player/widget
 	 *
 	 * @param  $link
 	 * @return string
@@ -133,9 +138,51 @@ class filter_poodll extends moodle_text_filter {
 		return $this->filter_poodll_process($link,$link[2]);
 	}
 	
+        /**
+	 * Replace legacy pdl links with widget
+	 *
+	 * @param  $link
+	 * @return string
+	 */
+        function filter_poodll_pdl_callback($link) {
+                 global $CFG;
+
+                //strip the .pdl extension
+                $len = strlen($link[2]);
+                $trimpoint = strpos($link[2], ".pdl");
+                $key=substr($link[2],0,$trimpoint);
+
+                //see if there is a parameter to this widget
+                $pos = strpos($key, "_");
+                $param="";
+
+                //if yes, trim it off the key and get its value
+                if($pos){
+                        $param=substr($key,$pos+1);
+                        $key=substr($key,0,$pos);
+                }
+
+                //depending on the widget, make up a filter string
+                switch ($key){
+                        case "audiorecorder": $fstring = "{POODLL:type=audiorecorder}";break; //not implemented
+                        case "videorecorder": $fstring = "{POODLL:type=videorecorder}";break; //not implemented
+                        case "whiteboardsimple": $fstring = "{POODLL:type=whiteboard,mode=simple,standalone=true}";break;//not implemented
+                        case "whiteboardfull": $fstring = "{POODLL:type=whiteboard,mode=normal,standalone=true}";break;//not implemented
+                        case "snapshot": $fstring = "{POODLL:type=snapshot}";break;
+                        case "stopwatch": $fstring = "{POODLL:type=stopwatch}";break;
+                        case "dice": $fstring = "{POODLL:type=dice,dicecount=$param}";break;
+                        case "calculator": $fstring = "{POODLL:type=calculator}";break;
+                        case "countdown": $fstring = "{POODLL:type=countdown,initseconds=$param}";break;
+                        case "counter": $fstring = "{POODLL:type=counter}";break;
+                        case "flashcards": $fstring = "{POODLL:type=flashcards,cardset=$param}";break;
+                }
+
+                //resolve the string and return it
+                return self::filter_poodll_process(array($fstring));
+        }
 	
-		/*
-	*	Callback function , exists outside of class definition(because its a callback ...)
+	/*
+	*	Main callback function , exists outside of class definition(because its a callback ...)
 	*
 	*/
 	function filter_poodll_process(array $link, $ext =false){

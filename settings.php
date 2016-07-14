@@ -5,13 +5,9 @@ defined('MOODLE_INTERNAL') || die;
 if (is_siteadmin()) {
 
 	//add folder in property tree for settings pages
-	 
-	 $poodll_category = new admin_category('filter_poodll_topcat', 'PoodLL');
-	 $template_category = new admin_category('filter_poodll_templatecat', 'Templates');
-	 $ADMIN->add('filtersettings', $poodll_category);
-	 $ADMIN->add('filter_poodll_topcat', $template_category);
-
 	 $conf = get_config('filter_poodll');
+	 $poodll_category = new admin_category('filter_poodll_topcat', 'PoodLL');
+         $ADMIN->add('filtersettings', $poodll_category);
 
 	//Genral Settings:
 	$general_settings = new admin_settingpage('filter_poodll_general',get_string('generalsettings', 'filter_poodll'));
@@ -38,6 +34,8 @@ if (is_siteadmin()) {
 	$ADMIN->add('filter_poodll_topcat', $widget_settings);
 	
 	//Templates
+        $template_category = new admin_category('filter_poodll_templatecat', 'Templates');
+	$ADMIN->add('filter_poodll_topcat', $template_category);
 	$template_pages =  \filter_poodll\settingstools::fetch_template_pages($conf);
 	foreach ($template_pages as $template_page) {
     	$ADMIN->add('filter_poodll_templatecat', $template_page);

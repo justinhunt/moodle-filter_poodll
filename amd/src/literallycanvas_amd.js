@@ -6,6 +6,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
     log.debug('Filter PoodLL: literallycanvas.js initialising');
 
     return {
+    
         // handle literallycanvas whiteboard saves for Moodle
         loadliterallycanvas: function(opts) {
 
@@ -14,15 +15,16 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
             var optscontrol = $(theid).get(0);
             if(optscontrol){
                 opts = JSON.parse(optscontrol.value);
+                this.config = opts;
                 $(theid).remove();
             }
-
+debugger;
             //stash our opts array
             utils.whiteboardopts[opts['recorderid']] = opts;
 
             //init the whiteboard	(diff logic if have a background image)
             var element = '#' + opts['recorderid'] + '_literally';
-            var lc_element = $('#' + element)[0];
+            var lc_element = $(element)[0];
             
             //init uploader
         	uploader.init(element, opts);
@@ -47,6 +49,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
                     recorderid: opts['recorderid']
                 });
             }
+            this.lc = lc;
 
             //restore previous drawing if any
             var vectordata = utils.whiteboardopts[opts['recorderid']]['vectordata'];
@@ -57,30 +60,24 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
                 }
             }
 
-            //handle autosave
+            //store a handle to this whiteboard
+            utils.whiteboards[opts['recorderid']] = lc;
+            
+            //register the draw and save events that we need to handle
+            this.registerEvents();
+           
+        },
+        
+        registerEvents: function() {
+        
+        	var mfp = this;
+            var recid = this.config['recorderid'];
+        
+        
+        	//handle autosave
             if(opts['autosave']){
-                //if user starts drawing, cancel the countdown to save
-                //drawinfStart event deprecated in lc4.9
-                /*
-                lc.on('drawingStart',(function(mfp,recid){
-                    return function(){
-                        var m = $('#' + recid + '_messages')[0];
-                        log.debug("dstart1");
-                        if(m){
-                            log.debug("dstart2");
-                            m.innerHTML = 'File has not been saved.';
-                            var savebutton = $('#' + recid + '_btn_upload_whiteboard')[0];
-                            savebutton.disabled=false;
-                            var th = utils.timeouthandles[recid];
-                            if(th){clearTimeout(th);}
-                        }
-                    }
-                })(this,opts['recorderid']));
-                */
-
-                //if user has drawn commence countdown to save
-                lc.on('drawingChange',(function(mfp,recid){
-                    return function(){
+                //if user has drawn, commence countdown to save
+                this.lc.on('drawingChange',function(){
                         var m = $('#' + recid + '_messages')[0];
                         var savebutton = $('#' + recid + '_btn_upload_whiteboard')[0];
                         if(m) {
@@ -94,37 +91,33 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
                                 function(){ utils.WhiteboardUploadHandler(recid);},
                                 utils.whiteboardopts[recid]['autosave']);
                         }
-                    }
-                })(this,opts['recorderid']));
+                });
 
                 //if no autosave
             }else{
                 //lc.on('drawingChange',(function(mfp){return function(){mfp.setUnsavedWarning;}})(this));
                 //if user has drawn, alert to unsaved state
-                lc.on('drawingChange',(function(mfp,recid){
-                    return function(){
+                lc.on('drawingChange',function(){
                         var m = $('#' + recid + '_messages');
                         if(m){
                             m.innerHTML = 'File has not been saved.';
                         }
-                    }
-                })(this,opts['recorderid']));
+                });
             }//end of handling autosave
-
-            //store a handle to this whiteboard
-            utils.whiteboards[opts['recorderid']] = lc;
-
-            //set up the upload/save button
+        
+        	 //set up the upload/save button
             var uploadbuttonstring = '#' + opts['recorderid'] + '_btn_upload_whiteboard';
             var uploadbutton = $(uploadbuttonstring);
             if(uploadbutton){
                 if(opts['autosave']){
                     uploadbutton.click(function(){utils.WhiteboardUploadHandler(opts['recorderid']);}, false);
                 }else{
-                    uploadbutton.click(function(){utils.CallFileUpload(opts['recorderid']);}, false);
+                	var wboard = utils.whiteboards[opts[recorderid]];
+                	var cvs = wboard.canvasForExport();
+                    uploadbutton.click(function(){uploader.uploadFile(cvs.ToDataURL(),'image');}, false);
+                    //uploadbutton.click(function(){utils.CallFileUpload(opts['recorderid']);}, false);
                 }
             }
-
         },
 
     }
