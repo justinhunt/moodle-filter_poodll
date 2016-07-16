@@ -226,6 +226,13 @@ public static function fetch_template_pages($conf){
 					get_string('template_showatto', 'filter_poodll',$tindex),
 					get_string('template_showatto_desc', 'filter_poodll'), 
 					 0,$yesno));
+					 
+			//template show in player list
+			$yesno = array('0'=>get_string('no'),'1'=>get_string('yes'));
+			 $settings_page->add(new \admin_setting_configselect('filter_poodll/template_showplayers_' . $tindex,
+					get_string('template_showplayers', 'filter_poodll',$tindex),
+					get_string('template_showplayers_desc', 'filter_poodll'), 
+					 0,$yesno));
 		
 			//template body
 			 $settings_page->add(new \admin_setting_configtextarea('filter_poodll/template_' . $tindex,

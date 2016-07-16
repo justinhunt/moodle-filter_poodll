@@ -544,7 +544,7 @@ class poodlltools
 				return self::fetchLiterallyCanvas($forsubmission, $width, $height, $backimage, $updatecontrol, $contextid, $component, $filearea, $itemid, $callbackjs, $vectorcontrol, $vectordata);
 				break;
 			case 'drawingboard':
-			case default:
+			default:
 				$forsubmission = true;
 				return self::fetchDrawingBoard($forsubmission, $width, $height, $backimage, $updatecontrol, $contextid, $component, $filearea, $itemid, $callbackjs, $vectorcontrol, $vectordata);
 				break;

@@ -53,11 +53,18 @@ class filtertools
 				$defplayername = 'Player: ';
 				$playername=$defplayername;
 				$playerkey = false;
-				 if($conf && property_exists($conf,'templatename_' . $templateid)){
-					$playername = $conf->{'templatename_' . $templateid};
-					$playerkey = $conf->{'templatekey_' . $templateid};
-					$playername = trim($playername);
-					if(empty($playername)){$playername = $playerkey;}
+				 if($conf){ 
+				 	 if(!property_exists($conf,'template_showplayers_' . $templateid) || 
+				 	 		$conf->{'template_showplayers_' .$templateid}==0){
+				 	 		continue;
+				 	 }
+				 	 
+					 if(property_exists($conf,'templatename_' . $templateid)){
+						$playername = $conf->{'templatename_' . $templateid};
+						$playerkey = $conf->{'templatekey_' . $templateid};
+						$playername = trim($playername);
+						if(empty($playername)){$playername = $playerkey;}
+					 }
 				 }
 				 //  a blank template will have no key, and maybe not a name
 				 if($playername == $defplayername){$playername .= $templateid;}
