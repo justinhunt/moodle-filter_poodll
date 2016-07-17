@@ -15,18 +15,27 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * PoodLL filter
+ * filter poodll installation tasks
  *
- * @package    filter
- * @subpackage poodll
- * @copyright  2015 Justin Hunt poodllsupport@gmail.com
+ * @package    filter_poodll
+ * @copyright  2016 Justin Hunt {@link http://poodll.com}
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2016071604;
-$plugin->requires  = 2015051100;
-$plugin->component = 'filter_poodll'; 
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '2.8.6(Build 2016071604)';
+/**
+ * Install the plugin.
+ */
+function xmldb_filter_poodll_install() {
+    $presets = \filter_poodll\poodllpresets::fetch_presets();
+	$forinstall = array('flowplayer','stopwatch');
+	$templateindex=0;
+	foreach($presets as $preset){			
+		if(in_array($preset['key'],$forinstall)){
+			$templateindex++;
+			//set the config
+			\filter_poodll\poodllpresets::set_preset_to_config($preset,$templateindex);
+		}
+	}//end of for each presets	
+}

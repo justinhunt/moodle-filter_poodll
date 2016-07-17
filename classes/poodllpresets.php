@@ -58,7 +58,7 @@ class poodllpresets extends \admin_setting {
      */
     public function get_setting() {
         return true;
-    }
+    }//end of get_setting
 
     /**
      * Always returns true
@@ -66,7 +66,7 @@ class poodllpresets extends \admin_setting {
      */
     public function get_defaultsetting() {
         return true;
-    }
+    }//get_defaultsetting
 
     /**
      * Never write settings
@@ -75,7 +75,7 @@ class poodllpresets extends \admin_setting {
     public function write_setting($data) {
     // do not write any setting
         return '';
-    }
+    }//write_setting
 
     /**
      * Returns an HTML string
@@ -108,10 +108,7 @@ class poodllpresets extends \admin_setting {
 		return format_admin_setting($this, $this->visiblename,
 			$dragdropsquare . '<div class="form-text defaultsnext">'. $presetscontrol . $select .  '</div>',
 			$this->information, true, '','', $query);
-
-
-
-	}
+	}//end of output html
         
         protected static function parse_preset_template(\SplFileInfo $fileinfo){
             $file=$fileinfo->openFile("r");
@@ -125,7 +122,7 @@ class poodllpresets extends \admin_setting {
             }else{
                 return false;
             }
-        }
+        }//end of parse preset template
 
 
         public static function fetch_presets(){          
@@ -141,5 +138,33 @@ class poodllpresets extends \admin_setting {
                             }
                         }
                        return $ret;
-	}//end of fetch presets function
+		}//end of fetch presets function
+				
+		public static function set_preset_to_config($preset, $templateindex){
+			$fields = array();
+			$fields['name']='templatename';
+			$fields['key']='templatekey';
+			$fields['instructions']='templateinstructions';
+			$fields['body']='template';
+			$fields['bodyend']='templateend';
+			$fields['showatto']='template_showatto';
+			$fields['showplayers']='template_showplayers';
+			$fields['requirecss']='templaterequire_css';
+			$fields['requirejs']='templaterequire_js';
+			$fields['defaults']='templatedefaults';
+			$fields['amd']='template_amd';
+			$fields['script']='templatescript';
+			$fields['style']='templatestyle';
+			$fields['dataset']='dataset';
+			$fields['datavars']='datavars';
+			
+			foreach($fields as $fieldkey=>$fieldname){
+				if(array_key_exists($fieldkey,$preset)){
+					$fieldvalue=$preset[$fieldkey];
+				}else{
+					$fieldvalue='';
+				}
+				set_config($fieldname . '_' . $templateindex, $fieldvalue, 'filter_poodll');
+			}
+		}//End of set_preset_to_config
 }//end of class

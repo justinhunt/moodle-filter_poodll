@@ -29,6 +29,7 @@ class filter_poodll extends moodle_text_filter {
      * @param string $text to be processed by the text
      * @param array $options filter options
      * @return string text after processing
+     * @return string text after processing
      */
     public function filter($text, array $options = array()) {
 			if (!is_string($text)) {
