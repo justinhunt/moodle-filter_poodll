@@ -42,7 +42,7 @@ define(['jquery',
     		var use_rec =false;
     		for(var i=0;i< this.config['rec_order'].length;i++){
 				   switch(this.config['rec_order'][i]){
-                                         case 'red5': use_rec = red5;break;
+                     case 'red5': use_rec = red5;break;
 			   		 case 'flash': use_rec = flashrec;break;
 			   		 case 'media': use_rec = mediarec;break;
 			   		 case 'upload': use_rec = uploadrec;break;

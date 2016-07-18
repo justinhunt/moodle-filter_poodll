@@ -23,14 +23,14 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         embed: function(element, config) { 
 		   // log.debug(config);
 		   // log.debug(config.widgetjson);
-                    var swfopts = $.parseJSON(config.mp3audio_widgetjson);
+            var swfopts = $.parseJSON(config.flashmp3audio_widgetjson);
+			/*
 			swfopts.cancelmousewheel = true;
 			swfopts.allowfullscreen = true;
 			swfopts.accessible = true;
 			swfopts.serverroot = '/';
 			swfopts.appenddivid = config.widgetid + 'Container';
-                        
-                       
+              */         
         	lz.embed.swf(swfopts);
         }
     }//end of returned object

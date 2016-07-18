@@ -33,8 +33,11 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         //into the element passed in. with config
         embed: function(element, config) { 
             this.config = config;
-            this.timeinterval = 5000;
-            this.audiomimetype = 'audio/webm';//or audio/wav
+            this.timeinterval = config.media_timeinterval;
+            this.audiomimetype = config.media_audiomimetype;
+			this.videorecordertype = config.media_videorecordertype;
+			this.videocapturewidth = config.media_videocapturewidth;
+			this.videocaptureheight = config.media_videocaptureheight;
             var controlbarid = "filter_poodll_controlbar_" + config.widgetid; 
             switch(config.mediatype){
                 case 'audio':
