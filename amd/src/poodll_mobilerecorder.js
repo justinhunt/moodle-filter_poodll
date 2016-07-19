@@ -58,11 +58,18 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         },
         
         insert_video_button: function(element){
-			var controls = '<a class ="filter_poodll_mobilerecorderlink" id="' + this.linkid + '" href="poodllproto:record?filename=' + this.config.s3filename + '&type=' + this.config.mediatype + '&s3folder=&timelimit='+ this.config.timelimit + '">open recorder</a>';
+			var controls = '<a class ="filter_poodll_mobilerecorderlink" id="' + this.linkid + 
+                                '" href="poodll:record?filename=' + this.config.s3filename + 
+                                '&type=' + this.config.mediatype + '&quality=' + this.config.mobilequality + 
+                                '&camera=' + this.config.mobilecamera + 
+                                '&s3folder=&timelimit='+ this.config.timelimit + '">open recorder</a>';
 			$(element).prepend(controls);        
         },
         insert_audio_button: function(element){
-			var controls = '<a class ="filter_poodll_mobilerecorderlink"  id="' + this.linkid + '" href="poodllproto:record?filename=' + this.config.s3filename + '&type=' + this.config.mediatype + '&s3folder=&timelimit='+ this.config.timelimit + '">open recorder</a>';
+			var controls = '<a class ="filter_poodll_mobilerecorderlink"  id="' + this.linkid + 
+                                '" href="poodll:record?filename=' + this.config.s3filename + 
+                                '&type=' + this.config.mediatype + '&quality=' + this.config.mobilequality + 
+                                '&s3folder=&timelimit='+ this.config.timelimit + '">open recorder</a>';
 			$(element).prepend(controls);        
         },
         

@@ -547,7 +547,7 @@ M.filter_poodll_templates = {
 		document.getElementsByTagName("head")[0].appendChild(link);	
 	},
 	
-	// Replace poodll_flowplayer divs with flowplayers
+	// load templates CSS for poodll filter templates, if AMD not ok
 	loadtemplate: function(Y,opts) {
 		//stash our Y and opts for later use
 		this.gyui = Y;

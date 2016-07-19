@@ -57,6 +57,10 @@ $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get
 
 	
 	//PoodLL player type settings.
+        $items[] = new \admin_setting_configtext('filter_poodll_recorderorder', get_string('recorderorder', 'filter_poodll'), 
+                    get_string('recorderorder_desc', 'filter_poodll'), 'media,flash,upload,mobile');
+
+        
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), '', 0);
 
 	// PoodLL Flashcards

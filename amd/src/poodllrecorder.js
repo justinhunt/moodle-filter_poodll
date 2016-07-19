@@ -4,8 +4,9 @@ define(['jquery',
 	'filter_poodll/poodll_flashrecorder',
 	'filter_poodll/poodll_mediarecorder',
 	'filter_poodll/poodll_uploadrecorder',
-	'filter_poodll/poodll_mobilerecorder' ], 
-	function($, log, flashrec, mediarec,uploadrec,mobilerec) {
+	'filter_poodll/poodll_mobilerecorder',
+        'filter_poodll/poodll_red5recorder'], 
+	function($, log, flashrec, mediarec,uploadrec,mobilerec,red5) {
 
     "use strict"; // jshint ;_;
 
@@ -41,6 +42,7 @@ define(['jquery',
     		var use_rec =false;
     		for(var i=0;i< this.config['rec_order'].length;i++){
 				   switch(this.config['rec_order'][i]){
+                                         case 'red5': use_rec = red5;break;
 			   		 case 'flash': use_rec = flashrec;break;
 			   		 case 'media': use_rec = mediarec;break;
 			   		 case 'upload': use_rec = uploadrec;break;
@@ -57,5 +59,5 @@ define(['jquery',
     		//if we got here no recorder was preferred AND supported the browser
     		log.debug('none of available recorders works on this browser');
     	}
-    }//end of returned object
+    };//end of returned object
 });//total end

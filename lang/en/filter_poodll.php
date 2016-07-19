@@ -38,7 +38,8 @@ $string['unregistered'] = 'PoodLL not displayed because it has not been register
 
 $string['flashcardstype'] ='Flashcards Type';
 
-
+$string['recorderorder'] = 'Preferred Recorder Order';
+$string['recorderorder_desc'] = 'PoodLL will choose the best recorder it can if the user browser and platform support it. You set the order here.';
 $string['showdownloadicon'] = 'Show download icon under players';
 
 

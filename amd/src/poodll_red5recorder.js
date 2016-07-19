@@ -3,7 +3,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Flash Recorder: initialising');
+    log.debug('PoodLL Red5 Recorder: initialising');
 
     return {
     
@@ -21,16 +21,12 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
         embed: function(element, config) { 
-		   // log.debug(config);
-		   // log.debug(config.widgetjson);
-                    var swfopts = $.parseJSON(config.mp3audio_widgetjson);
+                        var swfopts = $.parseJSON(config.red5video_widgetjson);
 			swfopts.cancelmousewheel = true;
 			swfopts.allowfullscreen = true;
 			swfopts.accessible = true;
 			swfopts.serverroot = '/';
 			swfopts.appenddivid = config.widgetid + 'Container';
-                        
-                       
         	lz.embed.swf(swfopts);
         }
     }//end of returned object
