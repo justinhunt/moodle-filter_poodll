@@ -240,12 +240,11 @@ class filtertools
 				//echo $matches[1][$cnt] . "=" . $matches[2][$cnt] . " <br/>";
 				$newvalue = $matches[2][$cnt];
 				//this could be done better, I am sure. WE are removing the quotes from start and end
-				//this wil however remove multiple quotes id they exist at start and end. NG really
+				//this wil however remove multiple quotes id they exisst at start and end. NG really
 				$newvalue = trim($newvalue,'"');
 				$itemprops[trim($matches[1][$cnt])]=$newvalue;
 			}
 		}
 		return $itemprops;
 	}//end of function
-
 }//end of class
