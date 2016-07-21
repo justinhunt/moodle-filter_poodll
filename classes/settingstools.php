@@ -47,7 +47,7 @@ $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get
 	$items[] = new \admin_setting_configtext('filter_poodll_uploadsecret', get_string('uploadsecret', 'filter_poodll'), get_string('uploadsecret_desc', 'filter_poodll'), '');
 
 		//PoodLL Network Settings.
-	$items[] = new \admin_setting_heading('filter_poodll_network_settings', get_string('filter_poodll_network_heading', 'filter_poodll'), 'You strange monkey');
+	$items[] = new \admin_setting_heading('filter_poodll_network_settings', get_string('filter_poodll_network_heading', 'filter_poodll'), '');
 	$items[] = new \admin_setting_configtext('filter_poodll_servername', get_string('servername', 'filter_poodll'), '', 'tokyo.poodll.com');
 	$items[] = new \admin_setting_configtext('filter_poodll_serverid', get_string('serverid', 'filter_poodll'), '', 'poodll');
 	$items[] = new \admin_setting_configtext('filter_poodll_serverport', get_string('serverport', 'filter_poodll'), '', '1935', PARAM_INT);
@@ -58,7 +58,7 @@ $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get
 	
 	//PoodLL player type settings.
         $items[] = new \admin_setting_configtext('filter_poodll_recorderorder', get_string('recorderorder', 'filter_poodll'), 
-                    get_string('recorderorder_desc', 'filter_poodll'), 'media,flash,upload,mobile,red5');
+                    get_string('recorderorder_desc', 'filter_poodll'), 'media,flash,upload,mobile,red5',PARAM_TEXT);
 
         
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), '', 0);

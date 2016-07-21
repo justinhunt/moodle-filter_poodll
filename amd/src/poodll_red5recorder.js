@@ -13,7 +13,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         	if (iOS){
         		return false;
         	}else{
-        		log.debug('PoodLL REd5 Recorder: supports this browser');
+        		log.debug('PoodLL Red5 Recorder: supports this browser');
         		return true;
         	}
         },
@@ -23,7 +23,9 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         embed: function(element, config) {
 			switch(config.mediatype){
 				case 'video':
+					log.debug('config.red5video_widgetjson:' + config.red5video_widgetjson);
 					var swfopts = $.parseJSON(config.red5video_widgetjson);
+					break;
 				case 'audio':
 				default:
 					var swfopts = $.parseJSON(config.red5audio_widgetjson);

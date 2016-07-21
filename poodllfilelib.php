@@ -162,6 +162,30 @@ function filter_poodll_prepareXMLReturn($resultArray, $requestid){
 	return $xml_output;
 }
 
+//this turns our results array into an xml string for returning to browser
+function filter_poodll_prepareLegacyXMLReturn($resultArray, $requestid){
+	//set up xml to return
+	$xml_output = "<result requestid='" . $requestid . "'>";
+
+	if($resultArray['success']){
+		$xml_output .= 'success';
+		foreach ($resultArray['messages'] as $message) {
+			//wpould like to change this errponeous use of word error, but need to 
+			//recompile recorders ..hassle J
+			$xml_output .= '<error>' . $message . '</error>';
+		}
+	}else{
+		$xml_output .= 'failure';
+		foreach ($resultArray['messages'] as $message) {
+			$xml_output .= '<error>' . $message . '</error>';
+		}
+	}
+
+	//close off xml to return
+	$xml_output .= "</result>";
+	return $xml_output;
+}
+
 
 //For uploading a file diorect from an HTML5 or SWF widget
 function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid, $comp, $farea,$itemid){
@@ -451,9 +475,8 @@ function filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$i
 //15,'123456789.flv','user','draft','746337947','99999'
 function filter_poodll_instance_remotedownload($contextid,$filename,$component, $filearea,$itemid, $requestid, $filepath='/'){
 	global $CFG,$USER;
-//set up return object
-//set up return object
 
+//set up return object
 	$return=filter_poodll_fetchReturnArray(true);
 
 	//set up auto transcoding (mp3 or mp4) or not
@@ -463,6 +486,8 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	$downloadfilename = $filename;
 	$ext = substr($filename,-4);
 	$filenamebase = substr($filename,0,-4);
+
+	
 	switch($ext){
 
 		case ".mp4":
@@ -490,10 +515,8 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 		default:
 			$jsp="download.jsp";
 			break;
-
-
-
 	}
+
 
 	//setup our file manipulators
 	$fs = get_file_storage();
@@ -513,8 +536,7 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	$file_record->source    = '';
 	$file_record->timecreated = time();
 	$file_record->timemodified= time();
-
-
+	
 	//one condition of using this function is that only one file can be here,
 	//attachment limits
 	/*
@@ -556,6 +578,7 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 		//determine the temp directory
 		$tempdir =  $CFG->tempdir . "/";
 	
+	
 		//actually make the file on disk so FFMPEG can get it
 		$mediastring = file_get_contents($red5_fileurl);
 		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
@@ -563,15 +586,15 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 		if($ret){
 			$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $ext==".mp3") ||
 				($CFG->filter_poodll_bgtranscode_video && $ext==".mp4");
+
 			if($do_bg_encoding && $CFG->version>=2014051200){
-				$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg_bg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
+				$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg_bg($file_record,$downloadfilename,$filenamebase, $ext );
 			}else{
 				$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
 			}
 
 			if($stored_file){
 				$filename=$stored_file->get_filename();
-
 				//setup our return object
 				$returnfilepath = $filename;
 				array_push($return['messages'],$returnfilepath );
@@ -592,7 +615,7 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 		}
 
 		//we process the result for return to browser
-		$xml_output=filter_poodll_prepareXMLReturn($return, $requestid);
+		$xml_output=filter_poodll_prepareLegacyXMLReturn($return, $requestid);
 
 		//we return to browser the result of our file operation
 		return $xml_output;
@@ -602,19 +625,15 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	//If get here we are downloading from JSP only, ie not converting locally
 	//actually copy over the file from remote server
 	if(!$fs->create_file_from_url($file_record, $red5_fileurl,$options, false)){
-		//	echo "boo:" . $red5_fileurl;
 		$return['success']=false;
 		array_push($return['messages'],"Unable to create file from url." );
 	}else{
-		// echo "yay:" . $red5_fileurl;
 		//get a file object if successful
 		$thecontext = context::instance_by_id($contextid);//get_context_instance_by_id($contextid);
 		$fileinfo = $browser->get_file_info($thecontext, $component,$filearea, $itemid, $filepath, $filename);
 
 		//if we could get a fileinfo object, return the url of the object
 		if($fileinfo){
-			//$returnfilepath  = $fileinfo->get_url();
-			//echo "boo:" . $red5_fileurl;
 			$returnfilepath = $filename;
 			array_push($return['messages'],$returnfilepath );
 		}else{
@@ -635,7 +654,7 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 
 
 	//we process the result for return to browser
-	$xml_output=filter_poodll_prepareXMLReturn($return, $requestid);
+	$xml_output=filter_poodll_prepareLegacyXMLReturn($return, $requestid);
 
 	//we return to browser the result of our file operation
 	return $xml_output;
@@ -662,7 +681,7 @@ function filter_poodll_instance_download($mimetype,$filename,$filehash,$requesti
 		//set up return object
 		$return=filter_poodll_fetchReturnArray(false);
 		array_push($return['messages'],"file not found." );
-		$xml_output=filter_poodll_prepareXMLReturn($return, $requestid);
+		$xml_output=filter_poodll_prepareLegacyXMLReturn($return, $requestid);
 		header("Content-type: text/xml");
 		echo "<?xml version=\"1.0\"?>\n";
 		echo $xml_output;

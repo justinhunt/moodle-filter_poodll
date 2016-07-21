@@ -107,7 +107,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 			//now we need to replace the splash if it had one
 			$imagefilename = substr($cd->filename,0,strlen($cd->filename)-3) . 'png';
 			try{
-				$imagefile = get_splash_ffmpeg($origfile, $imagefilename);
+				$imagefile = \filter_poodll\poodlltools::get_splash_ffmpeg($origfile, $imagefilename);
 			} catch (Exception $e) {
 				$this->handle_error('could not get create splash file from:' . $cd->filename . ':' . $e->getMessage(),$cd);
 				return;

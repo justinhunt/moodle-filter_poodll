@@ -1454,12 +1454,24 @@ class poodlltools
 	* Convert a video file to a different format using ffmpeg
 	*
 	*/
-	function convert_with_ffmpeg_bg($filerecord, $originalfilename, $convfilenamebase, $convext){
+	public static function convert_with_ffmpeg_bg($filerecord, $originalfilename, $convfilenamebase, $convext){
 		global $CFG;
+	
+		switch ($convext){
+			case '.mp4':
+				$mediatype="video";
+				break;
+			case '.mp3':
+			default:
+				$mediatype="audio";
+				break;
+		}
+		
 	
 		//store placeholder audio or video to display until conversion is finished
 		$filerecord->filename = $convfilenamebase . $convext;
-		$stored_file =\filter_poodll\poodlltools::store_placeholder_file($filerecord,$convfilenamebase,$convext);
+		//$stored_file =\filter_poodll\poodlltools::save_placeholderfile_in_moodle($filerecord,$convfilenamebase,$convext);
+		$stored_file =\filter_poodll\poodlltools::save_placeholderfile_in_moodle($mediatype,$filerecord);
 		//we need this id later, to find the old draft file and remove it, in ad hoc task
 		$filerecord->id = $stored_file->get_id();
 	
@@ -1809,7 +1821,7 @@ class poodlltools
 	* as original video file
 	*
 	*/
-	function get_splash_ffmpeg($videofile, $newfilename){
+	public static function get_splash_ffmpeg($videofile, $newfilename){
 
 		global $CFG, $USER;
 
@@ -2086,7 +2098,7 @@ class poodlltools
 		}
                 
 		//for audio mp3 recorder amd params
-		$rawparams = self::fetchFlashMP3RecorderAMDParams($timelimit, $callbackjs);
+		$rawparams = self::fetchFlashMP3RecorderAMDParams($widgetid,$timelimit, $callbackjs);
         foreach ($rawparams as $key => $value) {
                                 $widgetopts->{$key} = $value;
 		}
@@ -2098,9 +2110,13 @@ class poodlltools
         
         
         
-        public static function fetchRed5VideoRecorderAMDParams($widgetid,$updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs){
+        public static function fetchRed5VideoRecorderAMDParams($widgetid,$updatecontrol, 
+        		$contextid, $component, $filearea, $itemid, $timelimit, $callbackjs){
               
 			global $CFG, $USER, $COURSE;
+			
+			//formerly this was from the flag assigname=poodllrepository=small
+			$bigorsmall='big';
 			
 			//Set the servername and a capture settings from config file
 			$flvserver = self::fetch_mediaserver_url();
@@ -2126,15 +2142,15 @@ class poodlltools
 			$micecho = $CFG->filter_poodll_micecho;
 			$micloopback = $CFG->filter_poodll_micloopback;
 
-			//removed from params to make way for moodle 2 filesystem params Justin 20120213
-			$userid = "dummy";
-			$filename = "12345";
+	
+			
 			$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
-			switch ($assigname) {
-				case 'poodllrepository':
+			switch ($bigorsmall) {
+				case 'small':
 					$width = "298";
 					$height = "340";
 					break;
+				case 'big':
 				default:
 					$width = "350";
 					$height = "400";
@@ -2145,7 +2161,8 @@ class poodlltools
 			//If no user id is passed in, try to get it automatically
 			//Not sure if  this can be trusted, but this is only likely to be the case
 			//when this is called from the filter. ie not from an assignment.
-			if ($userid == "") $userid = $USER->username;
+			$userid = $USER->username;
+			$filename = "12345";
 
 			//Stopped using this
 			//$filename = $CFG->filter_poodll_filename;
@@ -2170,7 +2187,7 @@ class poodlltools
 			$params['silencelevel'] = $micsilence;
 			$params['capturefps'] = $capturefps;
 			$params['filename'] = $filename;
-			$params['assigName'] = $assigname;
+			$params['assigName'] = 'thismightsometimesbepoodllrepository';//can we delete this already?
 			$params['captureheight'] = $captureheight;
 			$params['picqual'] = $picqual;
 			$params['bandwidth'] = $bandwidth;
@@ -2215,7 +2232,7 @@ class poodlltools
  * Fetch any special parameters required by the MP3 recorder
  *
  */
-  public static function fetchFlashMP3RecorderAMDParams($timelimit = "0", $callbackjs = false)
+  public static function fetchFlashMP3RecorderAMDParams($widgetid,$timelimit = "0", $callbackjs = false)
 	{
 		global $CFG, $USER, $COURSE;
                 
