@@ -18,7 +18,7 @@ namespace filter_poodll;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/filter/poodll/vendor/autoload.php');
+require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws/aws-autoloader.php');
 
 use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\S3\S3Client;

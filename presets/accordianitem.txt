@@ -1,0 +1,1 @@
+{"key":"accordianitem","instructions":"","requirecss":"","requirejs":"","defaults":"","jquery":"0","amd":"1","body":"<h3>@@titletext@@</h3>\n<div>","bodyend":"</div>","script":"","style":"","dataset":"","datasetvars":""}

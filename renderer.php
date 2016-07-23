@@ -165,8 +165,7 @@ class filter_poodll_renderer extends plugin_renderer_base {
 		$widgetopts->widgetid=$widgetid;
 		
 		//recorder order of preference
-		//$rec_order = explode(',',$CFG->filter_poodll_recorderorder); // array('mobile','media','flashaudio','red5','upload','flash');
-		$rec_order= array("flashaudio","red5");
+		$rec_order = explode(',',$CFG->filter_poodll_recorderorder); // array('mobile','media','flashaudio','red5','upload','flash');
 		$widgetopts->rec_order=$rec_order;
 		
 		//The CSS selector string

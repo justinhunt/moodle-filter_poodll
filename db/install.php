@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_filter_poodll_install() {
     $presets = \filter_poodll\poodllpresets::fetch_presets();
-	$forinstall = array('flowplayer','stopwatch');
+	$forinstall = array('fff','stopwatch');
 	$templateindex=0;
 	foreach($presets as $preset){			
 		if(in_array($preset['key'],$forinstall)){

@@ -1,0 +1,1 @@
+{"key":"accordian","instructions":"","requirecss":"/filter/poodll/3rdparty/jqueryui/jquery-ui.min.css","requirejs":"","defaults":"","jquery":"1","amd":"1","body":"<div id=\"@@AUTOID@@\">","bodyend":"</div>","script":" $(function() {\n    $( \"#\" + @@AUTOID@@).accordion({\n  header: \"h3\",\n  heightStyle: \"content\"\n })\n});","style":"","dataset":"","datasetvars":""}

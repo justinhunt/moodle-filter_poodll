@@ -1,0 +1,1 @@
+{"key":"tabitem","instructions":"","requirecss":"","requirejs":"","defaults":"title=\"mybaby\"","jquery":"0","amd":"1","body":"<div id=\"@@AUTOID@@\" class=\"filter_generico_tabitem\" title=\"@@title@@\">","bodyend":"</div>","script":"","style":"","dataset":"","datasetvars":""}
