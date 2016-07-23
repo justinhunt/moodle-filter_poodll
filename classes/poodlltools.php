@@ -590,8 +590,8 @@ class poodlltools
 		$proparray['SINGLEITEM'] = true;
 		$proparray['AUTOHEIGHT'] = false;
 		$proparray['CSS_INJECT'] = true;
-		$proparray['CSS_OWL'] = $CFG->wwwroot . '/filter/poodll/owl/owl-carousel/owl.carousel.css';
-		$proparray['CSS_THEME'] = $CFG->wwwroot . '/filter/poodll/owl/owl-carousel/owl.theme.css';
+		$proparray['CSS_OWL'] = $CFG->wwwroot . '/filter/poodll/3rdparty/owl/owl-carousel/owl.carousel.css';
+		$proparray['CSS_THEME'] = $CFG->wwwroot . '/filter/poodll/3rdparty/owl/owl-carousel/owl.theme.css';
 
 		$PAGE->requires->js_call_amd('filter_poodll/owl_amd', 'loadowl', array($proparray));
 
