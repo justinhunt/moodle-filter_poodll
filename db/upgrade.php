@@ -36,7 +36,7 @@ function xmldb_filter_poodll_upgrade($oldversion) {
     if ($oldversion < 2016071604) {
 
 		$presets = \filter_poodll\poodllpresets::fetch_presets();
-		$forinstall = array('fff','stopwatch');
+		$forinstall = array('fff','stopwatch','audiojs');
 		$templateindex=0;
 		foreach($presets as $preset){			
 			if(in_array($preset['key'],$forinstall)){
