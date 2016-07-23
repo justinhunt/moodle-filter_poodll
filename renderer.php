@@ -165,7 +165,8 @@ class filter_poodll_renderer extends plugin_renderer_base {
 		$widgetopts->widgetid=$widgetid;
 		
 		//recorder order of preference
-		$rec_order = explode(',',$CFG->filter_poodll_recorderorder); // array('mobile','media','flash','upload','flash');
+		//$rec_order = explode(',',$CFG->filter_poodll_recorderorder); // array('mobile','media','flashaudio','red5','upload','flash');
+		$rec_order= array("flashaudio","red5");
 		$widgetopts->rec_order=$rec_order;
 		
 		//The CSS selector string
@@ -173,12 +174,35 @@ class filter_poodll_renderer extends plugin_renderer_base {
 		$selector = '#' . $container ;
 		$widgetopts->selector = $selector;
 		
+		//The strings we need for js
+		
+    $PAGE->requires->strings_for_js(array('insert',
+                                          'cancel',
+                                          'recui_record',
+                                          'recui_recordorchoose',
+                                          'recui_pause',
+                                          'recui_play',
+                                          'recui_stop',
+                                          'recui_save',
+                                          'recui_continue',
+                                          'recui_uploading',
+                                          'recui_converting',
+                                          'recui_uploading',
+                                          'recui_uploadafile',
+                                          'recui_uploadsuccess',
+                                          'recui_openrecorderapp',
+                                          'recui_awaitingconfirmation',
+                                          'recui_uploaderror',
+                                          'recui_nothingtosaveerror',
+                                          ),
+                                    'filter_poodll');
+		
 		//convert opts to json
 		$jsonstring = json_encode($widgetopts);
 		//we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
 		$opts_html = html_writer::tag('input', '', array('id' => 'amdopts_' . $widgetopts->widgetid, 'type' => 'hidden', 'value' => $jsonstring));
 		$PAGE->requires->js_call_amd("filter_poodll/poodllrecorder", 'init', array(array('widgetid' => $widgetid)));
-		$returnhtml = $opts_html . html_writer::div('', '', array('id' => $container));
+		$returnhtml = $opts_html . html_writer::div('', 'filter_poodll_recorder_placeholder', array('id' => $container));
 		return $returnhtml;
 	}
 

@@ -43,14 +43,14 @@ define(['jquery',
     		for(var i=0;i< this.config['rec_order'].length;i++){
 				   switch(this.config['rec_order'][i]){
                      case 'red5': use_rec = red5;break;
-			   		 case 'flash': use_rec = flashrec;break;
+			   		 case 'flashaudio': use_rec = flashrec;break;
 			   		 case 'media': use_rec = mediarec;break;
 			   		 case 'upload': use_rec = uploadrec;break;
 			   		 case 'mobile': use_rec = mobilerec;break;
 				   }//end of switch
 				   
 				   //if current browser supported by rec, then embed and return
-				   if(use_rec.supports_current_browser()){
+				   if(use_rec.supports_current_browser(this.config)){
 				   		use_rec.embed(element,this.config);
 				   		return;
 				   } // end of current browser support check  		

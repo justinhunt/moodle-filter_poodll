@@ -375,10 +375,10 @@ M.filter_poodll = {
 					}
 					if(xhr.status==200){
 						var resp = xhr.responseText;
-						var start= resp.indexOf("success<error>");
+						var start= resp.indexOf("success<filename>");
 						if (start<1){return;}
-						var end = resp.indexOf("</error>");
-						var filename= resp.substring(start+14,end);
+						var end = resp.indexOf("</filename>");
+						var filename= resp.substring(start+17,end);
 						
 						//invoke callbackjs if we have one, otherwise just update the control(default behav.)
 						if(opts['callbackjs'] && opts['callbackjs']!=''){ 

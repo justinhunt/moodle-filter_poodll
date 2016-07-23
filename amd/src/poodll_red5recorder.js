@@ -8,7 +8,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
     return {
     
     	// This recorder supports the current browser
-        supports_current_browser: function() { 
+        supports_current_browser: function(config) { 
         	var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         	if (iOS){
         		return false;
@@ -30,13 +30,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
 				default:
 					var swfopts = $.parseJSON(config.red5audio_widgetjson);
 			}
-			/*
-			swfopts.cancelmousewheel = true;
-			swfopts.allowfullscreen = true;
-			swfopts.accessible = true;
-			swfopts.serverroot = '/';
-			swfopts.appenddivid = config.widgetid + 'Container';
-			*/
+			
         	lz.embed.swf(swfopts);
         }
     }//end of returned object

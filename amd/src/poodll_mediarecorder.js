@@ -20,7 +20,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         previewvolume: 1,
     	
     	// This recorder supports the current browser
-        supports_current_browser: function() { 	 
+        supports_current_browser: function(config) { 	 
         	 if(navigator && navigator.mediaDevices && navigator.mediaDevices.getUserMedia){
         	 	log.debug('PoodLL Media Recorder: supports this browser');
         		return true;
@@ -60,12 +60,12 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         insert_fetch_control_bar: function(element,controlbarid, preview){
             	var controls ='<div class="poodll_mediarecorderbox" id="' + controlbarid + '">' ;
                 controls += preview,
-                controls +=  '<button class="poodll_start-recording">Start</button>';
-                controls += '<button class="poodll_stop-recording" disabled>Stop</button>';
-                controls += '<button class="poodll_pause-recording" disabled>Pause</button>';
-                controls += ' <button class="poodll_resume-recording hide" disabled>Resume</button>';
-                controls += ' <button class="poodll_play-recording" disabled>Play</button>';
-                controls += '<button class="poodll_save-recording" disabled>Save</button>';
+                controls +=  '<button class="poodll_start-recording">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
+                controls += '<button class="poodll_stop-recording" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
+                controls += '<button class="poodll_pause-recording" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
+                controls += ' <button class="poodll_resume-recording hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
+                controls += ' <button class="poodll_play-recording" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
+                controls += '<button class="poodll_save-recording" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
@@ -117,12 +117,12 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
              this.controlbar.startbutton.click(function() {
                 this.disabled = true;
                 self.blobs=[]; 
-                log.debug("cleared blobs");
                 self.captureUserMedia(mediaConstraints, onMediaSuccess, self.onMediaError);          
                 self.controlbar.playbutton.attr('disabled',true);
                 self.controlbar.resumebutton.hide();
                 self.controlbar.pausebutton.show();
                 self.controlbar.pausebutton.attr('disabled',false);
+                self.controlbar.preview.css('border-color','red');
             });
             
             this.controlbar.stopbutton.click(function() {
@@ -137,6 +137,8 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                     preview.get(0).pause();
                 }
                 
+                //turn border black
+               preview.css('border-color','black');
                 
                self.controlbar.playbutton.attr('disabled',false);
                self.controlbar.pausebutton.attr('disabled',true);
@@ -152,6 +154,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                 self.mediaRecorder.resume();
                 self.mediaRecorder.pause();
                 self.controlbar.resumebutton.attr('disabled',false) ;
+                self.controlbar.preview.css('border-color','black');
             });
             
             this.controlbar.resumebutton.click(function() {
@@ -160,6 +163,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                 self.controlbar.pausebutton.show();
                 self.mediaRecorder.resume();
                 self.controlbar.pausebutton.attr('disabled',false);
+                self.controlbar.preview.css('border-color','red');
             });
             
             this.controlbar.playbutton.click(function() {
@@ -185,11 +189,8 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                             uploader.uploadBlob(concatenatedBlob,self.blobs[0].type);
                     }); //end of concatenate blobs
                 }else{
-                    uploader.Output('No sound was captured. Sorry .. nothing to save.');
+                    uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if self.blobs		
-               //
-		//download the file right away .. useful when debugging
-		//self.mediaRecorder.save();
             
             });//end of save recording
             
@@ -246,7 +247,6 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             var self = this;
             
             var onMediaSuccess =function(stream) {
-                log.debug('onmediasuccess');
 
                 //create recorder
                 self.mediaRecorder= new MediaStreamRecorder(stream);
@@ -285,8 +285,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             
              this.register_controlbar_events(onMediaSuccess, mediaConstraints);
         }//end of register video events
-        
-        
+       
         
     };//end of returned object
 });//total end

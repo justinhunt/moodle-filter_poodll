@@ -10,7 +10,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
     	config: null,
     	
 		// This recorder supports the current browser
-        supports_current_browser: function() { 
+        supports_current_browser: function(config) { 
         	return true;//or false
         },
         
@@ -26,31 +26,28 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         insert_controls: function(element){
          	//for now.
          	var acceptmedia = '';
-         	log.debug('and config ha');
          	var config = this.config;
          	switch(config.mediatype){
+         		case 'video': 
+         		  acceptmedia='video/*';
+         		  break;
          		case 'audio': 
          		default:
-         		 acceptmedia='audio';
+         		 var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+         		 if(iOS){
+         		 	acceptmedia='video/*';
+         		 }else{
+         		 	acceptmedia='audio/*';
+         		 }
          	}
 
-         	log.debug('got to insert controls');
          //html5 recorder proper
 			var controls= '<div class="p_btn_wrapper">';
 
-			controls += '<input type="file" id="' + config.widgetid + '_poodllfileselect" name="poodllfileselect[]" ' +  acceptmedia + '/>';
-			controls += '<button type="button" class="p_btn">Record Now</button>'; 
+			controls += '<input type="file" id="' + config.widgetid + '_poodllfileselect" name="poodllfileselect[]" accept="' +  acceptmedia + '"/>';
+			controls += '<button type="button" class="p_btn">' + M.util.get_string('recui_recordorchoose', 'filter_poodll')  + '</button>'; 
 			controls += '</div>';
-		
-		//progress and messaging
-		//these controls are for the uploader not for the upload recorder. To be removed
-			/*
-			controls += '<div id="' + config['recorderid'] + '_progress" class="p_progress"><p></p></div>';
-			controls += '<div id="' + config['recorderid'] + '_messages" class="p_messages"></div>';
-			*/
-			
 			$(element).prepend(controls); 
-			log.debug('got to insert controls:prepend'); 
 		},
         
          // handle audio/video/image file uploads for Mobile

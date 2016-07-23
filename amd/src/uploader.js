@@ -79,7 +79,7 @@ define(['jquery','core/log'], function($, log) {
         },
         
         pokeFilename: function(filename,uploader){
-            uploader.Output("File saved successfully.");
+            uploader.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
             var upc = $('#' + uploader.config.updatecontrol);
             if (upc.length > 0) {
                     upc.get(0).value = filename;
@@ -90,7 +90,7 @@ define(['jquery','core/log'], function($, log) {
                     }else{
                             log.debug('upload failed #2');
                             log.debug(xhr);
-                            uploader.Output( "File could not be uploaded.");
+                            uploader.Output(M.util.get_string('recui_uploaderror', 'filter_poodll'));
                             return false
                     }
             }
@@ -121,7 +121,7 @@ define(['jquery','core/log'], function($, log) {
 						callbackargs[2]=filename;
 						callbackargs[3]=uploader.config.updatecontrol;
 				  
-						this.Output( "File saved successfully.");
+						this.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
 						this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
 
 					}else {
@@ -131,7 +131,7 @@ define(['jquery','core/log'], function($, log) {
 				}else{
 					log.debug('upload failed #3');
 					log.debug(xhr);
-					uploader.Output( "File could not be uploaded." );
+					uploader.Output(M.util.get_string('recui_uploaderror', 'filter_poodll'));
 				} //end of if status 200
 			}//end of if ready state 4
         
@@ -139,12 +139,14 @@ define(['jquery','core/log'], function($, log) {
        
         // upload Media file to wherever
         uploadFile: function(filedata,filetype) {
+        
+        console.log(filedata);
             var xhr = new XMLHttpRequest();
 			var config = this.config;
 			var uploader = this;
 			
-                     //get the file extension from the filetype
-                     var ext = this.fetchFileExtension(filetype);
+            //get the file extension from the filetype
+            var ext = this.fetchFileExtension(filetype);
             
             
 			//log.debug(config);
@@ -154,7 +156,7 @@ define(['jquery','core/log'], function($, log) {
 			var progress = this.createProgressBar(xhr,uploader);
  
             //alert user that we are now uploading    
-            this.Output("Uploading.");
+            this.Output(M.util.get_string('recui_uploading', 'filter_poodll'));
 
 			xhr.upload.addEventListener("load", function () {
 				//console.log("uploaded:");
@@ -202,7 +204,6 @@ define(['jquery','core/log'], function($, log) {
         postprocess_s3_upload: function(uploader){
             var config = uploader.config;
             var xhr = new XMLHttpRequest();
-            console.log('pinging post process');
 
             //log.debug(params);
             var params = "datatype=handles3upload";

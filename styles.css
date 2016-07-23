@@ -25,7 +25,7 @@
 	margin: 2px 0;
 	border: 1px inset #446;
 	border-radius: 5px;
-	background: #eee url([[setting:wwwroot]]/filter/poodll/progress.png) 100% 0 repeat-y;
+	background: #eee url(/filter/poodll/progress.png) 100% 0 repeat-y;
 }
 
 .p_progress p.success
@@ -189,17 +189,92 @@ left: -50%;
 div.filter_poodll_dragging {
    border:2px dashed #0000FF;
 }
-a.filter_poodll_mobilerecorderlink{
-  font: bold 11px;
-  text-decoration: none;
-  background-color: #EEEEEE;
-  color: #333333;
-  padding: 2px 6px 2px 6px;
-  border-top: 1px solid #CCCCCC;
-  border-right: 1px solid #333333;
-  border-bottom: 1px solid #333333;
-  border-left: 1px solid #CCCCCC;
+
+a.filter_poodll_mobilerecorderlink {
+	float: left;
+	margin: 3px;
+	-moz-box-shadow:inset 0px -3px 7px 0px #29bbff;
+	-webkit-box-shadow:inset 0px -3px 7px 0px #29bbff;
+	box-shadow:inset 0px -3px 7px 0px #29bbff;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #2dabf9), color-stop(1, #0688fa));
+	background:-moz-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+	background:-webkit-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+	background:-o-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+	background:-ms-linear-gradient(top, #2dabf9 5%, #0688fa 100%);
+	background:linear-gradient(to bottom, #2dabf9 5%, #0688fa 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#2dabf9', endColorstr='#0688fa',GradientType=0);
+	background-color:#2dabf9;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	border:1px solid #0b0e07;
+	/*display:inline-block;*/
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	padding:9px 23px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #263666;
 }
+a.filter_poodll_mobilerecorderlink:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #0688fa), color-stop(1, #2dabf9));
+	background:-moz-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+	background:-webkit-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+	background:-o-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+	background:-ms-linear-gradient(top, #0688fa 5%, #2dabf9 100%);
+	background:linear-gradient(to bottom, #0688fa 5%, #2dabf9 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#0688fa', endColorstr='#2dabf9',GradientType=0);
+	background-color:#0688fa;
+}
+a.filter_poodll_mobilerecorderlink:active {
+	position:relative;
+	top:1px;
+}
+
+a.filter_poodll_uploadafilelink {
+	float: left;
+	margin: 3px;
+	-moz-box-shadow:inset 0px -3px 7px 0px #3e7327;
+	-webkit-box-shadow:inset 0px -3px 7px 0px #3e7327;
+	box-shadow:inset 0px -3px 7px 0px #3e7327;
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #77b55a), color-stop(1, #72b352));
+	background:-moz-linear-gradient(top, #77b55a 5%, #72b352 100%);
+	background:-webkit-linear-gradient(top, #77b55a 5%, #72b352 100%);
+	background:-o-linear-gradient(top, #77b55a 5%, #72b352 100%);
+	background:-ms-linear-gradient(top, #77b55a 5%, #72b352 100%);
+	background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#77b55a', endColorstr='#72b352',GradientType=0);
+	background-color:#77b55a;
+	-moz-border-radius:3px;
+	-webkit-border-radius:3px;
+	border-radius:3px;
+	border:1px solid #4b8f29;
+	/*display:inline-block;*/
+	cursor:pointer;
+	color:#ffffff;
+	font-family:Arial;
+	font-size:13px;
+	padding:9px 23px;
+	text-decoration:none;
+	text-shadow:0px 1px 0px #5b8a3c;
+}
+a.filter_poodll_uploadafilelink:hover {
+	background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #72b352), color-stop(1, #77b55a));
+	background:-moz-linear-gradient(top, #72b352 5%, #77b55a 100%);
+	background:-webkit-linear-gradient(top, #72b352 5%, #77b55a 100%);
+	background:-o-linear-gradient(top, #72b352 5%, #77b55a 100%);
+	background:-ms-linear-gradient(top, #72b352 5%, #77b55a 100%);
+	background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
+	filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#72b352', endColorstr='#77b55a',GradientType=0);
+	background-color:#72b352;
+}
+a.filter_poodll_uploadafilelink:active {
+	position:relative;
+	top:1px;
+}
+
+
 .poodll_preview{
     border: black;
     border-style:solid;
@@ -213,4 +288,10 @@ a.filter_poodll_mobilerecorderlink{
 }
 .poodll_mediarecorderbox{
     width: 370px;
+}
+.filter_poodll_chooseopenapp_button{
+	
+}
+.filter_poodll_chooseupload_button{
+	
 }
