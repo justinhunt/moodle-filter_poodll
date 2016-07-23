@@ -35,6 +35,20 @@ class filtertools
 
 	const FILTER_POODLL_TEMPLATE_COUNT = 20;
 
+	public static function fetch_template_indexes($conf){
+		if($conf && array_key_exists('templatecount',$conf)){
+			$templatecount = $conf['templatecount'];
+		}else{
+			$templatecount = self::FILTER_POODLL_TEMPLATE_COUNT;
+		}
+		$players = array();
+		for ($i=1;$i<=$templatecount;$i++){
+			$players[]=$i;
+		}
+		return $players;
+	}
+
+
 	public static function fetch_players_list($conf){
 
 			//create player select list 

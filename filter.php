@@ -219,7 +219,7 @@ class filter_poodll extends moodle_text_filter {
                 if($ext){
                     $playerkey = $this->fetchconf('useplayer' . $ext);
                     $tempindex=0;
-                    $templatenumbers = filter_videoeasy_fetch_players();
+                    $templatenumbers = \filter_poodll\filtertools::fetch_template_indexes($conf);
                     foreach($templatenumbers as $templatenumber){
                             if($conf['templatekey_' . $templatenumber]==$playerkey){
                                     $tempindex=$templatenumber;
