@@ -13,9 +13,6 @@
  *
  * __________________________________________________________________________
  */
- 
- //moved this library down into filter method, so if disabled all the poodll stuff wouldn't load
-
 
 class filter_poodll extends moodle_text_filter {
 
@@ -308,6 +305,53 @@ class filter_poodll extends moodle_text_filter {
 		$dataset_vars  = str_replace('@@WWWROOT@@',$CFG->wwwroot,$dataset_vars);
 		//actually this is available from JS anyway M.cfg.wwwroot . But lets make it easy for people
 		$filterprops['WWWROOT']=$CFG->wwwroot;
+		
+		
+		//if we have urlparam variables e.g @@URLPARAM:id@@
+		if(strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $js_custom_script ,'@@URLPARAM:')!==false){
+			$urlparamstubs = explode('@@URLPARAM:',$poodlltemplate);
+			$dv_stubs = explode('@@URLPARAM:',$dataset_vars);
+			if($dv_stubs){
+				$urlparamstubs = array_merge($urlparamstubs,$dv_stubs);
+			}
+			$js_stubs = explode('@@URLPARAM:',$js_custom_script);
+			if($js_stubs){
+				$urlparamstubs = array_merge($urlparamstubs,$js_stubs);
+			}
+			
+			//URL Props
+			$count=0;
+			foreach($urlparamstubs as $propstub){
+				//we don't want the first one, its junk
+				$count++;
+				if($count==1){continue;}
+				//init our prop value
+				$propvalue=false;
+				
+				//fetch the property name
+				//user can use any case, but we work with lower case version
+				$end = strpos($propstub,'@@');
+				$urlprop_allcase = substr($propstub,0,$end);
+				if(empty($urlprop_allcase)){continue;}
+				$urlprop=strtolower($urlprop_allcase);
+				
+				//check if it exists in the params to the url and if so, set it.
+				$undefined = 'filter_poodll_nothing';
+				$thevalue = optional_param($urlprop_allcase,$undefined,PARAM_TEXT);
+				if($thevalue!=$undefined){
+					$propvalue=$thevalue;
+				}
+				
+				//if we have a propname and a propvalue, do the replace
+				if(!empty($urlprop) && !empty($propvalue)){
+					//echo "userprop:" . $userprop . '<br/>propvalue:' . $propvalue;
+					$poodlltemplate = str_replace('@@URLPARAM:' . $urlprop_allcase .'@@',$propvalue,$poodlltemplate);
+					$dataset_vars  = str_replace('@@URLPARAM:' . $urlprop_allcase .'@@',$propvalue,$dataset_vars);
+					//stash this for passing to js
+					$filterprops['URLPARAM:' . $urlprop_allcase]=$propvalue;
+				}
+			}
+		}//end of if we have@@URLPARAM
 	
 	
 		//if we have course variables e.g @@COURSE:ID@@
