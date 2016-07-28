@@ -125,11 +125,8 @@ class filter_poodll_renderer extends plugin_renderer_base {
 		//path to our js idgets folder
 		$pathtoSWF= $CFG->wwwroot . '/filter/poodll/flash/';
 
-
 		$retframe="<iframe scrolling=\"no\" class=\"fitvidsignore\" frameBorder=\"0\" src=\"{$pathtoSWF}poodlliframe.php?widget={$widget}&paramstring=" . urlencode($params) . "&width={$width}&height={$height}&bgcolor={$bgcolor}\" width=\"{$fwidth}\" height=\"{$fheight}\"></iframe>";
 		return $retframe;
-
-
 	}
 
 	public function fetchJSWidgetiFrame($widget,$rawparams,$width,$height, $bgcolor="#FFFFFF", $usemastersprite="false")

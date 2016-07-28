@@ -33,6 +33,17 @@ require_once($CFG->libdir . '/filelib.php');
  
 class poodlltools
 {
+	//this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
+    public static function fetchSimpleAudioPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 
+        $html_snippet = \html_writer::tag('a','audiofile.mp3',array('href'=>$url));
+       return format_text($html_snippet);
+    }
+    
+    //this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
+    public static function fetchSimpleVideoPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 
+        $html_snippet = \html_writer::tag('a','videofile.mp4',array('href'=>$url));
+       return format_text($html_snippet);
+    }
 
 	public static function fetch_mediaserver_url()
 	{
