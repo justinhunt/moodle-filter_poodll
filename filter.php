@@ -210,34 +210,34 @@ class filter_poodll extends moodle_text_filter {
 		//set a default end tag of none
 		$endtag=false;
                 
-                //determine which template we are using
-                //If we have an extension then it is from link
-                //get our template info
-                if($ext){
-                    $playerkey = $this->fetchconf('useplayer' . $ext);
-                    $tempindex=0;
-                    $templatenumbers = \filter_poodll\filtertools::fetch_template_indexes($conf);
-                    foreach($templatenumbers as $templatenumber){
-                            if($conf['templatekey_' . $templatenumber]==$playerkey){
-                                    $tempindex=$templatenumber;
-                                    break;
-                            }
-                    }
-                    if(!$tempindex){return;}
-                }else{
-                //else its from a  poodll filter string                
-                    for($tempindex=1;$tempindex<=$conf['templatecount'];$tempindex++){
-                                    if($filterprops['type']==$conf['templatekey_' . $tempindex]){
-                                            break;
-                                    }elseif($filterprops['type']==$conf['templatekey_' . $tempindex] . '_end'){
-                                            $endtag = true;
-                                            break;
-                                    }
-                    }
+		//determine which template we are using
+		//If we have an extension then it is from link
+		//get our template info
+		if($ext){
+			$playerkey = $this->fetchconf('useplayer' . $ext);
+			$tempindex=0;
+			$templatenumbers = \filter_poodll\filtertools::fetch_template_indexes($conf);
+			foreach($templatenumbers as $templatenumber){
+					if($conf['templatekey_' . $templatenumber]==$playerkey){
+							$tempindex=$templatenumber;
+							break;
+					}
+			}
+			if(!$tempindex){return;}
+		}else{
+		//else its from a  poodll filter string                
+			for($tempindex=1;$tempindex<=$conf['templatecount'];$tempindex++){
+							if($filterprops['type']==$conf['templatekey_' . $tempindex]){
+									break;
+							}elseif($filterprops['type']==$conf['templatekey_' . $tempindex] . '_end'){
+									$endtag = true;
+									break;
+							}
+			}
 
-                    //no key could be found if got all the way to 21
-                    if($tempindex==$conf['templatecount']+1){return '';}
-                }
+			//no key could be found if got all the way to templatecount
+			if($tempindex==$conf['templatecount']+1){return '';}
+		}
                 
 		//fetch our template
 		if($endtag){
@@ -293,7 +293,7 @@ class filter_poodll extends moodle_text_filter {
 		$filterprops['AUTOID']=$autoid;
 
 		//If template requires a MOODLEPAGEID lets give them one
-		//this is a bit of a special case.
+		//this is a bit redundant now it can be done now with @@URLPARAM:id@@ 
 		$moodlepageid = optional_param('id',0,PARAM_INT);
 		$poodlltemplate = str_replace('@@MOODLEPAGEID@@',$moodlepageid,$poodlltemplate);
 		$dataset_vars  = str_replace('@@MOODLEPAGEID@@',$moodlepageid,$dataset_vars);
@@ -319,7 +319,7 @@ class filter_poodll extends moodle_text_filter {
 				$urlparamstubs = array_merge($urlparamstubs,$js_stubs);
 			}
 			
-			//URL Props
+			//URL Param Props
 			$count=0;
 			foreach($urlparamstubs as $propstub){
 				//we don't want the first one, its junk
@@ -331,26 +331,16 @@ class filter_poodll extends moodle_text_filter {
 				//fetch the property name
 				//user can use any case, but we work with lower case version
 				$end = strpos($propstub,'@@');
-				$urlprop_allcase = substr($propstub,0,$end);
-				if(empty($urlprop_allcase)){continue;}
-				$urlprop=strtolower($urlprop_allcase);
+				$urlprop = substr($propstub,0,$end);
+				if(empty($urlprop)){continue;}
 				
 				//check if it exists in the params to the url and if so, set it.
-				$undefined = 'filter_poodll_nothing';
-				$thevalue = optional_param($urlprop_allcase,$undefined,PARAM_TEXT);
-				if($thevalue!=$undefined){
-					$propvalue=$thevalue;
-				}
-				
-				//if we have a propname and a propvalue, do the replace
-				if(!empty($urlprop) && !empty($propvalue)){
-					//echo "userprop:" . $userprop . '<br/>propvalue:' . $propvalue;
-					$poodlltemplate = str_replace('@@URLPARAM:' . $urlprop_allcase .'@@',$propvalue,$poodlltemplate);
-					$dataset_vars  = str_replace('@@URLPARAM:' . $urlprop_allcase .'@@',$propvalue,$dataset_vars);
-					//stash this for passing to js
-					$filterprops['URLPARAM:' . $urlprop_allcase]=$propvalue;
-				}
-			}
+				$propvalue = optional_param($urlprop,'',PARAM_TEXT);
+				$poodlltemplate = str_replace('@@URLPARAM:' . $urlprop .'@@',$propvalue,$poodlltemplate);
+				$dataset_vars  = str_replace('@@URLPARAM:' . $urlprop .'@@',$propvalue,$dataset_vars);
+				//stash this for passing to js
+				$filterprops['URLPARAM:' . $urlprop]=$propvalue;				
+			}//end of for each
 		}//end of if we have@@URLPARAM
 	
 	
