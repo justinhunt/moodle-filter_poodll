@@ -18,8 +18,6 @@ namespace filter_poodll;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws/aws-autoloader.php');
-
 use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\S3\S3Client;
 
@@ -34,11 +32,12 @@ use Aws\S3\S3Client;
  */
 class awstools
 {
+	protected $awsversion="2.x";//3.x
 	protected $transcoder = false; //the single transcoder object
 	protected $s3client = false; //the single transcoder object
 	protected $default_segment_size = 4;
 	protected $region = 'ap-northeast-1';
-        protected $convfolder = 'transcoded/';
+    protected $convfolder = 'transcoded/';
     protected $accesskey ='';
     protected $secretkey='';
 	protected $pipeline_video ='1467090278549-scfvbk'; //standard-transcoding-pipeline
@@ -61,7 +60,13 @@ class awstools
     public function __construct($accesskey,$secretkey) {
         $this->accesskey = $accesskey;
 		$this->secretkey = $secretkey;
-
+		$this->awsversion = "2.x";
+		require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
+		
+		//Later lets enable this via a config switch. Right now we need to support pre 5.5 versions of PHP
+		// but aws 3.x is from php 5.5 and up.
+		//$this->awsversion = "3.x";
+		//require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
     }
 	
 /**
@@ -260,8 +265,12 @@ class awstools
 		$options['ContentType']='application/octet-stream';
 		
 		$cmd = $s3client->getCommand('PutObject', $options);
-		$request = $s3client->createPresignedRequest($cmd, '+' . $minutes .' minutes');
-		$theurl = (string) $request->getUri();
+		if($this->awsversion=="3.x"){
+			$request = $s3client->createPresignedRequest($cmd, '+' . $minutes .' minutes');
+			$theurl = (string) $request->getUri();
+		}else{
+			$theurl =$cmd->createPresignedUrl('+' . $minutes .' minutes');
+		}
 		return $theurl;
 	}
 	
