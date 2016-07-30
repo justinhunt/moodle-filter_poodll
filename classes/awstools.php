@@ -58,15 +58,18 @@ class awstools
      * Constructor
      */
     public function __construct($accesskey,$secretkey) {
+		global $CFG;
         $this->accesskey = $accesskey;
 		$this->secretkey = $secretkey;
-		$this->awsversion = "2.x";
-		require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
-		
-		//Later lets enable this via a config switch. Right now we need to support pre 5.5 versions of PHP
+		//We need to support pre 5.5 versions of PHP
 		// but aws 3.x is from php 5.5 and up.
-		//$this->awsversion = "3.x";
-		//require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
+		if($CFG->filter_poodll_aws_sdk=="2.x"){
+			$this->awsversion = "2.x";
+			require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
+		}else{
+			$this->awsversion = "3.x";
+			require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
+		 }
     }
 	
 /**

@@ -1,5 +1,17 @@
 Change List
 =========
+Version 2.8.7(Build 2016071605)
+-Added AWS SDK for PHP version 2.3 (for older php versions)
+-Tweaked ad-hoc task for moving from s3
+-fixed installation zip file which would not pass verification on install
+-added support for @@URLPARAM:xx@@ variables in PoodLL filter templates
+-altered default templates for audiojs and others
+
+Version 2.8.6(Build 2016071604)
+First release of PoodLL 3
+-html5 recorders
+-template based filter system
+
 Version 2015121106
 Fixed a bug that caused the whiteboard and recorders to fail to submit their media, when jquery was not present.
 

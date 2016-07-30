@@ -27,8 +27,8 @@ require_once($CFG->libdir . '/filelib.php');
  * like embedding recorders and managing them
  *
  * @package   filter_poodll
- * @since      Moodle 2.7
- * @copyright  2014 Justin Hunt
+ * @since      Moodle 3.1
+ * @copyright  2016 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
  
@@ -41,11 +41,16 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_heading('filter_poodll_registration_settings', get_string('filter_poodll_registration_heading', 'filter_poodll'), get_string('filter_poodll_registration_explanation', 'filter_poodll'));
 		$items[] = new \admin_setting_configtext('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'), get_string('registrationkey_explanation', 'filter_poodll'), '');
 
-$items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get_string('usecloudrecording', 'filter_poodll'), get_string('usecloudrecording_desc', 'filter_poodll'), 1);
+    $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get_string('usecloudrecording', 'filter_poodll'), get_string('usecloudrecording_desc', 'filter_poodll'), 1);
 
+	$options = array('2.x' => 'Version 2.x', '3.x'=>"Version 3.x");
+	$items[] = new \admin_setting_configselect('filter_poodll_aws_sdk', get_string('awssdkversion', 'filter_poodll'), 
+		get_string('awssdkversion_desc', 'filter_poodll'), '2.x', $options);
+	
 	$items[] = new \admin_setting_configtext('filter_poodll_uploadkey', get_string('uploadkey', 'filter_poodll'), get_string('uploadkey_desc', 'filter_poodll'), '');
 	$items[] = new \admin_setting_configtext('filter_poodll_uploadsecret', get_string('uploadsecret', 'filter_poodll'), get_string('uploadsecret_desc', 'filter_poodll'), '');
 
+	
 		//PoodLL Network Settings.
 	$items[] = new \admin_setting_heading('filter_poodll_network_settings', get_string('filter_poodll_network_heading', 'filter_poodll'), '');
 	$items[] = new \admin_setting_configtext('filter_poodll_servername', get_string('servername', 'filter_poodll'), '', 'tokyo.poodll.com');
@@ -64,8 +69,8 @@ $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), '', 0);
 
 	// PoodLL Flashcards
-		$items[] = new \admin_setting_heading('filter_poodll_flashcards_settings', get_string('filter_poodll_flashcards_heading', 'filter_poodll'), '');
-		$options = array('poodll' => 'PoodLL', 'owl'=>"Owl");
+	$items[] = new \admin_setting_heading('filter_poodll_flashcards_settings', get_string('filter_poodll_flashcards_heading', 'filter_poodll'), '');
+	$options = array('poodll' => 'PoodLL', 'owl'=>"Owl");
 	$items[] = new \admin_setting_configselect('filter_poodll_flashcards_type', get_string('flashcardstype', 'filter_poodll'), '', 'poodll', $options);
 
 

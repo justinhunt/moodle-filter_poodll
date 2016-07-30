@@ -72,18 +72,23 @@ class adhoc_s3_move extends \core\task\adhoc_task {
         //fetch the permanent file record, that currently holds the placeholder file
         $permfilerecord = \filter_poodll\poodlltools::fetch_placeholder_file_record($cd->mediatype, $cd->filename);
         //do the replace, if it succeeds yay. If it fails ...give up
-        $success=false;
+        if(!$permfilerecord){
+			$giveup =true;
+            $this->handle_s3_error('could not find placeholder file:' . $cd->filename ,$cd,$giveup);
+            return;
+		}
+		
         try{
             \filter_poodll\poodlltools::replace_placeholderfile_in_moodle($cd->filerecord, $permfilerecord, $tempfilepath);
         }catch (Exception $e) {
             $giveup =true;
             $this->handle_s3_error('could not get replace placeholder with converted::' . $cd->filename . ':' . $e->getMessage(),$cd,$giveup);
             return;
-	}
+		}
         //nothing to do next. If it errors, it will be elsewhere. If it gets here it should be ok.
     }
 
-private function handle_s3_error($errorstring,$cd,$giveup){
+	private function handle_s3_error($errorstring,$cd,$giveup){
 			  	
     		//we do not retry indefinitely
     		//if we are well beyond the timestamp then we just cancel out of here.
@@ -94,11 +99,10 @@ private function handle_s3_error($errorstring,$cd,$giveup){
     			//we do not retry after two hours, we just report an error and return quietly
                     error_log('s3file:' . $errorstring);
                     error_log('will not retry');
-    		}else{
-                                
-                        error_log(print_r($cd,true));
-                        error_log('will retry');
-                        throw new \file_exception('s3file', $errorstring);
-                }//end of if/else
+    		}else{                   
+                    error_log(print_r($cd,true));
+                    error_log('will retry');
+                    throw new \file_exception('s3file', $errorstring);
+             }//end of if/else
 	}//end of function handle_S3_error
 } //end of class

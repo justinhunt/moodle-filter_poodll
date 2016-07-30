@@ -28,6 +28,9 @@ $string['registrationkey_explanation'] ="Enter your PoodLL registration key here
 $string['usecloudrecording'] = 'Cloud recording';
 $string['usecloudrecording_desc'] = 'PoodLL cloud recording. This enables transcoding and other services in the cloud. The PoodLL iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud. Cloud recording is under heavy development and will change. It should not be used in production yet.';
 
+$string['awssdkversion'] = 'AWS SDK';
+$string['awssdkversion_desc'] = 'PoodLL cloud recording uses Amazon Web Services (AWS). Version 3.x will only work with PHP 5.5 or greater. Version 2.x of the AWS SDK should work on PHP 5.3 or greater. You probably do not need to change this. ';
+
 $string['uploadkey'] = 'Upload key';
 $string['uploadkey_desc'] = 'PoodLL cloud recording requires an upload key for recording. You should receive this when you sign up for PoodLL. Enter the upload key here.';
 $string['uploadsecret'] = 'Upload secret';
@@ -91,7 +94,7 @@ $string['videotranscodedetails'] = 'Convert recorded/uploaded video files to MP4
 $string['audiotranscode'] = 'Auto Conv. to MP3';
 $string['audiotranscodedetails'] = 'Convert recorded/uploaded audio file to MP3 format before storing in Moodle. This works for recordings made on tokyo.poodll.com, or uploaded recordings if using FFMPEG';
 $string['ffmpeg'] ='Convert uploaded media with FFMPEG';
-$string['ffmpeg_details'] ='FFMPEG must be installed on your Moodle Server and on the system path. It will need to support converting to mp3, so try it out first on the command line, eg ffmpeg -i somefile.flv somefile.mp3 . This is still *experimental*';
+$string['ffmpeg_details'] ='FFMPEG must be installed on your Moodle Server and on the system path. It will need to support converting to mp3, so try it out first on the command line, eg ffmpeg -i somefile.flv somefile.mp3 . ';
 $string['mp4opts'] ='FFMPEG MP4 Conversion options';
 $string['mp4opts_details'] ='Leave this empty if you wish to let FFMPEG make the decisions. Anything you put here will appear between [ffmpeg -i myfile.xx ] and [ myfile.mp4 ]';
 $string['mp3opts'] ='FFMPEG MP3 Conversion options';
