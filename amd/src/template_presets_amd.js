@@ -9,7 +9,7 @@ define(['jquery','core/log'], function($, log) {
 
 	  presetdata: false,
 	  
-	  dataitems: ['name','key', 'instructions','showatto','showplayers','requirecss', 'requirejs', 'defaults',
+	  dataitems: ['name','key', 'instructions','showatto','showplayers','requirecss', 'requirejs','shim', 'defaults',
 			  'amd', 'body', 'bodyend', 'script', 'style','dataset','datasetvars'],
 
 	  fetchcontrols: function(templateindex) {
@@ -21,6 +21,7 @@ define(['jquery','core/log'], function($, log) {
 		  controls.showplayers = document.getElementById('id_s_filter_poodll_template_showplayers_' + templateindex);
 		  controls.requirecss = document.getElementById('id_s_filter_poodll_templaterequire_css_' + templateindex);
 		  controls.requirejs = document.getElementById('id_s_filter_poodll_templaterequire_js_' + templateindex);
+		  controls.shim = document.getElementById('id_s_filter_poodll_templaterequire_js_shim_' + templateindex);
 		  controls.defaults = document.getElementById('id_s_filter_poodll_templatedefaults_' + templateindex);
 		  controls.amd = document.getElementById('id_s_filter_poodll_template_amd_' + templateindex);
 		  controls.body = document.getElementById('id_s_filter_poodll_template_' + templateindex);

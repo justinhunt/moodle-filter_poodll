@@ -151,6 +151,7 @@ class poodllpresets extends \admin_setting {
 			$fields['showplayers']='template_showplayers';
 			$fields['requirecss']='templaterequire_css';
 			$fields['requirejs']='templaterequire_js';
+			$fields['shim']='templaterequire_js_shim';
 			$fields['defaults']='templatedefaults';
 			$fields['amd']='template_amd';
 			$fields['script']='templatescript';

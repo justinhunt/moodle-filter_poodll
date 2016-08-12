@@ -274,7 +274,13 @@ public static function fetch_template_pages($conf){
 					get_string('templaterequire_amd', 'filter_poodll',$tindex),
 					get_string('templaterequire_amd_desc', 'filter_poodll'), 
 					 1,$yesno));
-				 
+					 
+			//template shim
+			$settings_page->add(new \admin_setting_configtext('filter_poodll/templaterequire_js_shim_' . $tindex , 
+					get_string('templaterequire_js_shim', 'filter_poodll',$tindex),
+					get_string('templaterequire_js_shim_desc', 'filter_poodll'), 
+					 '', PARAM_TEXT,50));			
+			
 		
 			//template body script
 			 $settings_page->add(new \admin_setting_configtextarea('filter_poodll/templatescript_' . $tindex,

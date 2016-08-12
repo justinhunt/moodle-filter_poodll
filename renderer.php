@@ -82,6 +82,29 @@ class filter_poodll_renderer extends plugin_renderer_base {
 
 	public function fetchLiterallyCanvas($html)
 	{
+	global $PAGE;
+		//The strings we need for js
+		
+    $PAGE->requires->strings_for_js(array('insert',
+                                          'cancel',
+                                          'recui_record',
+                                          'recui_recordorchoose',
+                                          'recui_pause',
+                                          'recui_play',
+                                          'recui_stop',
+                                          'recui_save',
+                                          'recui_continue',
+                                          'recui_uploading',
+                                          'recui_converting',
+                                          'recui_uploading',
+                                          'recui_uploadafile',
+                                          'recui_uploadsuccess',
+                                          'recui_openrecorderapp',
+                                          'recui_awaitingconfirmation',
+                                          'recui_uploaderror',
+                                          'recui_nothingtosaveerror',
+                                          ),
+                                    'filter_poodll');
 		return $html;
 
 	}
@@ -157,7 +180,9 @@ class filter_poodll_renderer extends plugin_renderer_base {
 		global $CFG, $PAGE;
 		
 		//this init the M.mod_readaloud thingy, after the page has loaded.
-		$PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
+		//we replaced this with a shim to the same js file to avoid load order badness
+		//Justin 20160805
+		//$PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
 		
 		$widgetopts->widgetid=$widgetid;
 		
@@ -207,7 +232,8 @@ class filter_poodll_renderer extends plugin_renderer_base {
 	public function fetchLazloEmbedCode($widgetopts,$widgetid,$jsmodule)
 	{
 		global $CFG, $PAGE;
-		
+		echo "what !";
+		die;
 		//this init the M.mod_readaloud thingy, after the page has loaded.
 		$PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
 		

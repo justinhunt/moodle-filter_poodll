@@ -27,10 +27,12 @@ define(['jquery','core/log'], function($, log) {
         },
         //extract filename from the text returned as response to upload
         extractFilename: function(returntext){
-        	 var start= returntext.indexOf("success<filename>");
+            var searchkey ="success<filename>";
+        	 var start= returntext.indexOf(searchkey);
 			if (start<1){return false;}
 			var end = returntext.indexOf("</filename>");
-			var filename= returntext.substring(start+14,end);
+			var filename= returntext.substring(start+(searchkey.length),end);
+			return filename;
         },
         //create a progress bar
         createProgressBar: function(xhr,uploader){
@@ -98,6 +100,7 @@ define(['jquery','core/log'], function($, log) {
             return true;
         },
         
+        
         //after an upload handle the filename poke and callback call
         postProcessUpload: function(e,uploader){
         	  var xhr = e.currentTarget;
@@ -125,7 +128,7 @@ define(['jquery','core/log'], function($, log) {
 						this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
 
 					}else {
-                                                uploader.pokeFilename(filename,uploader);
+                             uploader.pokeFilename(filename,uploader);
 
 					}
 				}else{
@@ -139,17 +142,14 @@ define(['jquery','core/log'], function($, log) {
        
         // upload Media file to wherever
         uploadFile: function(filedata,filetype) {
-        
-        console.log(filedata);
+      
             var xhr = new XMLHttpRequest();
 			var config = this.config;
 			var uploader = this;
 			
             //get the file extension from the filetype
             var ext = this.fetchFileExtension(filetype);
-            
-            
-			//log.debug(config);
+ 
 			var using_s3 = config.using_s3;
 
 			// create progress bar if we have a container for it

@@ -1,7 +1,7 @@
 /* jshint ignore:start */
-define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploader) {
+define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], function($, log, uploader, lz) {
 
-    "use strict"; // jshint ;_;
+    "use strict"; // jshint ;
 
     log.debug('PoodLL Flash Recorder: initialising');
 

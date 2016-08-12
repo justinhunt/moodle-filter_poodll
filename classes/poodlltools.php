@@ -310,19 +310,29 @@ class poodlltools
 		if ($CFG->filter_poodll_autosavewhiteboard && $forsubmission) {
 			$opts['autosave'] = $CFG->filter_poodll_autosavewhiteboard;
 		}
+		
+		//set media type
+		$mediatype = "image";
+		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		
 		//imageurlprefix, that LC requires
 		$opts['imageurlprefix'] = $CFG->httpswwwroot . '/filter/poodll/js/literallycanvas.js/img';
 		$opts['recorderid'] = 'literallycanvas_' . time() . rand(10000, 999999);
 		$opts['widgetid'] = $opts['recorderid'];
 		$opts['callbackjs'] = $callbackjs;
+		$opts['using_s3'] = false;
 		$opts['updatecontrol'] = $updatecontrol;
 		$opts['vectorcontrol'] = $vectorcontrol;
 		$opts['base64control'] = '';//do this later
 		$opts['vectordata'] = $vectordata;
-		//amd requires opts be passed via html if they are too much.
-		$opts_html = "";
-
-
+		$opts['p1'] = '';
+		$opts['p2'] = $contextid;
+		$opts['p3'] = $component;
+		$opts['p4'] = $filearea;
+		$opts['p5'] = $itemid;
+		$opts['mediatype'] = $mediatype;
+		$opts['posturl'] = $poodllfilelib;
+		
 
 		//we encode the options and send them to html. Moodle doesn't like them cluttering the JS up
 		//when using AMD
@@ -339,7 +349,7 @@ class poodlltools
 		if ($height == 0) {
 			$height = $CFG->filter_poodll_whiteboardheight;
 		}
-		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		
 
 		//add the height of the control area, so that the user spec dimensions are the canvas size
 		$canvasheight = $height;
@@ -355,49 +365,26 @@ class poodlltools
 			$savecontrol = "";
 		}
 
-		//set media type
-		$mediatype = "image";
-
-
-		//this won't work in a quiz, and throws an error about trying to add to page head,
-		//when page head has already been output. So copy contents of this file to styles.css in poodllfilter
-		//$PAGE->requires->css(new \moodle_url($CFG->wwwroot . '/filter/poodll/js/literallycanvas.js/css/literallycanvas.css'));
-
-
-		//save button
-		$savebutton = "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_updatecontrol\" value=\"$updatecontrol\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_contextid\" value=\"$contextid\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_component\" value=\"$component\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_mediatype\" value=\"$mediatype\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_filearea\" value=\"$filearea\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_itemid\" value=\"$itemid\" />";
-
-		//justin 20140521 vectordata
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_vectorcontrol\" value=\"$vectorcontrol\" />";
-
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_fileliburl\" value=\"$poodllfilelib\" />";
-		//amd opts
-		$savebutton .= $opts_html;
-
 		if (array_key_exists('autosave', $opts)) {
 			$buttonclass = "w_btn";
 		} else {
 			$buttonclass = "p_btn";
 		}
-		$savebutton .= "<button type=\"button\" id=\"" . $opts['recorderid'] . "_btn_upload_whiteboard\" class=\"$buttonclass\">"
+		
+		$savebutton = "<button type=\"button\" id=\"" . $opts['recorderid'] . "_btn_upload_whiteboard\" class=\"$buttonclass\">"
 			. get_string('whiteboardsave', 'filter_poodll') .
 			"</button>";
 
 
 		//message container
-		$progresscontrols = "<div id=\"" . $opts['recorderid'] . "_messages\"></div>";
+		$progresscontrols ="<div id=\"" . $opts['recorderid'] . "_messages\"></div>";
 
 
 		//container of whiteboard, bgimage and other bits and pieces.
 		//add a buffer background image if necessary
 		$lcOpen = "<div class='whiteboard-wrapper' style='width:" . $width . "px; height:" . $height . "px;'>
 			<div class='fs-container' style='width:" . $width . "px; height:" . $height . "px;'>
-			<div id='" . $opts['recorderid'] . "_literally' class='literally'><canvas></canvas></div></div>";
+			<div id='" . $opts['recorderid'] . "_literally' class='literallycanvas'></div></div>";
 		if ($opts['backgroundimage']) {
 			$lcOpen .= " <img id='" . $opts['recorderid'] . "_separate-background-image' style='display: none;' src='" . $opts['backgroundimage'] . "'/>";
 		}
@@ -409,6 +396,7 @@ class poodlltools
 			$returnString .= $savebutton;
 			$returnString .= $savecontrol;
 			$returnString .= $progresscontrols;
+			$returnString .= $opts_html;
 		}
 		$returnString .= $lcClose;
 

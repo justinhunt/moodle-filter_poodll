@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd', 'filter_poodll/uploader', 'filter_poodll/literallycanvas'], function($, log, utils, React, uploader, LC) {
+define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader','filter_poodll/react_amd', 'filter_poodll/literallycanvas'], function($, log, utils, uploader,React, LC) {
 
     "use strict"; // jshint ;_;
 
@@ -18,16 +18,12 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/react_amd
                 this.config = opts;
                 $(theid).remove();
             }
-debugger;
-            //stash our opts array
-            utils.whiteboardopts[opts['recorderid']] = opts;
+
 
             //init the whiteboard	(diff logic if have a background image)
             var element = '#' + opts['recorderid'] + '_literally';
             var lc_element = $(element)[0];
             
-            //init uploader
-        	uploader.init(element, opts);
 
             if(opts['backgroundimage']){
                 //simple using opts['backgroundimage'] as src would be better than using a buffer image, but LC won't show it.
@@ -50,9 +46,12 @@ debugger;
                 });
             }
             this.lc = lc;
+            
+            //init uploader
+        	uploader.init(element, opts);
 
             //restore previous drawing if any
-            var vectordata = utils.whiteboardopts[opts['recorderid']]['vectordata'];
+            var vectordata = opts['vectordata'];
             if(vectordata){
                 //don't restore drawingboardjs vector if its there, goes to error
                 if(vectordata.indexOf('{"shapes"')==0 || vectordata.indexOf('{"colors"')==0){
@@ -60,8 +59,6 @@ debugger;
                 }
             }
 
-            //store a handle to this whiteboard
-            utils.whiteboards[opts['recorderid']] = lc;
             
             //register the draw and save events that we need to handle
             this.registerEvents();
@@ -71,8 +68,9 @@ debugger;
         registerEvents: function() {
         
         	var mfp = this;
-            var recid = this.config['recorderid'];
-        
+            
+            var opts = this.config;
+            var recid = opts['recorderid'];
         
         	//handle autosave
             if(opts['autosave']){
@@ -88,8 +86,8 @@ debugger;
                             var th = utils.timeouthandles[recid];
                             if(th){clearTimeout(th);}
                             utils.timeouthandles[recid] = setTimeout(
-                                function(){ utils.WhiteboardUploadHandler(recid);},
-                                utils.whiteboardopts[recid]['autosave']);
+                                function(){ utils.WhiteboardUploadHandler(recid,mfp.lc,opts);},
+                                opts['autosave']);
                         }
                 });
 
@@ -110,12 +108,15 @@ debugger;
             var uploadbutton = $(uploadbuttonstring);
             if(uploadbutton){
                 if(opts['autosave']){
-                    uploadbutton.click(function(){utils.WhiteboardUploadHandler(opts['recorderid']);}, false);
+                    uploadbutton.click(function(){utils.WhiteboardUploadHandler(opts['recorderid'],mfp.lc);}, false);
                 }else{
-                	var wboard = utils.whiteboards[opts[recorderid]];
-                	var cvs = wboard.canvasForExport();
-                    uploadbutton.click(function(){uploader.uploadFile(cvs.ToDataURL(),'image');}, false);
-                    //uploadbutton.click(function(){utils.CallFileUpload(opts['recorderid']);}, false);
+                	var cvs = utils.getCvs(opts['recorderid'],mfp.lc,opts);
+                    uploadbutton.click(
+                    	function(){
+                    		utils.pokeVectorData(opts['recorderid'],mfp.lc,opts);
+                    		uploader.uploadFile(cvs.toDataURL(),'image');
+                    	}, 
+                    false);
                 }
             }
         },
