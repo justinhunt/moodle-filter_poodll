@@ -1835,7 +1835,8 @@ class poodlltools
 		$widgetopts->p3 = $component;
 		$widgetopts->p4 = $filearea;
 		$widgetopts->p5 = $itemid;
-        $widgetopts->timelimit = $timelimit;
+                $widgetopts->timelimit = $timelimit;
+                $widgetopts->callbackjs = $callbackjs;
 		
 		//store the filename or "not yet decided flag"(ie false)
 		$widgetopts->filename = $filename;
@@ -1854,31 +1855,31 @@ class poodlltools
                                 $widgetopts->{$key} = $value;
 		}
                 
-        //for mediarecorder amd params
-        $rawparams = self::fetchMediaRecorderAMDParams();
+                //for mediarecorder amd params
+                $rawparams = self::fetchMediaRecorderAMDParams();
                 foreach ($rawparams as $key => $value) {
                                 $widgetopts->{$key} = $value;
-		}
-                
-        //for red5 video recorder amd params
-        $rawparams = self::fetchRed5VideoRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
+                }
+
+                //for red5 video recorder amd params
+                $rawparams = self::fetchRed5VideoRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
                 foreach ($rawparams as $key => $value) {
                                 $widgetopts->{$key} = $value;
-		}
-		
-		 //for red5 audio recorder amd params
-        $rawparams = self::fetchRed5AudioRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
+                }
+
+                         //for red5 audio recorder amd params
+                $rawparams = self::fetchRed5AudioRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
                 foreach ($rawparams as $key => $value) {
                                 $widgetopts->{$key} = $value;
-		}
-                
-		//for audio mp3 recorder amd params
-		$rawparams = self::fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit, $callbackjs);
-        foreach ($rawparams as $key => $value) {
-                                $widgetopts->{$key} = $value;
-		}
-			
-        //send it to renderer for putting on the page
+                }
+
+                        //for audio mp3 recorder amd params
+                $rawparams = self::fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit, $callbackjs);
+                foreach ($rawparams as $key => $value) {
+                                        $widgetopts->{$key} = $value;
+                        }
+
+                //send it to renderer for putting on the page
 		$renderer = $PAGE->get_renderer('filter_poodll');
 		return $renderer->fetchAMDRecorderEmbedCode($widgetopts,$widgetid);
 	}

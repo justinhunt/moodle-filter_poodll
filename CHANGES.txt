@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.0.0(Build 2016081401)
+-tweaks to support callbackjs for recorders
+-preset improvements
+-support for ad hoc shimming in templates
+-support auto iframe resizing
+
 Version 2.8.7(Build 2016071605)
 -Added AWS SDK for PHP version 2.3 (for older php versions)
 -Tweaked ad-hoc task for moving from s3
