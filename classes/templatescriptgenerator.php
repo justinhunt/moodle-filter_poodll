@@ -140,7 +140,8 @@ class templatescriptgenerator
 
 		//If not AMD
 		}else{
-
+                        //no shim so we just set an empty string
+			$theshim='';
 			$thefunction = "if(typeof filter_poodll_extfunctions == 'undefined'){filter_poodll_extfunctions={};}";
 			$thefunction .= "filter_poodll_extfunctions['" . $tindex . "']= function(opts) {" . $thescript. " \r\n};";
 
