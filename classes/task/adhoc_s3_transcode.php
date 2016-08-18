@@ -42,7 +42,7 @@ class adhoc_s3_transcode extends \core\task\adhoc_task {
     	
     	//get passed in data we need to perform conversion
     	$cd =  $this->get_custom_data();
-    	$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
+    	$awstools = new \filter_poodll\awstools();
         
         //if somehow this trasncoding already ocurred, just exit
         if($awstools->does_file_exist($cd->mediatype,$cd->s3filename,'out') ){

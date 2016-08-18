@@ -37,7 +37,9 @@ $string['uploadsecret'] = 'Upload secret';
 $string['uploadsecret_desc'] = 'PoodLL cloud recording requires an upload secret for recording.  You should receive this when you sign up for PoodLL. Enter the upload secret here.';
 
 
-$string['unregistered'] = 'PoodLL not displayed because it has not been registered. Registration is free. Ask your teacher/administrator to visit the PoodLL filter settings page and complete the registration process.';
+$string['unregistered'] = 'PoodLL not displayed because it has not been registered. Ask your teacher/administrator to register PoodLL at PoodLL.com.';
+$string['expired'] = 'PoodLL not displayed because registration has expired. Ask your teacher/administrator to renew the registration at PoodLL.com.';
+
 
 $string['flashcardstype'] ='Flashcards Type';
 

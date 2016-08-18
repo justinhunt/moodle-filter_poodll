@@ -65,8 +65,9 @@ class poodlltools
 		global $CFG, $USER, $COURSE;
 
 		$lm = new \filter_poodll\licensemanager();
-		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-			return $lm->fetch_unregistered_content();
+                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
+			return $lm->fetch_unregistered_content($registration_status);
 		}
 
 
@@ -521,8 +522,9 @@ class poodlltools
 		global $CFG, $USER, $COURSE;
 
 		$lm = new \filter_poodll\licensemanager();
-		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-			return $lm->fetch_unregistered_content();
+                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
+			return $lm->fetch_unregistered_content($registration_status);
 		}
 
 
@@ -1385,8 +1387,9 @@ class poodlltools
 		global $PAGE;
 
 		$lm = new \filter_poodll\licensemanager();
-		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-			return $lm->fetch_unregistered_content();
+                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
+			return $lm->fetch_unregistered_content($registration_status);
 		}
 
 		$renderer = $PAGE->get_renderer('filter_poodll');
@@ -1399,8 +1402,9 @@ class poodlltools
 		global $PAGE, $CFG;
 
 		$lm = new \filter_poodll\licensemanager();
-		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-			return $lm->fetch_unregistered_content();
+                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
+			return $lm->fetch_unregistered_content($registration_status);
 		}
 
 		$renderer = $PAGE->get_renderer('filter_poodll');
@@ -1414,8 +1418,9 @@ class poodlltools
 		global $CFG, $PAGE;
 
 		$lm = new \filter_poodll\licensemanager();
-		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-			return $lm->fetch_unregistered_content();
+                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
+			return $lm->fetch_unregistered_content($registration_status);
 		}
 
 //get our module javascript all ready to go
@@ -1521,7 +1526,7 @@ class poodlltools
 	public static function commence_s3_transcode($mediatype,$s3filename){
 		global $CFG;
                 //does file exist on s3
-		$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
+		$awstools = new \filter_poodll\awstools();
 		if($awstools->does_file_exist($mediatype,$s3filename,'in' ) && !$awstools->does_file_exist($mediatype,$s3filename,'out') ){
 			$awstools->create_one_transcoding_job($mediatype,$s3filename,$s3filename);
 		//}else{
@@ -1533,8 +1538,8 @@ class poodlltools
         public static function confirm_s3_arrival($mediatype,$filename){
 		global $CFG;
                 //does file exist on s3
-		$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
-                $s3filename = $awstools->fetch_s3_filename($mediatype, $filename);
+                $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
+		$awstools = new \filter_poodll\awstools();
 		if($awstools->does_file_exist($mediatype,$s3filename,'in' )){
                     return true;
 		}else{
@@ -1799,8 +1804,9 @@ class poodlltools
 		global $CFG, $PAGE;
 
 		$lm = new \filter_poodll\licensemanager();
-		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-			return $lm->fetch_unregistered_content();
+                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
+			return $lm->fetch_unregistered_content($registration_status);
 		}
 
 		// if we are using S3 lets get an upload url
@@ -1813,7 +1819,7 @@ class poodlltools
                         }
 			$filename = \html_writer::random_id('poodllfile') . $ext;
                         $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
-			$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
+			$awstools = new \filter_poodll\awstools();
 			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$s3filename);
 		}else{
 			$filename = false;

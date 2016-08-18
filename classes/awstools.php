@@ -57,11 +57,13 @@ class awstools
 	 /**
      * Constructor
      */
-    public function __construct($accesskey,$secretkey) {
+    public function __construct() {
 		global $CFG;
-        $this->accesskey = $accesskey;
-		$this->secretkey = $secretkey;
-		//We need to support pre 5.5 versions of PHP
+                $lm = new \filter_poodll\licensemanager();
+                $this->accesskey = $lm->get_cloud_access_key($CFG->filter_poodll_registrationkey);
+		$this->secretkey = $lm->get_cloud_access_secret($CFG->filter_poodll_registrationkey);
+
+                 //We need to support pre 5.5 versions of PHP
 		// but aws 3.x is from php 5.5 and up.
 		if($CFG->filter_poodll_aws_sdk=="2.x"){
 			$this->awsversion = "2.x";

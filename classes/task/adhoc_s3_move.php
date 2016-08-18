@@ -42,7 +42,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
     	
     	//get passed in data we need to perform conversion
     	$cd =  $this->get_custom_data();
-    	$awstools = new \filter_poodll\awstools($CFG->filter_poodll_uploadkey,$CFG->filter_poodll_uploadsecret);
+    	$awstools = new \filter_poodll\awstools();
         
         try{
             $ret= $awstools->fetch_s3_converted_file($cd->mediatype, $cd->s3filename, $cd->filename,$cd->filerecord);

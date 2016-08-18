@@ -38,19 +38,21 @@ class settingstools
 public static function fetch_general_items(){
 	$items = array();
 
-	$items[] = new \admin_setting_heading('filter_poodll_registration_settings', get_string('filter_poodll_registration_heading', 'filter_poodll'), get_string('filter_poodll_registration_explanation', 'filter_poodll'));
-		$items[] = new \admin_setting_configtext('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'), get_string('registrationkey_explanation', 'filter_poodll'), '');
-
-    $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get_string('usecloudrecording', 'filter_poodll'), get_string('usecloudrecording_desc', 'filter_poodll'), 1);
+        $items[] = new \admin_setting_heading('filter_poodll_registration_settings', get_string('filter_poodll_registration_heading', 'filter_poodll'), get_string('filter_poodll_registration_explanation', 'filter_poodll'));
+	$items[] = new \admin_setting_configtextarea('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'), get_string('registrationkey_explanation', 'filter_poodll'), '');
+	/*
+        $items[] = new \admin_setting_configtext('filter_poodll_uploadkey', get_string('uploadkey', 'filter_poodll'), get_string('uploadkey_desc', 'filter_poodll'), '');
+	$items[] = new \admin_setting_configtext('filter_poodll_uploadsecret', get_string('uploadsecret', 'filter_poodll'), get_string('uploadsecret_desc', 'filter_poodll'), '');
+        */
+	
+        
+	
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get_string('usecloudrecording', 'filter_poodll'), get_string('usecloudrecording_desc', 'filter_poodll'), 1);
 
 	$options = array('2.x' => 'Version 2.x', '3.x'=>"Version 3.x");
 	$items[] = new \admin_setting_configselect('filter_poodll_aws_sdk', get_string('awssdkversion', 'filter_poodll'), 
 		get_string('awssdkversion_desc', 'filter_poodll'), '2.x', $options);
-	
-	$items[] = new \admin_setting_configtext('filter_poodll_uploadkey', get_string('uploadkey', 'filter_poodll'), get_string('uploadkey_desc', 'filter_poodll'), '');
-	$items[] = new \admin_setting_configtext('filter_poodll_uploadsecret', get_string('uploadsecret', 'filter_poodll'), get_string('uploadsecret_desc', 'filter_poodll'), '');
 
-	
 		//PoodLL Network Settings.
 	$items[] = new \admin_setting_heading('filter_poodll_network_settings', get_string('filter_poodll_network_heading', 'filter_poodll'), '');
 	$items[] = new \admin_setting_configtext('filter_poodll_servername', get_string('servername', 'filter_poodll'), '', 'tokyo.poodll.com');
@@ -192,12 +194,15 @@ public static function fetch_template_pages($conf){
 		for($tindex=1;$tindex<=$templatecount;$tindex++){
 		 
 			 //template display name
-			 if($conf && property_exists($conf,'templatekey_' . $tindex)){
+                        $tname='';
+                        if($conf && property_exists($conf,'templatename_' . $tindex)){
+				$tname = $conf->{'templatename_' . $tindex};
+                        }
+			if(empty($tname) && $conf && property_exists($conf,'templatekey_' . $tindex)){
 				$tname = $conf->{'templatekey_' . $tindex};
-				if(empty($tname)){$tname=$tindex;}
-			 }else{
-				$tname = $tindex;
-			 }
+                        }
+			if(empty($tname)){$tname=$tindex;}
+
 		 
 			 //template settings Page Settings 
 			$settings_page = new \admin_settingpage('filter_poodll_templatepage_' . $tindex,get_string('templatepageheading', 'filter_poodll',$tname));
