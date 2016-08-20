@@ -1,0 +1,1 @@
+{"name":"","key":"welcomeuser","instructions":"","showatto":"0","showplayers":"0","requirecss":"","requirejs":"","shim":"","defaults":"","amd":"1","body":"Hi @@USER:firstname@@. This is your picture. <br />\n@@USER:PIC@@<br />","bodyend":"","script":"","style":"","dataset":"","datasetvars":""}
