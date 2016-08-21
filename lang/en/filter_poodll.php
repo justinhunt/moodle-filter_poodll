@@ -20,10 +20,10 @@ $string['filter_poodll_whiteboard_heading'] = 'Whiteboard Settings';
 $string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings';
 $string['filter_poodll_registration_heading'] ='Register your PoodLL';
 $string['filter_poodll_flashcards_heading'] ='Flashcards Settings';
-$string['filter_poodll_registration_explanation'] ="From PoodLL version 2.8.0 you are required to obtain and enter your PoodLL registration key. Registration is currently free, and you can obtain your key in a jiffy from <a href='http://poodll.com/registration'>http://poodll.com/registration</a>";
+$string['filter_poodll_registration_explanation'] ="PoodLL 3 requires a registration key. If you do not have one visit Poodll.com to get one.";
 
 $string['registrationkey'] = 'Registration Key';
-$string['registrationkey_explanation'] ="Enter your PoodLL registration key here. It is free, but PoodLL won't work without it. You can obtain a key from <a href='http://poodll.com/registration'>http://poodll.com/registration</a>";
+$string['registrationkey_explanation'] ="Enter your PoodLL registration key here. You can obtain a key from <a href='http://poodll.com/poodll-3-2'>http://poodll.com/poodll-3-2</a>";
 
 $string['usecloudrecording'] = 'Cloud recording';
 $string['usecloudrecording_desc'] = 'PoodLL cloud recording. This enables transcoding and other services in the cloud. The PoodLL iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud. Cloud recording is under heavy development and will change. It should not be used in production yet.';
