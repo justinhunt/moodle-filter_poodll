@@ -218,8 +218,8 @@ class filtertools
 			$proparray['FILETITLE'] = $filetitle;
 			$proparray['AUTOPNGFILENAME'] = $autopngfilename;
 			$proparray['AUTOJPGFILENAME'] = $autojpgfilename;
-			$proparray['VIDEOURL'] = $videourl;
 			$proparray['RAWVIDEOURL'] =  !empty($paramstring) ?  $videourl . '?' . $paramstring : $videourl;
+			$proparray['VIDEOURL'] = $videourl . '?cachekiller=' . rand(1,9999) . time(); //add a time stamp to url
 			$proparray['RAWPARAMS'] = $paramstring;
 			$proparray['AUTOPOSTERURLJPG'] = $autoposterurljpg;
 			$proparray['AUTOPOSTERURLPNG'] = $autoposterurlpng;
