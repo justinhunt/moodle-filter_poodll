@@ -1,4 +1,4 @@
-/* jshint ignore:start */;
+/* jshint ignore:start */
 define(['jquery','core/log'], function($, log) {
 
   "use strict"; // jshint ;_;

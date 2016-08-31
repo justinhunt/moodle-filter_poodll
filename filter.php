@@ -215,7 +215,13 @@ class filter_poodll extends moodle_text_filter {
 		//If we have an extension then it is from link
 		//get our template info
 		if($ext){
-			$playerkey = $this->fetchconf('useplayer' . $ext);
+			//in a special case it is possible for the player to be specified in the url params 
+			//however usually it will be from preferences
+			if(array_key_exists('player',$filterprops) && !empty($filterprops['player'])){
+				$playerkey = $filterprops['player'];
+			}else{
+				$playerkey = $this->fetchconf('useplayer' . $ext);
+			}
 			$tempindex=0;
 			$templatenumbers = \filter_poodll\filtertools::fetch_template_indexes($conf);
 			foreach($templatenumbers as $templatenumber){

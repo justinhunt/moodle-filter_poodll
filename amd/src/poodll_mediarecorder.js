@@ -62,12 +62,12 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         insert_fetch_control_bar: function(element,controlbarid, preview){
             	var controls ='<div class="poodll_mediarecorderbox" id="' + controlbarid + '">' ;
                 controls += preview,
-                controls +=  '<button class="poodll_start-recording">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
-                controls += '<button class="poodll_stop-recording" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
-                controls += '<button class="poodll_pause-recording" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
-                controls += ' <button class="poodll_resume-recording hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
-                controls += ' <button class="poodll_play-recording" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
-                controls += '<button class="poodll_save-recording" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+                controls +=  '<button type="button" class="poodll_start-recording">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_stop-recording" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_pause-recording" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
+                controls += ' <button type="button" class="poodll_resume-recording hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
+                controls += ' <button type="button" class="poodll_play-recording" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_save-recording" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={

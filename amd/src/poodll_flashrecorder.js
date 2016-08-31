@@ -33,7 +33,7 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
      
          //savebutton
 		   var savebuttonid = config.widgetid + '_savebutton'; 
-        	var savecontrol ='<button id="' + savebuttonid + '" class="poodll_save-recording">' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+        	var savecontrol ='<button id="' + savebuttonid + '" type="button" class="poodll_save-recording">' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
 			$(element).append(savecontrol);
 		   
 		   //audio control

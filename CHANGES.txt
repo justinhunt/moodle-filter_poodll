@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.0.2(Build 2016081403)
+-added option to specify player to use in url of media file &player=xxx type appendages to media url
+-removed option to use AWS SDK v3 to reduce download size
+-removed libraries from js and 3rdparty mediaelement folders
+-fixed a bug in submitting audio/video  in assignment submission and quizzes. The save button was sometimes submitting the form.
+
 Version 3.0.1(Build 2016081402)
 -fixed issue with browsers caching placeholder audio/video and not using transcoded media
 
