@@ -385,7 +385,7 @@ class poodlltools
 		//add a buffer background image if necessary
 		$lcOpen = "<div class='whiteboard-wrapper' style='width:" . $width . "px; height:" . $height . "px;'>
 			<div class='fs-container' style='width:" . $width . "px; height:" . $height . "px;'>
-			<div id='" . $opts['recorderid'] . "_literally' class='literallycanvas'></div></div>";
+			<div id='" . $opts['recorderid'] . "_literally' class='literallycanvas' style='width:" . $width . "px; height:" . $height . "px;'></div></div>";
 		if ($opts['backgroundimage']) {
 			$lcOpen .= " <img id='" . $opts['recorderid'] . "_separate-background-image' style='display: none;' src='" . $opts['backgroundimage'] . "'/>";
 		}
