@@ -193,7 +193,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 
 	//setup our return object
 	$return=filter_poodll_fetchReturnArray(true);
-error_log('FE:' . $fileextension);
+//error_log('FE:' . $fileextension);
 	//make sure nobodyapassed in a bogey file extension
 	switch($fileextension){
 		case "mp3":
@@ -316,12 +316,8 @@ error_log('FE:' . $fileextension);
 		//if we need to convert with ffmpeg, get on with it
 		if($convext){
 			//determine the temp directory
-			if (isset($CFG->tempdir)){
-				$tempdir =  $CFG->tempdir . "/";
-			}else{
-				//moodle 2.1 users have no $CFG->tempdir
-				$tempdir =  $CFG->dataroot . "/temp/";
-			}
+			$tempdir =  $CFG->tempdir . "/";
+			
 			//actually make the file on disk so FFMPEG can get it
 			$ret = file_put_contents($tempdir . $filename, $xfiledata);
 
@@ -330,9 +326,9 @@ error_log('FE:' . $fileextension);
 				$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $convext==".mp3") ||
 					($CFG->filter_poodll_bgtranscode_video && $convext==".mp4");
 				if($do_bg_encoding && $CFG->version>=2014051200){
-					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg_bg($record,$tempdir,$filename,$filenamebase, $convext );
+					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg_bg($record,$filename,$filenamebase, $convext );
 				}else{
-					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($record,$tempdir,$filename,$filenamebase, $convext );				
+					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($record, $filename,$filenamebase, $convext );				
 				}
 				if($stored_file){
 					$filename=$stored_file->get_filename();

@@ -1823,7 +1823,7 @@ class poodlltools
 			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$s3filename);
 		}else{
 			$filename = false;
-            $s3filename = false;
+                        $s3filename = false;
 			$posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 		}
 		
@@ -1847,7 +1847,7 @@ class poodlltools
 		//store the filename or "not yet decided flag"(ie false)
 		$widgetopts->filename = $filename;
 		$widgetopts->s3filename = $s3filename;
-		$widgetopts->using_s3 = $using_s3;
+		$widgetopts->using_s3 = intval($using_s3);
                 
 		//for mobile amd params
 		$rawparams = self::fetchMobileRecorderAMDParams();

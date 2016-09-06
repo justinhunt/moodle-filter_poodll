@@ -144,62 +144,71 @@ define(['jquery','core/log'], function($, log) {
         uploadFile: function(filedata,filetype) {
       
             var xhr = new XMLHttpRequest();
-			var config = this.config;
-			var uploader = this;
+	    var config = this.config;
+	    var uploader = this;
 			
             //get the file extension from the filetype
             var ext = this.fetchFileExtension(filetype);
  
-			var using_s3 = config.using_s3;
+            var using_s3 = config.using_s3;
 
-			// create progress bar if we have a container for it
-			var progress = this.createProgressBar(xhr,uploader);
+            // create progress bar if we have a container for it
+            var progress = this.createProgressBar(xhr,uploader);
  
             //alert user that we are now uploading    
             this.Output(M.util.get_string('recui_uploading', 'filter_poodll'));
 
-			xhr.upload.addEventListener("load", function () {
-				//console.log("uploaded:");
-                                if(using_s3){
-                                 //ping Moodle and inform that we have a new file
-                                    uploader.postprocess_s3_upload(uploader);
-                                }
-			});
+            xhr.upload.addEventListener("load", function () {
+                    //console.log("uploaded:");
+                    if(using_s3){
+                     //ping Moodle and inform that we have a new file
+                        uploader.postprocess_s3_upload(uploader);
+                    }
+            });
 
-			
-			xhr.onreadystatechange = function(e){
-				uploader.postProcessUpload(e,uploader);
-			}
-			
-			if(using_s3){
-				xhr.open("put",config.posturl, true);
-				xhr.setRequestHeader("Content-Type", 'application/octet-stream');
-				xhr.send(filedata);
-                                
-                          
-                                
-			}else{
-				//log.debug(params);
-			   	var params = "datatype=uploadfile";
-				//We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
-				//spent hours tracking that down ...justin 20121012
-				params += "&paramone=" + encodeURIComponent(filedata);
-				params += "&paramtwo=" + ext;
-				params += "&paramthree=" + config.mediatype;
-				params += "&requestid=" + config.widgetid;
-				params += "&contextid=" + config.p2;
-				params += "&component=" + config.p3;
-				params += "&filearea=" + config.p4;
-				params += "&itemid=" + config.p5;
-			
-				xhr.open("POST",config.posturl, true);
-				xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-				xhr.setRequestHeader("Cache-Control", "no-cache");
-				xhr.setRequestHeader("Content-length", params.length);
-				xhr.setRequestHeader("Connection", "close");
-				xhr.send(params);
-			}//end of if using_s3
+
+            xhr.onreadystatechange = function(e){
+                    uploader.postProcessUpload(e,uploader);
+            }
+
+            if(using_s3){
+                    xhr.open("put",config.posturl, true);
+                    xhr.setRequestHeader("Content-Type", 'application/octet-stream');
+                    xhr.send(filedata);
+
+
+
+            }else{
+                    //we have to base64 string the blob  before sending it
+                   var reader = new window.FileReader();
+                    reader.readAsDataURL(filedata); 
+                    reader.onloadend = function() {
+                        var base64filedata = reader.result;                
+                        //log.debug(params);
+                        var params = "datatype=uploadfile";
+                        //We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
+                        //spent hours tracking that down ...justin 20121012
+                        params += "&paramone=" + encodeURIComponent(base64filedata);
+                        params += "&paramtwo=" + ext;
+                        params += "&paramthree=" + config.mediatype;
+                        params += "&requestid=" + config.widgetid;
+                        params += "&contextid=" + config.p2;
+                        params += "&component=" + config.p3;
+                        params += "&filearea=" + config.p4;
+                        params += "&itemid=" + config.p5;
+
+                        xhr.open("POST",config.posturl, true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                        xhr.setRequestHeader("Cache-Control", "no-cache");
+                        xhr.setRequestHeader("Content-length", params.length);
+                        xhr.setRequestHeader("Connection", "close");
+                        xhr.send(params);
+
+                    }                 
+                    
+	     }//end of if using_s3
         },
+        
       
         postprocess_s3_upload: function(uploader){
             var config = uploader.config;

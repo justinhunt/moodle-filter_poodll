@@ -26,7 +26,7 @@ $string['registrationkey'] = 'Registration Key';
 $string['registrationkey_explanation'] ="Enter your PoodLL registration key here. You can obtain a key from <a href='https://poodll.com/poodll-3-2'>https://poodll.com/poodll-3-2</a>";
 
 $string['usecloudrecording'] = 'Cloud recording';
-$string['usecloudrecording_desc'] = 'PoodLL cloud recording. This enables transcoding and other services in the cloud. The PoodLL iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud. Cloud recording is under heavy development and will change. It should not be used in production yet.';
+$string['usecloudrecording_desc'] = 'PoodLL cloud recording. This enables transcoding and other services in the cloud. The PoodLL iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud.';
 
 $string['awssdkversion'] = 'AWS SDK';
 $string['awssdkversion_desc'] = 'PoodLL cloud recording uses Amazon Web Services (AWS). Version 3.x is supported but not shipped with PoodLL. Version 2.x of the AWS SDK will work on PHP 5.3 or greater. You should not need to change this, but contact PoodLL support if the need arises. ';
