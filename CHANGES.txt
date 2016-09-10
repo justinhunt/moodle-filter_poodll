@@ -4,6 +4,7 @@ Version 3.0.3(Build 2016081404)
 -removed a problem where non text links were filtered and replaced with players
 this would almost never be the desired situation
 -fix for failed uploads when not using cloud recording
+-added snapshot recorder (HTML5)
 
 Version 3.0.2(Build 2016081403)
 -added option to specify player to use in url of media file &player=xxx type appendages to media url

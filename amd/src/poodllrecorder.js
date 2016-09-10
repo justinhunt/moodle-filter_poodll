@@ -5,8 +5,10 @@ define(['jquery',
 	'filter_poodll/poodll_mediarecorder',
 	'filter_poodll/poodll_uploadrecorder',
 	'filter_poodll/poodll_mobilerecorder',
-        'filter_poodll/poodll_red5recorder'], 
-	function($, log, flashrec, mediarec,uploadrec,mobilerec,red5) {
+	'filter_poodll/poodll_flashsnapshotrecorder',
+	'filter_poodll/poodll_snapshotrecorder',
+    'filter_poodll/poodll_red5recorder'], 
+	function($, log, flashrec, mediarec,uploadrec,mobilerec,flashsnapshot,snapshot,red5) {
 
     "use strict"; // jshint ;_;
 
@@ -41,19 +43,21 @@ define(['jquery',
     		}
     		var use_rec =false;
     		for(var i=0;i< this.config['rec_order'].length;i++){
-                        switch(this.config['rec_order'][i]){
-                              case 'red5': use_rec = red5;break;
-                              case 'flashaudio': use_rec = flashrec;break;
-                              case 'media': use_rec = mediarec;break;
-                              case 'upload': use_rec = uploadrec;break;
-                              case 'mobile': use_rec = mobilerec;break;
-                        }//end of switch
+				switch(this.config['rec_order'][i]){
+					  case 'red5': use_rec = red5;break;
+					  case 'flashaudio': use_rec = flashrec;break;
+					  case 'media': use_rec = mediarec;break;
+					  case 'upload': use_rec = uploadrec;break;
+					  case 'mobile': use_rec = mobilerec;break;
+					  case 'flashsnapshot': use_rec = flashsnapshot;break;
+					  case 'snapshot': use_rec = snapshot;break;
+				}//end of switch
 
-                        //if current browser supported by rec, then embed and return
-                        if(use_rec.supports_current_browser(this.config)){
-                                     use_rec.embed(element,this.config);
-                                     return;
-                        } // end of current browser support check  		
+				//if current browser supported by rec, then embed and return
+				if(use_rec.supports_current_browser(this.config)){
+							 use_rec.embed(element,this.config);
+							 return;
+				} // end of current browser support check  		
     		};//end of each		
     		
     		//if we got here no recorder was preferred AND supported the browser

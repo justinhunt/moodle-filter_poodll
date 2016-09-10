@@ -144,8 +144,8 @@ define(['jquery','core/log'], function($, log) {
         uploadFile: function(filedata,filetype) {
       
             var xhr = new XMLHttpRequest();
-	    var config = this.config;
-	    var uploader = this;
+			var config = this.config;
+			var uploader = this;
 			
             //get the file extension from the filetype
             var ext = this.fetchFileExtension(filetype);
@@ -175,9 +175,6 @@ define(['jquery','core/log'], function($, log) {
                     xhr.open("put",config.posturl, true);
                     xhr.setRequestHeader("Content-Type", 'application/octet-stream');
                     xhr.send(filedata);
-
-
-
             }else{
                     //we have to base64 string the blob  before sending it
                    var reader = new window.FileReader();
@@ -248,7 +245,16 @@ define(['jquery','core/log'], function($, log) {
                 context = context[namespaces[i]];
             }
             return context[func].call(this, args);
-        }
-
+        },
+        
+        dataURItoBlob: function(dataURI, mimetype) {
+			var byteString = atob(dataURI.split(',')[1]);
+			var ab = new ArrayBuffer(byteString.length);
+			var ia = new Uint8Array(ab);
+			for (var i = 0; i < byteString.length; i++) {
+				ia[i] = byteString.charCodeAt(i);
+			}
+			return new Blob([ab], { type: mimetype });
+		}//end of dataURItoBlob
     }//end of returned object
 });//total end

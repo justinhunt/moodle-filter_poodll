@@ -8,8 +8,9 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
     return {
 		// This recorder supports the current browser
         supports_current_browser: function(config) { 
+				if(config.mediatype!='audio' && config.mediatype!='video'){return false;}
                 var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        	return iOS;//or false
+				return iOS;//or false
         },
         
          // Perform the embed of this recorder on the page
@@ -20,13 +21,11 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
             switch(config.mediatype){
                 case 'audio':
                 	this.insert_upload_button(element,this.linkid);
-                    this.insert_audio_button(element,this.linkid);
-                    
+                    this.insert_audio_button(element,this.linkid);               
                     break;
                 case 'video':
                     this.insert_upload_button(element,this.linkid);
                     this.insert_video_button(element,this.linkid);
-                    
                     break;
             
             }

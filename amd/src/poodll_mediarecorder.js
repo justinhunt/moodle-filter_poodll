@@ -20,8 +20,11 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         previewvolume: 1,
     	
     	// This recorder supports the current browser
-        supports_current_browser: function(config) { 	 
-        	 if(M.cfg.wwwroot.indexOf('https:')==0
+        supports_current_browser: function(config) {
+			
+			if(config.mediatype!='audio' && config.mediatype!='video'){return false;}
+			 	 
+        	if(M.cfg.wwwroot.indexOf('https:')==0
         	 	&& navigator && navigator.mediaDevices 
         	 	&& navigator.mediaDevices.getUserMedia){
         	 	  log.debug('PoodLL Media Recorder: supports this browser');

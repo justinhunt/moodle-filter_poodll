@@ -1792,11 +1792,17 @@ class poodlltools
 	}
 	
     //This a legacy call from client plugins, that ais mapped to amd recorder code
+	public static function fetchHTML5SnapshotCamera($updatecontrol = "saveflvvoice", $width,$height,$contextid, $component, $filearea, $itemid, $callbackjs = false)
+	{
+		$mediatype = "snapshot";
+		return self::fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, 0, $callbackjs);
+	}
+	
+	//This a legacy call from client plugins, that ais mapped to amd recorder code
 	public static function fetch_HTML5RecorderForSubmission($updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $mediatype = "image", $fromrepo = false, $callbackjs = false)
 	{
 		return self::fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, 0, $callbackjs);
 	}
-	
 	
 	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the recorders
 	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
@@ -1810,7 +1816,7 @@ class poodlltools
 		}
 
 		// if we are using S3 lets get an upload url
-		$using_s3 =$CFG->filter_poodll_cloudrecording;
+		$using_s3 =$CFG->filter_poodll_cloudrecording && ($mediatype=='audio' || $mediatype=='video');
 		if($using_s3){
                         switch($mediatype){
                             case 'audio': $ext='.mp3';break;
@@ -1823,7 +1829,7 @@ class poodlltools
 			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$s3filename);
 		}else{
 			$filename = false;
-                        $s3filename = false;
+            $s3filename = false;
 			$posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 		}
 		
@@ -1841,8 +1847,8 @@ class poodlltools
 		$widgetopts->p3 = $component;
 		$widgetopts->p4 = $filearea;
 		$widgetopts->p5 = $itemid;
-                $widgetopts->timelimit = $timelimit;
-                $widgetopts->callbackjs = $callbackjs;
+        $widgetopts->timelimit = $timelimit;
+        $widgetopts->callbackjs = $callbackjs;
 		
 		//store the filename or "not yet decided flag"(ie false)
 		$widgetopts->filename = $filename;
@@ -1861,257 +1867,356 @@ class poodlltools
                                 $widgetopts->{$key} = $value;
 		}
                 
-                //for mediarecorder amd params
-                $rawparams = self::fetchMediaRecorderAMDParams();
-                foreach ($rawparams as $key => $value) {
-                                $widgetopts->{$key} = $value;
-                }
+		//for mediarecorder amd params
+		$rawparams = self::fetchMediaRecorderAMDParams();
+		foreach ($rawparams as $key => $value) {
+						$widgetopts->{$key} = $value;
+		}
 
-                //for red5 video recorder amd params
-                $rawparams = self::fetchRed5VideoRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
-                foreach ($rawparams as $key => $value) {
-                                $widgetopts->{$key} = $value;
-                }
+		//for red5 video recorder amd params
+		$rawparams = self::fetchRed5VideoRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
+		foreach ($rawparams as $key => $value) {
+						$widgetopts->{$key} = $value;
+		}
 
-                         //for red5 audio recorder amd params
-                $rawparams = self::fetchRed5AudioRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
-                foreach ($rawparams as $key => $value) {
-                                $widgetopts->{$key} = $value;
-                }
+		//for red5 audio recorder amd params
+		$rawparams = self::fetchRed5AudioRecorderAMDParams($widgetid, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
+		foreach ($rawparams as $key => $value) {
+						$widgetopts->{$key} = $value;
+		}
 
-                        //for audio mp3 recorder amd params
-                $rawparams = self::fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit, $callbackjs);
-                foreach ($rawparams as $key => $value) {
-                                        $widgetopts->{$key} = $value;
-                        }
+		//for audio mp3 recorder amd params
+		$rawparams = self::fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit, $callbackjs);
+		foreach ($rawparams as $key => $value) {
+								$widgetopts->{$key} = $value;
+		}
+		
+		//for html5 snapshot recorder amd params
+		$rawparams = self::fetchHTML5SnapshotAMDParams($widgetid,$updatecontrol,$timelimit, $callbackjs);
+		foreach ($rawparams as $key => $value) {
+								$widgetopts->{$key} = $value;
+		}
+		
+		//for flash snapshot recorder amd params
+		$rawparams = self::fetchFlashSnapshotAMDParams($widgetid,$updatecontrol,$contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
+		foreach ($rawparams as $key => $value) {
+								$widgetopts->{$key} = $value;
+		}
 
-                //send it to renderer for putting on the page
+        //send it to renderer for putting on the page
 		$renderer = $PAGE->get_renderer('filter_poodll');
 		return $renderer->fetchAMDRecorderEmbedCode($widgetopts,$widgetid);
 	}
+	
         
- public static function fetchRed5AudioRecorderAMDParams($widgetid,$updatecontrol, 
+	public static function fetchRed5AudioRecorderAMDParams($widgetid,$updatecontrol, 
         		$contextid, $component, $filearea, $itemid, $timelimit, $callbackjs){
-              
-			global $CFG, $USER, $COURSE;
-			
-			//formerly this was from the flag assigname=poodllrepository=small
-			$bigorsmall='big';
-			
-			//Set the servername and a capture settings from config file
-			$flvserver = self::fetch_mediaserver_url();
-			
-
-			//set up auto transcoding (mp4) or not
-			if ($CFG->filter_poodll_audiotranscode || $CFG->filter_poodll_cloudrecording) {
-				$saveformat = "mp3";
-			} else {
-				$saveformat = "flv";
-			}
-
-			//Set the microphone config params
-			$prefmic = $CFG->filter_poodll_studentmic;
-			$micrate = $CFG->filter_poodll_micrate;
-			$micgain = $CFG->filter_poodll_micgain;
-			$micsilence = $CFG->filter_poodll_micsilencelevel;
-			$micecho = $CFG->filter_poodll_micecho;
-			$micloopback = $CFG->filter_poodll_micloopback;
-
-	
-			
-			$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
-	        $width = "350";
-			$height = "200";
-
-			//If no user id is passed in, try to get it automatically
-			//Not sure if  this can be trusted, but this is only likely to be the case
-			//when this is called from the filter. ie not from an assignment.
-			$userid = $USER->username;
-			$filename = "12345";
-
-			//Stopped using this
-			//$filename = $CFG->filter_poodll_filename;
-			$overwritemediafile = "false";
-			if ($updatecontrol == "saveflvvoice") {
-				$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
-			} else {
-				$savecontrol = "";
-			}
-
-			//auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
-			$autotryports = $CFG->filter_poodll_autotryports == 1 ? "yes" : "no";
-
-			//set up config for recorders
-			$params = array();
-			$params['red5url'] = urlencode($flvserver);
-			$params['overwritefile'] = $overwritemediafile;
-			$params['rate'] = $micrate;
-			$params['gain'] = $micgain;
-			$params['loopback'] = $micloopback;
-			$params['echosupression'] = $micecho;
-			$params['silencelevel'] = $micsilence;
-			$params['filename'] = $filename;
-			$params['assigName'] = 'thismightsometimesbepoodllrepository';//can we delete this already?
-			$params['prefmic'] = $prefmic;
-			$params['course'] = -1;
-			$params['updatecontrol'] = $updatecontrol;
-			$params['saveformat'] = $saveformat;
-			$params['uid'] = $userid;
-			//for file system in moodle 2
-			$params['poodllfilelib'] = $poodllfilelib;
-			$params['contextid'] = $contextid;
-			$params['component'] = $component;
-			$params['filearea'] = $filearea;
-			$params['itemid'] = $itemid;
-			$params['timelimit'] = $timelimit;
-			$params['autotryports'] = $autotryports;
-			$params['debug'] = 'false';
-			$params['lzproxied'] = 'false';
-					
-			//fetch and merge lang params
-			$langparams = self::filter_poodll_fetch_recorder_strings();
-			$params = array_merge($params, $langparams);
-
-			//callbackjs
-			if ($callbackjs) {
-				$params['callbackjs'] = $callbackjs;
-			}
-                
-             
-			//make the widget opts which we will return
-			$widgetopts= array();			
-			$widget="PoodLLAudioRecorder.lzx.swf9.swf";
-			$widgetopts['red5audio_widgetjson'] = self::fetchSWFWidgetJSON($widget, $params, $width, $height, '#FFFFFF', $widgetid);
-	
-			//return opts
-			return $widgetopts;
-        }
-        
-        public static function fetchRed5VideoRecorderAMDParams($widgetid,$updatecontrol, 
-        		$contextid, $component, $filearea, $itemid, $timelimit, $callbackjs){
-              
-			global $CFG, $USER, $COURSE;
-			
-			//formerly this was from the flag assigname=poodllrepository=small
-			$bigorsmall='big';
-			
-			//Set the servername and a capture settings from config file
-			$flvserver = self::fetch_mediaserver_url();
-			$capturewidth = $CFG->filter_poodll_capturewidth;
-			$captureheight = (string)(0.75 * intval($CFG->filter_poodll_capturewidth));
-			$capturefps = $CFG->filter_poodll_capturefps;
-			$prefcam = $CFG->filter_poodll_studentcam;
-			$prefmic = $CFG->filter_poodll_studentmic;
-			$bandwidth = $CFG->filter_poodll_bandwidth;
-			$picqual = $CFG->filter_poodll_picqual;
-
-			//set up auto transcoding (mp4) or not
-			if ($CFG->filter_poodll_videotranscode || $CFG->filter_poodll_cloudrecording) {
-				$saveformat = "mp4";
-			} else {
-				$saveformat = "flv";
-			}
-
-			//Set the microphone config params
-			$micrate = $CFG->filter_poodll_micrate;
-			$micgain = $CFG->filter_poodll_micgain;
-			$micsilence = $CFG->filter_poodll_micsilencelevel;
-			$micecho = $CFG->filter_poodll_micecho;
-			$micloopback = $CFG->filter_poodll_micloopback;
-
-	
-			
-			$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
-			switch ($bigorsmall) {
-				case 'small':
-					$width = "298";
-					$height = "340";
-					break;
-				case 'big':
-				default:
-					$width = "350";
-					$height = "400";
-			}
-
-
-
-			//If no user id is passed in, try to get it automatically
-			//Not sure if  this can be trusted, but this is only likely to be the case
-			//when this is called from the filter. ie not from an assignment.
-			$userid = $USER->username;
-			$filename = "12345";
-
-			//Stopped using this
-			//$filename = $CFG->filter_poodll_filename;
-			$overwritemediafile = "false";
-			if ($updatecontrol == "saveflvvoice") {
-				$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
-			} else {
-				$savecontrol = "";
-			}
-
-			//auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
-			$autotryports = $CFG->filter_poodll_autotryports == 1 ? "yes" : "no";
-
-			//set up config for recorders
-			$params = array();
-			$params['red5url'] = urlencode($flvserver);
-			$params['overwritefile'] = $overwritemediafile;
-			$params['rate'] = $micrate;
-			$params['gain'] = $micgain;
-			$params['loopback'] = $micloopback;
-			$params['echosupression'] = $micecho;
-			$params['silencelevel'] = $micsilence;
-			$params['capturefps'] = $capturefps;
-			$params['filename'] = $filename;
-			$params['assigName'] = 'thismightsometimesbepoodllrepository';//can we delete this already?
-			$params['captureheight'] = $captureheight;
-			$params['picqual'] = $picqual;
-			$params['bandwidth'] = $bandwidth;
-			$params['capturewidth'] = $capturewidth;
-			$params['prefmic'] = $prefmic;
-			$params['prefcam'] = $prefcam;
-			$params['course'] = -1;
-			$params['updatecontrol'] = $updatecontrol;
-			$params['saveformat'] = $saveformat;
-			$params['uid'] = $userid;
-			//for file system in moodle 2
-			$params['poodllfilelib'] = $poodllfilelib;
-			$params['contextid'] = $contextid;
-			$params['component'] = $component;
-			$params['filearea'] = $filearea;
-			$params['itemid'] = $itemid;
-			$params['timelimit'] = $timelimit;
-			$params['autotryports'] = $autotryports;
-			$params['debug'] = 'false';
-			$params['lzproxied'] = 'false';
-					
-			//fetch and merge lang params
-			$langparams = self::filter_poodll_fetch_recorder_strings();
-			$params = array_merge($params, $langparams);
-
-			//callbackjs
-			if ($callbackjs) {
-				$params['callbackjs'] = $callbackjs;
-			}
-                
-             
-			//make the widget opts which we will return
-			$widgetopts= array();			
-			$widget="PoodLLVideoRecorder.lzx.swf9.swf";
-			$widgetopts['red5video_widgetjson'] = self::fetchSWFWidgetJSON($widget, $params, $width, $height, '#FFFFFF', $widgetid);
-	
-			//return opts
-			return $widgetopts;
-        }//end of fetch red5 video recorder amd params
-
- /*
- * Fetch any special parameters required by the MP3 recorder
- *
- */
-  public static function fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit = "0", $callbackjs = false)
-	{
+		  
 		global $CFG, $USER, $COURSE;
+		
+		//formerly this was from the flag assigname=poodllrepository=small
+		$bigorsmall='big';
+		
+		//Set the servername and a capture settings from config file
+		$flvserver = self::fetch_mediaserver_url();
+		
+
+		//set up auto transcoding (mp4) or not
+		if ($CFG->filter_poodll_audiotranscode || $CFG->filter_poodll_cloudrecording) {
+			$saveformat = "mp3";
+		} else {
+			$saveformat = "flv";
+		}
+
+		//Set the microphone config params
+		$prefmic = $CFG->filter_poodll_studentmic;
+		$micrate = $CFG->filter_poodll_micrate;
+		$micgain = $CFG->filter_poodll_micgain;
+		$micsilence = $CFG->filter_poodll_micsilencelevel;
+		$micecho = $CFG->filter_poodll_micecho;
+		$micloopback = $CFG->filter_poodll_micloopback;
+
+
+		
+		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		$width = "350";
+		$height = "200";
+
+		//If no user id is passed in, try to get it automatically
+		//Not sure if  this can be trusted, but this is only likely to be the case
+		//when this is called from the filter. ie not from an assignment.
+		$userid = $USER->username;
+		$filename = "12345";
+
+		//Stopped using this
+		//$filename = $CFG->filter_poodll_filename;
+		$overwritemediafile = "false";
+		if ($updatecontrol == "saveflvvoice") {
+			$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
+		} else {
+			$savecontrol = "";
+		}
+
+		//auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
+		$autotryports = $CFG->filter_poodll_autotryports == 1 ? "yes" : "no";
+
+		//set up config for recorders
+		$params = array();
+		$params['red5url'] = urlencode($flvserver);
+		$params['overwritefile'] = $overwritemediafile;
+		$params['rate'] = $micrate;
+		$params['gain'] = $micgain;
+		$params['loopback'] = $micloopback;
+		$params['echosupression'] = $micecho;
+		$params['silencelevel'] = $micsilence;
+		$params['filename'] = $filename;
+		$params['assigName'] = 'thismightsometimesbepoodllrepository';//can we delete this already?
+		$params['prefmic'] = $prefmic;
+		$params['course'] = -1;
+		$params['updatecontrol'] = $updatecontrol;
+		$params['saveformat'] = $saveformat;
+		$params['uid'] = $userid;
+		//for file system in moodle 2
+		$params['poodllfilelib'] = $poodllfilelib;
+		$params['contextid'] = $contextid;
+		$params['component'] = $component;
+		$params['filearea'] = $filearea;
+		$params['itemid'] = $itemid;
+		$params['timelimit'] = $timelimit;
+		$params['autotryports'] = $autotryports;
+		$params['debug'] = 'false';
+		$params['lzproxied'] = 'false';
+				
+		//fetch and merge lang params
+		$langparams = self::filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
+
+		//callbackjs
+		if ($callbackjs) {
+			$params['callbackjs'] = $callbackjs;
+		}
+			
+		 
+		//make the widget opts which we will return
+		$widgetopts= array();			
+		$widget="PoodLLAudioRecorder.lzx.swf9.swf";
+		$widgetopts['red5audio_widgetjson'] = self::fetchSWFWidgetJSON($widget, $params, $width, $height, '#FFFFFF', $widgetid);
+
+		//return opts
+		return $widgetopts;
+	}
+	
+	public static function fetchRed5VideoRecorderAMDParams($widgetid,$updatecontrol, 
+			$contextid, $component, $filearea, $itemid, $timelimit, $callbackjs){
+		  
+		global $CFG, $USER, $COURSE;
+		
+		//formerly this was from the flag assigname=poodllrepository=small
+		$bigorsmall='big';
+		
+		//Set the servername and a capture settings from config file
+		$flvserver = self::fetch_mediaserver_url();
+		$capturewidth = $CFG->filter_poodll_capturewidth;
+		$captureheight = (string)(0.75 * intval($CFG->filter_poodll_capturewidth));
+		$capturefps = $CFG->filter_poodll_capturefps;
+		$prefcam = $CFG->filter_poodll_studentcam;
+		$prefmic = $CFG->filter_poodll_studentmic;
+		$bandwidth = $CFG->filter_poodll_bandwidth;
+		$picqual = $CFG->filter_poodll_picqual;
+
+		//set up auto transcoding (mp4) or not
+		if ($CFG->filter_poodll_videotranscode || $CFG->filter_poodll_cloudrecording) {
+			$saveformat = "mp4";
+		} else {
+			$saveformat = "flv";
+		}
+
+		//Set the microphone config params
+		$micrate = $CFG->filter_poodll_micrate;
+		$micgain = $CFG->filter_poodll_micgain;
+		$micsilence = $CFG->filter_poodll_micsilencelevel;
+		$micecho = $CFG->filter_poodll_micecho;
+		$micloopback = $CFG->filter_poodll_micloopback;
+
+
+		
+		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		switch ($bigorsmall) {
+			case 'small':
+				$width = "298";
+				$height = "340";
+				break;
+			case 'big':
+			default:
+				$width = "350";
+				$height = "400";
+		}
+
+
+
+		//If no user id is passed in, try to get it automatically
+		//Not sure if  this can be trusted, but this is only likely to be the case
+		//when this is called from the filter. ie not from an assignment.
+		$userid = $USER->username;
+		$filename = "12345";
+
+		//Stopped using this
+		//$filename = $CFG->filter_poodll_filename;
+		$overwritemediafile = "false";
+		if ($updatecontrol == "saveflvvoice") {
+			$savecontrol = "<input name='saveflvvoice' type='hidden' value='' id='saveflvvoice' />";
+		} else {
+			$savecontrol = "";
+		}
+
+		//auto try ports, try 2 x on standard port, then 80, then 1935,then 80,1935 ad nauseum
+		$autotryports = $CFG->filter_poodll_autotryports == 1 ? "yes" : "no";
+
+		//set up config for recorders
+		$params = array();
+		$params['red5url'] = urlencode($flvserver);
+		$params['overwritefile'] = $overwritemediafile;
+		$params['rate'] = $micrate;
+		$params['gain'] = $micgain;
+		$params['loopback'] = $micloopback;
+		$params['echosupression'] = $micecho;
+		$params['silencelevel'] = $micsilence;
+		$params['capturefps'] = $capturefps;
+		$params['filename'] = $filename;
+		$params['assigName'] = 'thismightsometimesbepoodllrepository';//can we delete this already?
+		$params['captureheight'] = $captureheight;
+		$params['picqual'] = $picqual;
+		$params['bandwidth'] = $bandwidth;
+		$params['capturewidth'] = $capturewidth;
+		$params['prefmic'] = $prefmic;
+		$params['prefcam'] = $prefcam;
+		$params['course'] = -1;
+		$params['updatecontrol'] = $updatecontrol;
+		$params['saveformat'] = $saveformat;
+		$params['uid'] = $userid;
+		//for file system in moodle 2
+		$params['poodllfilelib'] = $poodllfilelib;
+		$params['contextid'] = $contextid;
+		$params['component'] = $component;
+		$params['filearea'] = $filearea;
+		$params['itemid'] = $itemid;
+		$params['timelimit'] = $timelimit;
+		$params['autotryports'] = $autotryports;
+		$params['debug'] = 'false';
+		$params['lzproxied'] = 'false';
+				
+		//fetch and merge lang params
+		$langparams = self::filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
+
+		//callbackjs
+		if ($callbackjs) {
+			$params['callbackjs'] = $callbackjs;
+		}
+			
+		 
+		//make the widget opts which we will return
+		$widgetopts= array();			
+		$widget="PoodLLVideoRecorder.lzx.swf9.swf";
+		$widgetopts['red5video_widgetjson'] = self::fetchSWFWidgetJSON($widget, $params, $width, $height, '#FFFFFF', $widgetid);
+
+		//return opts
+		return $widgetopts;
+	}//end of fetch red5 video recorder amd params
+        
+        
+	/*
+	 * Fetch any special parameters required by the Flash recorder
+	 *
+	 */
+	public static function fetchFlashSnapshotAMDParams($widgetid,$updatecontrol,$contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false){
+		global $CFG;
+		
+		//Set  capture settings from config file
+		$capturewidth = $CFG->filter_poodll_capturewidth;
+		$captureheight = (string)(0.75 * intval($CFG->filter_poodll_capturewidth));
+		$capturefps = $CFG->filter_poodll_capturefps;
+		$prefcam = $CFG->filter_poodll_studentcam;
+		$prefmic = $CFG->filter_poodll_studentmic;
+		$bandwidth = $CFG->filter_poodll_bandwidth;
+		$picqual = $CFG->filter_poodll_picqual;
+		$filename ="somepicture.jpg"; //we need this?
+		
+		//just hardcode widtha nd height  ...for now(?)
+		$width = "350";
+		$height = "400";
+
+		//poodllfilelib for file handling
+		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		
+		
+
+		$params = array();
+		$params['capturefps'] = $capturefps;
+		$params['filename'] = $filename; //we need this?
+		$params['captureheight'] = $captureheight;
+		$params['picqual'] = $picqual;
+		$params['bandwidth'] = $bandwidth;
+		$params['capturewidth'] = $capturewidth;
+		$params['prefcam'] = $prefcam;
+		$params['updatecontrol'] = $updatecontrol;
+		$params['moodlewww'] = $CFG->wwwroot;
+
+		//for file system in moodle 2
+		$params['poodllfilelib'] = $poodllfilelib;
+		$params['contextid'] = $contextid;
+		$params['component'] = $component;
+		$params['filearea'] = $filearea;
+		$params['itemid'] = $itemid;
+
+		//recorder id
+		$params['recorderid'] = $widgetid;
+
+		//set to auto submit
+		$params['autosubmit'] = 'true';
+
+		//fetch and merge lang params
+		$langparams = self::filter_poodll_fetch_recorder_strings();
+		$params = array_merge($params, $langparams);
+
+		//callbackjs
+		if ($callbackjs) {
+			$params['callbackjs'] = $callbackjs;
+		}
+
+
+			
+		 //make the widget opts which we will return
+		$widgetopts= array();
+
+		
+		$widget="PoodLLSnapshot.lzx.swf9.swf";
+		$widgetopts['flashsnapshot_widgetjson'] = self::fetchSWFWidgetJSON($widget, $params, $width, $height, '#FFFFFF', $widgetid);
+
+		//return opts
+		return $widgetopts;
+
+			  
+	  }
+	  
+	  /*
+	 * Fetch any special parameters required by the Flash recorder
+	 *
+	 */
+	public static function fetchHTML5SnapshotAMDParams($widgetid,$updatecontrol,$timelimit = "0", $callbackjs = false){	  
+			  return array();
+	}
+        
+        
+        
+
+	 /*
+	 * Fetch any special parameters required by the MP3 recorder
+	 *
+	 */
+	  public static function fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit = "0", $callbackjs = false)
+		{
+			global $CFG, $USER, $COURSE;
                 
 
 		//Set the microphone config params
@@ -2182,18 +2287,18 @@ class poodlltools
 	}
 	
 	/*
- * Fetch any special parameters required by the Upload Recorder
- *
- */
+	 * Fetch any special parameters required by the Upload Recorder
+	 *
+	 */
 	public static function fetchUploadRecorderAMDParams()
 	{
 		return array();
 	}
         
-        /*
- * Fetch any special parameters required by the Upload Recorder
- *
- */
+      /*
+	 * Fetch any special parameters required by the Upload Recorder
+	 *
+	 */
 	public static function fetchMediaRecorderAMDParams()
 	{
 		$params=array();
@@ -2211,9 +2316,9 @@ class poodlltools
  */
 	public static function fetchMobileRecorderAMDParams()
 	{
-                $params=array();
-                $params['mobilequality']='medium'; //from low/medium/high
-                $params['mobilecamera']='front';//from front or back
+        $params=array();
+        $params['mobilequality']='medium'; //from low/medium/high
+        $params['mobilecamera']='front';//from front or back
 		return $params;
 	}
 

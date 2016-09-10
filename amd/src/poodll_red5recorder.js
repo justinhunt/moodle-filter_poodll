@@ -13,6 +13,7 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/lzflash'],
         	if (iOS){
         		return false;
         	}else{
+				if(config.mediatype!='audio' && config.mediatype!='video'){return false;}
         		log.debug('PoodLL Red5 Recorder: supports this browser');
         		return true;
         	}

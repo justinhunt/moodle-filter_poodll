@@ -16,7 +16,7 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
         	if (iOS){
         		return false;
         	}else{
-        		if(config.mediatype=='video'){return false;}
+        		if(config.mediatype!='audio'){return false;}
         		
         		log.debug('PoodLL Flash Recorder: supports this browser');
         		return true;

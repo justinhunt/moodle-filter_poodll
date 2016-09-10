@@ -102,6 +102,8 @@ class filter_poodll_renderer extends plugin_renderer_base {
                                           'recui_openrecorderapp',
                                           'recui_awaitingconfirmation',
                                           'recui_uploaderror',
+                                          'recui_takesnapshot',
+                                          'recui_cancelsnapshot',
                                           'recui_nothingtosaveerror',
                                           ),
                                     'filter_poodll');
@@ -215,6 +217,8 @@ class filter_poodll_renderer extends plugin_renderer_base {
                                           'recui_awaitingconfirmation',
                                           'recui_uploaderror',
                                           'recui_nothingtosaveerror',
+                                           'recui_takesnapshot',
+                                          'recui_cancelsnapshot'
                                           ),
                                     'filter_poodll');
 		

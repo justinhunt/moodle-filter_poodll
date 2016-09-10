@@ -142,6 +142,8 @@ $string['recui_awaitingconfirmation'] ='Awaiting confirmation';
 $string['recui_openrecorderapp'] ='PoodLL App';
 $string['recui_uploadafile'] ='Upload File';
 $string['recui_uploadsuccess'] ='Uploaded successfully';
+$string['recui_takesnapshot'] ='Take Picture';
+$string['recui_cancelsnapshot'] ='Cancel';
 $string['insert'] ='Insert';
 $string['cancel'] ='Cancel';
 
