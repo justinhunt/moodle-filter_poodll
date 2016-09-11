@@ -176,32 +176,55 @@ define(['jquery','core/log'], function($, log) {
                     xhr.setRequestHeader("Content-Type", 'application/octet-stream');
                     xhr.send(filedata);
             }else{
-                    //we have to base64 string the blob  before sending it
-                   var reader = new window.FileReader();
-                    reader.readAsDataURL(filedata); 
-                    reader.onloadend = function() {
-                        var base64filedata = reader.result;                
-                        //log.debug(params);
-                        var params = "datatype=uploadfile";
-                        //We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
-                        //spent hours tracking that down ...justin 20121012
-                        params += "&paramone=" + encodeURIComponent(base64filedata);
-                        params += "&paramtwo=" + ext;
-                        params += "&paramthree=" + config.mediatype;
-                        params += "&requestid=" + config.widgetid;
-                        params += "&contextid=" + config.p2;
-                        params += "&component=" + config.p3;
-                        params += "&filearea=" + config.p4;
-                        params += "&itemid=" + config.p5;
 
-                        xhr.open("POST",config.posturl, true);
-                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                        xhr.setRequestHeader("Cache-Control", "no-cache");
-                       // xhr.setRequestHeader("Content-length", params.length);
-                       // xhr.setRequestHeader("Connection", "close");
-                        xhr.send(params);
+                   //We NEED to redo this bit of code ..
+                   //its duplicating!!!
+                   if(!(filedata instanceof Blob)){
+                   		var params = "datatype=uploadfile";
+						//We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
+						//spent hours tracking that down ...justin 20121012
+						params += "&paramone=" + encodeURIComponent(filedata);
+						params += "&paramtwo=" + ext;
+						params += "&paramthree=" + config.mediatype;
+						params += "&requestid=" + config.widgetid;
+						params += "&contextid=" + config.p2;
+						params += "&component=" + config.p3;
+						params += "&filearea=" + config.p4;
+						params += "&itemid=" + config.p5;
+			
+						xhr.open("POST",config.posturl, true);
+						xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+						xhr.setRequestHeader("Cache-Control", "no-cache");
+						xhr.setRequestHeader("Content-length", params.length);
+						xhr.setRequestHeader("Connection", "close");
+						xhr.send(params);
+                   }else{
+						//we have to base64 string the blob  before sending it
+						var reader = new window.FileReader();
+						reader.readAsDataURL(filedata); 
+						reader.onloadend = function() {
+							var base64filedata = reader.result;                
+							//log.debug(params);
+							var params = "datatype=uploadfile";
+							//We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
+							//spent hours tracking that down ...justin 20121012
+							params += "&paramone=" + encodeURIComponent(base64filedata);
+							params += "&paramtwo=" + ext;
+							params += "&paramthree=" + config.mediatype;
+							params += "&requestid=" + config.widgetid;
+							params += "&contextid=" + config.p2;
+							params += "&component=" + config.p3;
+							params += "&filearea=" + config.p4;
+							params += "&itemid=" + config.p5;
 
-                    }                 
+							xhr.open("POST",config.posturl, true);
+							xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+							xhr.setRequestHeader("Cache-Control", "no-cache");
+						   // xhr.setRequestHeader("Content-length", params.length);
+						   // xhr.setRequestHeader("Connection", "close");
+							xhr.send(params);
+                    	}//end of fileread on load end
+                }//end of if blob                 
                     
 	     }//end of if using_s3
         },

@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.0.5(Build 2016081406)
+-Fixed bug stopping whiteboards upload
+
 Version 3.0.4(Build 2016081405)
 -fixed a bad bug which stopped non video filter strings being parsed
 
