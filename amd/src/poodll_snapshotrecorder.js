@@ -74,7 +74,7 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/webcam'], f
 
             var self =this;
             var config = this.config;
-
+			Webcam.set('swfURL',M.cfg.wwwroot + '/filter/poodll/3rdparty/webcam/webcam.swf');
             Webcam.attach('#' + this.htmlthings.camera);
             
             $('#' + this.htmlthings.savebutton).on('click',function(e){

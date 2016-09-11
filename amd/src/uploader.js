@@ -197,8 +197,8 @@ define(['jquery','core/log'], function($, log) {
                         xhr.open("POST",config.posturl, true);
                         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                         xhr.setRequestHeader("Cache-Control", "no-cache");
-                        xhr.setRequestHeader("Content-length", params.length);
-                        xhr.setRequestHeader("Connection", "close");
+                       // xhr.setRequestHeader("Content-length", params.length);
+                       // xhr.setRequestHeader("Connection", "close");
                         xhr.send(params);
 
                     }                 
@@ -223,8 +223,8 @@ define(['jquery','core/log'], function($, log) {
             xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.setRequestHeader("Cache-Control", "no-cache");
-            xhr.setRequestHeader("Content-length", params.length);
-            xhr.setRequestHeader("Connection", "close");
+          //  xhr.setRequestHeader("Content-length", params.length);
+          //  xhr.setRequestHeader("Connection", "close");
             xhr.send(params);
             
         },

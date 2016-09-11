@@ -278,16 +278,46 @@ a.filter_poodll_uploadafilelink:active {
 .poodll_preview{
     border: black;
     border-style:solid;
-    background-color: grey;
+    border-width: 2px;
+    background-color: #DDD;
     clear:both;
     width:320px;
 }
+
+.poodll_status{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 8px;
+}
+
+
+.poodll_preview.poodll_recording{
+	border: red;
+}
+
+.poodll_status.poodll_recording{
+	color: red;
+	border: red;
+}
+
 .poodll_save-recording{
     clear: both;
     width:320px;
 }
 .poodll_mediarecorderbox{
     width: 370px;
+}
+.poodll_take-snapshot{
+   margin-top: 5px;
+}
+.poodll_cancel-snapshot{
+   margin-top: 5px;
 }
 .filter_poodll_chooseopenapp_button{
 	
