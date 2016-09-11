@@ -63,9 +63,9 @@ class filter_poodll extends moodle_text_filter {
 					$newtext = preg_replace_callback($search, 'self::filter_poodll_allexts_callback', $newtext);
 				}
                                 
-                                //check for legacy pdl links
-                                $search='/<a\s[^>]*href="([^"#\?]+\.(.pdl))(.*?)"[^>]*>([^>]*)<\/a>/is';
-                                $newtext = preg_replace_callback($search, 'self::filter_poodll_pdl_callback', $newtext);
+				//check for legacy pdl links
+				$search='/<a\s[^>]*href="([^"#\?]+\.(.pdl))(.*?)"[^>]*>([^>]*)<\/a>/is';
+				$newtext = preg_replace_callback($search, 'self::filter_poodll_pdl_callback', $newtext);
 
 			
 			   //check for youtube
@@ -204,11 +204,13 @@ class filter_poodll extends moodle_text_filter {
 		//if we have no props, quit
 		if(empty($filterprops)){return "";}
                 
-                //if this was a link that was filtered, and the content was not text , we don't like it
-                //it most likely should be let alone or hidden as it is an icon to accompany the player
-                //in teh case of attachements/resources/podcasts etc
-                if(empty($filterprops['TITLE'])){return $link[0];}
-
+			//if this was a link that was filtered, and the content was not text , we don't like it
+			//it most likely should be let alone or hidden as it is an icon to accompany the player
+			//in teh case of attachements/resources/podcasts etc
+		if($ext){
+			if(empty($filterprops['TITLE'])){return $link[0];}
+		}
+		
 		//if we want to ignore the filter (for "how to use poodll" or "cut and paste" this style use) we let it go
 		//to use this, make the last parameter of the filter passthrough=1
 		if (!empty($filterprops['passthrough'])) return str_replace( ",passthrough=1","",$link[0]);
