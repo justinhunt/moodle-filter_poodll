@@ -57,11 +57,6 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	$sort = "id DESC";
     	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);
     	if(!$dbfiles){
-			if(!$cd->filerecord || !$cd->filerecord->id || !$fs->get_file_by_id($cd->filerecord->id)){
-				//the draft file is messed up, or gone, and its not in another area, possibly the user never saved it
-				//anyway lets just forget about this task. And move on.
-				return;
-			}
 			$nofilefoundmessage='could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet';
     		$this->handle_error($nofilefoundmessage,$cd);
 			throw new \file_exception('storedfileproblem', $nofilefoundmessage);

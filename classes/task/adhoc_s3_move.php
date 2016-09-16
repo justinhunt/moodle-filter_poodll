@@ -71,9 +71,9 @@ class adhoc_s3_move extends \core\task\adhoc_task {
         
         //fetch the permanent file record, that currently holds the placeholder file
         $permfilerecord = \filter_poodll\poodlltools::fetch_placeholder_file_record($cd->mediatype, $cd->filename);
-        //do the replace, if it succeeds yay. If it fails ...give up
+        //do the replace, if it succeeds yay. If it fails ... try again. The user may just not have saved yet
         if(!$permfilerecord){
-			$giveup =true;
+			$giveup =false;
             $this->handle_s3_error('could not find placeholder file:' . $cd->filename ,$cd,$giveup);
             return;
 		}
