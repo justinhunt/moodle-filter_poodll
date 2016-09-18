@@ -9,6 +9,7 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
     
         savebutton: null,
         audiodatacontrol: null,
+        config: null,
     
     	// This recorder supports the current browser
         supports_current_browser: function(config) { 
@@ -26,6 +27,9 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
         embed: function(element, config) { 
+        
+        	//set config
+        	this.config = config;
 	
 		   //swf recorder
             var swfopts = $.parseJSON(config.flashmp3audio_widgetjson);        
@@ -63,6 +67,11 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
               var audioBlob = new Blob([new Uint8Array(audioblobdata)],{type: 'audio/mpeg3'});
               //and we upload that blob
               uploader.uploadBlob(audioBlob,'audio/mpeg3');
+              //we would like to disable the recorder here
+              var apicall = 'poodllapi.mp3_disable()';
+              lz.embed[thisthis.config.widgetid].callMethod(apicall);
+              //just in case
+              return false;
             });//end of save button click
         
         }

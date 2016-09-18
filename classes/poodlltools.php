@@ -1481,17 +1481,22 @@ class poodlltools
            global $CFG;
             
             $fs=get_file_storage();
+            $dfr=$draftfilerecord;
             switch($mediatype){
                 case 'audio':$placeholderfilename = 'convertingmessage.mp3';break;
                 case 'video':$placeholderfilename = 'convertingmessage.mp4';break;
             }
-            $stored_file = $fs->create_file_from_pathname($draftfilerecord, 
-			$CFG->dirroot . '/filter/poodll/' .  $placeholderfilename);
+            //if we already have a stored file (second submit) just return that
+            $stored_file = $fs->get_file($dfr->contextid, $dfr->component, $dfr->filearea, $dfr->itemid, $dfr->filepath, $dfr->filename);
+            if(!$stored_file){
+            	$stored_file = $fs->create_file_from_pathname($draftfilerecord, 
+				$CFG->dirroot . '/filter/poodll/' .  $placeholderfilename);
+			}
             return $stored_file ;
             
         }
 	
-	public static function register_s3_download_task($mediatype,$s3filename,$draftfilerecord){
+	public static function register_s3_download_task($mediatype,$infilename,$outfilename, $draftfilerecord){
 	 	// set up task and add custom data
 	   $s3_task = new \filter_poodll\task\adhoc_s3_move();
 	   $savedatetime = new \DateTime();
@@ -1499,7 +1504,8 @@ class poodlltools
 	   $qdata = array(
 		   'filerecord' => $draftfilerecord,
 		   'filename' => $draftfilerecord->filename,
-                   's3filename'=>$s3filename,
+           'infilename'=>$infilename,
+            'outfilename'=>$outfilename,
 		   'mediatype'=> $mediatype,
 		   'isodate'=>$isodate
 	   );
@@ -1523,19 +1529,18 @@ class poodlltools
 	   \core\task\manager::queue_adhoc_task($s3_task);
 	}
 	
-	public static function commence_s3_transcode($mediatype,$s3filename){
+	public static function commence_s3_transcode($mediatype,$infilename,$outfilename){
 		global $CFG;
-                //does file exist on s3
-		$awstools = new \filter_poodll\awstools();
-		if($awstools->does_file_exist($mediatype,$s3filename,'in' ) && !$awstools->does_file_exist($mediatype,$s3filename,'out') ){
-			$awstools->create_one_transcoding_job($mediatype,$s3filename,$s3filename);
-		//}else{
-                    //the file has not arrived yet, possibly it was a mobile upload (which will finish later than this funftion)
-                 //   self::register_s3_transcode_task($mediatype,$s3filename);
-                }
+        
+        $awstools = new \filter_poodll\awstools();
+        
+        //does file exist on s3 in bucket
+		if($awstools->does_file_exist($mediatype,$infilename,'in' ) && !$awstools->does_file_exist($mediatype,$outfilename,'out') ){
+			$awstools->create_one_transcoding_job($mediatype,$infilename,$outfilename);
+        }
 	}
         
-        public static function confirm_s3_arrival($mediatype,$filename){
+    public static function confirm_s3_arrival($mediatype,$filename){
 		global $CFG;
                 //does file exist on s3
                 $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
@@ -1549,10 +1554,23 @@ class poodlltools
         
     public static function postprocess_s3_upload($mediatype,$draftfilerecord){
             $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype,$draftfilerecord->filename);
-            self::commence_s3_transcode($mediatype,$s3filename);
+            $infilename = $s3filename;
+            $outfilename = $infilename;
+            switch($mediatype){
+            	case 'audio':
+            		$newsuffix = '_' . rand(100000,999999) . '.mp3';
+            		$outfilename = str_replace('.mp3',$newsuffix ,$infilename);
+            		//$draftfilerecord->filename = str_replace('.mp3',$newsuffix ,$draftfilerecord->filename );
+            		break;
+            	case 'video':
+            		$newsuffix = '_' . rand(100000,999999) . '.mp4';
+            		$outfilename = str_replace('.mp4',$newsuffix ,$infilename);   
+            		//$draftfilerecord->filename = str_replace('.mp4',$newsuffix ,$draftfilerecord->filename );   		
+            }
+            self::commence_s3_transcode($mediatype,$infilename,$outfilename);
             $storedfile = self::save_placeholderfile_in_moodle($mediatype,$draftfilerecord);
             $draftfilerecord->id = $storedfile->get_id();
-            self::register_s3_download_task($mediatype,$s3filename, $draftfilerecord);
+            self::register_s3_download_task($mediatype,$infilename,$outfilename, $draftfilerecord);
    }
 	
 	public static function register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext){
@@ -1824,7 +1842,7 @@ class poodlltools
                             default:$ext='.wav';
                         }
 			$filename = \html_writer::random_id('poodllfile') . $ext;
-                        $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
+            $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
 			$awstools = new \filter_poodll\awstools();
 			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$s3filename);
 		}else{
@@ -1940,7 +1958,7 @@ class poodlltools
 		
 		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 		$width = "350";
-		$height = "200";
+		$height = "180";
 
 		//If no user id is passed in, try to get it automatically
 		//Not sure if  this can be trusted, but this is only likely to be the case
@@ -2268,7 +2286,7 @@ class poodlltools
 		//set dimensions
 		if ($CFG->filter_poodll_mp3recorder_size =='normal') {
 			$width = "350";
-			$height = "200";
+			$height = "180";
 		} else {
 			$width = "240";
 			$height  = "170";

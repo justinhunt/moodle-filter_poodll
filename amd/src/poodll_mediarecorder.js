@@ -18,6 +18,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         videocaptureheight: 240,
         controlbar: '',
         previewvolume: 1,
+        uploaded: false,
     	
     	// This recorder supports the current browser
         supports_current_browser: function(config) {
@@ -171,7 +172,9 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                 
                self.controlbar.playbutton.attr('disabled',false);
                self.controlbar.pausebutton.attr('disabled',true);
-               self.controlbar.startbutton.attr('disabled',false);
+              if(!self.uploaded){
+               	self.controlbar.startbutton.attr('disabled',false);
+              } 
                self.controlbar.resumebutton.hide();
                self.controlbar.pausebutton.show();
             });
@@ -224,11 +227,25 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
               if(self.blobs && self.blobs.length > 0){
                     ConcatenateBlobs(self.blobs, self.blobs[0].type, function(concatenatedBlob) {
                             uploader.uploadBlob(concatenatedBlob,self.blobs[0].type);
+                            
+                            //I know you want to allow multiple submissions off one page load BUT
+                            //this will require a new filename. The filename is the basis of the 
+                            //s3filename, s3uploadurl and filename for moodle. The problem with 
+                            //allowing mulitple uploads is that once the placeholder is overwritten
+                            //the subsequent submissions ad_hoc move task can no longer find the file to
+                            //replace. So we need a whole new filename or to cancel the previous ad hoc move. 
+                            //This should probably be
+                            //an ajax request from the uploader, or even a set of 10 filenames/s3uploadurls
+                            //pulled down at PHP time ..
+                            //this is one of those cases where a simple thing is hard ...J 20160919
+                            self.controlbar.startbutton.attr('disabled',true);
+                            self.uploaded = true;
                     }); //end of concatenate blobs
                 }else{
                     uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if self.blobs		
-            
+            	//probably not necessary  ... but getting odd ajax errors occasionally
+            	return false;
             });//end of save recording
             
             window.onbeforeunload = function() {

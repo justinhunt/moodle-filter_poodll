@@ -195,8 +195,8 @@ define(['jquery','core/log'], function($, log) {
 						xhr.open("POST",config.posturl, true);
 						xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 						xhr.setRequestHeader("Cache-Control", "no-cache");
-						xhr.setRequestHeader("Content-length", params.length);
-						xhr.setRequestHeader("Connection", "close");
+						//xhr.setRequestHeader("Content-length", params.length);
+						//xhr.setRequestHeader("Connection", "close");
 						xhr.send(params);
                    }else{
 						//we have to base64 string the blob  before sending it

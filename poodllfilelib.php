@@ -97,9 +97,13 @@ require_once($CFG->libdir . '/filelib.php');
 			filter_poodll_poodllpluginfile($contextid,"mod_assignment","submission",$itemid,"/",$paramone);
 			return;
                         
-                case "handles3upload":
-                        filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$itemid,$filename);
-                        return;
+        case "handles3upload":
+               $returnxml = filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$itemid,$filename);
+              	//probably not necessary to return anything, but just in case
+              	if(!$returnxml){return;}
+               header("Content-type: text/xml");
+			   echo "<?xml version=\"1.0\"?>";
+			   break;
 
 		case "instancedownload":
 			//paramone=mimetype paramtwo=path paramthree=hash
@@ -386,17 +390,6 @@ function filter_poodll_poodllpluginfile($contextid,$component,$filearea,$itemid,
 	//if no file we just quit.
 	if(!$f){return;}
 
-	//get permission info for this file: but it doesn't work oh no.....another moodle bug?
-	/*
-	$thecontext = get_context_instance_by_id($contextid);
-	$fileinfo = $br->get_file_info($thecontext, $component,$filearea, $itemid, $filepath, $filename);
-
-	//if we don't have permission to read, exit
-	if(!$fileinfo || !$fileinfo->is_readable()){echo "crap"; return;}
-		*/
-
-	//send_stored_file also works: but we are using send file, for no reason really
-	//send_stored_file($f, 0, 0, true); // download MUST be forced - security!
 
 	$fcontent = $f->get_content();
 	send_file($fcontent, $filename, 0, 0, true, true, "video/x-flv");
@@ -434,7 +427,7 @@ function filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$i
     
         $return=filter_poodll_fetchReturnArray(true);
     
-	global $CFG,$USER;
+		global $CFG,$USER;
         $draftfilerecord =new stdClass();
         $draftfilerecord->userid    = $USER->id;
         $draftfilerecord->contextid=$contextid;
@@ -444,24 +437,24 @@ function filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$i
         $draftfilerecord->filepath='/';
         $draftfilerecord->filename=$filename;
         $draftfilerecord->license  = $CFG->sitedefaultlicense;
-	$draftfilerecord->author   = 'Moodle User';
-	$draftfilerecord->source    = '';
-	$draftfilerecord->timecreated = time();
-	$draftfilerecord->timemodified= time();
+		$draftfilerecord->author   = 'Moodle User';
+		$draftfilerecord->source    = '';
+		$draftfilerecord->timecreated = time();
+		$draftfilerecord->timemodified= time();
         
              
-      $ret =  \filter_poodll\poodlltools::postprocess_s3_upload($mediatype, $draftfilerecord);
+     	 $ret =  \filter_poodll\poodlltools::postprocess_s3_upload($mediatype, $draftfilerecord);
         
-      if(!$ret){
+      	if(!$ret){
           $return['success']=false;
-	  array_push($return['messages'],"Unable to postprocess s3 upload." );
-      }
+	  		array_push($return['messages'],"Unable to postprocess s3 upload." );
+      	}
       
         //we process the result for return to browser
-	$xml_output=filter_poodll_prepareXMLReturn($return, '99999');
+		$xml_output=filter_poodll_prepareXMLReturn($return, '99999');
 
-	//we return to browser the result of our file operation
-	return $xml_output;
+		//we return to browser the result of our file operation
+		return $xml_output;
         
 //set up return object
 

@@ -154,37 +154,49 @@ class awstools
         */
 
         function does_file_exist($mediatype, $filename, $in_out='in'){
-		$s3client= $this->fetch_s3client();
-		$bucket='';
-		switch($mediatype){
-		 case 'audio':
-		 	if($in_out == 'out'){
-		 		$bucket =$this->bucket_audio_out;
-		 	}else{
-		 		$bucket =$this->bucket_audio_in;
-		 	}
-		 	break;
+			$s3client= $this->fetch_s3client();
+			$bucket='';
+			switch($mediatype){
+			 case 'audio':
+				if($in_out == 'out'){
+					$bucket =$this->bucket_audio_out;
+				}else{
+					$bucket =$this->bucket_audio_in;
+				}
+				break;
 		 
-		 case 'video':
-		 	if($in_out == 'out'){
-		 		$bucket =$this->bucket_video_out;
-		 	}else{
-		 		$bucket =$this->bucket_video_in;
-		 	}
-		 	break;
-		}
-		//return $s3client->if_object_exists($bucket,$filename);		
+			 case 'video':
+				if($in_out == 'out'){
+					$bucket =$this->bucket_video_out;
+				}else{
+					$bucket =$this->bucket_video_in;
+				}
+				break;
+			}
+			//return $s3client->if_object_exists($bucket,$filename);		
                 return $s3client->doesObjectExist($bucket,$filename);		
         }
+        
+        //called if we get a file submitted twice
+        function remove_transcoded($mediatype, $filename){
+        	switch ($mediatype){
+        		case 'audio':
+		 		   $bucketname =$this->bucket_audio_out;
+		 			break;
+		 		case 'video':
+		 		   $bucketname =$this->bucket_video_out;
+        	}
+        	$this->s3remove($bucketname,$filename);
+        }
 
-        function fetch_s3_converted_file($mediatype,$s3filename,$filename,$filerecord){
+        function fetch_s3_converted_file($mediatype,$infilename, $outfilename,$filename,$filerecord){
            global $CFG;
-            if($this->does_file_exist($mediatype, $this->convfolder . $s3filename,'out')){
+            if($this->does_file_exist($mediatype, $this->convfolder . $outfilename,'out')){
                 $tempfilepath = $CFG->tempdir . "/" . $filename;
-                $this->save_converted_to_file($mediatype,$s3filename, $tempfilepath);
+                $this->save_converted_to_file($mediatype,$outfilename, $tempfilepath);
                 return $tempfilepath;
             }else{
-                if(!$this->does_file_exist($mediatype,$s3filename,'in')){
+                if(!$this->does_file_exist($mediatype,$infilename,'in')){
                     //if we do not even have an input file then just return, somethings wrong
                     //but it can not be fixed
                     return false;

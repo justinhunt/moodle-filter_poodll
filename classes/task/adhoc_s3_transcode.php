@@ -44,9 +44,9 @@ class adhoc_s3_transcode extends \core\task\adhoc_task {
     	$cd =  $this->get_custom_data();
     	$awstools = new \filter_poodll\awstools();
         
-        //if somehow this trasncoding already ocurred, just exit
+        //if somehow this transcoding already ocurred, delete it and continue
         if($awstools->does_file_exist($cd->mediatype,$cd->s3filename,'out') ){
-            return;
+        	$awstools->remove_transcoded($cd->mediatype,$cd->s3filename);
         }
         
        

@@ -45,7 +45,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
     	$awstools = new \filter_poodll\awstools();
         
         try{
-            $ret= $awstools->fetch_s3_converted_file($cd->mediatype, $cd->s3filename, $cd->filename,$cd->filerecord);
+            $ret= $awstools->fetch_s3_converted_file($cd->mediatype,$cd->infilename, $cd->outfilename, $cd->filename,$cd->filerecord);
          }catch (Exception $e) {
             $giveup =false;
             $this->handle_s3_error('could not fetch:' . $cd->filename . ':' . $e->getMessage(),$cd,$giveup);
@@ -57,12 +57,12 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             //this indicates no "in" or "out" file, so we should just snuff this task and not repeat it
             //so we silently return
             $giveup=true;
-            $this->handle_s3_error('the file ' . $cd->s3filename . ' was not found anywhere on S3. giving up',$cd,$giveup);
+            $this->handle_s3_error('the files: ' . $cd->infilename . ' | ' . $cd->outfilename . ' were not found anywhere on S3. giving up',$cd,$giveup);
             return;
         }else if($ret===true){
             //this indicates we had an "in" file, but no "out" file yet. try again
            $giveup=false;
-            $this->handle_s3_error('the file ' . $cd->s3filename . ' has not yet been converted.',$cd,$giveup);
+            $this->handle_s3_error('the file ' . $cd->infilename . ' has not yet been converted.',$cd,$giveup);
             return;
         }else{
             //this indicates the file was found and saved and the path erturned
