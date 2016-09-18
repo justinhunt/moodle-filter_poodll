@@ -38,4 +38,10 @@ function xmldb_filter_poodll_install() {
 			\filter_poodll\poodllpresets::set_preset_to_config($preset,$templateindex);
 		}
 	}//end of for each presets	
+	
+	//Set the handlers
+	set_config('handlemp4', 1', 'filter_poodll');
+	set_config('handlemp3', 1, 'filter_poodll');
+	set_config('useplayermp4','fff','filter_poodll');
+	set_config('useplayermp3','audiojs','filter_poodll');
 }

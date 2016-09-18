@@ -198,18 +198,25 @@ public static function fetch_template_pages($conf){
 		for($tindex=1;$tindex<=$templatecount;$tindex++){
 		 
 			 //template display name
-                        $tname='';
-                        if($conf && property_exists($conf,'templatename_' . $tindex)){
+             $tname='';
+            if($conf && property_exists($conf,'templatename_' . $tindex)){
 				$tname = $conf->{'templatename_' . $tindex};
-                        }
+            }
 			if(empty($tname) && $conf && property_exists($conf,'templatekey_' . $tindex)){
 				$tname = $conf->{'templatekey_' . $tindex};
-                        }
+        	}
 			if(empty($tname)){$tname=$tindex;}
 
+			if($conf && property_exists($conf,'templatekey_' . $tindex) && property_exists($conf,'template_showatto_' . $tindex) &&  $conf->{'template_showatto_' . $tindex} > 0){
+				$templatetitle = get_string('templatepagewidgetheading', 'filter_poodll',$tname);
+			}elseif($conf && property_exists($conf,'templatekey_' . $tindex) && property_exists($conf,'template_showplayers_' . $tindex) &&  $conf->{'template_showplayers_' . $tindex} > 0){
+				$templatetitle = get_string('templatepageplayerheading', 'filter_poodll',$tname);
+			}else{
+				$templatetitle = get_string('templatepageheading', 'filter_poodll',$tname);
+			}
 		 
 			 //template settings Page Settings 
-			$settings_page = new \admin_settingpage('filter_poodll_templatepage_' . $tindex,get_string('templatepageheading', 'filter_poodll',$tname));
+			$settings_page = new \admin_settingpage('filter_poodll_templatepage_' . $tindex,$templatetitle);
 		
 			//template page heading
 			$settings_page->add(new \admin_setting_heading('filter_poodll/templateheading_' . $tindex, 

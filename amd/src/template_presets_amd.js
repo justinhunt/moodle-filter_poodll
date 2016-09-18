@@ -85,6 +85,16 @@ define(['jquery','core/log'], function($, log) {
 				  //then set the data
 				  if (presetdata[presetindex].hasOwnProperty(item)) {
 				   controls[item].value = presetdata[presetindex][item];
+			      }else{
+			      	switch(item){
+			      		case 'amd':
+			      		case 'showplayers':
+			      		case 'showatto':
+			      			controls[item].value =0;
+			      			break;
+			      		default:
+			      			controls[item].value ='';
+			      	}
 			      }
 			  }
 		  );

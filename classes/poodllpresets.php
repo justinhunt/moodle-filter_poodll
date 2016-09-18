@@ -89,8 +89,26 @@ class poodllpresets extends \admin_setting {
         $usearray = array();
         
         foreach($keys as $key){
-        	$usearray[$key]=$this->presetdata[$key]['key'];
+        	//get the template name
+        	if(!empty($this->presetdata[$key]['name'])){
+        		$usename = $this->presetdata[$key]['name'];
+        	}else{
+        		$usename = $this->presetdata[$key]['key'];
+        	}
+        	
+        	//if its a player or a widget or a template mark it as such
+        	if(!empty($this->presetdata[$key]['showplayers'])){
+        		$usename = '(P) ' . $usename;
+        	}elseif(!empty($this->presetdata[$key]['showatto'])){
+        		$usename = '(W) ' . $usename;        	
+        	}else{
+        		$usename = '(T) ' . $usename;        	
+        	}
+        	//set the name
+        	$usearray[$key]=$usename;
         }
+        //sort alphabetically the template names
+        asort($usearray);
 
 		$presetsjson = json_encode($this->presetdata);
 		$presetscontrol = \html_writer::tag('input', '', array('id' => 'id_s_filter_poodll_presetdata_' . $this->templateindex, 'type' => 'hidden', 'value' => $presetsjson));
