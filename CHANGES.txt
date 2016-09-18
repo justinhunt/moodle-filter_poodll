@@ -2,6 +2,7 @@ Change List
 =========
 Version 3.0.7(Build 2016081408)
 -tweaks to how presets and templates display on settings pages
+-removed ability to save more than once during a recording. User needs to reload page. Not ideal but currently the second recording will likely not be saved properly after fetching from cloud
 
 Version 3.0.6(Build 2016081407)
 -Fixed bug that could prevent files from finishing the conversion/copyback sequence
