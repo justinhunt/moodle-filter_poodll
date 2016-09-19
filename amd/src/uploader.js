@@ -128,8 +128,7 @@ define(['jquery','core/log'], function($, log) {
 						this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
 
 					}else {
-                                            uploader.pokeFilename(filename,uploader);
-
+                       uploader.pokeFilename(filename,uploader);
 					}
 				}else{
 					log.debug('upload failed #3');
@@ -158,6 +157,7 @@ define(['jquery','core/log'], function($, log) {
             //alert user that we are now uploading    
             this.Output(M.util.get_string('recui_uploading', 'filter_poodll'));
 
+/*
             xhr.upload.addEventListener("load", function () {
                     //console.log("uploaded:");
                     if(using_s3){
@@ -166,9 +166,14 @@ define(['jquery','core/log'], function($, log) {
                     }
             });
 
-
+*/
             xhr.onreadystatechange = function(e){
-                    uploader.postProcessUpload(e,uploader);
+            	if(using_s3 && this.readyState===4){
+                     //ping Moodle and inform that we have a new file
+                    uploader.postprocess_s3_upload(uploader);
+                }
+            	uploader.postProcessUpload(e,uploader);
+                
             }
 
             if(using_s3){

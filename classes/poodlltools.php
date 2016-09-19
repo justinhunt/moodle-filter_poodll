@@ -1958,7 +1958,7 @@ class poodlltools
 		
 		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 		$width = "350";
-		$height = "180";
+		$height = "190";
 
 		//If no user id is passed in, try to get it automatically
 		//Not sure if  this can be trusted, but this is only likely to be the case
