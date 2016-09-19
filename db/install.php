@@ -40,7 +40,7 @@ function xmldb_filter_poodll_install() {
 	}//end of for each presets	
 	
 	//Set the handlers
-	set_config('handlemp4', 1', 'filter_poodll');
+	set_config('handlemp4', 1, 'filter_poodll');
 	set_config('handlemp3', 1, 'filter_poodll');
 	set_config('useplayermp4','fff','filter_poodll');
 	set_config('useplayermp3','audiojs','filter_poodll');
