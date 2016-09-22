@@ -81,13 +81,12 @@ $string['miccanpause'] = 'Allow pause (MP3 recorder only)';
 $string['mp3skin'] = 'MP3 Skin';
 $string['mp3skin_details'] = 'If you want to use a recorder skin, ala theme, enter its name here. Otherwise enter: none.';
 
-
-
 //mp3 recorder settings
 $string['size'] ='Size';
 $string['tiny'] ='Tiny';
 $string['normal'] ='Normal';
-
+$string['mp3_nocloud'] ='No Cloud';
+$string['mp3_nocloud_details'] ='Do not submit Flash mp3 recordings to cloud for transcode and copyback.';
 
 //transcode settings
 $string['transcode_heading'] ='Audio/Video File Conversion Settings';

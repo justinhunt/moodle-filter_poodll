@@ -1833,14 +1833,20 @@ class poodlltools
 			return $lm->fetch_unregistered_content($registration_status);
 		}
 
+		// Lets determine if we are using S3
+		$using_s3 = $CFG->filter_poodll_cloudrecording && ($mediatype=='audio' || $mediatype=='video');
+		//if we have an mp3 based flash recorder
+		if($using_s3 && $CFG->filter_poodll_mp3recorder_nocloud && $mediatype=='audio'){
+			$using_s3 = false;
+		}
+		
 		// if we are using S3 lets get an upload url
-		$using_s3 =$CFG->filter_poodll_cloudrecording && ($mediatype=='audio' || $mediatype=='video');
 		if($using_s3){
-                        switch($mediatype){
-                            case 'audio': $ext='.mp3';break;
-                            case 'video': $ext='.mp4';break;
-                            default:$ext='.wav';
-                        }
+			switch($mediatype){
+				case 'audio': $ext='.mp3';break;
+				case 'video': $ext='.mp4';break;
+				default:$ext='.wav';
+			}
 			$filename = \html_writer::random_id('poodllfile') . $ext;
             $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
 			$awstools = new \filter_poodll\awstools();
