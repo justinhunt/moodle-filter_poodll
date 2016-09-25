@@ -5,11 +5,9 @@ Thanks for downloading the PoodLL filter
 Information on installing the PoodLL filter and getting started in general is available here.
 https://poodll.com/poodll-3-docs/getting-started/
 
-In short however, upload the unzipped PoodLL filter into a directory called "poodll" in your Moodle site, under
-[path to Moodle]/filter
+In short however, upload the unzipped PoodLL filter into a directory called "poodll" in your Moodle site, under [path to Moodle]/filter
 
-Be sure that the files are in such a structure that [path to Moodle]/filter/poodll/version.php exists.
-If yor folder structure is different Moodle will complain.
+Be sure that the files are in such a structure that [path to Moodle]/filter/poodll/version.php exists. If your folder structure is different Moodle will complain.
 
 Setting up the PoodLL Filter
 =============================
