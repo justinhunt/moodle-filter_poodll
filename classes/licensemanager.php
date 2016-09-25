@@ -20,9 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  *
- * This is a class containing static functions for general PoodLL filter things
- * like embedding recorders and managing them
- *
+ * This is a class containing functions for managing/checking licenses
  * @package   filter_poodll
  * @since      Moodle 2.7
  * @copyright  2014 Justin Hunt
@@ -36,6 +34,7 @@ class licensemanager
     
     const FILTER_POODLL_LICENSE_INDIVIDUAL = 2512;
     const FILTER_POODLL_LICENSE_INSTITUTION = 2511;
+    const FILTER_POODLL_LICENSE_FREETRIAL = 2583;
 
     private $registered_url='';
     private $validated = false;
@@ -76,6 +75,31 @@ class licensemanager
         return $this->cloud_access_secret;
     }
     
+     /**
+     * Fetch license details in display form
+     *
+     *
+     */
+    public function fetch_license_details(){
+    	$details = new \stdClass();
+    	$details->expire_date = $this->expire_date;
+    	switch($this->license_type){
+    		case self::FILTER_POODLL_LICENSE_FREETRIAL:
+    			$details->license_type='Free Trial';
+    			break;
+    		case self::FILTER_POODLL_LICENSE_INDIVIDUAL:
+    			$details->license_type='Individual';
+    			break;
+    		case self::FILTER_POODLL_LICENSE_INSTITUTION:
+    			$details->license_type='Institution';
+    			break;
+    		default:
+    			$details->license_type="";
+    	}
+    	$details->registered_url = $this->registered_url;
+    	return $details;
+    }
+
     /**
      * Check the registration key is valid
      *
@@ -102,6 +126,11 @@ class licensemanager
         }
         $expire_time = strtotime($this->expire_date);
         $diff = $expire_time - time();
+        /*
+        echo ($this->expire_date . ' | ');
+        echo (date("D M j G:i:s T Y", time()) . ' | ');
+        echo($expire_time . ' | ' . time() . ' | ' . $diff); 
+       */
         if($diff < 0){return self::FILTER_POODLL_IS_EXPIRED;}
         
         //get arrays of the wwwroot and registered url

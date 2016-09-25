@@ -36,19 +36,20 @@ class settingstools
 {
 	
 public static function fetch_general_items(){
+	global $CFG;
 	$items = array();
 
         $items[] = new \admin_setting_heading('filter_poodll_registration_settings', get_string('filter_poodll_registration_heading', 'filter_poodll'), get_string('filter_poodll_registration_explanation', 'filter_poodll'));
-	$items[] = new \admin_setting_configtextarea('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'), get_string('registrationkey_explanation', 'filter_poodll'), '');
-	/*
-        $items[] = new \admin_setting_configtext('filter_poodll_uploadkey', get_string('uploadkey', 'filter_poodll'), get_string('uploadkey_desc', 'filter_poodll'), '');
-	$items[] = new \admin_setting_configtext('filter_poodll_uploadsecret', get_string('uploadsecret', 'filter_poodll'), get_string('uploadsecret_desc', 'filter_poodll'), '');
-        */
-	
-        
-	
+		$regkey_desc = get_string('registrationkey_explanation', 'filter_poodll');
+		if($CFG && property_exists($CFG,'filter_poodll_registrationkey') && !empty($CFG->filter_poodll_registrationkey)){
+			$lm = new \filter_poodll\licensemanager();
+			$lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+			$license_details = $lm->fetch_license_details();
+			$display_license_details = get_string('license_details', 'filter_poodll',$license_details);
+			$regkey_desc .= $display_license_details ;
+		}
+		$items[] = new \admin_setting_configtextarea('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'), $regkey_desc, '');
         $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get_string('usecloudrecording', 'filter_poodll'), get_string('usecloudrecording_desc', 'filter_poodll'), 1);
-
 	
 	//removed aws 3.x version from distributable because it was too large and not required
 	//if its needed added aws sdk for php in a folder called aws-v3 in /filter/poodll/3rdparty
@@ -136,6 +137,22 @@ public static function fetch_general_items(){
 
 }// end of fetch general items
 
+public static function fetch_mobile_items($conf){
+	global $CFG;
+	
+	$items = array();
+	$items[] = new \admin_setting_configcheckbox('filter_poodll_mobile_show', get_string('mobile_show', 'filter_poodll'), get_string('mobile_show_desc', 'filter_poodll'), 0);
+	
+	$quality_options = array('low' => get_string('lowquality', 'filter_poodll'), 'medium'=>get_string('mediumquality', 'filter_poodll'), 'high'=>get_string('highquality', 'filter_poodll'));
+	//right now the quality option is only for video, but later we might put this in.
+	//$items[] = new \admin_setting_configselect('filter_poodll_mobile_audio_quality', get_string('mobile_audio_quality', 'filter_poodll'), '', 'medium', $quality_options);
+	$items[] = new \admin_setting_configselect('filter_poodll_mobile_video_quality', get_string('mobile_video_quality', 'filter_poodll'), '', 'medium', $quality_options);
+
+	$camera_options = array('front' => get_string('camerafront', 'filter_poodll'), 'back'=>get_string('cameraback', 'filter_poodll'));
+	$items[] = new \admin_setting_configselect('filter_poodll_mobile_default_camera', get_string('default_camera', 'filter_poodll'), '', 'front', $camera_options);
+
+	return $items;
+}
 	
 public static function fetch_extension_items($conf){
 		//init return array

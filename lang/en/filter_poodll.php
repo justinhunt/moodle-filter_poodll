@@ -24,9 +24,21 @@ $string['filter_poodll_registration_explanation'] ="PoodLL 3 requires a registra
 
 $string['registrationkey'] = 'Registration Key';
 $string['registrationkey_explanation'] ="Enter your PoodLL registration key here. You can obtain a key from <a href='https://poodll.com/poodll-3-2'>https://poodll.com/poodll-3-2</a>";
+$string['license_details'] ='<br> -------------- <br> License type: {$a->license_type} <br> Expires(JST): {$a->expire_date} <br> Registered URL: {$a->registered_url} ';
 
 $string['usecloudrecording'] = 'Cloud recording';
 $string['usecloudrecording_desc'] = 'PoodLL cloud recording. This enables transcoding and other services in the cloud. The PoodLL iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud.';
+
+$string['mobile_show'] = 'Show mobile';
+$string['mobile_show_desc'] = 'When the user is on an iOS device, instead of a recorder they are shown an "upload/record" button and a "use PoodLL app" button. Uncheck this to hide the PoodLL app button.'; 
+$string['mobile_audio_quality'] = 'Audio quality';
+$string['mobile_video_quality'] = 'Video quality';
+$string['lowquality'] = 'low';
+$string['mediumquality'] = 'medium';
+$string['highquality'] = 'high';
+$string['default_camera'] = 'Default camera';
+$string['camerafront'] = 'front';
+$string['cameraback'] = 'back';
 
 $string['awssdkversion'] = 'AWS SDK';
 $string['awssdkversion_desc'] = 'PoodLL cloud recording uses Amazon Web Services (AWS). Version 3.x is supported but not shipped with PoodLL. Version 2.x of the AWS SDK will work on PHP 5.3 or greater. You should not need to change this, but contact PoodLL support if the need arises. ';
@@ -205,6 +217,7 @@ $string['useplayerdesc'] = "The player selected will use the information from th
 $string['handle'] = 'Handle {$a}';
 $string['widgetsettings'] = 'Widget Settings';
 $string['extensionsettings'] = 'File Extension Settings';
+$string['mobilesettings'] = 'iOS App Settings';
 $string['dataset'] = 'Dataset';
 $string['dataset_desc'] = 'Poodll allows you to pull a dataset from the database for use in your template. This is an advanced feature. Enter the sql portion of a $DB->get_records_sql call here.';
 $string['datasetvars'] = 'Dataset Variables';

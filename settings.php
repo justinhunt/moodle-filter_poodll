@@ -25,6 +25,14 @@ if (is_siteadmin()) {
 	}
 	$ADMIN->add('filter_poodll_topcat', $extension_settings);
 	
+	//Mobile app Settings 
+	$mobile_settings = new admin_settingpage('filter_poodll_mobile',get_string('mobilesettings', 'filter_poodll'));
+	$mobile_items =  \filter_poodll\settingstools::fetch_mobile_items($conf);
+	foreach ($mobile_items as $mobile_item) {
+    	$mobile_settings->add($mobile_item);
+	}
+	$ADMIN->add('filter_poodll_topcat', $mobile_settings);
+	
 	//Widgets Settings: to show in poodll widgets 
 	$widget_settings = new admin_settingpage('filter_poodll_widgets',get_string('widgetsettings', 'filter_poodll'));
 	$widget_items =  \filter_poodll\settingstools::fetch_widget_items($conf);

@@ -21,11 +21,15 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
             switch(config.mediatype){
                 case 'audio':
                 	this.insert_upload_button(element,this.linkid);
-                    this.insert_audio_button(element,this.linkid);               
+                	if(config.showmobile==1){
+                    	this.insert_audio_button(element,this.linkid);
+                    }               
                     break;
                 case 'video':
                     this.insert_upload_button(element,this.linkid);
-                    this.insert_video_button(element,this.linkid);
+                    if(config.showmobile==1){
+                    	this.insert_video_button(element,this.linkid);
+                    }
                     break;
             
             }

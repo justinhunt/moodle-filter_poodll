@@ -63,9 +63,8 @@ class poodlltools
 	public static function fetch_whiteboard($runtime, $boardname, $imageurl = "", $slave = false, $rooms = "", $width = 0, $height = 0, $mode = 'normal', $standalone = 'false')
 	{
 		global $CFG, $USER, $COURSE;
-
 		$lm = new \filter_poodll\licensemanager();
-                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+        $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
 		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
 			return $lm->fetch_unregistered_content($registration_status);
 		}
@@ -1880,7 +1879,7 @@ class poodlltools
 		$widgetopts->using_s3 = intval($using_s3);
                 
 		//for mobile amd params
-		$rawparams = self::fetchMobileRecorderAMDParams();
+		$rawparams = self::fetchMobileRecorderAMDParams($mediatype);
                 foreach ($rawparams as $key => $value) {
                                 $widgetopts->{$key} = $value;
 		}
@@ -2338,11 +2337,31 @@ class poodlltools
  * Fetch any special parameters required by the mobile recorder
  *
  */
-	public static function fetchMobileRecorderAMDParams()
+	public static function fetchMobileRecorderAMDParams($mediatype)
 	{
+		global $CFG;
         $params=array();
-        $params['mobilequality']='medium'; //from low/medium/high
-        $params['mobilecamera']='front';//from front or back
+        switch($mediatype){
+        	case 'audio': 
+        		//from low/medium/high
+        		$params['mobilequality']='medium';
+        		//right now we don't have audio quality. Maybe later.
+        		//$params['mobilequality']=$CFG->filter_poodll_mobile_audio_quality; 
+        		break;
+        	case 'video': 
+        		//from low/medium/high
+        		$params['mobilequality']=$CFG->filter_poodll_mobile_video_quality;
+        		break;
+        	case 'image':
+        	default:
+        		//this is irrelevant because the app won't be handling it.
+        		//just for completeness
+        		$params['mobilequality']='medium';
+        }
+        //from front or back
+        $params['mobilecamera']=$CFG->filter_poodll_mobile_default_camera;
+       //show the mobile app button .. or not
+        $params['showmobile']=$CFG->filter_poodll_mobile_show;
 		return $params;
 	}
 
