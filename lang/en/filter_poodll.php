@@ -168,10 +168,10 @@ $string['sitedefault'] = "Site Default";
 $string['player'] = 'Player {$a}';
 
 //template strings
-$string['templatepageheading'] = 'Template: {$a}';
-$string['templatepagewidgetheading'] = 'Widget: {$a}';
-$string['templatepageplayerheading'] = 'Player: {$a}';
-$string['templatepageheading'] = 'Template: {$a}';
+$string['templatepageheading'] = '(T): {$a}';
+$string['templatepagewidgetheading'] = '(W): {$a}';
+$string['templatepageplayerheading'] = '(P): {$a}';
+$string['templatepageheading'] = '(T): {$a}';
 $string['templateheading'] = 'Settings for Poodll Template {$a}';
 $string['template'] = 'The body of template {$a}';
 $string['template_desc'] = 'Put the template here, define variables by surrounding them with @@ marks at either e. eg @@variable@@';

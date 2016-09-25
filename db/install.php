@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_filter_poodll_install() {
     $presets = \filter_poodll\poodllpresets::fetch_presets();
-	$forinstall = array('fff','audiojs','mediaelementaudio','mediaelementvideo','youtubelightbox','stopwatch','tabs','tabitem','accordian','accordianitem');
+	$forinstall = array('fff','flowplayer','mediaelementvideo','jwplayer','nativevideo','audiojs','mediaelementaudio','nativeaudio','youtubelightbox','stopwatch','tabs','tabitem','accordian','accordianitem');
 	$templateindex=0;
 	foreach($presets as $preset){			
 		if(in_array($preset['key'],$forinstall)){
