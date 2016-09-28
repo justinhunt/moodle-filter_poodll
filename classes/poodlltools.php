@@ -1945,7 +1945,7 @@ class poodlltools
 		
 
 		//set up auto transcoding (mp4) or not
-		if ($CFG->filter_poodll_audiotranscode || $CFG->filter_poodll_cloudrecording) {
+		if ($CFG->filter_poodll_audiotranscode) {
 			$saveformat = "mp3";
 		} else {
 			$saveformat = "flv";
