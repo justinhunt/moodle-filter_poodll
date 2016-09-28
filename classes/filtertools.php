@@ -141,7 +141,6 @@ class filtertools
 			$rawurl = $url;
 			$url = clean_param($url, PARAM_URL);
 			$urlstub = substr($rawurl,0,strpos($rawurl,'.' . $ext));
-		
 			if($ext=="youtube"){
 				$filename = $link[1];
 				$url="https://www.youtube.com/watch?v=" . $filename;
@@ -151,7 +150,7 @@ class filtertools
 				$autoposterurljpg  ="http://img.youtube.com/vi/" . $filename ."/hqdefault.jpg";
 				$autoposterurlpng  ="http://img.youtube.com/vi/" . $filename ."/hqdefault.png";
 				$filetitle="";
-				$title="";
+				$title=$filename;
 				$scheme='https:';
 			}else{	
 				//get the bits of the url

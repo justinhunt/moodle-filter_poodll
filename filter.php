@@ -210,14 +210,14 @@ class filter_poodll extends moodle_text_filter {
 		if($ext){
 			if(empty($filterprops['TITLE'])){return $link[0];}
 		}
-		
+
 		//if we want to ignore the filter (for "how to use poodll" or "cut and paste" this style use) we let it go
 		//to use this, make the last parameter of the filter passthrough=1
 		if (!empty($filterprops['passthrough'])) return str_replace( ",passthrough=1","",$link[0]);
 	
 		//set a default end tag of none
 		$endtag=false;
-                
+            
 		//determine which template we are using
 		//If we have an extension then it is from link
 		//get our template info
@@ -248,7 +248,6 @@ class filter_poodll extends moodle_text_filter {
 									break;
 							}
 			}
-
 			//no key could be found if got all the way to templatecount
 			if($tempindex==$conf['templatecount']+1){return '';}
 		}
