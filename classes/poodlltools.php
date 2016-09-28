@@ -2048,7 +2048,7 @@ class poodlltools
 		$picqual = $CFG->filter_poodll_picqual;
 
 		//set up auto transcoding (mp4) or not
-		if ($CFG->filter_poodll_videotranscode || $CFG->filter_poodll_cloudrecording) {
+		if ($CFG->filter_poodll_videotranscode) {
 			$saveformat = "mp4";
 		} else {
 			$saveformat = "flv";
