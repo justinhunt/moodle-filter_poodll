@@ -1570,6 +1570,7 @@ class poodlltools
             $storedfile = self::save_placeholderfile_in_moodle($mediatype,$draftfilerecord);
             $draftfilerecord->id = $storedfile->get_id();
             self::register_s3_download_task($mediatype,$infilename,$outfilename, $draftfilerecord);
+			return true;
    }
 	
 	public static function register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext){
