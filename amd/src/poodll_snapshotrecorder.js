@@ -6,10 +6,21 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/webcam'], f
     log.debug('PoodLL Snapshot Recorder: initialising');
 
     return {
-    
-    	config: null,
-    	imagefile: false,
-    	htmlthings: '',
+		
+		instanceprops: [],
+		
+		fetch_instance_props : function(widgetid){
+			return this.instanceprops[widgetid];
+		},
+		
+		init_instance_props: function(widgetid){
+			var props = {};
+			props.imagefile = false;
+			props.htmlthings = '';
+			props.config = null;
+			props.uploader = null;
+			this.instanceprops[widgetid] = props
+		},
     	
 		// This recorder supports the current browser
         supports_current_browser: function(config) { 
@@ -27,16 +38,25 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/webcam'], f
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
         embed: function(element, config) { 
-        	this.config = config;
-        	this.insert_controls(element);
-        	uploader.init(element,config);
-      		this.register_events();
+			this.init_instance_props(config.widgetid);
+			var ip = this.fetch_instance_props(config.widgetid);
+        	//set config
+        	ip.config = config;
+			
+			//set uploader
+			ip.uploader = uploader.clone();
+			ip.uploader.init(element,config);
+			
+        	this.insert_controls(element, config.widgetid);
+      		this.register_events(config.widgetid);
         },
 
-        insert_controls: function(element){
+        insert_controls: function(element, widgetid){
+			var ip = this.fetch_instance_props(widgetid);
+		
          	//for now.
          	var acceptmedia = '';
-         	var config = this.config;
+         	var config = ip.config;
 
 			
 			 var htmlthings ={
@@ -46,7 +66,7 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/webcam'], f
             	savebutton: config.widgetid + '_poodll_save-snapshot',
             	cancelbutton: config.widgetid + '_poodll_cancel-snapshot'
             };
-            this.htmlthings =htmlthings;
+            ip.htmlthings =htmlthings;
 			
 			
          	//html5 snapshot maker proper
@@ -70,38 +90,38 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/webcam'], f
 		},
         
          // handle image file uploads for Mobile
-        register_events: function() {
+        register_events: function(widgetid) {
 
-            var self =this;
-            var config = this.config;
+			var ip = this.fetch_instance_props(widgetid);
+            var config = ip.config;
+
 			Webcam.set('swfURL',M.cfg.wwwroot + '/filter/poodll/3rdparty/webcam/webcam.swf');
-            Webcam.attach('#' + this.htmlthings.camera);
+            Webcam.attach('#' + ip.htmlthings.camera);
             
-            $('#' + this.htmlthings.savebutton).on('click',function(e){
-                if(self.imagefile){
+            $('#' + ip.htmlthings.savebutton).on('click',function(e){
+                if(ip.imagefile){
 					var mimetype = 'image/jpeg';
-					var imageblob = uploader.dataURItoBlob(self.imagefile,mimetype);
-                	uploader.uploadFile(imageblob,mimetype);
+					var imageblob = ip.uploader.dataURItoBlob(ip.imagefile,mimetype);
+                	ip.uploader.uploadFile(imageblob,mimetype);
                 }else{
-                    uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
-                }//end of if self.imagefile		
+                    ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
+                }//end of if ip.imagefile		
             });
             
-            $('#'  + this.htmlthings.cancelbutton).on('click',function(e){
-            		self.imagefile = false;
-            		$('#' + self.htmlthings.preview).addClass('hide').html('');
-            		$('#' + self.htmlthings.camera).removeClass('hide');
+            $('#'  + ip.htmlthings.cancelbutton).on('click',function(e){
+            		ip.imagefile = false;
+            		$('#' + ip.htmlthings.preview).addClass('hide').html('');
+            		$('#' + ip.htmlthings.camera).removeClass('hide');
             });
             
-            $('#'  + this.htmlthings.snapbutton).on('click',function(e){
+            $('#'  + ip.htmlthings.snapbutton).on('click',function(e){
             	Webcam.snap( function(data_uri) {
-            		self.imagefile = data_uri;
-                	$('#' + self.htmlthings.preview).html('<img src="'+data_uri+'"/>').removeClass('hide');
-                	$('#' + self.htmlthings.camera).addClass('hide');
+            		ip.imagefile = data_uri;
+                	$('#' + ip.htmlthings.preview).html('<img src="'+data_uri+'"/>').removeClass('hide');
+                	$('#' + ip.htmlthings.camera).addClass('hide');
             	} );
             });
 
         }
-
     }//end of returned object
 });//total end

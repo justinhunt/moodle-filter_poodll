@@ -6,6 +6,21 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
     log.debug('PoodLL Mobile Recorder: initialising');
 
     return {
+	
+		instanceprops: [],
+		
+		fetch_instance_props : function(widgetid){
+			return this.instanceprops[widgetid];
+		},
+		
+		init_instance_props: function(widgetid){
+			var props = {};
+			props.config = null;
+			props.uploader = null;
+			props.linkid = null;
+			this.instanceprops[widgetid] = props
+		},
+    	
 		// This recorder supports the current browser
         supports_current_browser: function(config) { 
 				if(config.mediatype!='audio' && config.mediatype!='video'){return false;}
@@ -15,43 +30,51 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
         
          // Perform the embed of this recorder on the page
         //into the element passed in. with config
-        embed: function(element, config) { 
-            this.config = config;
-            this.linkid = 'filter_poodll_mobilerecorder_link_' + config.widgetid;
+        embed: function(element, config) {
+			this.init_instance_props(config.widgetid);
+			var ip = this.fetch_instance_props(config.widgetid);
+        	//set config
+        	ip.config = config;
+			
+			//set uploader
+			ip.uploader = uploader.clone();
+			ip.uploader.init(element,config);
+
+            ip.linkid = 'filter_poodll_mobilerecorder_link_' + config.widgetid;
             switch(config.mediatype){
                 case 'audio':
-                	this.insert_upload_button(element,this.linkid);
+                	this.insert_upload_button(element,config.widgetid);
                 	if(config.showmobile==1){
-                    	this.insert_audio_button(element,this.linkid);
+                    	this.insert_audio_button(element,config.widgetid);
                     }               
                     break;
                 case 'video':
-                    this.insert_upload_button(element,this.linkid);
+                    this.insert_upload_button(element,config.widgetid);
                     if(config.showmobile==1){
-                    	this.insert_video_button(element,this.linkid);
+                    	this.insert_video_button(element,config.widgetid);
                     }
                     break;
             
             }
-            uploader.init(element,config);
-            this.register_events(element);
+            
+            this.register_events(element, config.widgetid);
             return true;//or false
         },
         
         // handle audio/video/image file uploads for Mobile
-        register_events: function(element) {
-
-            var config = this.config;
+        register_events: function(element, widgetid) {
+			var ip = this.fetch_instance_props(widgetid);
+            var config = ip.config;
             var mobilerecorder =this;
             //launch the app from the link
-            $('#' + this.linkid).on('mousedown touchstart',function(e){
+            $('#' + ip.linkid).on('mousedown touchstart',function(e){
                     //to make sure both "confirm" and "openapp"
                     //happened. I had to do this
                    // e.preventDefault();
                   //  e.stopPropagation();
-                    mobilerecorder.confirm_s3_arrival();
+                    mobilerecorder.confirm_s3_arrival(widgetid);
                    // window.location=$(this).attr('href');
-                    uploader.Output(M.util.get_string('recui_awaitingconfirmation', 'filter_poodll'));
+                    ip.uploader.Output(M.util.get_string('recui_awaitingconfirmation', 'filter_poodll'));
                     return;
                     
                     //but I wanted to just do this
@@ -63,7 +86,7 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
                 }
               );
               //launch the upload dialog (if no app or whatever)
-              $('#' + this.linkid + '_uploadafile').on('mousedown touchstart',function(e){
+              $('#' + ip.linkid + '_uploadafile').on('mousedown touchstart',function(e){
               		$(element).empty();
               		uploadrec.embed(element,config);
                 }
@@ -71,36 +94,39 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
 
         },
         
-        insert_video_button: function(element){
-			var controls = '<a class ="filter_poodll_mobilerecorderlink" id="' + this.linkid + 
-                                '" href="poodll:record?filename=' + this.config.s3filename + 
-                                '&type=' + this.config.mediatype + '&quality=' + this.config.mobilequality + 
-                                '&camera=' + this.config.mobilecamera + 
-                                '&s3folder=&timelimit='+ this.config.timelimit + '">' + 
+        insert_video_button: function(element, widgetid){
+			var ip = this.fetch_instance_props(widgetid);
+			var controls = '<a class ="filter_poodll_mobilerecorderlink" id="' + ip.linkid + 
+                                '" href="poodll:record?filename=' + ip.config.s3filename + 
+                                '&type=' + ip.config.mediatype + '&quality=' + ip.config.mobilequality + 
+                                '&camera=' + ip.config.mobilecamera + 
+                                '&s3folder=&timelimit='+ ip.config.timelimit + '">' + 
                                 M.util.get_string('recui_openrecorderapp', 'filter_poodll') + '</a>';
 			$(element).prepend(controls);        
         },
-        insert_audio_button: function(element){
-			var controls = '<a class ="filter_poodll_mobilerecorderlink"  id="' + this.linkid + 
-                                '" href="poodll:record?filename=' + this.config.s3filename + 
-                                '&type=' + this.config.mediatype + '&quality=' + this.config.mobilequality + 
-								'&camera=' + this.config.mobilecamera +
-                                '&s3folder=&timelimit='+ this.config.timelimit + '">' +
+        insert_audio_button: function(element,widgetid){
+			var ip = this.fetch_instance_props(widgetid);
+			var controls = '<a class ="filter_poodll_mobilerecorderlink"  id="' + ip.linkid + 
+                                '" href="poodll:record?filename=' + ip.config.s3filename + 
+                                '&type=' + ip.config.mediatype + '&quality=' + ip.config.mobilequality + 
+								'&camera=' + ip.config.mobilecamera +
+                                '&s3folder=&timelimit='+ ip.config.timelimit + '">' +
                                 M.util.get_string('recui_openrecorderapp', 'filter_poodll') + '</a>';
 			$(element).prepend(controls);        
         },
         
-        insert_upload_button: function(element){
-			var controls = '<a class ="filter_poodll_uploadafilelink" id="' + this.linkid + '_uploadafile' +
+        insert_upload_button: function(element,widgetid){
+			var ip = this.fetch_instance_props(widgetid);
+			var controls = '<a class ="filter_poodll_uploadafilelink" id="' + ip.linkid + '_uploadafile' +
                                 '" href="#">' + 
                                 M.util.get_string('recui_uploadafile', 'filter_poodll') + '</a>';
 			$(element).prepend(controls);        
         },
         
-        confirm_s3_arrival: function(){
-            
-             var xhr = new XMLHttpRequest();
-	     var config = this.config;
+        confirm_s3_arrival: function(widgetid){
+            var ip = this.fetch_instance_props(widgetid);
+            var xhr = new XMLHttpRequest();
+			var config = ip.config;
 
              
             var posturl = config.wwwroot + '/filter/poodll/poodllfilelib.php';
@@ -115,9 +141,9 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
             
             xhr.addEventListener("load", function () {
                 if(xhr.response && xhr.response.indexOf(config.filename)>0){
-                    uploader.pokeFilename(config.filename, uploader);
-                    uploader.postprocess_s3_upload(uploader);
-                    uploader.Output( M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
+                    ip.uploader.pokeFilename(config.filename, ip.uploader);
+                    ip.uploader.postprocess_s3_upload(ip.uploader);
+                    ip.uploader.Output( M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
                 }else{
                    // setTimeout(mobilerecorder.confirm_s3_arrival,2000);
                     setTimeout(function(){

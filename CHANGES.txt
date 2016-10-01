@@ -6,6 +6,10 @@ Version 3.0.10(Build 2016081411)
 - Fixed problem where Youtube parsing was broken
 - Fixed problem where no-cloud on m3 recorder could break html5 audio recorder
 - Added support for multiple html5 recorders on one page
+- Added support for multiple flashmp3 recorders on one page
+- Added support for multiple upload  recorders on one page
+- Added support for multiple snapshot recorders on one page
+- Added support for multiple mobile recorders on one page
 
 Version 3.0.9(Build 2016081410)
 - Added a no cloud checkbox to the MP3 recorder settings on PoodLL General Settings page. If checked, mp3 files will get uploaded direct to moodle and bypass cloud

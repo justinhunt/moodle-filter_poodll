@@ -8,6 +8,19 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
     return {
     
     	config: null,
+		
+		instanceprops: [],
+		
+		fetch_instance_props : function(widgetid){
+			return this.instanceprops[widgetid];
+		},
+		
+		init_instance_props: function(widgetid){
+			var props = {};
+			props.config= null;
+			props.uploader = null;
+			this.instanceprops[widgetid] = props
+		},
     	
 		// This recorder supports the current browser
         supports_current_browser: function(config) { 
@@ -17,16 +30,26 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
         embed: function(element, config) { 
-        	this.config = config;
-        	this.insert_controls(element);
-        	uploader.init(element,config);
-      		this.register_events();
+			this.init_instance_props(config.widgetid);
+			var ip = this.fetch_instance_props(config.widgetid);
+        	//set config
+        	ip.config = config;
+			
+			//set uploader
+			ip.uploader = uploader.clone();
+			ip.uploader.init(element,config);
+			
+			//get form and evenets working
+        	this.insert_controls(element, config.widgetid);
+      		this.register_events(config.widgetid);
         },
 
-        insert_controls: function(element){
-         	//for now.
+        insert_controls: function(element, widgetid){
+         	var ip = this.fetch_instance_props(widgetid);
+			
+			//for now
          	var acceptmedia = '';
-         	var config = this.config;
+         	var config = ip.config;
          	switch(config.mediatype){
          		case 'video': 
          		  acceptmedia='video/*';
@@ -51,38 +74,39 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
 		},
         
          // handle audio/video/image file uploads for Mobile
-        register_events: function() {
+        register_events: function(widgetid) {
 
-            var self =this;
-            var config = this.config;
-            $('#' + config.widgetid + '_poodllfileselect').on('change',function(e){
-                    self.FileSelectHandler(e); }
+			var self =this;
+            $('#' + widgetid + '_poodllfileselect').on('change',function(e){
+                    self.FileSelectHandler(e,widgetid); }
                 );
 
         },
 
         // file selection
-        FileSelectHandler: function(e) {
-
+        FileSelectHandler: function(e,widgetid) {
+			var ip = this.fetch_instance_props(widgetid);
+			
             // fetch FileList object
             var files = e.target.files || e.dataTransfer.files;
 
             // process all File objects
             for (var i = 0, file; file = files[i]; i++) {
-                //this.ParseFile(f);
-                uploader.uploadBlob(file,file.type);
+                //this.ParseFile(f,widgetid);
+                ip.uploader.uploadBlob(file,file.type);
             }
         },
 
         // output file information
-        ParseFile: function(file) {
-
-            // start upload
+        ParseFile: function(file,widgetid) {
+			var ip = this.fetch_instance_props(widgetid);
+            
+			// start upload
             var filedata ="";
             var reader = new FileReader();
             reader.onloadend = function(e) {
                 filedata = e.target.result;
-                uploader.uploadFile(filedata, file.type);
+                ip.uploader.uploadFile(filedata, file.type);
             }
             reader.readAsDataURL(file);
 

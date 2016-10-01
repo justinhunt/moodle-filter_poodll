@@ -6,10 +6,21 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
     log.debug('PoodLL Flash Recorder: initialising');
 
     return {
-    
-        savebutton: null,
-        audiodatacontrol: null,
-        config: null,
+		
+		instanceprops: [],
+		
+		fetch_instance_props : function(widgetid){
+			return this.instanceprops[widgetid];
+		},
+		
+		init_instance_props: function(widgetid){
+			var props = {};
+			props.savebutton= null;
+			props.audiodatacontrol= null;
+			props.config= null;
+			props.uploader = null;
+			this.instanceprops[widgetid] = props
+		},
     
     	// This recorder supports the current browser
         supports_current_browser: function(config) { 
@@ -34,9 +45,10 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
 				config.s3filename =false;
 				config.using_s3=false;
 			}
-		
+			this.init_instance_props(config.widgetid);
+			var ip = this.fetch_instance_props(config.widgetid);
         	//set config
-        	this.config = config;
+        	ip.config = config;
 	
 		   //swf recorder
             var swfopts = $.parseJSON(config.flashmp3audio_widgetjson);        
@@ -53,30 +65,32 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
         	 $(element).prepend(audiocontrol);
      
      		//init the uploader
-		   uploader.init(element,config);
+			ip.uploader  = uploader.clone();
+		    ip.uploader.init(element,config);
      
 			//register events
 			lz.embed[config.widgetid].setCanvasAttribute('audiodatacontrol',audiodatacontrolid);
-			this.savebutton = $('#' + savebuttonid );
-			this.audiodatacontrol = $('#' + audiodatacontrolid );
-			this.registerevents();
+			ip.savebutton = $('#' + savebuttonid );
+			ip.audiodatacontrol = $('#' + audiodatacontrolid );
+			this.registerevents(config.widgetid);
         },
         
-        registerevents: function(){
-        	var thisthis  = this;
-        	this.savebutton.click(function() {
+        registerevents: function(widgetid){
+			var ip = this.fetch_instance_props(widgetid);
+			
+        	ip.savebutton.click(function() {
                 //this.disabled = true;
               //here we convert a string og base64 data into a blob which represents 
               //an mp3 file.  
-              var audiodata = atob(thisthis.audiodatacontrol.val());
+              var audiodata = atob(ip.audiodatacontrol.val());
               var audioblobdata=[];
               for(var i = 0; i < audiodata.length; i++) {audioblobdata.push(audiodata.charCodeAt(i));}
               var audioBlob = new Blob([new Uint8Array(audioblobdata)],{type: 'audio/mpeg3'});
               //and we upload that blob
-              uploader.uploadBlob(audioBlob,'audio/mpeg3');
+              ip.uploader.uploadBlob(audioBlob,'audio/mpeg3');
               //we would like to disable the recorder here
               var apicall = 'poodllapi.mp3_disable()';
-              lz.embed[thisthis.config.widgetid].callMethod(apicall);
+              lz.embed[ip.config.widgetid].callMethod(apicall);
               //just in case
               return false;
             });//end of save button click
