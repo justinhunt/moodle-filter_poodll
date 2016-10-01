@@ -1835,10 +1835,7 @@ class poodlltools
 
 		// Lets determine if we are using S3
 		$using_s3 = $CFG->filter_poodll_cloudrecording && ($mediatype=='audio' || $mediatype=='video');
-		//if we have an mp3 based flash recorder
-		if($using_s3 && $CFG->filter_poodll_mp3recorder_nocloud && $mediatype=='audio'){
-			$using_s3 = false;
-		}
+
 		
 		// if we are using S3 lets get an upload url
 		if($using_s3){
@@ -1857,6 +1854,9 @@ class poodlltools
 			$posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
 		}
 		
+		//cloudbypassurl
+		$cloudbypassurl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		
 		//generate a (most likely) unique id for the recorder, if one was not passed in
 		$widgetid = \html_writer::random_id('recorderbase');
 
@@ -1864,6 +1864,7 @@ class poodlltools
 		$widgetopts->id = $widgetid;
 		$widgetopts->widgetid = $widgetid;
 		$widgetopts->posturl = $posturl;
+		$widgetopts->cloudbypassurl = $cloudbypassurl;
 		$widgetopts->updatecontrol = $updatecontrol;
 		$widgetopts->mediatype=$mediatype;
 		$widgetopts->p1 = '';
@@ -2143,7 +2144,7 @@ class poodlltools
 		$widgetopts= array();			
 		$widget="PoodLLVideoRecorder.lzx.swf9.swf";
 		$widgetopts['red5video_widgetjson'] = self::fetchSWFWidgetJSON($widget, $params, $width, $height, '#FFFFFF', $widgetid);
-
+		
 		//return opts
 		return $widgetopts;
 	}//end of fetch red5 video recorder amd params
@@ -2274,11 +2275,11 @@ class poodlltools
 		$params['autosubmit'] = $autosubmit;
 		$params['timelimit'] = $timelimit;
 		$params['canpause'] = $canpause;
-                $params['debug'] = 'false';
+        $params['debug'] = 'false';
 		$params['lzproxied'] = 'false';
 		$params['sendmethod'] = 'post';
 		$params['updatecontrol'] = $updatecontrol;
-		//$params['audiodatacontrol'] = $audiocontrol;
+		
 
 		//fetch and merge lang params
 		$langparams = self::filter_poodll_fetch_recorder_strings();
@@ -2304,7 +2305,9 @@ class poodlltools
 		
 		$widget="PoodllMP3Record.lzx.swf10.swf";
 		$widgetopts['flashmp3audio_widgetjson'] = self::fetchSWFWidgetJSON($widget, $params, $width, $height, '#FFFFFF', $widgetid);
-
+		//if we are bypassing clooud
+		$widgetopts['flashmp3_cloudbypass'] =  $CFG->filter_poodll_mp3recorder_nocloud;
+		
 		//return opts
 		return $widgetopts;
                 

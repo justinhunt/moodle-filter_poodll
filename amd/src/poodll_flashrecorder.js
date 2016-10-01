@@ -27,7 +27,14 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
         embed: function(element, config) { 
-        
+			//if we are bypassing cloud tweak a few things
+			if(config.flashmp3_cloudbypass==1){
+				config.posturl = config.cloudbypassurl; 
+				config.filename=false;
+				config.s3filename =false;
+				config.using_s3=false;
+			}
+		
         	//set config
         	this.config = config;
 	
