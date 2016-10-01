@@ -7,18 +7,11 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
 
     return {
     
-    	recorded_index: 0,
-    	mediaRecorder: null,
-    	blobs: [],
-        controlbarid: '',
-        timeinterval: 5000,
-        audiomimetype: 'audio/webm',
-        videorecordertype: 'auto',//mediarec or webp
-        videocapturewidth: 320,
-        videocaptureheight: 240,
-        controlbar: '',
-        previewvolume: 1,
-        uploaded: false,
+		instanceprops: [],
+		
+		fetch_instanceprops : function(controlbarid){
+			return this.instanceprops[controlbarid];
+		},
     	
     	// This recorder supports the current browser
         supports_current_browser: function(config) {
@@ -38,37 +31,57 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
         embed: function(element, config) { 
-            this.config = config;
-            this.timeinterval = config.media_timeinterval;
-            this.audiomimetype = config.media_audiomimetype;
-			this.videorecordertype = config.media_videorecordertype;
-			this.videocapturewidth = config.media_videocapturewidth;
-			this.videocaptureheight = config.media_videocaptureheight;
-            var controlbarid = "filter_poodll_controlbar_" + config.widgetid; 
-           
- 
-            switch(config.mediatype){
+			var controlbarid = "filter_poodll_controlbar_" + config.widgetid;
+			this.init_instance_props(controlbarid);
+			var ip = this.fetch_instanceprops(controlbarid);
+			
+			ip.config = config;
+			ip.timeinterval = config.media_timeinterval;
+			ip.audiomimetype = config.media_audiomimetype;
+			ip.videorecordertype = config.media_videorecordertype;
+			ip.videocaptureheight = config.media_videocaptureheight; 
+            
+			switch(config.mediatype){
                 case 'audio':
                     var preview = this.fetch_audio_preview();
-                    this.controlbar = this.insert_fetch_control_bar(element,controlbarid, preview);
-                    uploader.init(element,config);
-                    this.register_audio_events();
+                    ip.controlbar = this.insert_fetch_control_bar(element,controlbarid, preview);
+					ip.uploader = uploader.clone();
+                    ip.uploader.init(element,config);
+                    this.register_audio_events(controlbarid);
                     break;
                 case 'video':
-                     var preview = this.fetch_video_preview();
-                    this.controlbar = this.insert_fetch_control_bar(element,controlbarid,preview);
-                    uploader.init(element,config);
-                    this.register_video_events();
+                    var preview = this.fetch_video_preview();
+                    ip.controlbar = this.insert_fetch_control_bar(element,controlbarid,preview);
+					ip.uploader = uploader.clone();
+                    ip.uploader.init(element,config);
+                    this.register_video_events(controlbarid);
                     break;
                    
             }
-            
-            var controlbar = this.controlbar;
-            timer.init(0,function(){
-					controlbar.status.html(timer.fetch_display_time());
+			//init timer
+            ip.timer = timer.clone();
+			ip.timer.init(0,function(){
+					ip.controlbar.status.html(ip.timer.fetch_display_time());
 					}
 				);
         },
+		
+		init_instance_props: function(controlbarid){
+			this.instanceprops[controlbarid] = {};
+			this.instanceprops[controlbarid].recorded_index= 0;
+			this.instanceprops[controlbarid].mediaRecorder= null;
+			this.instanceprops[controlbarid].blobs= [];
+			this.instanceprops[controlbarid].timeinterval= 5000;
+			this.instanceprops[controlbarid].audiomimetype= 'audio/webm';
+			this.instanceprops[controlbarid].videorecordertype= 'auto';//mediarec or webp
+			this.instanceprops[controlbarid].videocapturewidth= 320;
+			this.instanceprops[controlbarid].videocaptureheight= 240;
+			this.instanceprops[controlbarid].controlbar= '';
+			this.instanceprops[controlbarid].previewvolume= 1;
+			this.instanceprops[controlbarid].timer= {};
+			this.instanceprops[controlbarid].uploader= {};
+			this.instanceprops[controlbarid].uploaded= false;
+		},
         
         //insert the control bar and return it to be reused
         insert_fetch_control_bar: function(element,controlbarid, preview){
@@ -133,100 +146,101 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                 return data.getUTCHours() + " hours, " + data.getUTCMinutes() + " minutes and " + data.getUTCSeconds() + " second(s)";
         },
 
-        register_controlbar_events: function(onMediaSuccess, mediaConstraints){
+        register_controlbar_events: function(onMediaSuccess, mediaConstraints, controlbarid){
             var self = this;
-            
-             this.controlbar.startbutton.click(function() {
+			var ip = this.fetch_instanceprops(controlbarid);
+
+            ip.controlbar.startbutton.click(function() {
                 this.disabled = true;
-                self.blobs=[]; 
+                ip.blobs=[]; 
                 self.captureUserMedia(mediaConstraints, onMediaSuccess, self.onMediaError);          
-                self.controlbar.playbutton.attr('disabled',true);
-                self.controlbar.resumebutton.hide();
-                self.controlbar.pausebutton.show();
-                self.controlbar.pausebutton.attr('disabled',false);
-                self.set_visual_mode('recordmode',self);
+                ip.controlbar.playbutton.attr('disabled',true);
+                ip.controlbar.resumebutton.hide();
+                ip.controlbar.pausebutton.show();
+                ip.controlbar.pausebutton.attr('disabled',false);
+                self.set_visual_mode('recordmode',controlbarid);
                 
                 //timer and status bar
-                timer.reset();
-                timer.start();
-                self.update_status();
+                ip.timer.reset();
+                ip.timer.start();
+                self.update_status(controlbarid);
             });
             
-            this.controlbar.stopbutton.click(function() {
+            ip.controlbar.stopbutton.click(function() {
                 this.disabled = true;
                 
-                self.mediaRecorder.stop();
+                ip.mediaRecorder.stop();
                 //this throws an error, do we worry?
                 //self.mediaRecorder.stream.stop();
                 
-                 var preview = self.controlbar.preview;
+                 var preview = ip.controlbar.preview;
                 if(preview && preview.get(0)){
                     preview.get(0).pause();
                 }
                 
                //turn border black etc
-               self.set_visual_mode('previewmode',self);
+               self.set_visual_mode('previewmode',controlbarid);
                //timer and status bar
-               timer.stop()
-               self.update_status();
+               ip.timer.stop()
+               self.update_status(controlbarid);
                 
-               self.controlbar.playbutton.attr('disabled',false);
-               self.controlbar.pausebutton.attr('disabled',true);
-              if(!self.uploaded){
-               	self.controlbar.startbutton.attr('disabled',false);
+               ip.controlbar.playbutton.attr('disabled',false);
+               ip.controlbar.pausebutton.attr('disabled',true);
+              if(!ip.uploaded){
+               	ip.controlbar.startbutton.attr('disabled',false);
               } 
-               self.controlbar.resumebutton.hide();
-               self.controlbar.pausebutton.show();
+               ip.controlbar.resumebutton.hide();
+               ip.controlbar.pausebutton.show();
             });
           
-            this.controlbar.pausebutton.click(function() {
+            ip.controlbar.pausebutton.click(function() {
                 this.disabled = true;
                 $(this).hide();
-                self.controlbar.resumebutton.show();
-                self.mediaRecorder.resume();
-                self.mediaRecorder.pause();
-                self.controlbar.resumebutton.attr('disabled',false) ;
-                self.set_visual_mode('pausedmode',self);
+                ip.controlbar.resumebutton.show();
+                ip.mediaRecorder.resume();
+                ip.mediaRecorder.pause();
+                ip.controlbar.resumebutton.attr('disabled',false) ;
+                self.set_visual_mode('pausedmode',controlbarid);
                 
                 //timer and status bar
-                timer.pause();
-                self.update_status();
+                ip.timer.pause();
+                self.update_status(controlbarid);
             });
             
-            this.controlbar.resumebutton.click(function() {
+            ip.controlbar.resumebutton.click(function() {
                 this.disabled = true;
                 $(this).hide();
-                self.controlbar.pausebutton.show();
-                self.mediaRecorder.resume();
-                self.controlbar.pausebutton.attr('disabled',false);
-                self.set_visual_mode('recordmode',self);
+                ip.controlbar.pausebutton.show();
+                ip.mediaRecorder.resume();
+                ip.controlbar.pausebutton.attr('disabled',false);
+                self.set_visual_mode('recordmode',controlbarid);
                 
                 //timer and status bar
-                timer.resume();
-                self.update_status();
+                ip.timer.resume();
+                self.update_status(controlbarid);
             });
             
-            this.controlbar.playbutton.click(function() {
+            ip.controlbar.playbutton.click(function() {
                 this.disabled = true;
-                var preview = self.controlbar.preview.get(0);
-                if(self.blobs && self.blobs.length > 0){
-                    ConcatenateBlobs(self.blobs, self.blobs[0].type, function(concatenatedBlob) {
+                var preview = ip.controlbar.preview.get(0);
+                if(ip.blobs && ip.blobs.length > 0){
+                    ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
                              var mediaurl = URL.createObjectURL(concatenatedBlob);
                              preview.src= mediaurl;
                              preview.controls =true;
-                             preview.volume = self.previewvolume;
+                             preview.volume = ip.previewvolume;
                              preview.play();
                     }); //end of concatenate blobs
                 }        
-                self.controlbar.stopbutton.attr('disabled',false);
-                self.controlbar.startbutton.attr('disabled',true);
+                ip.controlbar.stopbutton.attr('disabled',false);
+                ip.controlbar.startbutton.attr('disabled',true);
             });
             
-           this.controlbar.savebutton.click(function() {
+           ip.controlbar.savebutton.click(function() {
                 this.disabled = true;
-              if(self.blobs && self.blobs.length > 0){
-                    ConcatenateBlobs(self.blobs, self.blobs[0].type, function(concatenatedBlob) {
-                            uploader.uploadBlob(concatenatedBlob,self.blobs[0].type);
+              if(ip.blobs && ip.blobs.length > 0){
+                    ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                            ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
                             
                             //I know you want to allow multiple submissions off one page load BUT
                             //this will require a new filename. The filename is the basis of the 
@@ -238,139 +252,143 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                             //an ajax request from the uploader, or even a set of 10 filenames/s3uploadurls
                             //pulled down at PHP time ..
                             //this is one of those cases where a simple thing is hard ...J 20160919
-                            self.controlbar.startbutton.attr('disabled',true);
-                            self.uploaded = true;
+                            ip.controlbar.startbutton.attr('disabled',true);
+                            ip.uploaded = true;
                     }); //end of concatenate blobs
                 }else{
-                    uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
+                    ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if self.blobs		
             	//probably not necessary  ... but getting odd ajax errors occasionally
             	return false;
             });//end of save recording
             
             window.onbeforeunload = function() {
-                self.controlbar.startbutton.attr('disabled',false);
-                var preview = self.controlbar.preview;
+                ip.controlbar.startbutton.attr('disabled',false);
+                var preview = ip.controlbar.preview;
                 if(preview && preview.get(0)){
                     preview.get(0).pause();
                 }
             };
         },
         
-        register_audio_events: function(){
+        register_audio_events: function(controlbarid){
         	
+			var self = this;
+			var ip = this.fetch_instanceprops(controlbarid);
+			
             var mediaConstraints = {
                 audio: true
-            };
-            //get a handle on  self class
-            var self = this;
-            
-            
+            };       
             
             var onMediaSuccess =function(stream) {
 
         	log.debug('onmediasuccess');
 
                 // get blob after specific time interval
-                self.mediaRecorder= new MediaStreamRecorder(stream);
+                ip.mediaRecorder= new MediaStreamRecorder(stream);
                // self.controlbar.preview.attr('src',URL.createObjectURL(stream));
-                self.mediaRecorder.mimeType = self.audiomimetype;
-                self.mediaRecorder.audioChannels = 1;
-                self.mediaRecorder.start(self.timeInterval);
-                self.mediaRecorder.ondataavailable =  function(blob) {
-        			self.blobs.push(blob);
+                ip.mediaRecorder.mimeType = ip.audiomimetype;
+                ip.mediaRecorder.audioChannels = 1;
+                ip.mediaRecorder.start(ip.timeInterval);
+                ip.mediaRecorder.ondataavailable =  function(blob) {
+        			ip.blobs.push(blob);
         			};
-                self.controlbar.preview.attr('src',null);               
-                self.controlbar.stopbutton.attr('disabled',false);
-                self.controlbar.pausebutton.attr('disabled',false);
-                self.controlbar.savebutton.attr('disabled',false);
+                ip.controlbar.preview.attr('src',null);               
+                ip.controlbar.stopbutton.attr('disabled',false);
+                ip.controlbar.pausebutton.attr('disabled',false);
+                ip.controlbar.savebutton.attr('disabled',false);
             };
             
-            this.register_controlbar_events(onMediaSuccess, mediaConstraints);
+            this.register_controlbar_events(onMediaSuccess, mediaConstraints, controlbarid);
           
         },//end of register audio events
         
         
-        register_video_events: function(){
+        register_video_events: function(controlbarid){
+		
+			var self = this;
+			var ip = this.fetch_instanceprops(controlbarid);
         	
             var mediaConstraints = {
                 audio: !IsOpera && !IsEdge,
                 video: true
             };
-            //get a handle on  self class
-            var self = this;
-            
+
             var onMediaSuccess =function(stream) {
 
                 //create recorder
-                self.mediaRecorder= new MediaStreamRecorder(stream);
+                ip.mediaRecorder= new MediaStreamRecorder(stream);
                 //create preview
                // self.controlbar.preview.attr('src',stream.url);
-                self.controlbar.preview.attr('src',window.URL.createObjectURL(stream));
-                self.controlbar.preview.attr('controls',false);
-                self.controlbar.preview.get(0).volume=0;
-                self.controlbar.preview.get(0).play();
+                ip.controlbar.preview.attr('src',window.URL.createObjectURL(stream));
+                ip.controlbar.preview.attr('controls',false);
+                ip.controlbar.preview.get(0).volume=0;
+                ip.controlbar.preview.get(0).play();
               
                 //set recorder type
-                if (self.videorecordertype === 'mediarec') {
-                    self.mediaRecorder.recorderType = MediaRecorderWrapper;
+                if (ip.videorecordertype === 'mediarec') {
+                    ip.mediaRecorder.recorderType = MediaRecorderWrapper;
                 }
-                if (self.videorecordertype === 'webp') {
-                    self.mediaRecorder.recorderType = WhammyRecorder;
+                if (ip.videorecordertype === 'webp') {
+                    ip.mediaRecorder.recorderType = WhammyRecorder;
                 }
                 
                 //set capture size
-                self.mediaRecorder.videoWidth = self.videocapturewidth;
-                self.mediaRecorder.videoHeight = self.videocaptureheight;
+                ip.mediaRecorder.videoWidth = ip.videocapturewidth;
+                ip.mediaRecorder.videoHeight = ip.videocaptureheight;
                 
                 //staert recording
-                self.mediaRecorder.start(self.timeInterval);
-                self.mediaRecorder.ondataavailable =  function(blob) {
-                    self.blobs.push(blob);
+                ip.mediaRecorder.start(self.timeInterval);
+                ip.mediaRecorder.ondataavailable =  function(blob) {
+                    ip.blobs.push(blob);
             		//log.debug('We got a blobby');
             		//log.debug(URL.createObjectURL(blob));
         		};
                 
-                self.controlbar.stopbutton.attr('disabled',false);
-                self.controlbar.pausebutton.attr('disabled',false);
-                self.controlbar.savebutton.attr('disabled',false);
+                ip.controlbar.stopbutton.attr('disabled',false);
+                ip.controlbar.pausebutton.attr('disabled',false);
+                ip.controlbar.savebutton.attr('disabled',false);
               
             };
             
-             this.register_controlbar_events(onMediaSuccess, mediaConstraints);
+             this.register_controlbar_events(onMediaSuccess, mediaConstraints,controlbarid);
         },//end of register video events
        
-       set_visual_mode: function(mode, self){
+       set_visual_mode: function(mode, controlbarid){
+			var self = this;
+			var ip = this.fetch_instanceprops(controlbarid);
+	   
 		   switch(mode){
 			   
 			   case 'recordmode':
-					self.controlbar.preview.addClass('poodll_recording');
-					self.controlbar.status.addClass('poodll_recording');
-					if(self.config.mediatype=='audio'){
-						self.controlbar.preview.addClass('hide');
+					ip.controlbar.preview.addClass('poodll_recording');
+					ip.controlbar.status.addClass('poodll_recording');
+					if(ip.config.mediatype=='audio'){
+						ip.controlbar.preview.addClass('hide');
 					}	
-					self.controlbar.status.removeClass('hide');		
+					ip.controlbar.status.removeClass('hide');		
 					break;
 				
 			   case 'previewmode':
-					self.controlbar.preview.removeClass('poodll_recording');
-					self.controlbar.status.removeClass('poodll_recording');
-					if(self.config.mediatype=='audio'){
-						self.controlbar.preview.removeClass('hide');
+					ip.controlbar.preview.removeClass('poodll_recording');
+					ip.controlbar.status.removeClass('poodll_recording');
+					if(ip.config.mediatype=='audio'){
+						ip.controlbar.preview.removeClass('hide');
 					}
-					self.controlbar.status.addClass('hide');
+					ip.controlbar.status.addClass('hide');
 					break;
 			   
 			   case 'pausedmode':
-					self.controlbar.preview.removeClass('poodll_recording');
-					self.controlbar.status.removeClass('poodll_recording');
+					ip.controlbar.preview.removeClass('poodll_recording');
+					ip.controlbar.status.removeClass('poodll_recording');
 					break;
 		   }
 		   
 	   },
 	   
-	   update_status: function(){
-		    this.controlbar.status.html(timer.fetch_display_time());
+	   update_status: function(controlbarid){
+			var ip = this.fetch_instanceprops(controlbarid);
+		    ip.controlbar.status.html(ip.timer.fetch_display_time());
 		}
         
         

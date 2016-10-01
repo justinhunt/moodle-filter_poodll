@@ -11,6 +11,11 @@ define(['jquery','core/log'], function($, log) {
     	seconds: 0,
     	intervalhandle: null,
     	callback: null,
+		
+		//for making multiple instances
+		clone: function(){
+			return $.extend(true,{},this);
+		},
     	
     	init: function(initseconds,callback){
     		this.initseconds = initseconds;

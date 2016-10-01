@@ -8,6 +8,10 @@ define(['jquery','core/log'], function($, log) {
     return {
     
     	config: null,
+		//for making multiple instances
+		clone: function(){
+			return $.extend(true,{},this);
+		},
     	
     	init: function(element,config){
     		this.config = config;
