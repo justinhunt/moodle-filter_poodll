@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.0.11(Build 2016081412)
+-updated youtube lightbox
+
 Version 3.0.10(Build 2016081411)
 - Added the correct CSS to fetch progress image
 - Fixed problem affecting mp4/mp3 checkbox on red5 recorders
