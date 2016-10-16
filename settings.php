@@ -25,6 +25,16 @@ if (is_siteadmin()) {
 	}
 	$ADMIN->add('filter_poodll_topcat', $extension_settings);
 	
+	///diagnostics items
+	//$diagnostics_settings = new admin_settingpage('filter_poodll_diagnostics',get_string('diagnosticssettings', 'filter_poodll'));
+	
+	$diagnostics_settings = new admin_externalpage('poodlldiagnostics', get_string('supportinfo', 'filter_poodll'),
+          $CFG->wwwroot . '/filter/poodll/poodlldiagnostics.php' );
+	
+	$ADMIN->add('filter_poodll_topcat', $diagnostics_settings);
+
+
+
 	//Mobile app Settings 
 	$mobile_settings = new admin_settingpage('filter_poodll_mobile',get_string('mobilesettings', 'filter_poodll'));
 	$mobile_items =  \filter_poodll\settingstools::fetch_mobile_items($conf);
