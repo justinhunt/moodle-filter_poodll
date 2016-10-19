@@ -216,10 +216,13 @@ $string['useplayer'] = '{$a} Player';
 $string['useplayerdesc'] = "The player selected will use the information from the appropriate template.";
 $string['handle'] = 'Handle {$a}';
 $string['widgetsettings'] = 'Widget Settings';
+$string['supportinfo'] = 'Support Info';
 $string['extensionsettings'] = 'File Extension Settings';
 $string['mobilesettings'] = 'iOS App Settings';
 $string['dataset'] = 'Dataset';
 $string['dataset_desc'] = 'Poodll allows you to pull a dataset from the database for use in your template. This is an advanced feature. Enter the sql portion of a $DB->get_records_sql call here.';
 $string['datasetvars'] = 'Dataset Variables';
 $string['datasetvars_desc'] = 'Put a comma separated list of variables that make up the vars for the SQL. You can and probably will want to use variables here.';
-
+$string['value']='value';
+$string['poodllsupportinfo']='PoodLL Support Information';
+$string['exportdiagnostics']="Export";
