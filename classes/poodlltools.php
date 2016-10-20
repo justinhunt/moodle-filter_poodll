@@ -412,6 +412,11 @@ class poodlltools
 	public static function fetchDrawingBoard($forsubmission = true, $width = 0, $height = 0, $backimage = "", $updatecontrol = "", $contextid = 0, $component = "", $filearea = "", $itemid = 0, $callbackjs = false, $vectorcontrol = '', $vectordata = '')
 	{
 		global $CFG, $USER, $COURSE, $PAGE;
+		
+		//set url of poodllfilelib
+		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		//set media type
+		$mediatype = "image";
 
 		//javascript upload handler
 		$opts = Array();
@@ -419,7 +424,19 @@ class poodlltools
 		$opts['callbackjs'] = $callbackjs;
 		$opts['updatecontrol'] = $updatecontrol;
 		$opts['vectorcontrol'] = $vectorcontrol;
-		$opts['vectordata'] = $vectordata;
+		$opts['vectordata'] = $vectordata;	
+		$opts['widgetid'] = $opts['recorderid'];
+		$opts['callbackjs'] = $callbackjs;
+		$opts['using_s3'] = false;
+		$opts['base64control'] = '';//do this later
+		$opts['p1'] = '';
+		$opts['p2'] = $contextid;
+		$opts['p3'] = $component;
+		$opts['p4'] = $filearea;
+		$opts['p5'] = $itemid;
+		$opts['mediatype'] = $mediatype;
+		$opts['posturl'] = $poodllfilelib;
+		
 
 		//be careful here, only set the background IF
 		//(a) we have an image and (b) we have no vectordata
@@ -430,24 +447,13 @@ class poodlltools
 		if ($CFG->filter_poodll_autosavewhiteboard && $forsubmission) {
 			$opts['autosave'] = $CFG->filter_poodll_autosavewhiteboard;
 		}
-
-
-		//do what we have to do for moodle 2.9 and lower
-		if (true || $CFG->version < 2013051400) {
-
-			//We need this so that we can require the JSON , for json stringify
-			$jsmodule = array(
-				'name' => 'filter_poodll',
-				'fullpath' => '/filter/poodll/module.js',
-				'requires' => array('json')
-			);
-
-			//setup our JS call
-			$PAGE->requires->js_init_call('M.filter_poodll.loaddrawingboard', array($opts), false, $jsmodule);
-		} else {
-			$PAGE->requires->js_call_amd("filter_poodll/drawingboard_amd", 'loaddrawingboard', array($opts));
-
-		}
+	
+		//we encode the options and send them to html. Moodle doesn't like them cluttering the JS up
+		//when using AMD
+		$jsonstring = json_encode($opts);
+		$opts_html = \html_writer::tag('input', '', array('id' => 'amdopts_' . $opts['recorderid'], 'type' => 'hidden', 'value' => $jsonstring));
+		$PAGE->requires->js_call_amd("filter_poodll/drawingboard_amd", 'loaddrawingboard', array(array('recorderid' => $opts['recorderid'])));
+	
 		//removed from params to make way for moodle 2 filesystem params Justin 20120213
 		if ($width == 0) {
 			$width = $CFG->filter_poodll_whiteboardwidth;
@@ -455,8 +461,6 @@ class poodlltools
 		if ($height == 0) {
 			$height = $CFG->filter_poodll_whiteboardheight;
 		}
-		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
-
 
 		//the control to put the filename of our picture
 		if ($updatecontrol == "saveflvvoice") {
@@ -464,33 +468,15 @@ class poodlltools
 		} else {
 			$savecontrol = "";
 		}
-
-		//set media type
-		$mediatype = "image";
-
-
-		//include other needed libraries
-		$PAGE->requires->js("/filter/poodll/js/drawingboard.js/dist/drawingboard.min.js");
-
-
-		//save button
-		$savebutton = "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_updatecontrol\" value=\"$updatecontrol\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_contextid\" value=\"$contextid\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_component\" value=\"$component\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_mediatype\" value=\"$mediatype\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_filearea\" value=\"$filearea\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_itemid\" value=\"$itemid\" />";
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_fileliburl\" value=\"$poodllfilelib\" />";
-
-		//justin 20151210 vectordata
-		$savebutton .= "<input type=\"hidden\" id=\"" . $opts['recorderid'] . "_vectorcontrol\" value=\"$vectorcontrol\" />";
-
+		
+		//if autosaving
 		if (array_key_exists('autosave', $opts)) {
 			$buttonclass = "w_btn";
 		} else {
 			$buttonclass = "p_btn";
 		}
-		$savebutton .= "<button type=\"button\" id=\"" . $opts['recorderid'] . "_btn_upload_whiteboard\" class=\"$buttonclass\">"
+		//save button
+		$savebutton = "<button type=\"button\" id=\"" . $opts['recorderid'] . "_btn_upload_whiteboard\" class=\"$buttonclass\">"
 			. get_string('whiteboardsave', 'filter_poodll') .
 			"</button>";
 
@@ -508,8 +494,10 @@ class poodlltools
 			$returnString .= $savecontrol;
 			$returnString .= $savebutton;
 			$returnString .= $progresscontrols;
+			
 		}
 		$returnString .= $dbClose;
+		$returnString .= $opts_html;
 
 		$renderer = $PAGE->get_renderer('filter_poodll');
 		return $renderer->fetchDrawingBoard($returnString);
