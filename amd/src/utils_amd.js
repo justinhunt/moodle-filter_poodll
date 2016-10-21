@@ -9,27 +9,20 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
 		timeouthandles: [],
        // Call Upload file from drawingboard a, first handle autosave bits and pieces
         WhiteboardUploadHandler: function(recid,wboard,opts) {
-        	log.debug('gotach');
             // Save button disabling a little risky db perm. fails publish "startdrawing" after mode change
             var savebutton = $('#' + recid + '_btn_upload_whiteboard')[0];
             savebutton.disabled=true;
-            log.debug('gotach 2');
             clearTimeout(this.timeouthandles[recid]);
             //call the file upload
-            log.debug('gotach 3');
             var cvs = this.getCvs(recid,wboard,opts);
             this.pokeVectorData(recid,wboard,opts);
             uploader.uploadFile(cvs.toDataURL(),'image');
         },
         
         getCvs: function(recid,wboard,opts){
-        	log.debug('heere');
             if(recid.indexOf('drawingboard_')==0){
                 var cvs = wboard.canvas;
-                log.debug('heere');
             }else{
-            	log.debug('now heere');
-                //var cvs = wboard.getImage({});
             	var cvs =wboard.canvasForExport();
             }//end of of drawing board
             return cvs;

@@ -113,7 +113,33 @@ class filter_poodll_renderer extends plugin_renderer_base {
 
 	public function fetchDrawingBoard($html)
 	{
+		global $PAGE;
+		//The strings we need for js
+		
+   		 $PAGE->requires->strings_for_js(array('insert',
+                                          'cancel',
+                                          'recui_record',
+                                          'recui_recordorchoose',
+                                          'recui_pause',
+                                          'recui_play',
+                                          'recui_stop',
+                                          'recui_save',
+                                          'recui_continue',
+                                          'recui_uploading',
+                                          'recui_converting',
+                                          'recui_uploading',
+                                          'recui_uploadafile',
+                                          'recui_uploadsuccess',
+                                          'recui_openrecorderapp',
+                                          'recui_awaitingconfirmation',
+                                          'recui_uploaderror',
+                                          'recui_takesnapshot',
+                                          'recui_cancelsnapshot',
+                                          'recui_nothingtosaveerror',
+                                          ),
+                                    'filter_poodll');
 		return $html;
+
 
 	}
 
