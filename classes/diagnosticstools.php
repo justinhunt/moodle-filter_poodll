@@ -55,7 +55,7 @@ class diagnosticstools {
 		
 		//general version info
 		$ds['moodle_version'] = $CFG->version;
-		$ds['os_version']= 0;
+		$ds['os_version']= php_uname();
 		
 		//poodll version info
 		$ds['poodll_filter_version'] = get_config('filter_poodll','version');
@@ -84,6 +84,7 @@ class diagnosticstools {
 		$ds['maxupload'] = $CFG->maxbytes;
 		$ds['cronclionly'] = $CFG->cronclionly;
 		$ds['suhosin'] = extension_loaded('suhosin'); //this is not working what "name"?
+		$ds['pfl_permissions'] = decoct(fileperms($CFG->dirroot . '/filter/poodll/poodllfilelib.php') & 0777); 
 		
 		//site setting info
 		$ds['currenttheme']= \core_useragent::get_device_type_theme('default');
@@ -122,6 +123,11 @@ class diagnosticstools {
 		$ds['useplayerwebm']=get_config('filter_poodll','useplayerwebm');
 		$ds['useplayertube']=get_config('filter_poodll','useplayeryoutube');
 		
+		//PHP settings
+		$ds['maxexecutiontime']=ini_get('max_execution_time'); 
+		$ds['postmaxsize']=ini_get('post_max_size'); 
+		$ds['uploadmaxfilesize']=ini_get('upload_max_filesize'); 
+		$ds['memorylimit']=ini_get('memory_limit'); 
 		
 		//filter setting info	
 		foreach (\core_component::get_plugin_list('filter') as $plugin => $unused) {
