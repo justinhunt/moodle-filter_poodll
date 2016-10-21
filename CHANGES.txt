@@ -1,7 +1,11 @@
 Change List
 =========
+
 Version 3.0.11(Build 2016081412)
 -updated youtube lightbox
+- added diagnostics page to settings
+- fixed broken drawingboard.js
+- tweaked some presets
 
 Version 3.0.10(Build 2016081411)
 - Added the correct CSS to fetch progress image
