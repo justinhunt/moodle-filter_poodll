@@ -97,20 +97,20 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
         insert_video_button: function(element, widgetid){
 			var ip = this.fetch_instance_props(widgetid);
 			var controls = '<a class ="filter_poodll_mobilerecorderlink" id="' + ip.linkid + 
-                                '" href="poodll:record?filename=' + ip.config.s3filename + 
+                                '" href="poodllrecorder://?presignedurl=' + encodeURIComponent(ip.config.s3filename) + 
                                 '&type=' + ip.config.mediatype + '&quality=' + ip.config.mobilequality + 
                                 '&camera=' + ip.config.mobilecamera + 
-                                '&s3folder=&timelimit='+ ip.config.timelimit + '">' + 
+                                '&timelimit='+ ip.config.timelimit + '">' + 
                                 M.util.get_string('recui_openrecorderapp', 'filter_poodll') + '</a>';
 			$(element).prepend(controls);        
         },
         insert_audio_button: function(element,widgetid){
 			var ip = this.fetch_instance_props(widgetid);
 			var controls = '<a class ="filter_poodll_mobilerecorderlink"  id="' + ip.linkid + 
-                                '" href="poodll:record?filename=' + ip.config.s3filename + 
+                                '" href="poodllrecorder://?presignedurl=' + encodeURIComponent(ip.config.s3filename) + 
                                 '&type=' + ip.config.mediatype + '&quality=' + ip.config.mobilequality + 
 								'&camera=' + ip.config.mobilecamera +
-                                '&s3folder=&timelimit='+ ip.config.timelimit + '">' +
+                                '&timelimit='+ ip.config.timelimit + '">' +
                                 M.util.get_string('recui_openrecorderapp', 'filter_poodll') + '</a>';
 			$(element).prepend(controls);        
         },
