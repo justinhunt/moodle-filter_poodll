@@ -6,6 +6,7 @@ Version 3.0.11(Build 2016081412)
 - added diagnostics page to settings
 - fixed broken drawingboard.js
 - tweaked some presets
+- fixed bug in mp3recorder(flash)  which killed recording on IE with latest flash
 
 Version 3.0.10(Build 2016081411)
 - Added the correct CSS to fetch progress image

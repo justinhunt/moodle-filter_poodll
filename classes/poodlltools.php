@@ -1899,7 +1899,7 @@ class poodlltools
 		}
 
 		//for audio mp3 recorder amd params
-		$rawparams = self::fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit, $callbackjs);
+		$rawparams = self::fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol, $contextid, $component, $filearea, $itemid,$timelimit, $callbackjs);
 		foreach ($rawparams as $key => $value) {
 								$widgetopts->{$key} = $value;
 		}
@@ -2227,7 +2227,7 @@ class poodlltools
 	 * Fetch any special parameters required by the MP3 recorder
 	 *
 	 */
-	  public static function fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol,$timelimit = "0", $callbackjs = false)
+	  public static function fetchFlashMP3RecorderAMDParams($widgetid,$updatecontrol, $contextid, $component, $filearea, $itemid,$timelimit = "0", $callbackjs = false)
 		{
 			global $CFG, $USER, $COURSE;
                 
@@ -2240,7 +2240,7 @@ class poodlltools
 		$micloopback = $CFG->filter_poodll_micloopback;
 		$micdevice = $CFG->filter_poodll_studentmic;
 
-		//we can add or remove this,
+		//this only applies to direct from flash uploads (ala internet explorer)
 		$autosubmit = "true";
 
 		//can we pause or not
@@ -2265,8 +2265,19 @@ class poodlltools
 		$params['canpause'] = $canpause;
         $params['debug'] = 'false';
 		$params['lzproxied'] = 'false';
-		$params['sendmethod'] = 'post';
+		$params['sendmethod'] = 'post';//'ajax' = direct fron flash uploading;
+
+		$params['showexportbutton'] = 'false';
+		$poodllfilelib = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+		$params['posturl'] = $poodllfilelib;
+		$params['p1'] = 1;//?? what goes here?
+		$params['p2'] = $contextid;
+		$params['p3'] = $component;
+		$params['p4'] = $filearea;
+		$params['p5'] = $itemid;
+				
 		$params['updatecontrol'] = $updatecontrol;
+		$params['audiodatacontrol']=$widgetid . '_adc';
 		
 
 		//fetch and merge lang params
@@ -2282,9 +2293,11 @@ class poodlltools
 		if ($CFG->filter_poodll_mp3recorder_size =='normal') {
 			$width = "350";
 			$height = "180";
+			$params['size'] = 'normal';
 		} else {
 			$width = "240";
 			$height  = "170";
+			$params['size'] = 'small';
 		}
 		
 		 //make the widget opts which we will return
