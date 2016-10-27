@@ -332,7 +332,8 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 				if($do_bg_encoding && $CFG->version>=2014051200){
 					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg_bg($record,$filename,$filenamebase, $convext );
 				}else{
-					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($record, $filename,$filenamebase, $convext );				
+					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($record, $filename,$filenamebase, $convext );
+					
 				}
 				if($stored_file){
 					$filename=$stored_file->get_filename();
@@ -545,6 +546,9 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	$red5_fileurl= "http://" . $CFG->filter_poodll_servername .
 		":"  .  $CFG->filter_poodll_serverhttpport . "/poodll/" . $jsp . "?poodllserverid=" .
 		$CFG->filter_poodll_serverid . "&filename=" . $downloadfilename . "&caller=" . urlencode($CFG->wwwroot);
+		
+//echo $red5_fileurl . '<br />';		
+		
 	//download options
 	$options = array();
 	$options['headers']=null;
@@ -567,19 +571,24 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 		//determine the temp directory
 		$tempdir =  $CFG->tempdir . "/";
 	
+//echo $tempdir . '<br />';
 	
 		//actually make the file on disk so FFMPEG can get it
 		$mediastring = file_get_contents($red5_fileurl);
+//echo 'strlen: ' . strlen($mediastring) . '<br />';
+
 		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
+		
+//echo 'tdir:' . $tempdir . $downloadfilename;
 		//if successfully saved to disk, convert
 		if($ret){
 			$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $ext==".mp3") ||
 				($CFG->filter_poodll_bgtranscode_video && $ext==".mp4");
 
-			if($do_bg_encoding && $CFG->version>=2014051200){
+			if($do_bg_encoding){
 				$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg_bg($file_record,$downloadfilename,$filenamebase, $ext );
 			}else{
-				$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($file_record,$tempdir,$downloadfilename,$filenamebase, $ext );
+				$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($file_record,$downloadfilename,$filenamebase, $ext );
 			}
 
 			if($stored_file){
