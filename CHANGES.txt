@@ -5,9 +5,11 @@ Version 3.0.12(Build 2016081413)
 -fixed a bug in the once player template that caused strange page jumps to oneplayer only pages
 -fixed a bug that caused a form submit in the elton player template
 -fixed a bug that broke FFMPEG conversions from red5/tokyo.poodll.com recordings
+-numerous tweaks to template presets
+-added audioquality setting to mobile settings
 
 Version 3.0.11(Build 2016081412)
--updated youtube lightbox
+- updated youtube lightbox
 - added diagnostics page to settings
 - fixed broken drawingboard.js
 - tweaked some presets

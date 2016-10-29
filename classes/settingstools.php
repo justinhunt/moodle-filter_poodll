@@ -144,8 +144,7 @@ public static function fetch_mobile_items($conf){
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_mobile_show', get_string('mobile_show', 'filter_poodll'), get_string('mobile_show_desc', 'filter_poodll'), 0);
 	
 	$quality_options = array('low' => get_string('lowquality', 'filter_poodll'), 'medium'=>get_string('mediumquality', 'filter_poodll'), 'high'=>get_string('highquality', 'filter_poodll'));
-	//right now the quality option is only for video, but later we might put this in.
-	//$items[] = new \admin_setting_configselect('filter_poodll_mobile_audio_quality', get_string('mobile_audio_quality', 'filter_poodll'), '', 'medium', $quality_options);
+	$items[] = new \admin_setting_configselect('filter_poodll_mobile_audio_quality', get_string('mobile_audio_quality', 'filter_poodll'), '', 'medium', $quality_options);
 	$items[] = new \admin_setting_configselect('filter_poodll_mobile_video_quality', get_string('mobile_video_quality', 'filter_poodll'), '', 'medium', $quality_options);
 
 	$camera_options = array('front' => get_string('camerafront', 'filter_poodll'), 'back'=>get_string('cameraback', 'filter_poodll'));

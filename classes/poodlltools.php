@@ -2349,9 +2349,7 @@ class poodlltools
         switch($mediatype){
         	case 'audio': 
         		//from low/medium/high
-        		$params['mobilequality']='medium';
-        		//right now we don't have audio quality. Maybe later.
-        		//$params['mobilequality']=$CFG->filter_poodll_mobile_audio_quality; 
+        		$params['mobilequality']=$CFG->filter_poodll_mobile_audio_quality; 
         		break;
         	case 'video': 
         		//from low/medium/high
