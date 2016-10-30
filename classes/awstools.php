@@ -54,6 +54,20 @@ class awstools
 	protected $preset_mp4 = "1467090505514-0gibkw";
 	protected $thumbnail_preset = '1467090505514-0gibkw'; //thumbnail size is set to preset size so use 720p preset to get a bigger thumbnail. 
 
+
+
+    /**
+     * Make S3 filename (ala object key)
+     */
+	public static function fetch_s3_filename($mediatype, $filename){
+            global $CFG,$USER;
+            $s3filename =$CFG->wwwroot . '/' . $USER->sesskey . '/' . $mediatype . '/' . $filename;
+            $s3filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $s3filename);
+            // Remove any runs of periods (thanks falstro!)
+            $s3filename = mb_ereg_replace("([\.]{2,})", '', $s3filename);       
+            return $s3filename;
+    }
+
 	 /**
      * Constructor
      */
@@ -95,14 +109,37 @@ class awstools
 		return $this->transcoder;
 	}
         
-        public static function fetch_s3_filename($mediatype, $filename){
-            global $CFG,$USER;
-            $s3filename =$CFG->wwwroot . '/' . $USER->sesskey . '/' . $mediatype . '/' . $filename;
-            $s3filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $s3filename);
-            // Remove any runs of periods (thanks falstro!)
-            $s3filename = mb_ereg_replace("([\.]{2,})", '', $s3filename);       
-            return $s3filename;
-        }
+    
+    //post file data directly to S3
+	function s3_put_filedata($mediatype,$key,$filedata){
+		$s3client = $this->fetch_s3client();
+	
+		//Get bucket
+		$bucket='';
+		switch($mediatype){
+			case 'audio':
+				$bucket=$this->bucket_audio_in;
+				break;
+			case 'video':
+				$bucket=$this->bucket_video_in;
+				break;
+		}
+		//options
+		$options = array();
+		$options['Bucket']=$bucket;
+		$options['Key']=$key;
+		$options['Body']=$filedata;
+		//$options['Sourcefile']=$filepath;
+		//$options['ContentMD5']=false;
+		$options['ContentType']='application/octet-stream';
+		
+		$result = $s3client->putObject($options);
+		if($result){
+			return true;
+		}else{
+			return false;
+		}	
+	}
 
 	
 	//create a single job
@@ -393,116 +430,7 @@ class awstools
 	}
 	
 	
-	
-	/**
-*
-*
-*  PATH/NAME HANDLING CODE STARTS HERE
-*
-*/
 
-	
-/*	
-	
-	//check that filename appears correct
-	function partsarray_sanity_check($partsarray,$length=3){
-		//check number of elements in basename/partsarray
-		if(count($partsarray)!= $length){
-			echo "filename must be of format [coursename]_module[xx]_[filename].[ext]";
-			echo " OR  format [coursename]_module[xx]_[filename]_poster.[ext]";
-			return false;
-		}
-		
-		//check module name
-		if(strpos(strtoLower($partsarray[1]),'module')!=0){
-			echo $partsarray[1] . " MUST be format modulexx";
-			return false;
-		}
-		
-		//chedk coursename
-		switch(strtoLower($partsarray[0])){
-			case 'idawn': 
-			case 'icareerskills':
-			case 'itech':
-			case 'ibiz':
-			case 'inumbers':
-				//all ok
-				break;
-			default:
-				echo $partsarray[0] . "is not a known course";
-				return false;
-			
-		}
-		
-		//sanity check passed
-		return true;
-	}
-
-	
-	//get the destination folder of a file when not yet moved finally
-	function fetch_production_prefix($input_key, $type){
-		$noextension = substr($input_key, 0, -4);
-		$basename = basename($noextension);
-		$partsarray = split('_',$basename);
-		
-		switch($type){
-			case 'image': $correct_parts_size = 3;break;
-			case 'quiz': $correct_parts_size = 3;break;
-			case 'video': $correct_parts_size = 3;break;
-			case 'poster': $correct_parts_size = 4;break;
-		}
-		
-		//brief sanity check
-		$filenameisgood = $this->partsarray_sanity_check($partsarray,$correct_parts_size);
-		if(!$filenameisgood){
-			echo "filename: " . $basename . " appears wrong.";
-			return false;
-		}
-		
-		$finalarray = array();
-		$finalarray[0]='publiccontent';
-		$finalarray[1]='courses';
-		$coursename = strtoLower($partsarray[0]);
-		$modulename = strtoLower($partsarray[1]);
-		$finalarray[2]=$coursename;
-		$finalarray[3]=$modulename; //module e.g module01
-		$finalarray[4]='content';
-		
-		switch($type){
-			case 'image': 
-				$finalarray[5]='images'; 
-				break;
-			case 'quiz': 
-				$finalarray[5]='quizzes';
-				break;
-			case 'video': 		
-				$finalarray[5]='media';
-				$finalarray[6]='video';
-				break;
-			case 'poster': 		
-				$finalarray[5]='media';
-				$finalarray[6]='video';
-				//the video name
-				$finalarray[7]=$partsarray[2];
-				break;
-		
-		}
-		
-		$production_prefix = implode('/',$finalarray);
-		$production_prefix .= '/';
-		return $production_prefix ;
-	}
-	
-	//fetch or create the transcoder object 
-	function fetch_s3client(){
-		if(!$this->s3client){
-			$this->s3client = S3Client::factory(array('credentials' => 
-				array('key' => $this->accesskey, 'secret' => $this->secretkey)));
-		}
-		return $this->s3client;
-	}
-
-	*/
 	
 	
 	

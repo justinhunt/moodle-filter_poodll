@@ -473,6 +473,7 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	//The jsp to call is different.
 	$jsp="download.jsp";
 	$convertlocally=false;
+	$convertremotely=false;
 	$downloadfilename = $filename;
 	$ext = substr($filename,-4);
 	$filenamebase = substr($filename,0,-4);
@@ -481,16 +482,11 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	switch($ext){
 
 		case ".mp4":
-			if ($CFG->filter_poodll_ffmpeg){
-				$convertlocally=true;
-				$downloadfilename = $filenamebase . ".flv";
-			}else{
-				$jsp="convert.jsp";
-			}
-			break;
-
 		case ".mp3":
-			if ($CFG->filter_poodll_ffmpeg){
+			if ($CFG->filter_poodll_cloudrecording){
+				$convertremotely=true;
+				$downloadfilename = $filenamebase . ".flv";
+			}elseif($CFG->filter_poodll_ffmpeg){
 				$convertlocally=true;
 				$downloadfilename = $filenamebase . ".flv";
 			}else{
@@ -527,13 +523,6 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	$file_record->timecreated = time();
 	$file_record->timemodified= time();
 	
-	//one condition of using this function is that only one file can be here,
-	//attachment limits
-	/*
-    if($filearea=='draft'){
-        $fs->delete_area_files($contextid,$component,$filearea,$itemid);
-    }
-    */
 
 	//if file already exists, delete it
 	//we could use fileinfo, but it don&'t work
@@ -566,20 +555,49 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	}
 
 
-	//branch logic depending on whether (converting locally) or (not conv||convert on server)
+	//convert remotely on AWS
+	if($convertremotely){
+		 $awstools = new \filter_poodll\awstools();
+		 $mediatype='video';
+		 $filedata = file_get_contents($red5_fileurl);
+		 switch($ext){
+		 	case '.mp4': $mediatype='video';
+		 		break;
+			case '.mp3': $mediatype='audio';
+		 		break;		 
+		 }
+		 $key =  \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
+		 $success = $awstools->s3_put_filedata($mediatype,$key,$filedata);
+     	 $ret =  \filter_poodll\poodlltools::postprocess_s3_upload($mediatype, $file_record);
+     	 if(!$ret){
+     	 	$return['success']=false;
+			array_push($return['messages'],"Unable to setup s3 post processing." );
+		}else{
+			//setup our return object
+			$return['success']=true;
+			array_push($return['messages'],$filename );
+		}
+
+		//we process the result for return to browser
+		$xml_output=filter_poodll_prepareLegacyXMLReturn($return, $requestid);
+
+		//we return to browser the result of our file operation
+		return $xml_output;
+     	 
+	}
+
+	//Convert locally using FFMPEG
 	if($convertlocally){
 		//determine the temp directory
 		$tempdir =  $CFG->tempdir . "/";
-	
-//echo $tempdir . '<br />';
+
 	
 		//actually make the file on disk so FFMPEG can get it
 		$mediastring = file_get_contents($red5_fileurl);
-//echo 'strlen: ' . strlen($mediastring) . '<br />';
 
 		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
 		
-//echo 'tdir:' . $tempdir . $downloadfilename;
+
 		//if successfully saved to disk, convert
 		if($ret){
 			$do_bg_encoding = ($CFG->filter_poodll_bgtranscode_audio && $ext==".mp3") ||
@@ -620,8 +638,8 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	}//end of if converting locally
 
 
-	//If get here we are downloading from JSP only, ie not converting locally
-	//actually copy over the file from remote server
+	//If get here we are downloading from JSP only, ie not converting locally or remotely
+	//We actually copy over the file from remote server
 	if(!$fs->create_file_from_url($file_record, $red5_fileurl,$options, false)){
 		$return['success']=false;
 		array_push($return['messages'],"Unable to create file from url." );
