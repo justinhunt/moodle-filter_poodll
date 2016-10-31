@@ -1836,10 +1836,12 @@ class poodlltools
             $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
 			$awstools = new \filter_poodll\awstools();
 			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$s3filename);
+			$quicktime_signed_url = $awstools->get_presigned_upload_url($mediatype,30,$s3filename,true);
 		}else{
 			$filename = false;
             $s3filename = false;
 			$posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
+			$quicktime_signed_url = '';
 		}
 		
 		//cloudbypassurl
@@ -1862,6 +1864,7 @@ class poodlltools
 		$widgetopts->p5 = $itemid;
         $widgetopts->timelimit = $timelimit;
         $widgetopts->callbackjs = $callbackjs;
+        $widgetopts->quicktimesignedurl =$quicktime_signed_url;
 		
 		//store the filename or "not yet decided flag"(ie false)
 		$widgetopts->filename = $filename;

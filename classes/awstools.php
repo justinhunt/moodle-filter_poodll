@@ -298,7 +298,7 @@ class awstools
 		return $theurl;
 	}
 
-	function get_presigned_upload_url($mediatype,$minutes=30,$key){
+	function get_presigned_upload_url($mediatype,$minutes=30,$key, $iosvideo=false){
 		$s3client = $this->fetch_s3client();
 		//Get bucket
 		$bucket='';
@@ -316,7 +316,11 @@ class awstools
 		$options['Key']=$key;
 		$options['Body']='';
 		//$options['ContentMD5']=false;
-		$options['ContentType']='application/octet-stream';
+		if($iosvideo){
+			$options['ContentType']='video/quicktime';
+		}else{
+			$options['ContentType']='application/octet-stream';
+		}
 		
 		$cmd = $s3client->getCommand('PutObject', $options);
 		if($this->awsversion=="3.x"){

@@ -2,7 +2,7 @@ Change List
 =========
 Version 3.0.13(Build 2016081414)
 -added ability to convert on Amazon even when using Red5
-
+-added support for video on mobile app (in preseigned url)
 
 Version 3.0.12(Build 2016081413)
 -fixed a bug in the presigned url we pass to mobile
