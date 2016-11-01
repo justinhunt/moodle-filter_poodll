@@ -1835,8 +1835,8 @@ class poodlltools
 			$filename = \html_writer::random_id('poodllfile') . $ext;
             $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
 			$awstools = new \filter_poodll\awstools();
-			$posturl  = $awstools->get_presigned_upload_url($mediatype,30,$s3filename);
-			$quicktime_signed_url = $awstools->get_presigned_upload_url($mediatype,30,$s3filename,true);
+			$posturl  = $awstools->get_presigned_upload_url($mediatype,60,$s3filename);
+			$quicktime_signed_url = $awstools->get_presigned_upload_url($mediatype,60,$s3filename,true);
 		}else{
 			$filename = false;
             $s3filename = false;
