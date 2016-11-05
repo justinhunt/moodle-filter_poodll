@@ -2327,7 +2327,7 @@ class poodlltools
 	}
         
       /*
-	 * Fetch any special parameters required by the Upload Recorder
+	 * Fetch any special parameters required by the Media Recorder
 	 *
 	 */
 	public static function fetchMediaRecorderAMDParams()
@@ -2337,7 +2337,8 @@ class poodlltools
 		$params['media_audiomimetype'] = 'audio/webm';//or audio/wav
         $params['media_videorecordertype'] = 'auto';//or mediarec or webp
         $params['media_videocapturewidth'] = 320;
-        $params['media_videocaptureheight'] = 240;    
+        $params['media_videocaptureheight'] = 240;   
+        $params['media_skin'] = 'burntrose'; 
 		return $params;
 	}
         

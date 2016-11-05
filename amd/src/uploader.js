@@ -104,6 +104,17 @@ define(['jquery','core/log'], function($, log) {
             return true;
         },
         
+        alertRecorderSuccess: function(){
+        	if(this.config.hasOwnProperty('onuploadsuccess')){
+        		this.config.onuploadsuccess();
+        	}
+        },
+        
+        alertRecorderFailure: function(){
+        	if(this.config.hasOwnProperty('onuploadfailure')){
+        		this.config.onuploadfailure();
+        	}
+        },
         
         //after an upload handle the filename poke and callback call
         postProcessUpload: function(e,uploader){
@@ -134,10 +145,18 @@ define(['jquery','core/log'], function($, log) {
 					}else {
                        uploader.pokeFilename(filename,uploader);
 					}
+					
+					//alert the recorder that this was successful
+					this.alertRecorderSuccess();
+					
 				}else{
 					log.debug('upload failed #3');
 					log.debug(xhr);
 					uploader.Output(M.util.get_string('recui_uploaderror', 'filter_poodll'));
+					
+					//alert the recorder that this failed
+					this.alertRecorderFailure();
+					
 				} //end of if status 200
 			}//end of if ready state 4
         
