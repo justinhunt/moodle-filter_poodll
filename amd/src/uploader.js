@@ -104,15 +104,15 @@ define(['jquery','core/log'], function($, log) {
             return true;
         },
         
-        alertRecorderSuccess: function(){
+        alertRecorderSuccess: function(widgetid){
         	if(this.config.hasOwnProperty('onuploadsuccess')){
-        		this.config.onuploadsuccess();
+        		this.config.onuploadsuccess(widgetid);
         	}
         },
         
-        alertRecorderFailure: function(){
+        alertRecorderFailure: function(widgetid){
         	if(this.config.hasOwnProperty('onuploadfailure')){
-        		this.config.onuploadfailure();
+        		this.config.onuploadfailure(widgetid);
         	}
         },
         
@@ -147,7 +147,7 @@ define(['jquery','core/log'], function($, log) {
 					}
 					
 					//alert the recorder that this was successful
-					this.alertRecorderSuccess();
+					this.alertRecorderSuccess(uploader.config.widgetid);
 					
 				}else{
 					log.debug('upload failed #3');
@@ -155,7 +155,7 @@ define(['jquery','core/log'], function($, log) {
 					uploader.Output(M.util.get_string('recui_uploaderror', 'filter_poodll'));
 					
 					//alert the recorder that this failed
-					this.alertRecorderFailure();
+					this.alertRecorderFailure(uploader.config.widgetid);
 					
 				} //end of if status 200
 			}//end of if ready state 4
@@ -180,16 +180,6 @@ define(['jquery','core/log'], function($, log) {
             //alert user that we are now uploading    
             this.Output(M.util.get_string('recui_uploading', 'filter_poodll'));
 
-/*
-            xhr.upload.addEventListener("load", function () {
-                    //console.log("uploaded:");
-                    if(using_s3){
-                     //ping Moodle and inform that we have a new file
-                        uploader.postprocess_s3_upload(uploader);
-                    }
-            });
-
-*/
             xhr.onreadystatechange = function(e){
             	if(using_s3 && this.readyState===4){
                      //ping Moodle and inform that we have a new file
@@ -261,6 +251,18 @@ define(['jquery','core/log'], function($, log) {
         postprocess_s3_upload: function(uploader){
             var config = uploader.config;
             var xhr = new XMLHttpRequest();
+            var that = this;
+            
+            //lets do a little error checking
+            //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
+            xhr.onreadystatechange = function(e){
+            	if(this.readyState===4){
+            		if(xhr.status!=200){
+                       that.Output('Post Process s3 Upload Error:' + xhr.status);
+                       $('#' + that.config.widgetid + '_messages').show();
+                     }
+                }
+            }
 
             //log.debug(params);
             var params = "datatype=handles3upload";

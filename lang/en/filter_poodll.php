@@ -227,3 +227,10 @@ $string['value']='value';
 
 $string['poodllsupportinfo']='PoodLL Support Information';
 $string['exportdiagnostics']="Export";
+
+//html5 recorder
+$string['plain_recorder']="Plain";
+$string['burntrose_recorder']="Burnt Rose";
+$string['html5recorder_skin']="HTML5 Recorder Skin";
+$string['filter_poodll_html5recorder_heading']="HTML5 Recorder Settings";
+

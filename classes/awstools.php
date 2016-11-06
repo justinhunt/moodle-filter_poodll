@@ -209,8 +209,7 @@ class awstools
 					$bucket =$this->bucket_video_in;
 				}
 				break;
-			}
-			//return $s3client->if_object_exists($bucket,$filename);		
+			}		
                 return $s3client->doesObjectExist($bucket,$filename);		
         }
         

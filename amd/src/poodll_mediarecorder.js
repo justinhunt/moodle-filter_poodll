@@ -47,14 +47,14 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             
 			switch(config.mediatype){
                 case 'audio':
-                    var preview = this.fetch_audio_preview();
+                    var preview = this.fetch_audio_preview(config.media_skin);
                     ip.controlbar = this.insert_fetch_control_bar(element,controlbarid, preview);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
                     this.register_audio_events(controlbarid);
                     break;
                 case 'video':
-                    var preview = this.fetch_video_preview();
+                    var preview = this.fetch_video_preview(config.media_skin);
                     ip.controlbar = this.insert_fetch_control_bar_video(element,controlbarid,preview);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
@@ -87,30 +87,29 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
 			this.instanceprops[controlbarid].uploaded= false;
 		},
 		
-         on_upload_success: function(){
-        	log.debug('from poodllmediarecorder: uploadsuccess');
-			
-			$('.poodll_save-recording').hide();
-            $('.p_messages').hide();
-            $('.poodll_savedsuccessfully').show();
-			
+        on_upload_success: function(widgetid){
+        	 log.debug('from poodllmediarecorder: uploadsuccess');		
+        	 var controlbarid = 'filter_poodll_controlbar_' + widgetid;
+			 $('#' + controlbarid + ' > .poodll_save-recording').hide();
+            // $('#' + controlbarid  + '_messages').hide();
+             $('#' + controlbarid + ' > .poodll_savedsuccessfully').show();
         },
         
-        on_upload_failure: function(){
+        on_upload_failure: function(controlbarid){
         	log.debug('from poodllmediarecorder: uploadfailure');
         },		
 		
-		fetch_status_bar: function(){
-			var status = '<div class="poodll_status" width="320" height="50">00:00:00</div>';
+		fetch_status_bar: function(skin){
+			var status = '<div class="poodll_status_' + skin + '" width="320" height="50">00:00:00</div>';
             return status;
         },
         
-		fetch_audio_preview: function(){
-			var preview = '<audio class="poodll_preview hide" controls></audio>';
+		fetch_audio_preview: function(skin){
+			var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
             return preview;
         },
-        fetch_video_preview: function(){
-            var preview ='<video class="poodll_preview" width="320" height="240"></video>';
+        fetch_video_preview: function(skin){
+            var preview ='<video class="poodll_preview_' + skin + '" width="320" height="240"></video>';
             return preview;
         },
         
@@ -218,38 +217,6 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             
              this.register_controlbar_events(onMediaSuccess, mediaConstraints,controlbarid);
         },//end of register video events
-       
-       set_visual_mode: function(mode, controlbarid){
-			var self = this;
-			var ip = this.fetch_instanceprops(controlbarid);
-	   
-		   switch(mode){
-			   
-			   case 'recordmode':
-					ip.controlbar.preview.addClass('poodll_recording');
-					ip.controlbar.status.addClass('poodll_recording');
-					if(ip.config.mediatype=='audio'){
-						ip.controlbar.preview.addClass('hide');
-					}	
-					ip.controlbar.status.removeClass('hide');		
-					break;
-				
-			   case 'previewmode':
-					ip.controlbar.preview.removeClass('poodll_recording');
-					ip.controlbar.status.removeClass('poodll_recording');
-					if(ip.config.mediatype=='audio'){
-						ip.controlbar.preview.removeClass('hide');
-					}
-					ip.controlbar.status.addClass('hide');
-					break;
-			   
-			   case 'pausedmode':
-					ip.controlbar.preview.removeClass('poodll_recording');
-					ip.controlbar.status.removeClass('poodll_recording');
-					break;
-		   }
-		   
-	   },
 	   
 	   update_status: function(controlbarid){
 			var ip = this.fetch_instanceprops(controlbarid);
@@ -259,6 +226,17 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
 		//
 		//branching functions for skins
         //
+       set_visual_mode: function(mode, controlbarid){
+        	var ip = this.fetch_instanceprops(controlbarid);
+        	switch(ip.config.media_skin){
+        		case 'standard': this.set_visual_mode_standard(mode, controlbarid);
+        			break;
+        		case 'burntrose':  this.set_visual_mode_burntrose(mode, controlbarid);
+        	}
+        },
+		
+		
+		
        register_controlbar_events: function(onMediaSuccess, mediaConstraints, controlbarid){
         	var ip = this.fetch_instanceprops(controlbarid);
         	switch(ip.config.media_skin){
@@ -296,30 +274,65 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         // STANDARD SKIN
         //
         //
-        
+		
+		//set visuals for different states (ie recording or playing)
+        set_visual_mode_standard: function(mode, controlbarid){
+			var self = this;
+			var ip = this.fetch_instanceprops(controlbarid);
+	   
+		   switch(mode){
+			   
+			   case 'recordmode':
+					ip.controlbar.preview.addClass('poodll_recording');
+					ip.controlbar.status.addClass('poodll_recording');
+					if(ip.config.mediatype=='audio'){
+						ip.controlbar.preview.addClass('hide');
+					}	
+					ip.controlbar.status.removeClass('hide');		
+					break;
+				
+			   case 'previewmode':
+					ip.controlbar.preview.removeClass('poodll_recording');
+					ip.controlbar.status.removeClass('poodll_recording');
+					if(ip.config.mediatype=='audio'){
+						ip.controlbar.preview.removeClass('hide');
+					}
+					ip.controlbar.status.addClass('hide');
+					break;
+			   
+			   case 'pausedmode':
+					ip.controlbar.preview.removeClass('poodll_recording');
+					ip.controlbar.status.removeClass('poodll_recording');
+					break;
+		   }
+		   
+	   },
+		
+		
+		
         //insert the control bar and return it to be reused
         insert_fetch_control_bar_standard: function(element,controlbarid, preview){
-            	var controls ='<div class="poodll_mediarecorderbox" id="' + controlbarid + '">' ;
-            	var status = this.fetch_status_bar();
+            	var controls ='<div class="poodll_mediarecorderbox_standard" id="' + controlbarid + '">' ;
+            	var status = this.fetch_status_bar('standard');
                 controls += status,
                 controls += preview,
-                controls +=  '<button type="button" class="poodll_start-recording">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_stop-recording" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_pause-recording" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
-                controls += ' <button type="button" class="poodll_resume-recording hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
-                controls += ' <button type="button" class="poodll_play-recording" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_save-recording" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+                controls +=  '<button type="button" class="poodll_start-recording_standard">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_stop-recording_standard" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_pause-recording_standard" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
+                controls += ' <button type="button" class="poodll_resume-recording_standard hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
+                controls += ' <button type="button" class="poodll_play-recording_standard" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_save-recording_standard" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
-					status: $('#' + controlbarid + ' > .poodll_status'),
-                    preview: $('#' + controlbarid + ' > .poodll_preview'),
-                    startbutton: $('#' + controlbarid + ' > .poodll_start-recording'),
-                    stopbutton: $('#' + controlbarid + ' > .poodll_stop-recording'),
-                    pausebutton: $('#' + controlbarid + ' > .poodll_pause-recording'),
-                    resumebutton: $('#' + controlbarid + ' > .poodll_resume-recording'),
-                    playbutton: $('#' + controlbarid + ' > .poodll_play-recording'),
-                    savebutton: $('#' + controlbarid + ' > .poodll_save-recording')    
+					status: $('#' + controlbarid + ' > .poodll_status_standard'),
+                    preview: $('#' + controlbarid + ' > .poodll_preview_standard'),
+                    startbutton: $('#' + controlbarid + ' > .poodll_start-recording_standard'),
+                    stopbutton: $('#' + controlbarid + ' > .poodll_stop-recording_standard'),
+                    pausebutton: $('#' + controlbarid + ' > .poodll_pause-recording_standard'),
+                    resumebutton: $('#' + controlbarid + ' > .poodll_resume-recording_standard'),
+                    playbutton: $('#' + controlbarid + ' > .poodll_play-recording_standard'),
+                    savebutton: $('#' + controlbarid + ' > .poodll_save-recording_standard')    
                 };
                 return controlbar;
         }, //end of fetch_control_bar_standard
@@ -329,6 +342,9 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
 			var ip = this.fetch_instanceprops(controlbarid);
 
             ip.controlbar.startbutton.click(function() {
+            	//clear messages
+            	$('#' + ip.config.widgetid  + '_messages').text('');
+            	
                 this.disabled = true;
                 ip.blobs=[]; 
                 self.captureUserMedia(mediaConstraints, onMediaSuccess, self.onMediaError);          
@@ -453,11 +469,41 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         // BURNTROSE SKIN
         //
         //
+		
+		//set visuals for different states (ie recording or playing)
+        set_visual_mode_burntrose: function(mode, controlbarid){
+			var self = this;
+			var ip = this.fetch_instanceprops(controlbarid);
+	   
+		   switch(mode){
+			   
+			   case 'recordmode':
+					ip.controlbar.preview.addClass('poodll_recording');
+					ip.controlbar.status.addClass('poodll_recording');
+					if(ip.config.mediatype=='audio'){
+						ip.controlbar.preview.addClass('hide');
+					}	
+					ip.controlbar.status.removeClass('hide');		
+					break;
+				
+			   case 'previewmode':
+					ip.controlbar.preview.removeClass('poodll_recording');
+					ip.controlbar.status.removeClass('poodll_recording');
+					break;
+			   
+			   case 'pausedmode':
+					ip.controlbar.preview.removeClass('poodll_recording');
+					ip.controlbar.status.removeClass('poodll_recording');
+					break;
+		   }
+		   
+	   },
+		
         
         //insert the control bar and return it to be reused
         insert_fetch_control_bar_burntrose: function(element,controlbarid, preview){
             	var controls ='<div class="poodll_mediarecorderbox" id="' + controlbarid + '">' ;
-            	var status = this.fetch_status_bar();
+            	var status = this.fetch_status_bar('burntrose');
                 controls += status,
                 controls += preview,
                 controls +=  '<span class="poodll_start-recording"title="Start"></span>';
@@ -475,8 +521,8 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
-					status: $('#' + controlbarid + ' > .poodll_status'),
-                    preview: $('#' + controlbarid + ' > .poodll_preview'),
+					status: $('#' + controlbarid + ' > .poodll_status_burntrose'),
+                    preview: $('#' + controlbarid + ' > .poodll_preview_burntrose'),
                     startbutton: $('#' + controlbarid + ' > .poodll_start-recording'),
                     stopbutton: $('#' + controlbarid + ' > .poodll_stop-recording'),
                     pausebutton: $('#' + controlbarid + ' > .poodll_pause-recording'),
@@ -497,7 +543,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         //insert the control bar and return it to be reused
         insert_fetch_control_bar_video_burntrose: function(element,controlbarid, preview){
             	var controls ='<div class="poodll_mediavideobox" id="' + controlbarid + '">' ;
-			var status = this.fetch_status_bar();
+			var status = this.fetch_status_bar('burntrose');
             controls += status,
 			controls += preview,
             controls +=  '<div class="poodll_mediavideobox2" id="' + controlbarid + '">' ;
@@ -520,8 +566,8 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                
                 $(element).prepend(controls);
                 var controlbar ={
-					status: $('#' + controlbarid + ' > .poodll_status'),
-                    preview: $('#' + controlbarid + ' > .poodll_preview'),
+					status: $('#' + controlbarid + ' > .poodll_status_burntrose'),
+                    preview: $('#' + controlbarid + ' > .poodll_preview_burntrose'),
                     startbutton: $('#' + controlbarid + ' > .poodll_start-recording'),
                     stopbutton: $('#' + controlbarid + ' > .poodll_stop-recording'),
                     pausebutton: $('#' + controlbarid + ' > .poodll_pause-recording'),
@@ -545,6 +591,9 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             
              ip.controlbar.startbutton.click(function() {
                 this.disabled = false;
+                
+                //clear messages
+                $('#' + ip.config.widgetid  + '_messages').text('');
 
                 ip.blobs=[]; 
                 self.captureUserMedia(mediaConstraints, onMediaSuccess, self.onMediaError);          
@@ -668,6 +717,14 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             ip.controlbar.playbutton.click(function() {
                 this.disabled = false;
                 var preview = ip.controlbar.preview.get(0);
+				
+				//if we are playing already, lets stop
+				if(preview.currentTime > 0 && !preview.paused){
+					preview.pause();
+					preview.currentTime=0;
+					 return;
+				}
+				
                 if(ip.blobs && ip.blobs.length > 0){
                     ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
                              var mediaurl = URL.createObjectURL(concatenatedBlob);

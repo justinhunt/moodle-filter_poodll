@@ -90,9 +90,7 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_configtext('filter_poodll_micgain', get_string('micgain', 'filter_poodll'), '', '50', PARAM_INT); 
 	$items[] = new \admin_setting_configtext('filter_poodll_micecho', get_string('micecho', 'filter_poodll'), '', 'yes');
 	$items[] = new \admin_setting_configtext('filter_poodll_micloopback', get_string('micloopback', 'filter_poodll'), '', 'no');
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_miccanpause', get_string('miccanpause', 'filter_poodll'), '', 0);
-	$items[] = new \admin_setting_configtext('filter_poodll_mp3skin', get_string('mp3skin', 'filter_poodll'), 
-			get_string('mp3skin_details', 'filter_poodll'), 'none');
+	
 
 
 	//video capture settings.
@@ -109,7 +107,15 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_heading('filter_poodll_mp3recorder_settings', get_string('filter_poodll_mp3recorder_heading', 'filter_poodll'), '');
 	$options = array('normal' => get_string('normal', 'filter_poodll'), 'tiny' => get_string('tiny', 'filter_poodll'));
 	$items[] = new \admin_setting_configselect('filter_poodll_mp3recorder_size', get_string('size', 'filter_poodll'), '', 'normal', $options);
+	$items[] = new \admin_setting_configcheckbox('filter_poodll_miccanpause', get_string('miccanpause', 'filter_poodll'), '', 0);
+	$items[] = new \admin_setting_configtext('filter_poodll_mp3skin', get_string('mp3skin', 'filter_poodll'), 
+			get_string('mp3skin_details', 'filter_poodll'), 'none');
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_mp3recorder_nocloud', get_string('mp3_nocloud', 'filter_poodll'), get_string('mp3_nocloud_details', 'filter_poodll'), 0);
+
+   //html5 recorder settings.
+	$items[] = new \admin_setting_heading('filter_poodll_html5recorder_settings', get_string('filter_poodll_html5recorder_heading', 'filter_poodll'), '');
+	$options = array('standard' => get_string('plain_recorder', 'filter_poodll'), 'burntrose' => get_string('burntrose_recorder', 'filter_poodll'));
+	$items[] = new \admin_setting_configselect('filter_poodll_html5recorder_skin', get_string('html5recorder_skin', 'filter_poodll'), '', 'normal', $options);
 
 
 

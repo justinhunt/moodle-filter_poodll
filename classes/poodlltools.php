@@ -1522,7 +1522,7 @@ class poodlltools
         $awstools = new \filter_poodll\awstools();
         
         //does file exist on s3 in bucket
-		if($awstools->does_file_exist($mediatype,$infilename,'in' ) && !$awstools->does_file_exist($mediatype,$outfilename,'out') ){
+		if($awstools->does_file_exist($mediatype,$infilename,'in' )){
 			$awstools->create_one_transcoding_job($mediatype,$infilename,$outfilename);
         }
 	}
@@ -2332,13 +2332,14 @@ class poodlltools
 	 */
 	public static function fetchMediaRecorderAMDParams()
 	{
+		global $CFG;
 		$params=array();
 		$params['media_timeinterval'] = 5000;
 		$params['media_audiomimetype'] = 'audio/webm';//or audio/wav
         $params['media_videorecordertype'] = 'auto';//or mediarec or webp
         $params['media_videocapturewidth'] = 320;
         $params['media_videocaptureheight'] = 240;   
-        $params['media_skin'] = 'burntrose'; 
+        $params['media_skin'] = $CFG->filter_poodll_html5recorder_skin; 
 		return $params;
 	}
         
