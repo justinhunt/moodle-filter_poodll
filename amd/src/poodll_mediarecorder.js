@@ -516,7 +516,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
 				controls += ' <span class="poodll_recmic hide" ></span>';
 				controls += ' <span class="poodll_resume_mic hide" ></span>';
                 controls += '<span class="poodll_savebtn" ></span>';
-				controls += '<span class="poodll_save-recording hide" title="Save" ></span>';
+				controls += '<span class="poodll_save-recording_burntrose hide" title="Save" ></span>';
 				controls += '<span class="poodll_savedsuccessfully hide"></span>';
                 controls += '</div>';
                 $(element).prepend(controls);
@@ -530,7 +530,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                     play1: $('#' + controlbarid + ' > .poodll_play-recording'),
 					playbutton: $('#' + controlbarid + ' > .poodll_playsave'),
                     save1: $('#' + controlbarid + ' > .poodll_savebtn'),
-					savebutton: $('#' + controlbarid + ' > .poodll_save-recording'),
+					savebutton: $('#' + controlbarid + ' > .poodll_save-recording_burntrose'),
 					savesuccess: $('#' + controlbarid + ' > .poodll_savedsuccessfully'),
 					
 					playermic: $('#'+controlbarid + '> .poodll_mic'),
@@ -558,7 +558,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
 				controls += ' <span class="poodll_resume_mic hide" ></span>';
 
                  controls += '<span class="poodll_savebtn "title="Save" ></span>';
-                 controls += '<span class="poodll_save-recording hide "title="Save" ></span>';
+                 controls += '<span class="poodll_save-recording_burntrose hide "title="Save" ></span>';
                 controls += '<span class="poodll_savedsuccessfully hide" ></span>';
                 controls += '</div>';
 				controls += '</div>';
@@ -575,7 +575,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                     play1: $('#' + controlbarid + ' > .poodll_play-recording'),
 					playbutton: $('#' + controlbarid + ' > .poodll_playsave'),
                     save1: $('#' + controlbarid + ' > .poodll_savebtn'),
-					savebutton: $('#' + controlbarid + ' > .poodll_save-recording'),
+					savebutton: $('#' + controlbarid + ' > .poodll_save-recording_burntrose'),
 					savesuccess: $('#' + controlbarid + ' > .poodll_savedsuccessfully'),
 					
 					playermic: $('#'+controlbarid + '> .poodll_mic'),
@@ -638,7 +638,7 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                  ip.controlbar.startbutton.attr('disabled',false);
 
 
-				 //ip.controlbar.savebutton.removeClass('poodll_save-recording');
+				 //ip.controlbar.savebutton.removeClass('poodll_save-recording_burntrose');
 			     //ip.controlbar.savebutton.addClass('poodll_savebtn');
 				
 

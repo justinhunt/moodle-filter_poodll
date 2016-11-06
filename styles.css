@@ -288,6 +288,12 @@ a.filter_poodll_uploadafilelink:active {
 	
 }
 
+.poodll_save-recording{
+    clear: both;
+    width:320px;
+}
+
+
 /* MEDIA RECORDER STANDARD SKIN .. need to remove '_standard' */
 .poodll_preview_standard{
     border: black;
@@ -455,7 +461,7 @@ a.filter_poodll_uploadafilelink:active {
         background-position:0px 0px !important;
         outline:none !important;
     }
-    .poodll_save-recording
+    .poodll_save-recording_burntrose
     {
         background: #eee url([[pix:filter_poodll|save2]])100% no-repeat !important;
         height: 33px!important;
@@ -467,8 +473,8 @@ a.filter_poodll_uploadafilelink:active {
         background-position:0px 0px !important;
         position:absolute
     }
-    .poodll_save-recording:hover,
-    .poodll_save-recording:focus
+    .poodll_save-recording_burntrose:hover,
+    .poodll_save-recording_burntrose:focus
     {
         background-position:0px 0px !important;
         outline:none !important;
@@ -640,7 +646,7 @@ a.filter_poodll_uploadafilelink:active {
 		height: 96px !important;
 	}
 
-	.poodll_mediavideobox2 > .poodll_save-recording {
+	.poodll_mediavideobox2 > .poodll_save-recording_burntrose {
 		margin-left: 152px !important;
 		margin-top: 39px !important;
 	}
