@@ -113,6 +113,7 @@ class diagnosticstools {
 		$ds['filter_poodll_ffmpeg']=$CFG->filter_poodll_ffmpeg;
 		$ds['filter_poodll_bgtranscode_video']=$CFG->filter_poodll_bgtranscode_video;
 		$ds['filter_poodll_bgtranscode_audio']=$CFG->filter_poodll_bgtranscode_audio;
+		$ds['filter_poodll_html5recorder_skin']=$CFG->filter_poodll_html5recorder_skin;
 		$ds['extensions']=get_config('filter_poodll','extensions');
 		$ds['handlemp3']=get_config('filter_poodll','handlemp3');
 		$ds['handlemp4']=get_config('filter_poodll','handlemp4');
@@ -130,10 +131,17 @@ class diagnosticstools {
 		$ds['memorylimit']=ini_get('memory_limit'); 
 		
 		//filter setting info	
+		/*
 		foreach (\core_component::get_plugin_list('filter') as $plugin => $unused) {
             $ds['installed_filter_' . $plugin] = filter_get_name($plugin);
         }
-	
+        */
+        //filters
+         $filters = $DB->get_records('filter_active',array('contextid'=>1));
+         foreach ($filters as $filter) {
+            $ds['filter_active_' . $filter->filter] = $filter->active;
+            $ds['filter_sortorder_' . $filter->filter] = $filter->sortorder;
+        }
 		return $ds;
 	}
 	
