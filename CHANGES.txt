@@ -2,7 +2,8 @@ Change List
 =========
 Version 3.0.14(Build 2016110601)
 -added a once player js
--added recorder skins
+-added HTML5 recorder skin (burntrose)
+-added filter active and sort order fields to support info
 
 Version 3.0.13(Build  2016081414)
 -added ability to convert on Amazon even when using Red5
