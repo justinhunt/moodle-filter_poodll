@@ -193,6 +193,11 @@ class filter_poodll extends moodle_text_filter {
 		}
 
 		 $conf = get_object_vars(get_config('filter_poodll'));
+		 
+		 //we use this to see if its a web service calling this, 
+		//in which case we return the alternate content
+		$is_webservice = strpos($PAGE->url,'/webservice/pluginfile.php') > 0;
+		 
 	
 		//get our filter props
 		if($ext){
@@ -255,9 +260,14 @@ class filter_poodll extends moodle_text_filter {
 		//fetch our template
 		if($endtag){
 			$poodlltemplate = $conf['templateend_' . $tempindex];
+			$alternate_content = $conf['templatealternate_' . $tempindex];
 		}else{
 			$poodlltemplate = $conf['template_' . $tempindex];
+			$alternate_content = $conf['templatealternate__end_' . $tempindex];
 		}
+
+		//fetch alternate content
+		$alternate_content = $conf['templatealternate_' . $tempindex];
 
 
 		//fetch dataset info
@@ -274,6 +284,7 @@ class filter_poodll extends moodle_text_filter {
 		foreach($filterprops as $name=>$value){
 			$poodlltemplate = str_replace('@@' . $name .'@@',$value,$poodlltemplate);
 			$dataset_vars  = str_replace('@@' . $name .'@@',$value,$dataset_vars);
+			$alternate_content = str_replace('@@' . $name .'@@',$value,$alternate_content);
 		}
 	
 		//fetch defaults for this template
@@ -292,6 +303,7 @@ class filter_poodll extends moodle_text_filter {
 						}
 						$poodlltemplate = str_replace('@@' . $name .'@@',strip_tags($value),$poodlltemplate);
 						$dataset_vars  = str_replace('@@' . $name .'@@',strip_tags($value),$dataset_vars);
+						$alternate_content = str_replace('@@' . $name .'@@',strip_tags($value),$alternate_content);
 						//stash for using in JS later
 						$filterprops[$name]=$value;
 					}
@@ -302,6 +314,7 @@ class filter_poodll extends moodle_text_filter {
 		//If we have autoid lets deal with that
 		$autoid = 'filterpoodll_' . time() . (string)rand(100,32767) ;
 		$poodlltemplate = str_replace('@@AUTOID@@',$autoid,$poodlltemplate);
+		$alternate_content = str_replace('@@AUTOID@@',$autoid,$alternate_content);
 		//stash this for passing to js
 		$filterprops['AUTOID']=$autoid;
 
@@ -310,26 +323,33 @@ class filter_poodll extends moodle_text_filter {
 		$moodlepageid = optional_param('id',0,PARAM_INT);
 		$poodlltemplate = str_replace('@@MOODLEPAGEID@@',$moodlepageid,$poodlltemplate);
 		$dataset_vars  = str_replace('@@MOODLEPAGEID@@',$moodlepageid,$dataset_vars);
+		$alternate_content = str_replace('@@MOODLEPAGEID@@',$moodlepageid,$alternate_content);
 		//stash this for passing to js
 		$filterprops['MOODLEPAGEID']=$moodlepageid;
 	
 		//we should stash our wwwroot too
 		$poodlltemplate = str_replace('@@WWWROOT@@',$CFG->wwwroot,$poodlltemplate);
 		$dataset_vars  = str_replace('@@WWWROOT@@',$CFG->wwwroot,$dataset_vars);
+		$alternate_content = str_replace('@@WWWROOT@@',$CFG->wwwroot,$alternate_content);
 		//actually this is available from JS anyway M.cfg.wwwroot . But lets make it easy for people
 		$filterprops['WWWROOT']=$CFG->wwwroot;
 		
 		
 		//if we have urlparam variables e.g @@URLPARAM:id@@
-		if(strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $js_custom_script ,'@@URLPARAM:')!==false){
+		if(strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $alternate_content . ' ' . $js_custom_script ,'@@URLPARAM:')!==false){
 			$urlparamstubs = explode('@@URLPARAM:',$poodlltemplate);
 			$dv_stubs = explode('@@URLPARAM:',$dataset_vars);
+			
 			if($dv_stubs){
 				$urlparamstubs = array_merge($urlparamstubs,$dv_stubs);
 			}
 			$js_stubs = explode('@@URLPARAM:',$js_custom_script);
 			if($js_stubs){
 				$urlparamstubs = array_merge($urlparamstubs,$js_stubs);
+			}
+			$alt_stubs = explode('@@URLPARAM:',$alternate_content);
+			if($alt_stubs){
+				$urlparamstubs = array_merge($urlparamstubs,$alt_stubs);
 			}
 			
 			//URL Param Props
@@ -351,6 +371,7 @@ class filter_poodll extends moodle_text_filter {
 				$propvalue = optional_param($urlprop,'',PARAM_TEXT);
 				$poodlltemplate = str_replace('@@URLPARAM:' . $urlprop .'@@',$propvalue,$poodlltemplate);
 				$dataset_vars  = str_replace('@@URLPARAM:' . $urlprop .'@@',$propvalue,$dataset_vars);
+				$alternate_content = str_replace('@@URLPARAM:' . $urlprop .'@@',$propvalue,$alternate_content);
 				//stash this for passing to js
 				$filterprops['URLPARAM:' . $urlprop]=$propvalue;				
 			}//end of for each
@@ -358,7 +379,7 @@ class filter_poodll extends moodle_text_filter {
 	
 	
 		//if we have course variables e.g @@COURSE:ID@@
-		if(strpos($poodlltemplate . ' ' . $dataset_vars ,'@@COURSE:')!==false){
+		if(strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $alternate_content . ' ' . $js_custom_script ,'@@COURSE:')!==false){
 				$coursevars = get_object_vars($COURSE);
 				$coursepropstubs = explode('@@COURSE:',$poodlltemplate);
 				$d_stubs = explode('@@COURSE:',$dataset_vars);
@@ -368,6 +389,10 @@ class filter_poodll extends moodle_text_filter {
 				$j_stubs=explode('@@COURSE:',$js_custom_script);
 				if($j_stubs){
 					$coursepropstubs = array_merge($coursepropstubs,$j_stubs);
+				}
+				$alt_stubs=explode('@@COURSE:',$alternate_content);
+				if($alt_stubs){
+					$coursepropstubs = array_merge($coursepropstubs,$alt_stubs);
 				}
 
 
@@ -400,6 +425,7 @@ class filter_poodll extends moodle_text_filter {
 					if(!empty($courseprop) && !empty($propvalue)){
 						$poodlltemplate = str_replace('@@COURSE:' . $courseprop_allcase .'@@',$propvalue,$poodlltemplate);
 						$dataset_vars  = str_replace('@@COURSE:' . $courseprop_allcase .'@@',$propvalue,$dataset_vars);
+						$alternate_content = str_replace('@@COURSE:' . $courseprop_allcase .'@@',$propvalue,$alternate_content);
 						//stash this for passing to js
 						$filterprops['COURSE:' . $courseprop_allcase]=$propvalue;
 					}
@@ -409,7 +435,7 @@ class filter_poodll extends moodle_text_filter {
 		//if we have user variables e.g @@USER:FIRSTNAME@@
 		//It is a bit wordy, because trying to avoid loading a lib
 		//or making a DB call if unneccessary
-		if(strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $js_custom_script ,'@@USER:')!==false){
+		if(strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $js_custom_script . ' ' . $alternate_content ,'@@USER:')!==false){
 			$uservars = get_object_vars($USER);
 			$userpropstubs = explode('@@USER:',$poodlltemplate);
 			$d_stubs = explode('@@USER:',$dataset_vars);
@@ -419,6 +445,10 @@ class filter_poodll extends moodle_text_filter {
 			$j_stubs = explode('@@USER:',$js_custom_script);
 			if($j_stubs){
 				$userpropstubs = array_merge($userpropstubs,$j_stubs);
+			}
+			$alt_stubs = explode('@@USER:',$alternate_content);
+			if($alt_stubs){
+				$userpropstubs = array_merge($userpropstubs,$alt_stubs);
 			}
 		
 			//User Props
@@ -469,6 +499,7 @@ class filter_poodll extends moodle_text_filter {
 					//echo "userprop:" . $userprop . '<br/>propvalue:' . $propvalue;
 					$poodlltemplate = str_replace('@@USER:' . $userprop_allcase .'@@',$propvalue,$poodlltemplate);
 					$dataset_vars  = str_replace('@@USER:' . $userprop_allcase .'@@',$propvalue,$dataset_vars);
+					$alternate_content  = str_replace('@@USER:' . $userprop_allcase .'@@',$propvalue,$alternate_content);
 					//stash this for passing to js
 					$filterprops['USER:' . $userprop_allcase]=$propvalue;
 				}
@@ -486,8 +517,17 @@ class filter_poodll extends moodle_text_filter {
 			if($dataset_vars){
 				$vars=explode(',',$dataset_vars);
 			}
+			//turn numeric vars into numbers (not strings)
+			$query_vars = array();
+			for($i = 0; $i < sizeof($vars); $i++) {
+				if(is_numeric($vars[$i])) {
+					$query_vars[] = intval($vars[$i]);
+				} else {
+					$query_vars[] = $vars[$i];
+				}
+			}
 			try {
-				$alldata = $DB->get_records_sql($dataset_body, $vars);
+				$alldata = $DB->get_records_sql($dataset_body, $query_vars);
 				if($alldata) {
 					$filterprops['DATASET'] = $alldata;
 					//replace the specified names with spec values, if its a one element array
@@ -495,6 +535,7 @@ class filter_poodll extends moodle_text_filter {
 						$thedata = get_object_vars(array_pop($alldata));
 						foreach ($thedata as $name => $value) {
 							$poodlltemplate = str_replace('@@DATASET:' . $name . '@@', $value, $poodlltemplate);
+							$alternate_content = str_replace('@@DATASET:' . $name . '@@', $value, $alternate_content);
 						}
 					}
 				}
@@ -503,6 +544,12 @@ class filter_poodll extends moodle_text_filter {
 			}
 		}//end of if dataset
 	
+	    
+	    //if this is a web service/mobile app we just return the alternate content
+	   	if($is_webservice && !empty($alternate_content)){
+			return $alternate_content;		
+		}
+		
 		//If this is the end tag we don't need to subsequent CSS and JS stuff. We already did it.
 		if($endtag){
 			return $poodlltemplate;
@@ -631,562 +678,3 @@ class filter_poodll extends moodle_text_filter {
 	}//end of function
 
 }//end of class
-	
-	
-	
-	//Original Code ------------------------------------------------------------------
-	
-	
-/*
-		function filter($text, array $options = array()) {
-			global $CFG;
-
-			   
-			if (!is_string($text)) {
-				// non string data can not be filtered anyway
-				return $text;
-			}
-			
-			$newtext = $text; // fullclone is slow and not needed here
-				
-			//NB test regular expressions here:
-			//http://www.spaweditor.com/scripts/regex/index.php
-			//using match all to see what will be matched and in what index of "link" variable it will show
-			//currently MP4/FLV 0 shows the whole string, 1 the link,2 the width+height param string, 3, the width, 4 the height, 5 the linked text
-			//MP3 0 shows the whole string, 1 the link, 2 the linked text
-			
-			//I think we can optimize this whole things a bit more, anyway we try to filter as little as possible
-			$havelinks = !(stripos($text, '</a>') ===false);
-			
-			//check for mp3
-			 if ($CFG->filter_poodll_handlemp3) {
-				if ($havelinks) {
-				// performance shortcut - all filepicker media links  end with the </a> tag,
-					$search = '/<a\s[^>]*href="([^"#\?]+\.mp3)"[^>]*>([^>]*)<\/a>/is';
-					$newtext = preg_replace_callback($search, 'filter_poodll_mp3_callback', $newtext);
-				}
-			}
-			
-			//check for mp4
-			if ($CFG->filter_poodll_handlemp4) {
-				if ($havelinks) {
-					// performance shortcut - all filepicker media links  end with the </a> tag,
-					
-					//justin 20120525 added ability to declare width of media by appending strings like: ?d=640x480
-					//$search = '/<a\s[^>]*href="([^"#\?]+\.mp4)"[^>]*>([^>]*)<\/a>/is';
-					$search = '/<a\s[^>]*href="([^"#\?]+\.mp4)(\?d=([\d]{1,4})x([\d]{1,4}))?"[^>]*>([^>]*)<\/a>/is';
-					$newtext = preg_replace_callback($search, 'filter_poodll_mp4flv_callback', $newtext);
-				}
-			}
-			
-			//experimental .mov support
-			if ($CFG->filter_poodll_handlemov) {
-				if ($havelinks) {
-					$search = '/<a\s[^>]*href="([^"#\?]+\.mov)(\?d=([\d]{1,4})x([\d]{1,4}))?"[^>]*>([^>]*)<\/a>/is';
-					$newtext = preg_replace_callback($search, 'filter_poodll_mp4flv_callback', $newtext);
-				}
-			}
-			
-			//check for flv
-			if ($CFG->filter_poodll_handleflv) {
-				if ($havelinks) {
-				// performance shortcut - all filepicker media links  end with the </a> tag,
-				
-					//justin 20120525 added ability to declare width of media by appending strings like: ?d=640x480
-					//$search = '/<a\s[^>]*href="([^"#\?]+\.flv)"[^>]*>([^>]*)<\/a>/is';
-					$search = '/<a\s[^>]*href="([^"#\?]+\.flv)(\?d=([\d]{1,4})x([\d]{1,4}))?"[^>]*>([^>]*)<\/a>/is';
-					$newtext = preg_replace_callback($search, 'filter_poodll_mp4flv_callback', $newtext);
-				}
-			}
-			
-			//check for .pdl . This is a shorthand filter using presets to allow selection of PoodLL widgets
-			//from the Moodle File repository
-			if($havelinks){
-				if (!(stripos($text, '.pdl') ===false)) {
-					// performance shortcut - all filepicker media links  end with the </a> tag,
-					$search = '/<a\s[^>]*href="([^"#\?]+\.pdl)"[^>]*>([^>]*)<\/a>/is';
-					$newtext = preg_replace_callback($search, 'filter_poodll_pdl_callback', $newtext);
-				}
-			}
-
-
-			
-			$search = '/{POODLL:.*?}/is';
-
-			$newtext = preg_replace_callback($search, 'filter_poodll_callback', $newtext);
-			
-			if (is_null($newtext) or $newtext === $text) {
-				// error or not filtered
-				return $text;
-			}
-
-			return $newtext;
-		}
-}//end of class
-*/
-
-/*
-*	Callback function , exists outside of class definition(because its a callback ...)
-*
-*/
-
-/*
-function filter_poodll_callback(array $link){
-	global $CFG, $COURSE, $USER;
-
-		$lm = new \filter_poodll\licensemanager();
-		if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-			return $lm->fetch_unregistered_content();
-		}
-
-	//get our filter props
-	//we use a function in the poodll poodllresourcelib, because
-	//parsing will also need to be done by the html editor
-	$filterprops=	\filter_poodll\filtertools::fetch_filter_properties($link[0]);
-
-	//if we have no props, quit
-	if(empty($filterprops)){return "";}
-	
-	//if we want to ignore the filter (for "how to use a filter" demos) we let it go
-	//to use this, make the last parameter of the filter passthrough=1
-	if (!empty($filterprops['passthrough'])) return str_replace( ",passthrough=1","",$link[0]);
-	
-	//Init our return variable 
-	$returnHtml ="";
-	
-	//Runtime JS or Flash
-	if (empty($filterprops['runtime']))$filterprops['runtime'] ='auto'; 
-
-	//depending on the type of filter
-	switch ($filterprops['type']){
-			
-		case 'adminconsole':
-			$returnHtml= \filter_poodll\filtertools::fetch_poodllconsole($filterprops['runtime']);
-			break;
-	
-			
-		case 'audio':
-			$returnHtml= \filter_poodll\filtertools::fetchSimpleAudioPlayer($filterprops['runtime'],
-			$filterprops['path'],!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'rtmp',
-				!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_audiowidth,
-				!empty($filterprops['height']) ? $filterprops['height'] :  $CFG->filter_poodll_audioheight,
-				!empty($filterprops['embed']) ? $filterprops['embed']=='true' : false,
-				!empty($filterprops['embedstring']) ? $filterprops['embedstring'] : 'Play',
-				false,
-				!empty($filterprops['usepoodlldata']) ? $filterprops['usepoodlldata']=='true' : false,
-				!empty($filterprops['splashurl']) ? $filterprops['splashurl'] : '') ;
-			break;
-			
-		case 'audiolist':
-			$returnHtml= \filter_poodll\filtertools::fetchAudioListPlayer($filterprops['runtime'],$filterprops['path'],
-				!empty($filterprops['filearea']) ? $filterprops['filearea'] : 'content',
-				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'rtmp',
-				!empty($filterprops['width']) ? $filterprops['width'] : 400,
-				!empty($filterprops['height']) ? $filterprops['height'] : 250,
-				!empty($filterprops['sequentialplay']) ? $filterprops['sequentialplay'] : 'true',
-				!empty($filterprops['player']) ? $filterprops['player'] : $CFG->filter_poodll_defaultplayer,
-				!empty($filterprops['showplaylist']) ? $filterprops['showplaylist']=='true' : true,
-				!empty($filterprops['usepoodlldata']) ? $filterprops['usepoodlldata']=='true' : false);
-			break;
-			
-		case 'audiorecorder':
-			$returnHtml= \filter_poodll\filtertools::fetchSimpleAudioRecorder($filterprops['runtime'],
-						!empty($filterprops['savefolder']) ? $filterprops['savefolder'] : '');
-			break;	
-			
-		case 'audiotest':
-			$returnHtml= \filter_poodll\filtertools::fetchAudioTestPlayer($filterprops['runtime'],$filterprops['path'],
-				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'rtmp',
-				!empty($filterprops['width']) ? $filterprops['width'] : 400,
-				!empty($filterprops['height']) ? $filterprops['height'] : 50,
-				!empty($filterprops['filearea']) ? $filterprops['filearea'] : 'content',
-				!empty($filterprops['usepoodlldata']) ? $filterprops['usepoodlldata']=='true' : false);
-			break;	
-
-			
-		case 'bigvideogallery':
-			$returnHtml= \filter_poodll\filtertools::fetchBigVideoGallery($filterprops['runtime'],$filterprops['path'],
-				!empty($filterprops['filearea']) ? $filterprops['filearea'] : 'content',
-				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'http',
-				!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_biggallwidth,
-				!empty($filterprops['height']) ? $filterprops['height'] :  $CFG->filter_poodll_biggallheight,
-				!empty($filterprops['usepoodlldata']) ? $filterprops['usepoodlldata']=='true' : false);
-			break;	
-			
-
-		case 'calculator':
-			$returnHtml= \filter_poodll\filtertools::fetch_poodllcalc($filterprops['runtime'],!empty($filterprops['width']) ? $filterprops['width'] : 300,
-				!empty($filterprops['height']) ? $filterprops['height'] : 400,
-				!empty($filterprops['size']) ? $filterprops['size'] : 'normal');
-			break;
-
-
-		case 'countdown':
-			$returnHtml= \filter_poodll\filtertools::fetch_countdowntimer($filterprops['runtime'],$filterprops['initseconds'],
-				!empty($filterprops['usepresets']) ? $filterprops['usepresets'] : 'false',
-				!empty($filterprops['width']) ? $filterprops['width'] : 400,
-				!empty($filterprops['height']) ? $filterprops['height'] : 300,
-				!empty($filterprops['fontheight']) ? $filterprops['fontheight'] : 64,
-				!empty($filterprops['mode']) ? $filterprops['mode'] : 'normal',
-				!empty($filterprops['permitfullscreen']) ? $filterprops['permitfullscreen'] : false, 
-				!empty($filterprops['uniquename']) ? $filterprops['uniquename'] : 'auniquename');
-			break;
-		
-		case 'counter':
-			$returnHtml= \filter_poodll\filtertools::fetch_counter($filterprops['runtime'],!empty($filterprops['initcount']) ? $filterprops['initcount']  : 0,
-				!empty($filterprops['usepresets']) ? $filterprops['usepresets'] : 'false',
-				!empty($filterprops['width']) ? $filterprops['width'] : 480,
-				!empty($filterprops['height']) ? $filterprops['height'] : 265,
-				!empty($filterprops['fontheight']) ? $filterprops['fontheight'] : 64,
-				!empty($filterprops['permitfullscreen']) ? $filterprops['permitfullscreen'] : false );
-			break;	
-		
-		case 'dice':
-			$returnHtml= \filter_poodll\filtertools::fetch_dice($filterprops['runtime'],!empty($filterprops['dicecount']) ? $filterprops['dicecount']  : 1,
-				!empty($filterprops['dicesize']) ? $filterprops['dicesize'] : 200,
-				!empty($filterprops['width']) ? $filterprops['width'] : 600,
-				!empty($filterprops['height']) ? $filterprops['height'] : 300);
-			break;
-			
-
-		case 'flashcards':
-			$returnHtml= \filter_poodll\filtertools::fetch_flashcards($filterprops['runtime'],
-				!empty($filterprops['cardset']) ? $filterprops['cardset'] : -1,
-				!empty($filterprops['qname']) ? $filterprops['qname'] : "",
-				!empty($filterprops['frontcolor']) ? $filterprops['frontcolor'] : "0xDDDDDD",
-				!empty($filterprops['backcolor']) ? $filterprops['backcolor'] : "0x000000",
-				!empty($filterprops['cardwidth']) ? $filterprops['cardwidth'] : 300,
-				!empty($filterprops['cardheight']) ? $filterprops['cardheight'] : 150,
-				!empty($filterprops['randomize']) ? $filterprops['randomize'] : 'yes',
-				!empty($filterprops['width']) ? $filterprops['width'] : 400,
-				!empty($filterprops['height']) ? $filterprops['height'] : 300,
-				!empty($filterprops['flashcardstype']) ? $filterprops['flashcardstype'] : $CFG->filter_poodll_flashcards_type);
-			break;
-			
-		case 'miniplayer':
-			$returnHtml= \filter_poodll\filtertools::fetch_miniplayer($filterprops['runtime'],$filterprops['url'],
-				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'http',
-				!empty($filterprops['imageurl']) ? $filterprops['imageurl'] : '',
-				!empty($filterprops['width']) ? $filterprops['width'] :  $CFG->filter_poodll_miniplayerwidth,
-				!empty($filterprops['height']) ? $filterprops['height'] :  $CFG->filter_poodll_miniplayerwidth,
-				!empty($filterprops['iframe']) ? $filterprops['iframe']=='true' :  false);
-			break;
-			
-		case 'onceplayer':
-			$returnHtml= \filter_poodll\filtertools::fetch_onceplayer($filterprops['runtime'],$filterprops['url'],
-				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'http',
-				!empty($filterprops['width']) ? $filterprops['width'] :  0,
-				!empty($filterprops['height']) ? $filterprops['height'] :  0,
-				!empty($filterprops['iframe']) ? $filterprops['iframe']=='true' :  false);
-			break;
-			
-		case 'newpoodllpairwork':
-			$returnHtml= \filter_poodll\filtertools::fetch_embeddablepairclient($filterprops['runtime'],
-				!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_newpairwidth,
-				!empty($filterprops['height']) ? $filterprops['height'] : $CFG->filter_poodll_newpairheight,
-				!empty($filterprops['chat']) ? $filterprops['chat'] : true,
-				!empty($filterprops['whiteboard']) ? $filterprops['whiteboard'] : false, 
-				!empty($filterprops['showvideo']) ? $filterprops['showvideo'] : false,
-				!empty($filterprops['whiteboardback']) ? $filterprops['whiteboardback'] : ''
-				);
-			break;
-			
-		case 'stopwatch':
-			$returnHtml= \filter_poodll\filtertools::fetch_stopwatch($filterprops['runtime'],!empty($filterprops['width']) ? $filterprops['width'] : 400,
-				!empty($filterprops['height']) ? $filterprops['height'] : 265,!empty($filterprops['fontheight']) ? $filterprops['fontheight'] : 64,
-				!empty($filterprops['mode']) ? $filterprops['mode'] : 'normal',
-				!empty($filterprops['permitfullscreen']) ? $filterprops['permitfullscreen'] : false, 
-				!empty($filterprops['uniquename']) ? $filterprops['uniquename'] : 'auniquename');
-			break;
-						
-		case 'smallvideogallery':
-			$returnHtml= \filter_poodll\filtertools::fetchSmallVideoGallery($filterprops['runtime'],$filterprops['path'],
-				!empty($filterprops['filearea']) ? $filterprops['filearea'] : 'content',
-				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'http',
-				!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_smallgallwidth,
-				!empty($filterprops['height']) ? $filterprops['height'] :  $CFG->filter_poodll_smallgallheight,
-				!empty($filterprops['permitfullscreen']) ? $filterprops['permitfullscreen'] : false,
-				!empty($filterprops['usepoodlldata']) ? $filterprops['usepoodlldata']=='true' : false);
-			break;
-
-		case 'poodllpalette':
-			$returnHtml= \filter_poodll\filtertools::fetch_poodllpalette($filterprops['runtime'],
-			$filterprops['width'],$filterprops['height'],"swf");
-			break;	
-			
-		case 'wordplayer':
-			$returnHtml= \filter_poodll\filtertools::fetch_wordplayer($filterprops['runtime'],
-				$filterprops['url'],$filterprops['word'],
-				!empty($filterprops['fontsize']) ? $filterprops['fontsize'] : $CFG->filter_poodll_wordplayerfontsize,
-				!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'http',
-				!empty($filterprops['width']) ? $filterprops['width'] :  "0",
-				!empty($filterprops['height']) ? $filterprops['height'] :  "0",
-				!empty($filterprops['iframe']) ? $filterprops['iframe']=='true' :  false);
-			break;
-			
-		case 'whiteboard':
-			$returnHtml= \filter_poodll\filtertools::fetch_whiteboard($filterprops['runtime'],!empty($filterprops['boardname']) ? $filterprops['boardname'] : "whiteboard",
-				!empty($filterprops['backimage']) ? $filterprops['backimage'] : "",
-				(!empty($filterprops['slave'])&& $filterprops['slave']=='true') ? $filterprops['slave'] : false,
-				!empty($filterprops['rooms']) ? $filterprops['rooms'] : "",
-				!empty($filterprops['width']) ? $filterprops['width'] :  $CFG->filter_poodll_whiteboardwidth,
-				!empty($filterprops['height']) ? $filterprops['height'] :  $CFG->filter_poodll_whiteboardheight,
-				!empty($filterprops['mode']) ? $filterprops['mode'] :  'normal',
-				(!empty($filterprops['standalone'])&& $filterprops['standalone']=='true')  ? $filterprops['standalone'] :  'false'
-				);
-			break;									
-
-		case 'poodllpairwork':
-			$courseid = $COURSE->id;
-			$username = $USER->username;
-			
-			$poodllpairworkplayer ="";
-			$studentalias="";
-			$pairmap="";
-			
-			if ($pairmap = get_record("poodllpairwork_usermap", "username", $username, "course", $courseid)) {
-				$studentalias = $pairmap->role;
-			}				
-					
-			//if we have a role and hence a session.
-			if ($studentalias != ""){			
-				$me = get_record('user', 'username', $username);
-				$partner = get_record('user', 'username', $pairmap->partnername);
-				$partnerpic = \filter_poodll\filtertools::fetch_user_picture($partner,35);
-				$mepic = \filter_poodll\filtertools::fetch_user_picture($me,35);
-				$poodllpairworkplayer =  "<h4>" . get_string("yourpartneris", "poodllpairwork") . fullname($partner) . "</h4>";
-				$poodllpairworkplayer .= \filter_poodll\filtertools::fetchPairworkPlayer($pairmap->username,$pairmap->partnername,$mepic, fullname($me),$partnerpic,fullname($partner));
-		
-			}
-			
-			$returnHtml= $poodllpairworkplayer;
-			break;
-			
-		case 'quizlet':
-			$returnHtml= fetch_quizlet($filterprops['id'],
-				!empty($filterprops['title']) ? $filterprops['title']  : 'quizlet',
-				!empty($filterprops['mode']) ? $filterprops['mode'] :  'familiarize',
-				!empty($filterprops['width']) ? $filterprops['width'] :  '100%',
-				!empty($filterprops['height']) ? $filterprops['height'] :  '310')
-				;
-			break;	
-			
-		case 'scrollerstart':
-			$returnHtml= \filter_poodll\filtertools::fetch_poodllscroller(true,
-				!empty($filterprops['width']) ? $filterprops['width'] :  '400',
-				!empty($filterprops['height']) ? $filterprops['height'] :  '200',
-				!empty($filterprops['speed']) ? $filterprops['speed'] :  '10',
-				!empty($filterprops['repeat']) ? $filterprops['repeat'] :  'yes',
-				!empty($filterprops['axis']) ? $filterprops['axis'] :  'y',
-				!empty($filterprops['pixelshift']) ? $filterprops['pixelshift'] :  '2')
-				;
-			break;	
-		
-		case 'scrollerstop':
-			$returnHtml= \filter_poodll\filtertools::fetch_poodllscroller(false);
-
-			break;
-
-		
-		case 'snapshot':
-			$returnHtml= \filter_poodll\filtertools::fetchSnapshotCamera(!empty($filterprops['updatecontrol']) ? $filterprops['updatecontrol'] :  'filename',
-				!empty($filterprops['filename']) ? $filterprops['filename'] :  'filename',
-				!empty($filterprops['width']) ? $filterprops['width'] :  '350',
-				!empty($filterprops['height']) ? $filterprops['height'] :  '400')
-				;
-			break;	
-
-			
-		case 'videorecorder':
-			$returnHtml= \filter_poodll\filtertools::fetchSimpleVideoRecorder($filterprops['runtime'],
-						!empty($filterprops['savefolder']) ? $filterprops['savefolder'] : '');
-			break;	
-			
-		case 'video': 
-			//$returnHtml= fetchSimpleVideoPlayer($filterprops['path'],$filterprops['width'],$filterprops['height']);
-			$returnHtml= \filter_poodll\filtertools::fetchSimpleVideoPlayer($filterprops['runtime'],$filterprops['path'],
-			!empty($filterprops['width']) ? $filterprops['width'] : $CFG->filter_poodll_videowidth,
-			!empty($filterprops['height']) ? $filterprops['height'] :  $CFG->filter_poodll_videoheight,
-			!empty($filterprops['protocol']) ? $filterprops['protocol'] : 'rtmp',
-			!empty($filterprops['embed']) ? $filterprops['embed']=='true' : false,
-			!empty($filterprops['permitfullscreen']) ? $filterprops['permitfullscreen'] : false ,
-			!empty($filterprops['embedstring']) ? $filterprops['embedstring'] : 'Play',
-			!empty($filterprops['splashurl']) ? $filterprops['splashurl'] : '') ;
-			break;
-
-
-		default:
-
-	
-	}
-
-	//return our html
-	return $returnHtml;
-
-}//end of poodll default callback function
-*/
-
-
-
-
-/**
- * Replace pdl links with appropriate PoodLL widget
- *
- * @param  $link
- * @return string
- */
- 
- /*
-function filter_poodll_pdl_callback($link) {
-global $CFG;
-
-	$lm = new \filter_poodll\licensemanager();
-	if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-		return $lm->fetch_unregistered_content();
-	}
-
-	//strip the .pdl extension
-	$len = strlen($link[2]);
-	$trimpoint = strpos($link[2], ".pdl");
-	$key=substr($link[2],0,$trimpoint);
-	
-	//see if there is a parameter to this widget
-	$pos = strpos($key, "_");
-	$param="";
-	
-	//if yes, trim it off the key and get its value
-	if($pos){
-		$param=substr($key,$pos+1);
-		$key=substr($key,0,$pos);
-	}
-
-	//depending on the widget, make up a filter string
-	switch ($key){
-		case "audiorecorder": $fstring = "{POODLL:type=audiorecorder}";break;
-		case "videorecorder": $fstring = "{POODLL:type=videorecorder}";break;
-		case "snapshot": $fstring = "{POODLL:type=snapshot}";break;
-		case "stopwatch": $fstring = "{POODLL:type=stopwatch}";break;
-		case "dice": $fstring = "{POODLL:type=dice,dicecount=$param}";break;
-		case "calculator": $fstring = "{POODLL:type=calculator}";break;
-		case "countdown": $fstring = "{POODLL:type=countdown,initseconds=$param}";break;
-		case "counter": $fstring = "{POODLL:type=counter}";break;
-		case "whiteboardsimple": $fstring = "{POODLL:type=whiteboard,mode=simple,standalone=true}";break;
-		case "whiteboardfull": $fstring = "{POODLL:type=whiteboard,mode=normal,standalone=true}";break;
-		case "sliderocket": $fstring = "{POODLL:type=sliderocket,id=$param}";break;
-		case "quizlet": $fstring = "{POODLL:type=quizlet,id=$param}";break;
-		case "flashcards": $fstring = "{POODLL:type=flashcards,cardset=$param}";break;
-	}
-	
-	//resolve the string and return it
-	$returnHtml= filter_poodll_callback(array($fstring));	
-	return $returnHtml;
-}
-*/
-
-/**
- * Replace mp3 links with player
- *
- * @param  $link
- * @return string
- */
-
-/*
-function filter_poodll_mp3_callback($link) {
-global $CFG;
-
-	$lm = new \filter_poodll\licensemanager();
-	if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-		return $lm->fetch_unregistered_content();
-	}
-
-	//get the url and massage it a little
-    $url = $link[1];
-    $rawurl = str_replace('&amp;', '&', $url);
-	
-	//test for presence of player selectors and serve up the correct player
-	$len = strlen($link[2]);
-	if (strrpos($link[2],'.mini.mp3')=== $len-9){
-		$returnHtml= \filter_poodll\filtertools::fetch_miniplayer('auto',$rawurl,'http','',0,0,true);
-		
-	}else if (strrpos($link[2],'.once.mp3')=== $len-9){
-		$returnHtml= \filter_poodll\filtertools::fetch_onceplayer('auto',$rawurl,'http');
-	
-	}elseif(strrpos($link[2],'.word.mp3')=== $len-9){
-		$word=substr($link[2],0,$len-9);
-		$returnHtml=  \filter_poodll\filtertools::fetch_wordplayer('auto',$rawurl,$word,0,'http',0,0,true);
-	
-	}elseif(strrpos($link[2],'.inlineword.mp3')=== $len-15){
-		$word=substr($link[2],0,$len-15);
-		$returnHtml=  \filter_poodll\filtertools::fetch_wordplayer('js',$rawurl,$word,0,'http',0,0,true);
-		
-	}else{
-		$returnHtml=  \filter_poodll\filtertools::fetchSimpleAudioPlayer('auto',$rawurl,'http',$CFG->filter_poodll_audiowidth,$CFG->filter_poodll_audioheight,false,'Play');
-	}
-	
-	return $returnHtml;
-}
-*/
-
-/**
- * Replace mp4 or flv links with player
- *
- * @param  $link
- * @return string
- */
- 
- /*
-function filter_poodll_mp4flv_callback($link) {
-global $CFG;
-
-	$lm = new \filter_poodll\licensemanager();
-	if(!$lm->validate_registrationkey($CFG->filter_poodll_registrationkey)) {
-		return $lm->fetch_unregistered_content();
-	}
-
-	//clean up url
-	$url = $link[1];
-    $url = str_replace('&amp;', '&', $url);
-	$url = clean_param($url, PARAM_URL);
-	
-	//use default widths or explicit width/heights if they were passed in ie http://url.to.video.mp4?d=640x480
-	if (empty($link[3]) or empty($link[4])) {
-		$width = $CFG->filter_poodll_videowidth;
-		$height = $CFG->filter_poodll_videoheight;
-	}else{
-		$width = $link[3];
-		$height = $link[4];
-	}
-	
-	//get the url and massage it a little
-    $url = $link[1];
-    $rawurl = str_replace('&amp;', '&', $url);
-	
-	//test for presence of player selectors and serve up the correct player
-	//determine the file extension
-	$ext = substr($link[5],-3); 
-	$len = strlen($link[5]);
-	if (strrpos($link[5],'.mini.' . $ext)=== $len-9){
-		$returnHtml= \filter_poodll\filtertools::fetch_miniplayer('auto',$rawurl,'http','',0,0,true);
-	
-	}else if (strrpos($link[2],'.once.' . $ext)=== $len-9){
-		$returnHtml= \filter_poodll\filtertools::fetch_onceplayer('auto',$rawurl,'http');
-		
-	}elseif(strrpos($link[5],'.word.' . $ext)=== $len-9){
-		$word=substr($link[5],0,$len-9);
-		$returnHtml= \filter_poodll\filtertools::fetch_wordplayer('auto',$rawurl,$word,0,'http',0,0,true);
-		
-	}elseif(strrpos($link[5],'.audio.' . $ext)=== $len-10){
-		$returnHtml=  \filter_poodll\filtertools::fetchSimpleAudioPlayer('auto',$rawurl,'http',$CFG->filter_poodll_audiowidth,$CFG->filter_poodll_audioheight,false,'Play');
-		
-	}elseif(strrpos($link[5],'.inlineword.' . $ext)=== $len-15){
-		$word=substr($link[5],0,$len-15);
-		$returnHtml= \filter_poodll\filtertools::fetch_wordplayer('js',$rawurl,$word,0,'http',0,0,true);
-	
-		
-	}else{
-		$returnHtml=  \filter_poodll\filtertools::fetchSimpleVideoPlayer('auto',$url,$width,$height,'http',false,true , 'Play');
-	}
-	
-	return $returnHtml;
-}
-*/

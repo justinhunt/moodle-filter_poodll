@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.0.15(Build 2016111201)
+-added alternate content fields for falling back to on non css/js env. (ala mobile app)
+-convert datavars to integers if they are numeric before passing to SQL
+
 Version 3.0.14(Build 2016110601)
 -added a once player js
 -added HTML5 recorder skin (burntrose)

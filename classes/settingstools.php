@@ -355,6 +355,17 @@ public static function fetch_template_pages($conf){
 				get_string('datasetvars', 'filter_poodll',$tindex),
 				get_string('datasetvars_desc', 'filter_poodll'),
 				'', PARAM_RAW,50));
+				
+			//alternative content
+		   $defvalue= '';
+		   $settings_page->add(new \admin_setting_configtextarea('filter_poodll/templatealternate_' . $tindex,
+				get_string('templatealternate', 'filter_poodll',$tindex),
+				get_string('templatealternate_desc', 'filter_poodll'),
+				$defvalue,PARAM_RAW));
+		   $settings_page->add(new \admin_setting_configtextarea('filter_poodll/templatealternate_end_' . $tindex,
+				get_string('templatealternate_end', 'filter_poodll',$tindex),
+				get_string('templatealternate_end_desc', 'filter_poodll'),
+				$defvalue,PARAM_RAW));
 
 			$pages[] = $settings_page;
 		}
