@@ -263,7 +263,7 @@ class filter_poodll extends moodle_text_filter {
 			$alternate_content = $conf['templatealternate_' . $tempindex];
 		}else{
 			$poodlltemplate = $conf['template_' . $tempindex];
-			$alternate_content = $conf['templatealternate__end_' . $tempindex];
+			$alternate_content = $conf['templatealternate_end_' . $tempindex];
 		}
 
 		//fetch alternate content
