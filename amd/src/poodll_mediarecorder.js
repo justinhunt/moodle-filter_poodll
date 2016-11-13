@@ -506,17 +506,17 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             	var status = this.fetch_status_bar('burntrose');
                 controls += status,
                 controls += preview,
-                controls +=  '<span class="poodll_start-recording"title="Start"></span>';
-                controls += '<span class="poodll_stop-recording hide" title="Stop"></span>';
-                controls += '<span class="poodll_pause-recording hide" title="Pause"></span>';
-                controls += ' <span class="poodll_resume-recording hide"title="Resume" ></span>';
+                controls +=  '<span class="poodll_start-recording" title="' + M.util.get_string('recui_record', 'filter_poodll') + '"></span>';
+                controls += '<span class="poodll_stop-recording hide" title="' + M.util.get_string('recui_stop', 'filter_poodll') + '></span>';
+                controls += '<span class="poodll_pause-recording hide" title="' + M.util.get_string('recui_pause', 'filter_poodll') + '"></span>';
+                controls += ' <span class="poodll_resume-recording hide"title="' + M.util.get_string('recui_continue', 'filter_poodll') + '" ></span>';
                 controls += ' <span class="poodll_play-recording" ></span>';
-				controls += ' <span class="poodll_playsave hide" title="Play" ></span>';
+				controls += ' <span class="poodll_playsave hide" title="' + M.util.get_string('recui_play', 'filter_poodll') + '" ></span>';
 				controls += ' <span class="poodll_mic" ></span>';
 				controls += ' <span class="poodll_recmic hide" ></span>';
 				controls += ' <span class="poodll_resume_mic hide" ></span>';
                 controls += '<span class="poodll_savebtn" ></span>';
-				controls += '<span class="poodll_save-recording_burntrose hide" title="Save" ></span>';
+				controls += '<span class="poodll_save-recording_burntrose hide" title="' + M.util.get_string('recui_save', 'filter_poodll') + '" ></span>';
 				controls += '<span class="poodll_savedsuccessfully hide"></span>';
                 controls += '</div>';
                 $(element).prepend(controls);
@@ -547,18 +547,18 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             controls += status,
 			controls += preview,
             controls +=  '<div class="poodll_mediavideobox2" id="' + controlbarid + '">' ;
-                controls +=  '<span class="poodll_start-recording" title="Start"></span>';
-                controls += '<span class="poodll_stop-recording hide" title="Stop"></span>';
-                controls += '<span class="poodll_pause-recording hide" title="Pause" ></span>';
-                controls += ' <span class="poodll_resume-recording hide" title="Resume"></span>';
+                controls +=  '<span class="poodll_start-recording" title="' + M.util.get_string('recui_record', 'filter_poodll') + '"></span>';
+                controls += '<span class="poodll_stop-recording hide" title="' + M.util.get_string('recui_stop', 'filter_poodll') + '"></span>';
+                controls += '<span class="poodll_pause-recording hide" title="' + M.util.get_string('recui_pause', 'filter_poodll') + '" ></span>';
+                controls += ' <span class="poodll_resume-recording hide" title="' + M.util.get_string('recui_continue', 'filter_poodll') + '"></span>';
                 controls += ' <span class="poodll_play-recording" ></span>';
-				controls += ' <span class="poodll_playsave hide" title="Play"></span>';
+				controls += ' <span class="poodll_playsave hide" title="' + M.util.get_string('recui_play', 'filter_poodll') + '"></span>';
 				controls += ' <span class="poodll_mic hide" ></span>';
 				controls += ' <span class="poodll_recmic hide" ></span>';
 				controls += ' <span class="poodll_resume_mic hide" ></span>';
 
-                 controls += '<span class="poodll_savebtn "title="Save" ></span>';
-                 controls += '<span class="poodll_save-recording_burntrose hide "title="Save" ></span>';
+                 controls += '<span class="poodll_savebtn "title="' + M.util.get_string('recui_save', 'filter_poodll') + '" ></span>';
+                 controls += '<span class="poodll_save-recording_burntrose hide "title="' + M.util.get_string('recui_save', 'filter_poodll') + '" ></span>';
                 controls += '<span class="poodll_savedsuccessfully hide" ></span>';
                 controls += '</div>';
 				controls += '</div>';
