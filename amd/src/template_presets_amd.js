@@ -10,7 +10,7 @@ define(['jquery','core/log'], function($, log) {
 	  presetdata: false,
 	  
 	  dataitems: ['name','key', 'instructions','showatto','showplayers','requirecss', 'requirejs','shim', 'defaults',
-			  'amd', 'body', 'bodyend', 'script', 'style','dataset','datasetvars'],
+			  'amd', 'body', 'bodyend', 'script', 'style','dataset','datasetvars','alternate','alternateend'],
 
 	  fetchcontrols: function(templateindex) {
 	  	  var controls = {};
@@ -30,6 +30,8 @@ define(['jquery','core/log'], function($, log) {
 		  controls.style = document.getElementById('id_s_filter_poodll_templatestyle_' + templateindex);
 		  controls.dataset = document.getElementById('id_s_filter_poodll_dataset_' + templateindex);
 		  controls.datasetvars = document.getElementById('id_s_filter_poodll_datasetvars_' + templateindex);
+		  controls.alternate = document.getElementById('id_s_filter_poodll_templatealternate_' + templateindex);
+		  controls.alternateend = document.getElementById('id_s_filter_poodll_templatealternate_end_' + templateindex);
 		  controls.presetdata = document.getElementById('id_s_filter_poodll_presetdata_' + templateindex);
 		  return controls;
 	  },
