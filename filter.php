@@ -201,7 +201,7 @@ class filter_poodll extends moodle_text_filter {
 	
 		//get our filter props
 		if($ext){
-			$filterprops= \filter_poodll\filtertools::fetch_filter_properties_fromurl($link,$ext);
+			$filterprops= \filter_poodll\filtertools::fetch_filter_properties_fromurl($link,$ext, $is_webservice);
 		}else{
 			$filterprops= \filter_poodll\filtertools::fetch_filter_properties($link[0]);
 		}

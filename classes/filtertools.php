@@ -133,7 +133,7 @@ class filtertools
 		}
 	}
 
-	public static function fetch_filter_properties_fromurl($link,$ext){
+	public static function fetch_filter_properties_fromurl($link,$ext, $is_webservice){
 		global $PAGE;
 	
 			$url = $link[1];
@@ -218,7 +218,11 @@ class filtertools
 			$proparray['AUTOPNGFILENAME'] = $autopngfilename;
 			$proparray['AUTOJPGFILENAME'] = $autojpgfilename;
 			$proparray['RAWVIDEOURL'] =  !empty($paramstring) ?  $videourl . '?' . $paramstring : $videourl;
-			$proparray['VIDEOURL'] = $videourl . '?cachekiller=' . rand(1,9999) . time(); //add a time stamp to url
+			if($is_webservice){
+				$proparray['VIDEOURL'] = $videourl;
+			}else{
+				$proparray['VIDEOURL'] = $videourl . '?cachekiller=' . rand(1,9999) . time(); //add a time stamp to url
+			}
 			$proparray['RAWPARAMS'] = $paramstring;
 			$proparray['AUTOPOSTERURLJPG'] = $autoposterurljpg;
 			$proparray['AUTOPOSTERURLPNG'] = $autoposterurlpng;

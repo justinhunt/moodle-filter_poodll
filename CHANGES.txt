@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.0.16(Build 2016111202)
+-fixed alternate field bug, media files wouldn't play
+
 Version 3.0.15(Build 2016111201)
 -added alternate content fields for falling back to on non css/js env. (ala mobile app)
 -convert datavars to integers if they are numeric before passing to SQL
