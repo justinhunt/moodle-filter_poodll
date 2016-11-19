@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.0.18(Build 2016111901)
+-fixed a bug on webservice detection for mobile/alternate content
+
+
 Version 3.0.17(Build 2016111203)
 -added tinyvideojsplayer
 
