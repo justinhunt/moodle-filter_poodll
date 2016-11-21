@@ -1,3 +1,8 @@
+.hide {
+	display: none;
+}
+
+
 .filter_poodll_mp3skinned_recorder {
 	width: 240px;
 	height: 205px;
@@ -303,6 +308,9 @@ a.filter_poodll_uploadafilelink:active {
     clear:both;
     width:320px;
 }
+audio.poodll_preview_standard{
+    height:37px;
+}
 
 .poodll_preview_standard.poodll_recording{
 	border: red;
@@ -316,6 +324,10 @@ a.filter_poodll_uploadafilelink:active {
 .poodll_mediarecorderbox_standard {
     width: 370px;
     text-align: center;
+}
+
+.poodll_mediarecorder_button_standard {
+    margin: 5px;
 }
 
 .poodll_status_standard{

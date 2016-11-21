@@ -47,7 +47,7 @@ define(['jquery','core/log'], function($, log) {
 				//get the dom object so we can use direct manip.
 				var o = o_query.get(0);
 				progress = o.firstChild;
-				if(progress==null){
+				if(progress===null){
 					progress = o.appendChild(document.createElement("p"));
 				}
 				//reset/set background position to 0, and label to "uploading
@@ -75,7 +75,6 @@ define(['jquery','core/log'], function($, log) {
                 case "audio/mpeg3": ext = "mp3";break;
                 case "audio/webm": ext = "webm";break;
                 case "audio/x-mpeg-3": ext = "mp3";break;
-                case "audio/mpeg3": ext = "mp3";break;
                 case "audio/3gpp": ext = "3gpp";break;
                 case "video/mpeg3": ext = "3gpp";break;
                 case "video/mp4": ext = "mp4";break;
@@ -95,12 +94,10 @@ define(['jquery','core/log'], function($, log) {
                             upc.value = filename;
                     }else{
                             log.debug('upload failed #2');
-                            log.debug(xhr);
                             uploader.Output(M.util.get_string('recui_uploaderror', 'filter_poodll'));
-                            return false
+                            return false;
                     }
             }
-            
             return true;
         },
         
@@ -175,7 +172,7 @@ define(['jquery','core/log'], function($, log) {
             var using_s3 = config.using_s3;
 
             // create progress bar if we have a container for it
-            var progress = this.createProgressBar(xhr,uploader);
+            this.createProgressBar(xhr,uploader);
  
             //alert user that we are now uploading    
             this.Output(M.util.get_string('recui_uploading', 'filter_poodll'));
@@ -187,7 +184,7 @@ define(['jquery','core/log'], function($, log) {
                 }
             	uploader.postProcessUpload(e,uploader);
                 
-            }
+            };
 
             if(using_s3){
                     xhr.open("put",config.posturl, true);
@@ -241,9 +238,8 @@ define(['jquery','core/log'], function($, log) {
 						   // xhr.setRequestHeader("Content-length", params.length);
 						   // xhr.setRequestHeader("Connection", "close");
 							xhr.send(params);
-                    	}//end of fileread on load end
+                    	};//end of fileread on load end
                 }//end of if blob                 
-                    
 	     }//end of if using_s3
         },
         
@@ -255,14 +251,14 @@ define(['jquery','core/log'], function($, log) {
             
             //lets do a little error checking
             //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
-            xhr.onreadystatechange = function(e){
+            xhr.onreadystatechange = function(){
             	if(this.readyState===4){
             		if(xhr.status!=200){
                        that.Output('Post Process s3 Upload Error:' + xhr.status);
                        $('#' + that.config.widgetid + '_messages').show();
                      }
                 }
-            }
+            };
 
             //log.debug(params);
             var params = "datatype=handles3upload";
@@ -309,5 +305,5 @@ define(['jquery','core/log'], function($, log) {
 			}
 			return new Blob([ab], { type: mimetype });
 		}//end of dataURItoBlob
-    }//end of returned object
+    };//end of returned object
 });//total end

@@ -81,7 +81,6 @@ define(['jquery','core/log'], function($, log) {
 
 			
 		}//end of function
-
-	}
+	};
 });
 /* jshint ignore:end */

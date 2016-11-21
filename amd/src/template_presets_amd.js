@@ -45,7 +45,7 @@ define(['jquery','core/log'], function($, log) {
 		    );
 		    var jsonbundle = JSON.stringify(bundle);
 		    return jsonbundle;
-    		window.open("data:text/json;charset=utf-8," + encodeURIComponent(bundlejson));
+    		window.open("data:text/json;charset=utf-8," + encodeURIComponent(jsonbundle));
 	  },
 	  
 	  exportbundle: function(templateindex){
@@ -123,10 +123,10 @@ define(['jquery','core/log'], function($, log) {
 			});
 			
 			//drag drop square events
-			var ddsquareid='#id_s_filter_poodll_dragdropsquare_' + opts['templateindex']
+			var ddsquareid='#id_s_filter_poodll_dragdropsquare_' + opts['templateindex'];
 			
 			//export the current bundle
-			$(ddsquareid).on("click", function(event) {
+			$(ddsquareid).on("click", function() {
 				amdpresets.exportbundle(opts['templateindex']);
 			});
 			
@@ -165,7 +165,7 @@ define(['jquery','core/log'], function($, log) {
 						  if(templatedata.key){
 						  	amdpresets.dopopulate(opts['templateindex'],templatedata);
 						  }
-					  }
+					  };
 					  r.readAsText(f);
 					} else { 
 					  alert("Failed to load file");
@@ -174,7 +174,6 @@ define(['jquery','core/log'], function($, log) {
 				$(this).removeClass('filter_poodll_dragging');
 			});
 		}//end of function
-
-	}
+	};
 });
 /* jshint ignore:end */

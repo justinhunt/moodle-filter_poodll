@@ -316,11 +316,11 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             	var status = this.fetch_status_bar('standard');
                 controls += status,
                 controls += preview,
-                controls +=  '<button type="button" class="poodll_start-recording_standard">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_stop-recording_standard" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_pause-recording_standard" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
-                controls += ' <button type="button" class="poodll_resume-recording_standard hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
-                controls += ' <button type="button" class="poodll_play-recording_standard" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_standard poodll_start-recording_standard">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_stop-recording_standard" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_pause-recording_standard" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_standard　poodll_play-recording_standard" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
                 controls += '<button type="button" class="poodll_save-recording_standard" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
                 controls += '</div>';
                 $(element).prepend(controls);

@@ -58,7 +58,7 @@ define(['jquery',
 							 use_rec.embed(element,this.config);
 							 return;
 				} // end of current browser support check  		
-    		};//end of each		
+    		}//end of each		
     		
     		//if we got here no recorder was preferred AND supported the browser
     		log.debug('none of available recorders works on this browser');

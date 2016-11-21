@@ -17,9 +17,8 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
             var cvs = this.getCvs(recid,wboard,opts);
             this.pokeVectorData(recid,wboard,opts);
             uploader.uploadFile(cvs.toDataURL(),'image');
-        },
-        
-        getCvs: function(recid,wboard,opts){
+        },        
+        getCvs: function(recid,wboard){
             if(recid.indexOf('drawingboard_')==0){
                 var cvs = wboard.canvas;
             }else{
@@ -40,5 +39,5 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
             //need to do the poke here
            $('#' + opts['vectorcontrol']).val(vectordata);
         }//end of poke vectordata
-    }
+    };
 });

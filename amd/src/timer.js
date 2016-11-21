@@ -36,7 +36,7 @@ define(['jquery','core/log'], function($, log) {
 			var theHours = '00' + parseInt(this.seconds/3600);
 			theHours = theHours.substr(theHours.length -2,2);
 			var theMinutes = '00' + parseInt(this.seconds/60);
-			theMinutes = theMinutes.substr(theMinutes.length -2,2) 
+			theMinutes = theMinutes.substr(theMinutes.length -2,2);
 			var theSeconds = '00' + parseInt(this.seconds%60);
 			theSeconds = theSeconds.substr(theSeconds.length -2,2);
 			var display_time= theHours + ':' + theMinutes + ':' + theSeconds ;			
@@ -58,5 +58,5 @@ define(['jquery','core/log'], function($, log) {
 			this.increment = 1;
 		}
 
-    }//end of returned object
+    };//end of returned object
 });//total end
