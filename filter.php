@@ -64,7 +64,7 @@ class filter_poodll extends moodle_text_filter {
 				}
                                 
 				//check for legacy pdl links
-				$search='/<a\s[^>]*href="([^"#\?]+\.(.pdl))(.*?)"[^>]*>([^>]*)<\/a>/is';
+				$search='/<a\s[^>]*href="([^"#\?]+\.(pdl))(.*?)"[^>]*>([^>]*)<\/a>/is';
 				$newtext = preg_replace_callback($search, 'self::filter_poodll_pdl_callback', $newtext);
 
 			
@@ -146,9 +146,15 @@ class filter_poodll extends moodle_text_filter {
                  global $CFG;
 
                 //strip the .pdl extension
-                $len = strlen($link[2]);
-                $trimpoint = strpos($link[2], ".pdl");
-                $key=substr($link[2],0,$trimpoint);
+                $len = strlen($link[1]);
+                $trimpoint = strpos($link[1], ".pdl");
+                $key=substr($link[1],0,$trimpoint);
+                if(strpos($key, "https://")===0  && $len > 12){
+                	$key=substr($key,8);
+                }elseif(strpos($key, "http://")===0 && $len > 11){
+                	$key=substr($key,7);
+                }
+                $fstring='';
 
                 //see if there is a parameter to this widget
                 $pos = strpos($key, "_");
@@ -176,7 +182,11 @@ class filter_poodll extends moodle_text_filter {
                 }
 
                 //resolve the string and return it
-                return self::filter_poodll_process(array($fstring));
+                if(!empty($fstring)){
+                    return self::filter_poodll_process(array($fstring));
+                }else{
+                	return '';
+                }
         }
 	
 	/*
@@ -647,7 +657,6 @@ class filter_poodll extends moodle_text_filter {
 
 		//AMD or not, and then load our js for this template on the page
 		if($require_amd){
-
 			$generator = new \filter_poodll\templatescriptgenerator($tempindex);
 			$template_amd_script = $generator->get_template_script();
 
@@ -661,6 +670,7 @@ class filter_poodll extends moodle_text_filter {
 			$PAGE->requires->js_amd_inline($template_amd_script);
 			//for AMD template script
 			$PAGE->requires->js_call_amd('filter_poodll/template_amd','loadtemplate', array(array('AUTOID'=>$filterprops['AUTOID'])));
+			//echo $filterprops['AUTOID'] . PHP_EOL;
 
 
 		}else{

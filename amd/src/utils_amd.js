@@ -37,7 +37,9 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
             }//end of of drawing board
             
             //need to do the poke here
-           $('#' + opts['vectorcontrol']).val(vectordata);
+            if(typeof opts['vectorcontrol'] !== 'undefined' && opts['vectorcontrol'] !==''){
+              $('#' + opts['vectorcontrol']).val(vectordata);
+           }
         }//end of poke vectordata
     };
 });

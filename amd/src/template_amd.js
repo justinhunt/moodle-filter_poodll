@@ -37,7 +37,6 @@ define(['jquery','core/log'], function($, log) {
 		// load all poodll stuff and stash all our variables
 		loadtemplate: function(opts) {
 
-
 			//pick up opts from html
 			var theid = '#filter_poodll_amdopts_' + opts['AUTOID'];
 			var optscontrol = $(theid).get(0);

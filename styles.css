@@ -678,6 +678,7 @@ audio.poodll_preview_standard{
 }
 .filter_poodll_recorder_placeholder
 {
-	text-align:left
+	text-align:center;
+	display: inline-block;
 }
 

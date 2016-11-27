@@ -84,8 +84,13 @@ define(['jquery','core/log'], function($, log) {
         },
         
         pokeFilename: function(filename,uploader){
-            uploader.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
-            var upc = $('#' + uploader.config.updatecontrol);
+            uploader.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll')); 
+            var upc = '';
+            if(typeof uploader.config.updatecontrol !== 'undefined' && uploader.config.updatecontrol !==''){
+              upc=$('[id="' + uploader.config.updatecontrol + '"]');
+               //the code below used to work until odd chars in question id annoyed jquery 3 
+              //upc = $('#' + uploader.config.updatecontrol);
+            }
             if (upc.length > 0) {
                     upc.get(0).value = filename;
             }else{
