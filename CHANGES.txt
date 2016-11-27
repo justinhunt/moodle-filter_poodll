@@ -3,6 +3,10 @@ Change List
 Version 3.0.18(Build 2016111901)
 -fixed a bug on webservice detection for mobile/alternate content
 -tweaks to CSS so it dosplays ok on Moodle 3.2 with standard theme
+-improved the once player js tmplate
+-added source of amd libraries so that can debug with cachejs off
+-removed duplicates in presets directory
+
 
 Version 3.0.17(Build 2016111203)
 -added tinyvideojsplayer
