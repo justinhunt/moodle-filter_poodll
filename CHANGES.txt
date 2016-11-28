@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.0.20(Build 2016112802)
+-fixed problem with audiojs template which would error if id not found
+-fixed problem with undefined template being added when html and js not synced
+
 Version 3.0.19(Build 2016112801)
 -added a warning message if the recorder has not captured data
 -fixed a style problem if using burntrose theme
