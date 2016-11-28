@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.0.19(Build 2016112801)
+-added a warning message if the recorder has not captured data
+-fixed a style problem if using burntrose theme
+
 Version 3.0.18(Build 2016111901)
 -fixed a bug on webservice detection for mobile/alternate content
 -tweaks to CSS so it dosplays ok on Moodle 3.2 with standard theme

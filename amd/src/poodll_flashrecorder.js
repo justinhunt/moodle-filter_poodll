@@ -108,10 +108,16 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
               //here we convert a string of base64 data into a blob which represents 
               //an mp3 file.  
               var audiodata = atob(ip.audiodatacontrol.val());
+              
+              //we check if there is actually any data,because if not we want to complain
+              if(!audiodata || audiodata.length ==0){
+			 	ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
+			 	return false;
+			  }
+              
               var audioblobdata=[];
               for(var i = 0; i < audiodata.length; i++) {audioblobdata.push(audiodata.charCodeAt(i));}
               var audioBlob = new Blob([new Uint8Array(audioblobdata)],{type: 'audio/mpeg3'});
-
               //and we upload that blob
               ip.uploader.uploadBlob(audioBlob,'audio/mpeg3');
               //we would like to disable the recorder here
