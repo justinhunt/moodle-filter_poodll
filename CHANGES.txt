@@ -1,5 +1,12 @@
 Change List
 =========
+Version 3.0.21(Build 2016112803)
+-added support for proxy servers
+-added Video JS Subtitle player template
+-added Native Video Subtitle player template
+-added Video JS audio player template
+-added Video JS audio transcript player template
+
 Version 3.0.20(Build 2016112802)
 -fixed problem with audiojs template which would error if id not found
 -fixed problem with undefined template being added when html and js not synced

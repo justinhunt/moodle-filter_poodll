@@ -244,12 +244,23 @@ class awstools
         }
 //fetch or create the transcoder object 
 	function fetch_s3client(){
+		global $CFG;
+		
 		if(!$this->s3client){
-			$this->s3client = S3Client::factory(array(
-			'region'=>$this->region,
-			'version'=>'2006-03-01',
-			'credentials' => 
-				array('key' => $this->accesskey, 'secret' => $this->secretkey)));
+			$config = array();
+			$config['region']=$this->region;
+			$config['version']='2006-03-01';
+			$config['credentials']=array('key' => $this->accesskey, 'secret' => $this->secretkey);
+			//add proxy settings if necessary
+			if(!empty($CFG->proxyhost)){
+				$proxy=$CFG->proxytype . '://' . $CFG->proxyhost;
+				if($CFG->proxyport > 0) {$proxy = $proxy . ':' . $CFG->proxyport;}
+				if(!empty($CFG->proxyuser)){
+					$proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
+				}
+				$config['request.options']=array('proxy'=>$proxy);
+			}
+			$this->s3client = S3Client::factory($config);
 		}
 		return $this->s3client;
 	}
