@@ -162,6 +162,7 @@ class poodllpresets extends \admin_setting {
 			$fields = array();
 			$fields['name']='templatename';
 			$fields['key']='templatekey';
+			$fields['version']='templateversion';
 			$fields['instructions']='templateinstructions';
 			$fields['body']='template';
 			$fields['bodyend']='templateend';

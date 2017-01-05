@@ -559,7 +559,9 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	if($convertremotely){
 		 $awstools = new \filter_poodll\awstools();
 		 $mediatype='video';
-		 $filedata = file_get_contents($red5_fileurl);
+		 	 
+		 $filedata = download_file_content($red5_fileurl);
+		
 		 switch($ext){
 		 	case '.mp4': $mediatype='video';
 		 		break;
@@ -593,7 +595,7 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 
 	
 		//actually make the file on disk so FFMPEG can get it
-		$mediastring = file_get_contents($red5_fileurl);
+		$mediastring = download_file_content($red5_fileurl);
 
 		$ret = file_put_contents($tempdir . $downloadfilename, $mediastring);
 		

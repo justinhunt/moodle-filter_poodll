@@ -250,17 +250,23 @@ public static function fetch_template_pages($conf){
 					get_string('presets', 'filter_poodll'), get_string('presets_desc', 'filter_poodll'),$tindex,$presetdata));
 
 			
-                        //template name
+            //template name
 			 $settings_page->add(new \admin_setting_configtext('filter_poodll/templatename_' . $tindex , 
 					get_string('templatename', 'filter_poodll',$tindex),
 					get_string('templatename_desc', 'filter_poodll'), 
 					 '', PARAM_TEXT));
                         
-                         //template key
+            //template key
 			 $settings_page->add(new \admin_setting_configtext('filter_poodll/templatekey_' . $tindex , 
 					get_string('templatekey', 'filter_poodll',$tindex),
 					get_string('templatekey_desc', 'filter_poodll'), 
 					 '', PARAM_ALPHANUMEXT));
+					 
+			//template version
+			 $settings_page->add(new \admin_setting_configtext('filter_poodll/templateversion_' . $tindex , 
+					get_string('templateversion', 'filter_poodll',$tindex),
+					get_string('templateversion_desc', 'filter_poodll'), 
+					 '', PARAM_TEXT));
 
 			//template instructions
 			$settings_page->add(new \admin_setting_configtextarea('filter_poodll/templateinstructions_' . $tindex,

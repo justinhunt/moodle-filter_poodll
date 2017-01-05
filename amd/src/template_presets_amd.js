@@ -9,13 +9,14 @@ define(['jquery','core/log'], function($, log) {
 
 	  presetdata: false,
 	  
-	  dataitems: ['name','key', 'instructions','showatto','showplayers','requirecss', 'requirejs','shim', 'defaults',
+	  dataitems: ['name','key', 'version','instructions','showatto','showplayers','requirecss', 'requirejs','shim', 'defaults',
 			  'amd', 'body', 'bodyend', 'script', 'style','dataset','datasetvars','alternate','alternateend'],
 
 	  fetchcontrols: function(templateindex) {
 	  	  var controls = {};
           controls.name = document.getElementById('id_s_filter_poodll_templatename_' + templateindex);
 		  controls.key = document.getElementById('id_s_filter_poodll_templatekey_' + templateindex);
+		  controls.version = document.getElementById('id_s_filter_poodll_templateversion_' + templateindex);
 		  controls.instructions = document.getElementById('id_s_filter_poodll_templateinstructions_' + templateindex);
 		  controls.showatto = document.getElementById('id_s_filter_poodll_template_showatto_' + templateindex);
 		  controls.showplayers = document.getElementById('id_s_filter_poodll_template_showplayers_' + templateindex);
