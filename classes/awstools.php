@@ -98,17 +98,26 @@ class awstools
 		
 	 //fetch or create the transcoder object 
 	function fetch_transcoder(){
-            global $CFG;
+        global $CFG;
 		if(!$this->transcoder){
-			$this->transcoder = ElasticTranscoderClient::factory(
-			array('region' => $this->region, 
-                            'version'=>'2012-09-25',
-                            'default_caching_config' => $CFG->tempdir . '/tmp',
-			   'credentials'=>array('key' => $this->accesskey, 'secret' => $this->secretkey)));
+		        $config = array();
+                $config['region'] = $this->region;
+                $config['version']='2012-09-25';
+                $config['default_caching_config'] = $CFG->tempdir . '/tmp';
+                $config['credentials']= array('key' => $this->accesskey, 'secret' => $this->secretkey);
+                //add proxy settings if necessary
+                if(!empty($CFG->proxyhost)){
+                    $proxy=$CFG->proxytype . '://' . $CFG->proxyhost;
+                    if($CFG->proxyport > 0) {$proxy = $proxy . ':' . $CFG->proxyport;}
+                    if(!empty($CFG->proxyuser)){
+                        $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
+                    }
+                    $config['request.options']=array('proxy'=>$proxy);
+                }
+			    $this->transcoder = ElasticTranscoderClient::factory($config);
 		}
 		return $this->transcoder;
 	}
-        
     
     //post file data directly to S3
 	function s3_put_filedata($mediatype,$key,$filedata){
@@ -159,16 +168,19 @@ class awstools
 		  # Specify the outputs based on the hls presets array spefified.
 		  $outputs = array();
 		  switch($mediatype){
-		  	case 'audio':
-		  		$pipeline_id= $this->pipeline_audio;
-		  		$one_output = array('Key'=> $output_key, 'PresetId' =>$this->preset_mp3);
-		  		$outputs[] = $one_output;
-		  		break;
+
 		  	case 'video':
 		  		$pipeline_id= $this->pipeline_video;
 		  		$one_output = array('Key'=> $output_key, 'PresetId' =>$this->preset_mp4);
 		  		$outputs[] = $one_output;
 		  		break;
+
+            case 'audio':
+            default:
+              $pipeline_id= $this->pipeline_audio;
+              $one_output = array('Key'=> $output_key, 'PresetId' =>$this->preset_mp3);
+              $outputs[] = $one_output;
+              break;
 		  }
 
 		  # Create the job.
@@ -216,11 +228,15 @@ class awstools
         //called if we get a file submitted twice
         function remove_transcoded($mediatype, $filename){
         	switch ($mediatype){
-        		case 'audio':
-		 		   $bucketname =$this->bucket_audio_out;
-		 			break;
+
 		 		case 'video':
 		 		   $bucketname =$this->bucket_video_out;
+		 		   break;
+
+                case 'audio':
+                default:
+                    $bucketname =$this->bucket_audio_out;
+                    break;
         	}
         	$this->s3remove($bucketname,$filename);
         }

@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.0.23(Build 2017010701)
+-fixed bug where proxy requests to elastic transcoder did not go through proxy
+
 Version 3.0.22(Build 2017010401)
 -added support for proxy servers (Red5)
 
