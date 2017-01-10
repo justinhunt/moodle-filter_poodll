@@ -34,7 +34,7 @@ class awstools
 {
 	protected $awsversion="2.x";//3.x
 	protected $transcoder = false; //the single transcoder object
-	protected $s3client = false; //the single transcoder object
+	protected $s3client = false; //the single S3 object
 	protected $default_segment_size = 4;
 	protected $region = 'ap-northeast-1';
     protected $convfolder = 'transcoded/';
@@ -258,7 +258,7 @@ class awstools
             }
             
         }
-//fetch or create the transcoder object 
+//fetch or create the S3 object 
 	function fetch_s3client(){
 		global $CFG;
 		
