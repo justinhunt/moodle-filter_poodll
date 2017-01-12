@@ -101,6 +101,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
                     error_log('will not retry');
     		}else{                   
                     error_log(print_r($cd,true));
+                    error_log('s3file:' . $errorstring);
                     error_log('will retry');
                     throw new \file_exception('s3file', $errorstring);
              }//end of if/else
