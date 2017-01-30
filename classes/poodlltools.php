@@ -2411,6 +2411,11 @@ class poodlltools
         $debugdata->contextid=$contextid;
         $debugdata->type=$type;
         $debugdata->source='poodlltools.php';
+        if(array_key_exists('HTTP_USER_AGENT', $_SERVER)) {
+            $debugdata->useragent = $_SERVER['HTTP_USER_AGENT'];
+        }else{
+            $debugdata->useragent = '';
+        }
         $debugdata->message=$message;
         \filter_poodll\event\debug_log::create_from_data($debugdata)->trigger();
     }

@@ -1,5 +1,7 @@
 Change List
 =========
+Version 3.0.27(2017013001)
+-added browser agent to debug logs
 
 Version 3.0.26(2017013000)
 -added better checking for failed uploads and failed transcode calls
