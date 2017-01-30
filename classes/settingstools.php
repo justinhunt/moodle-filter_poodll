@@ -138,8 +138,15 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_configtext('filter_poodll_whiteboardwidth', get_string('wboardwidth', 'filter_poodll'), '', '600', PARAM_INT);
 	$items[] = new \admin_setting_configtext('filter_poodll_whiteboardheight', get_string('wboardheight', 'filter_poodll'), '', '350', PARAM_INT);
 	$items[] = new \admin_setting_configtext('filter_poodll_autosavewhiteboard', get_string('wboardautosave', 'filter_poodll'), get_string('wboardautosave_details', 'filter_poodll'), 2000, PARAM_INT);
-	
-	return $items;
+
+    /*
+    //Logging
+    */
+    $items[] = new \admin_setting_heading('filter_poodll_debug_settings', get_string('debug_heading', 'filter_poodll'), '');
+    $items[] = new \admin_setting_configcheckbox('filter_poodll_debug', get_string('debug_enable', 'filter_poodll'), get_string('debug_enable_details', 'filter_poodll'), 0);
+
+
+    return $items;
 
 }// end of fetch general items
 

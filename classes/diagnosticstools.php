@@ -56,6 +56,12 @@ class diagnosticstools {
 		//general version info
 		$ds['moodle_version'] = $CFG->version;
 		$ds['os_version']= php_uname();
+		//server time
+        date_default_timezone_set('Asia/Tokyo');
+        $timestamp = time();
+        $server_time = date("d-m-Y (D) H:i:s", $timestamp);
+		$ds['server_time']=$server_time . ' (translated to JAPAN STANDARD TIME)';
+
 		
 		//poodll version info
 		$ds['poodll_filter_version'] = get_config('filter_poodll','version');
@@ -81,12 +87,18 @@ class diagnosticstools {
 		//site info
 		$ds['wwwroot'] = $CFG->wwwroot;
 		$ds['dirroot'] = $CFG->dirroot;
+        $ds['dataroot'] = $CFG->dataroot;
 		$ds['maxupload'] = $CFG->maxbytes;
 		$ds['cronclionly'] = $CFG->cronclionly;
 		$ds['suhosin'] = extension_loaded('suhosin'); //this is not working what "name"?
-		$ds['pfl_permissions'] = decoct(fileperms($CFG->dirroot . '/filter/poodll/poodllfilelib.php') & 0777); 
-		
-		//site setting info
+		$ds['pfl_permissions'] = decoct(fileperms($CFG->dirroot . '/filter/poodll/poodllfilelib.php') & 0777);
+        $ds['datadir_permissions'] = decoct(fileperms($CFG->dataroot) & 0777);
+        //disk space
+        $fd = disk_free_space($CFG->dataroot);
+        if($fd > 0){$fd = round($fd / 1024 / 1024);}
+        $ds['free_disk']=$fd . ' MB';
+
+        //site setting info
 		$ds['currenttheme']= \core_useragent::get_device_type_theme('default');
 		$ds['cachejs']= $CFG->cachejs;
 		$ds['debug']= $CFG->debug;
@@ -142,6 +154,15 @@ class diagnosticstools {
             $ds['filter_active_' . $filter->filter] = $filter->active;
             $ds['filter_sortorder_' . $filter->filter] = $filter->sortorder;
         }
+
+        //red5 settings
+        $ds['filter_poodll_servername']=$CFG->filter_poodll_servername;
+        $ds['filter_poodll_serverid']=$CFG->filter_poodll_serverid;
+        $ds['filter_poodll_serverport']=$CFG->filter_poodll_serverport;
+        $ds['filter_poodll_serverhttpport']=$CFG->filter_poodll_serverhttpport;
+        $ds['filter_poodll_autotryports']=$CFG->filter_poodll_autotryports;
+
+
 		return $ds;
 	}
 	

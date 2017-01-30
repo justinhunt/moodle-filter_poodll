@@ -240,3 +240,16 @@ $string['burntrose_recorder']="Burnt Rose";
 $string['html5recorder_skin']="HTML5 Recorder Skin";
 $string['filter_poodll_html5recorder_heading']="HTML5 Recorder Settings";
 
+//events
+$string['event_adhoc_registered'] = 'Poodll Adhoc task registered';
+$string['event_adhoc_move_registered'] = 'Poodll Adhoc move task registered';
+$string['event_adhoc_convert_registered'] = 'Poodll Adhoc convert task registered';
+$string['event_adhoc_completed'] = 'Poodll Adhoc task completed';
+$string['event_adhoc_move_completed'] = 'Poodll Adhoc move task completed';
+$string['event_adhoc_convert_completed'] = 'Poodll Adhoc convert task completed';
+$string['event_debug_log'] = 'Poodll debug note';
+
+//debug settings
+$string['debug_heading'] = 'Poodll Debugging';
+$string['debug_enable'] = 'Enable Debugging';
+$string['debug_enable_details'] = 'If enabled, information about recordings will be stored in the Moodle logs. These are intended to assist in troubleshooting and support from the Poodll helpdesk. Turn off when not needed or you will have useless junk in your Moodle log.';

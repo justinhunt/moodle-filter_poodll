@@ -56,12 +56,25 @@ require_once($CFG->libdir . '/filelib.php');
 	$filedata  = optional_param('filedata', "", PARAM_TEXT);
 	$fileext  = optional_param('fileext', "", PARAM_TEXT);
         
-        //from the universal recorder
-        //from the general recorder (mp3)
+     //from the universal recorder
+    //from the general recorder (mp3)
 	$mediatype  = optional_param('mediatype', "", PARAM_TEXT);
 	$filename  = optional_param('filename', "", PARAM_TEXT);
-        
-	//map general recorder upload data to what we expect otherwise
+
+
+	//error log flags
+    CONST LOG_PFL_TEMPDIR_FAIL=1;
+    CONST LOG_PFL_FILE_SAVE_FAIL=2;
+    CONST LOG_PFL_FILE_EXISTS=3;
+    CONST LOG_PFL_MAKE_SF_FAIL=4;
+    CONST LOG_PFL_LOCAL_CONVERT_FAIL=5;
+    CONST LOG_PFL_DOWNLOAD_FAIL=6;
+    CONST LOG_PFL_CREATE_FROM_URL_FAIL=7;
+
+
+
+
+//map general recorder upload data to what we expect otherwise
 	if($p1!=''){
 		$contextid = $p2;
 		$comp = $p3;
@@ -191,7 +204,7 @@ function filter_poodll_prepareLegacyXMLReturn($resultArray, $requestid){
 }
 
 
-//For uploading a file diorect from an HTML5 or SWF widget
+//For uploading a file direct from an HTML5 or SWF widget
 function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actionid,$contextid, $comp, $farea,$itemid){
 	global $CFG,$USER;
 
@@ -288,6 +301,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 			$stored_file = $fs->create_file_from_string($record, $xfiledata);
 
 		}else{
+            \filter_poodll\poodlltools::send_debug_data(LOG_PFL_FILE_EXISTS,'Quitting. file already exists:' . $filename,$USER->id,$contextid,'poodllfilelib.php');
 			$stored_file = false;
 			$return['success']=false;
 			array_push($return['messages'],"Already exists, file with filename:" . $filename );
@@ -333,7 +347,6 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg_bg($record,$filename,$filenamebase, $convext );
 				}else{
 					$stored_file = \filter_poodll\poodlltools::convert_with_ffmpeg($record, $filename,$filenamebase, $convext );
-					
 				}
 				if($stored_file){
 					$filename=$stored_file->get_filename();
@@ -341,6 +354,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 					//if failed, default to using the original uploaded data
 					//and delete the temp file we made
 				}else{
+                    \filter_poodll\poodlltools::send_debug_data(LOG_PFL_MAKE_SF_FAIL,'Unable to create stored file:' . $filename,$USER->id,$contextid,'poodllfilelib.php');
 					$stored_file = $fs->create_file_from_string($record, $xfiledata);
 					if(is_readable(realpath($tempdir . $filename))){
 						unlink(realpath($tempdir . $filename));
@@ -349,6 +363,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 
 				//if couldn't create on disk fall back to the original data
 			}else{
+                \filter_poodll\poodlltools::send_debug_data(LOG_PFL_TEMPDIR_FAIL,'Unable to save file to temp dir:' . $filename,$USER->id,$contextid,'poodllfilelib.php');
 				$stored_file = $fs->create_file_from_string($record, $xfiledata);
 			}
 
@@ -365,6 +380,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 
 		//if unsuccessful, return error
 	}else{
+        \filter_poodll\poodlltools::send_debug_data(LOG_PFL_SAVEFILE_FAIL,'Unable to save file with:' . $filename,$USER->id,$contextid,'poodllfilelib.php');
 		$return['success']=false;
 		array_push($return['messages'],"unable to save file with filename:" . $filename );
 	}
@@ -620,6 +636,9 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 				//if failed, default to using the original uploaded data
 				//and delete the temp file we made
 			}else{
+                \filter_poodll\poodlltools::send_debug_data(LOG_PFL_LOCAL_CONVERT_FAIL,
+                        'Unable to convert locally:' . $downloadfilename,
+                        $USER->id,$contextid,'poodllfilelib.php');
 				$return['success']=false;
 				array_push($return['messages'],"Unable to convert file locally." );
 
@@ -628,6 +647,9 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 				}
 			}
 		}else{
+            \filter_poodll\poodlltools::send_debug_data(LOG_PFL_DOWNLOAD_FAIL,
+                    'Unable to download ' . $red5_fileurl . 'and save to:' . $tempdir . $downloadfilename,
+                    $USER->id,$contextid,'poodllfilelib.php');
 			$return['success']=false;
 			array_push($return['messages'],"Unable to create local temp file." );
 		}
@@ -643,6 +665,9 @@ function filter_poodll_instance_remotedownload($contextid,$filename,$component, 
 	//If get here we are downloading from JSP only, ie not converting locally or remotely
 	//We actually copy over the file from remote server
 	if(!$fs->create_file_from_url($file_record, $red5_fileurl,$options, false)){
+        \filter_poodll\poodlltools::send_debug_data(LOG_PFL_CREATE_FROM_URL_FAIL,
+                'Unable to create from URL:' . $red5_fileurl,
+                $USER->id,$contextid,'poodllfilelib.php');
 		$return['success']=false;
 		array_push($return['messages'],"Unable to create file from url." );
 	}else{

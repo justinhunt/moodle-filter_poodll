@@ -1,5 +1,16 @@
 Change List
 =========
+
+Version 3.0.26(2017013000)
+-added better checking for failed uploads and failed transcode calls
+-added debug logging and related setting
+-added log for registering adhoc tasks and completion of adhoc task
+-add diagnostic messages for red5 server settings
+
+Version 3.0.25(Build 2017010702)
+-added a few more diagnostic messages
+
+
 Version 3.0.24(Build 2017010702)
 -added a log output to show error message when retrying an S3 copy back
 

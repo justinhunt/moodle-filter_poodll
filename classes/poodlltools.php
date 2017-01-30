@@ -33,6 +33,8 @@ require_once($CFG->libdir . '/filelib.php');
  
 class poodlltools
 {
+    const LOG_SAVE_PLACEHOLDER_FAIL = 1;
+
 	//this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
     public static function fetchSimpleAudioPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 
         $html_snippet = \html_writer::tag('a','audiofile.mp3',array('href'=>$url));
@@ -1211,13 +1213,13 @@ class poodlltools
 	
 		//store placeholder audio or video to display until conversion is finished
 		$filerecord->filename = $convfilenamebase . $convext;
-		//$stored_file =\filter_poodll\poodlltools::save_placeholderfile_in_moodle($filerecord,$convfilenamebase,$convext);
-		$stored_file =\filter_poodll\poodlltools::save_placeholderfile_in_moodle($mediatype,$filerecord);
+		//$stored_file =self::save_placeholderfile_in_moodle($filerecord,$convfilenamebase,$convext);
+		$stored_file =self::save_placeholderfile_in_moodle($mediatype,$filerecord);
 		//we need this id later, to find the old draft file and remove it, in ad hoc task
 		$filerecord->id = $stored_file->get_id();
 	
 		// register task
-	   $success = \filter_poodll\poodlltools::register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext);
+	   $success = self::register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext);
 	 
 	   return $stored_file;
 	}
@@ -1371,7 +1373,7 @@ class poodlltools
 
 	public static function fetchJSWidgetiFrame($widget, $rawparams, $width, $height, $bgcolor = "#FFFFFF", $usemastersprite = "false")
 	{
-		global $PAGE;
+		global $CFG,$PAGE;
 
 		$lm = new \filter_poodll\licensemanager();
                 $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
@@ -1479,15 +1481,20 @@ class poodlltools
             	$stored_file = $fs->create_file_from_pathname($draftfilerecord, 
 				$CFG->dirroot . '/filter/poodll/' .  $placeholderfilename);
 			}
+			if(!$stored_file) {
+                self::send_debug_data(SELF::LOG_SAVE_PLACEHOLDER_FAIL,'Unable to save placeholder:' . $dfr->filename,$dfr->userid,$dfr->contextid);
+            }
             return $stored_file ;
             
         }
 	
 	public static function register_s3_download_task($mediatype,$infilename,$outfilename, $draftfilerecord){
+         global $USER;
+
 	 	// set up task and add custom data
 	   $s3_task = new \filter_poodll\task\adhoc_s3_move();
 	   $savedatetime = new \DateTime();
-           $isodate=$savedatetime->format('Y-m-d H:i');
+	   $isodate=$savedatetime->format('Y-m-d H:i');
 	   $qdata = array(
 		   'filerecord' => $draftfilerecord,
 		   'filename' => $draftfilerecord->filename,
@@ -1499,9 +1506,13 @@ class poodlltools
 	   $s3_task->set_custom_data($qdata);
 	   // queue it
 	   \core\task\manager::queue_adhoc_task($s3_task);
+        \filter_poodll\event\adhoc_move_registered::create_from_task($qdata)->trigger();
+
 	}
-        
-        public static function register_s3_transcode_task($mediatype,$s3filename){
+
+	//this should never be called, the adhoc task is no longer there.
+    //but we might need in near future, so we hang on to it.
+    public static function register_s3_transcode_task($mediatype,$s3filename){
 	 	// set up task and add custom data
 	   $s3_task = new \filter_poodll\task\adhoc_s3_transcode();
 	   $savedatetime = new \DateTime();
@@ -1517,14 +1528,19 @@ class poodlltools
 	}
 	
 	public static function commence_s3_transcode($mediatype,$infilename,$outfilename){
-		global $CFG;
-        
+		global $CFG,$USER;
+
+        $ret = false;
         $awstools = new \filter_poodll\awstools();
         
         //does file exist on s3 in bucket
 		if($awstools->does_file_exist($mediatype,$infilename,'in' )){
 			$awstools->create_one_transcoding_job($mediatype,$infilename,$outfilename);
+			$ret = true;
+        }else{
+            self::send_debug_data(SELF::LOG_TRANSCODE,'Nothing to transcode:' . $infilename,$USER->id);
         }
+        return $ret;
 	}
         
     public static function confirm_s3_arrival($mediatype,$filename){
@@ -1536,29 +1552,36 @@ class poodlltools
                     return true;
 		}else{
                    return false;
-                }
+        }
 	}
         
-    public static function postprocess_s3_upload($mediatype,$draftfilerecord){
-            $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype,$draftfilerecord->filename);
-            $infilename = $s3filename;
-            $outfilename = $infilename;
-            switch($mediatype){
-            	case 'audio':
-            		$newsuffix = '_' . rand(100000,999999) . '.mp3';
-            		$outfilename = str_replace('.mp3',$newsuffix ,$infilename);
-            		//$draftfilerecord->filename = str_replace('.mp3',$newsuffix ,$draftfilerecord->filename );
-            		break;
-            	case 'video':
-            		$newsuffix = '_' . rand(100000,999999) . '.mp4';
-            		$outfilename = str_replace('.mp4',$newsuffix ,$infilename);   
-            		//$draftfilerecord->filename = str_replace('.mp4',$newsuffix ,$draftfilerecord->filename );   		
+    public static function postprocess_s3_upload($mediatype,$draftfilerecord)
+    {
+        $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $draftfilerecord->filename);
+        $infilename = $s3filename;
+        $outfilename = $infilename;
+        switch ($mediatype) {
+            case 'audio':
+                $newsuffix = '_' . rand(100000, 999999) . '.mp3';
+                $outfilename = str_replace('.mp3', $newsuffix, $infilename);
+                //$draftfilerecord->filename = str_replace('.mp3',$newsuffix ,$draftfilerecord->filename );
+                break;
+            case 'video':
+                $newsuffix = '_' . rand(100000, 999999) . '.mp4';
+                $outfilename = str_replace('.mp4', $newsuffix, $infilename);
+            //$draftfilerecord->filename = str_replace('.mp4',$newsuffix ,$draftfilerecord->filename );
+        }
+        $success = self::commence_s3_transcode($mediatype, $infilename, $outfilename);
+        if ($success) {
+            $success=false;
+            $storedfile = self::save_placeholderfile_in_moodle($mediatype, $draftfilerecord);
+            if($storedfile) {
+                $draftfilerecord->id = $storedfile->get_id();
+                self::register_s3_download_task($mediatype, $infilename, $outfilename, $draftfilerecord);
+                $success = true;
             }
-            self::commence_s3_transcode($mediatype,$infilename,$outfilename);
-            $storedfile = self::save_placeholderfile_in_moodle($mediatype,$draftfilerecord);
-            $draftfilerecord->id = $storedfile->get_id();
-            self::register_s3_download_task($mediatype,$infilename,$outfilename, $draftfilerecord);
-			return true;
+        }
+        return $success;
    }
 	
 	public static function register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext){
@@ -1569,11 +1592,16 @@ class poodlltools
 		   'filename' => $filerecord->filename,
 		   'originalfilename' => $originalfilename,
 		   'convfilenamebase' => $convfilenamebase,
-		   'convext' => $convext
+		   'convext' => $convext,
+           'infilename'=>$originalfilename,
+           'outfilename'=>$filerecord->filename
 	   );
+	   //infilename and outfilename, are used only for logging. But we need them
+
 	   $conv_task->set_custom_data($qdata);
 	   // queue it
 	   \core\task\manager::queue_adhoc_task($conv_task);
+	   \filter_poodll\event\adhoc_convert_registered::create_from_task($qdata)->trigger();
 	   return true;
 	   
 	}
@@ -1691,8 +1719,8 @@ class poodlltools
 	
 			//delete the temp file we made, regardless
 			}else{
-				if(is_readable(realpath($tempvideofile))){
-					unlink(realpath($tempvideofile));
+				if(is_readable(realpath($tempvideofilepath))){
+					unlink(realpath($tempvideofilepath));
 				}
 			}		
 			//return the stored file
@@ -2372,6 +2400,20 @@ class poodlltools
         $params['showmobile']=$CFG->filter_poodll_mobile_show;
 		return $params;
 	}
+
+    public static function send_debug_data($type,$message, $userid=false,$contextid=false, $source='poodlltools.php'){
+        global $CFG;
+        //only log if is on in Poodll settings
+        if(!$CFG->filter_poodll_debug){return;}
+
+        $debugdata = new \stdClass();
+        $debugdata->userid=$userid;
+        $debugdata->contextid=$contextid;
+        $debugdata->type=$type;
+        $debugdata->source='poodlltools.php';
+        $debugdata->message=$message;
+        \filter_poodll\event\debug_log::create_from_data($debugdata)->trigger();
+    }
 
 
 

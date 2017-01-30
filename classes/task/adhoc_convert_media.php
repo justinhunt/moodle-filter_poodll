@@ -31,7 +31,13 @@ require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class adhoc_convert_media extends \core\task\adhoc_task {
-                                                                     
+
+    const LOG_DID_NOT_CONVERT = 1;
+    const LOG_MISSING_FILENAME = 2;
+    const LOG_NO_FILE_FOUND_IN_DB = 3;
+    const LOG_STORED_FILE_PROBLEM = 4;
+    const LOG_SPLASHFILE_MAKE_FAIL = 5;
+
     public function execute() {   
     	//NB: seems any exceptions not thrown HERE, kill subsequent tasks
     	//so wrap some function calls in try catch to prevent that happening
@@ -49,7 +55,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	
     	}
 		if(!property_exists($cd,'filename')){
-			$this->handle_error('missing filename in custom data:' , $cd);
+			$this->handle_error(self::LOG_MISSING_FILENAME,'missing filename in custom data:' , $cd);
 			return;
 		}
     	$select = "filename='" . $cd->filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
@@ -58,7 +64,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);
     	if(!$dbfiles){
 			$nofilefoundmessage='could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet';
-    		$this->handle_error($nofilefoundmessage,$cd);
+    		$this->handle_error(self::LOG_NO_FILE_FOUND_IN_DB,$nofilefoundmessage,$cd);
 			throw new \file_exception('storedfileproblem', $nofilefoundmessage);
 			return;
     	}
@@ -67,7 +73,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	$origfilerecord = array_shift($dbfiles);	
     	$origfile = $fs->get_file_by_id($origfilerecord->id);
     	if(!$origfile){
-			$this->handle_error( 'something wrong with sf:' . $cd->filename,$cd);
+			$this->handle_error(self::LOG_STORED_FILE_PROBLEM, 'something wrong with sf:' . $cd->filename,$cd);
 			return;
 		}
 
@@ -91,7 +97,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 				$cd->convext,
 				$throwawayfilename);
 		} catch (Exception $e) {
-			$this->handle_error('could not get convert:' . $cd->filename . ':' . $e->getMessage(),$cd);
+			$this->handle_error(self::LOG_DID_NOT_CONVERT,'could not get convert:' . $cd->filename . ':' . $e->getMessage(),$cd);
 			return;
 		}
 		
@@ -104,7 +110,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 			try{
 				$imagefile = \filter_poodll\poodlltools::get_splash_ffmpeg($origfile, $imagefilename);
 			} catch (Exception $e) {
-				$this->handle_error('could not get create splash file from:' . $cd->filename . ':' . $e->getMessage(),$cd);
+				$this->handle_error(self::LOG_SPLASHFILE_MAKE_FAIL,'could not get create splash file from:' . $cd->filename . ':' . $e->getMessage(),$cd);
 				return;
 			}
 			return;
@@ -112,19 +118,49 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 		 $this->handle_error('unable to convert ' . $cd->originalfilename,$cd);
 		 return;
 		}
+		//if we got here then the task was completed successfully
+        $cd->outfilename=$cd->filename;
+		$cd->infilename=$cd->originalfilename;
+		$cd->filerecord=$origfilerecord;
+        \filter_poodll\event\adhoc_convert_completed::create_from_task($cd)->trigger();
 		
     }
 
-	private function handle_error($errorstring,$cd){
+	private function handle_error($errorcode,$errorstring,$cd){
 		//throwing errors will see the process retrying. 
 		//however there is little point in retrying.
 		$throwerrors = false;
+
+        //data for logging
+        $contextid=$cd->filerecord->contextid;
+        $userid=$cd->filerecord->userid;
 		
 		if($throwerrors){
-			throw new \file_exception('storedfileproblem', $errorstring);
+		    //log error
+            $this->send_debug_data($errorcode,
+                $errorstring,$userid,$contextid);
+
+            throw new \file_exception('storedfileproblem', $errorstring);
 		}else{
 			error_log('storedfileproblem:' . $errorstring);
 			error_log(print_r($cd,true));
+
+            $this->send_debug_data($errorcode,
+                $errorstring,$userid,$contextid);
 		}
 	}
+
+    private function send_debug_data($type,$message, $userid=false,$contextid=false){
+        global $CFG;
+        //only log if is on in Poodll settings
+        if(!$CFG->filter_poodll_debug){return;}
+
+        $debugdata = new \stdClass();
+        $debugdata->userid=$userid;
+        $debugdata->contextid=$contextid;
+        $debugdata->type=$type;
+        $debugdata->source='adhoc_convert_media.php';
+        $debugdata->message=$message;
+        \filter_poodll\event\debug_log::create_from_data($debugdata)->trigger();
+    }
 } 

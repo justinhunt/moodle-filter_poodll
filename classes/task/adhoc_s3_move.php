@@ -31,6 +31,11 @@ require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
  */
 class adhoc_s3_move extends \core\task\adhoc_task {
 
+        const LOG_PLACEHOLDER_REPLACE_FAIL = 1;
+        const LOG_FETCH_FILE_FAIL = 2;
+        const LOG_NOT_ON_S3 = 3;
+        const LOG_NOT_CONVERTED = 4;
+        const LOG_PLACEHOLDER_NOT_FOUND = 5;
 
 //cd needs filename, filerecord and mediatype and savedatetime and convext
               
@@ -48,24 +53,27 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             $ret= $awstools->fetch_s3_converted_file($cd->mediatype,$cd->infilename, $cd->outfilename, $cd->filename,$cd->filerecord);
          }catch (Exception $e) {
             $giveup =false;
-            $this->handle_s3_error('could not fetch:' . $cd->filename . ':' . $e->getMessage(),$cd,$giveup);
+            $message='could not fetch:' . $cd->filename . ':' . $e->getMessage();
+            $this->handle_s3_error(self::LOG_FETCH_FILE_FAIL,$message,$cd,$giveup);
             return;
-	}
+	    }
         
         
         if($ret===false){
             //this indicates no "in" or "out" file, so we should just snuff this task and not repeat it
             //so we silently return
             $giveup=true;
-            $this->handle_s3_error('the files: ' . $cd->infilename . ' | ' . $cd->outfilename . ' were not found anywhere on S3. giving up',$cd,$giveup);
+            $message='the files: ' . $cd->infilename . ' | ' . $cd->outfilename . ' were not found anywhere on S3. giving up';
+            $this->handle_s3_error(self::LOG_NOT_ON_S3,$message,$cd,$giveup);
             return;
         }else if($ret===true){
             //this indicates we had an "in" file, but no "out" file yet. try again
            $giveup=false;
-            $this->handle_s3_error('the file ' . $cd->infilename . ' has not yet been converted.',$cd,$giveup);
+           $message='the file ' . $cd->infilename . ' has not yet been converted.';
+            $this->handle_s3_error(self::LOG_NOT_CONVERTED,$message,$cd,$giveup);
             return;
         }else{
-            //this indicates the file was found and saved and the path erturned
+            //this indicates the file was found and saved and the path returned
             $tempfilepath = $ret;
         }
         
@@ -74,7 +82,8 @@ class adhoc_s3_move extends \core\task\adhoc_task {
         //do the replace, if it succeeds yay. If it fails ... try again. The user may just not have saved yet
         if(!$permfilerecord){
 			$giveup =false;
-            $this->handle_s3_error('could not find placeholder file:' . $cd->filename ,$cd,$giveup);
+			$message='could not find placeholder file:' . $cd->filename;
+            $this->handle_s3_error(self::LOG_PLACEHOLDER_NOT_FOUND, $message ,$cd,$giveup);
             return;
 		}
 		
@@ -82,28 +91,56 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             \filter_poodll\poodlltools::replace_placeholderfile_in_moodle($cd->filerecord, $permfilerecord, $tempfilepath);
         }catch (Exception $e) {
             $giveup =true;
-            $this->handle_s3_error('could not get replace placeholder with converted::' . $cd->filename . ':' . $e->getMessage(),$cd,$giveup);
+            $message = 'could not get replace placeholder with converted::' . $cd->filename . ':' . $e->getMessage();
+            $this->handle_s3_error(self::LOG_PLACEHOLDER_REPLACE_FAIL,$message,$cd,$giveup);
             return;
 		}
         //nothing to do next. If it errors, it will be elsewhere. If it gets here it should be ok.
+        $cd->filerecord=$permfilerecord;
+        \filter_poodll\event\adhoc_move_completed::create_from_task($cd)->trigger();
     }
 
-	private function handle_s3_error($errorstring,$cd,$giveup){
-			  	
+	private function handle_s3_error($errorcode, $errorstring,$cd,$giveup){
+            //data for logging
+            $contextid=$cd->filerecord->contextid;
+            $userid=$cd->filerecord->userid;
+
     		//we do not retry indefinitely
     		//if we are well beyond the timestamp then we just cancel out of here.
     		$nowdatetime = new \DateTime();
-                $savedatetime = new \DateTime($cd->isodate);
+            $savedatetime = new \DateTime($cd->isodate);
     		$diffInSeconds = $nowdatetime->getTimestamp() - $savedatetime->getTimestamp();
     		if($diffInSeconds > (60 * 60 * 2) || $giveup){
     			//we do not retry after two hours, we just report an error and return quietly
-                    error_log('s3file:' . $errorstring);
-                    error_log('will not retry');
-    		}else{                   
-                    error_log(print_r($cd,true));
-                    error_log('s3file:' . $errorstring);
-                    error_log('will retry');
-                    throw new \file_exception('s3file', $errorstring);
+                $errorstring .= ' :will not retry';
+                error_log('s3file:' . $errorstring);
+                //send to debug log
+                $this->send_debug_data($errorcode,
+                    $errorstring,$userid,$contextid);
+    		}else{
+                $errorstring .= ' :will retry';
+                error_log(print_r($cd,true));
+                error_log('s3file:' . $errorstring);
+                //send to debug log
+                $this->send_debug_data($errorcode,
+                    $errorstring,$userid,$contextid);
+
+                //throw error so task will be retried
+                throw new \file_exception('s3file', $errorstring);
              }//end of if/else
 	}//end of function handle_S3_error
+
+    private function send_debug_data($type,$message, $userid=false,$contextid=false){
+        global $CFG;
+        //only log if is on in Poodll settings
+        if(!$CFG->filter_poodll_debug){return;}
+
+	    $debugdata = new \stdClass();
+	    $debugdata->userid=$userid;
+	    $debugdata->contextid=$contextid;
+	    $debugdata->type=$type;
+	    $debugdata->source='adhoc_s3_move.php';
+        $debugdata->message=$message;
+        \filter_poodll\event\debug_log::create_from_data($debugdata)->trigger();
+    }
 } //end of class
