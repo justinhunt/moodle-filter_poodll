@@ -104,19 +104,20 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 		//replace the placeholder(original) file with the converted one
 		if($convertedfile){
 			$origfile->replace_file_with($convertedfile);
-			
-			//now we need to replace the splash if it had one
-			$imagefilename = substr($cd->filename,0,strlen($cd->filename)-3) . 'png';
-			try{
-				$imagefile = \filter_poodll\poodlltools::get_splash_ffmpeg($origfile, $imagefilename);
-			} catch (Exception $e) {
-				$this->handle_error(self::LOG_SPLASHFILE_MAKE_FAIL,'could not get create splash file from:' . $cd->filename . ':' . $e->getMessage(),$cd);
-				return;
-			}
-			return;
+
+			//now we make a splash if it needs one
+            if($cd->convext=='.mp3') {
+                $imagefilename = substr($cd->filename, 0, strlen($cd->filename) - 3) . 'png';
+                try {
+                    $imagefile = \filter_poodll\poodlltools::get_splash_ffmpeg($origfile, $imagefilename);
+                } catch (Exception $e) {
+                    $this->handle_error(self::LOG_SPLASHFILE_MAKE_FAIL, 'could not get create splash file from:' . $cd->filename . ':' . $e->getMessage(), $cd);
+                    //we don't "return" here, because the lack of a splash is not critical, the file is converted
+                }
+            }
 		}else{
-		 $this->handle_error('unable to convert ' . $cd->originalfilename,$cd);
-		 return;
+		    $this->handle_error('unable to convert ' . $cd->originalfilename,$cd);
+		    return;
 		}
 		//if we got here then the task was completed successfully
         $cd->outfilename=$cd->filename;
