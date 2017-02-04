@@ -1,5 +1,10 @@
 Change List
 =========
+
+Version 3.0.28(2017020401)
+-fixed iOS and Android version detection bug
+-fixed snapshot recorder default to upload on iOS
+
 Version 3.0.27(2017013001)
 -added browser agent to debug logs
 

@@ -54,14 +54,18 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
          		case 'video': 
          		  acceptmedia='video/*';
          		  break;
-         		case 'audio': 
-         		default:
+                case 'snapshot':
+				case 'image':
+					acceptmedia='image/*';
+				case 'audio':
          		 var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
          		 if(iOS){
          		 	acceptmedia='video/*';
          		 }else{
          		 	acceptmedia='audio/*';
          		 }
+				default:
+                    acceptmedia='';
          	}
 
          //html5 recorder proper

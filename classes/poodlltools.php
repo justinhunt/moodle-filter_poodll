@@ -1545,8 +1545,8 @@ class poodlltools
         
     public static function confirm_s3_arrival($mediatype,$filename){
 		global $CFG;
-                //does file exist on s3
-                $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
+          //does file exist on s3
+         $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
 		$awstools = new \filter_poodll\awstools();
 		if($awstools->does_file_exist($mediatype,$s3filename,'in' )){
                     return true;

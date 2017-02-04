@@ -415,10 +415,9 @@ function filter_poodll_poodllpluginfile($contextid,$component,$filearea,$itemid,
 
 /* Here we check if the file has been received over on S3 */
 function filter_poodll_confirmarrival($mediatype, $filename){
-    
-        $return=filter_poodll_fetchReturnArray(true);
-    
-	global $CFG,$USER;
+    global $CFG,$USER;
+
+    $return=filter_poodll_fetchReturnArray(true);
 
       $return['success']=false;       
       $ret =  \filter_poodll\poodlltools::confirm_s3_arrival($mediatype, $filename);
