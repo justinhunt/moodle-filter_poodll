@@ -70,6 +70,7 @@ require_once($CFG->libdir . '/filelib.php');
     CONST LOG_PFL_LOCAL_CONVERT_FAIL=5;
     CONST LOG_PFL_DOWNLOAD_FAIL=6;
     CONST LOG_PFL_CREATE_FROM_URL_FAIL=7;
+    CONST LOG_PFL_FILE_CREATED=8;
 
 
 
@@ -285,6 +286,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 	//if file already exists, raise an error
 	if($fs->file_exists($contextid,$comp,$farea,$itemid,$filepath,$filename)){
 		if($mediatype=='image'){
+            \filter_poodll\poodlltools::send_debug_data(LOG_PFL_FILE_EXISTS,'image file already exists. will delete and try:' . $filename,$USER->id,$contextid,'poodllfilelib.php');
 			//delete any existing draft files.
 			$file = $fs->get_file($contextid,$comp,$farea,$itemid,$filepath,$filename);
 			$file->delete();
@@ -377,6 +379,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 	//if successful return filename
 	if($stored_file){
 		array_push($return['messages'],$filename );
+        \filter_poodll\poodlltools::send_debug_data(LOG_PFL_FILE_CREATED,'Successfully created:' . $filename,$USER->id,$contextid,'poodllfilelib.php');
 
 		//if unsuccessful, return error
 	}else{
