@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.0.30(Build 2017030401)
+-Fixed erroneous error message from adhoc convert task
+-Fixed problem saving whiteboard vector data inside quiz question answers
+-Fixed issue with large base64 audio data being attached to form submissions needlesly
+-Fixed issue with mobile ios app on TinyMCE Poodll anywhere (insert button not enabling)
 
 Version 3.0.28(2017020401)
 -fixed iOS and Android version detection bug
