@@ -117,6 +117,23 @@ define(['jquery','core/log'], function($, log) {
         		this.config.onuploadfailure(widgetid);
         	}
         },
+
+		doCallback: function(uploader,filename){
+            //invoke callbackjs if we have one, otherwise just update the control(default behav.)
+            if(uploader.config.callbackjs && uploader.config.callbackjs !=''){
+                var callbackargs  = new Array();
+                callbackargs[0]=uploader.config.widgetid;
+                callbackargs[1]="filesubmitted";
+                callbackargs[2]=filename;
+                callbackargs[3]=uploader.config.updatecontrol;
+
+                this.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
+                this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
+
+            }else {
+                uploader.pokeFilename(filename,uploader);
+            }
+		},
         
         //after an upload handle the filename poke and callback call
         postProcessUpload: function(e,uploader){
@@ -132,21 +149,10 @@ define(['jquery','core/log'], function($, log) {
 						log.debug(xhr);
 						return;
 					}
-				
-					//invoke callbackjs if we have one, otherwise just update the control(default behav.)
-					if(uploader.config.callbackjs && uploader.config.callbackjs !=''){
-						var callbackargs  = new Array();
-						callbackargs[0]=uploader.config.widgetid;
-						callbackargs[1]="filesubmitted";
-						callbackargs[2]=filename;
-						callbackargs[3]=uploader.config.updatecontrol;
-				  
-						this.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
-						this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
 
-					}else {
-                       uploader.pokeFilename(filename,uploader);
-					}
+					//if we have a callback then call it
+					// this is for enabling buttons on tinymce etc, filename fields etc
+					this.doCallback(uploader,filename);
 					
 					//alert the recorder that this was successful
 					this.alertRecorderSuccess(uploader.config.widgetid);

@@ -144,6 +144,7 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
                     ip.uploader.pokeFilename(config.filename, ip.uploader);
                     ip.uploader.postprocess_s3_upload(ip.uploader);
                     ip.uploader.Output( M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
+                    ip.uploader.doCallback(ip.uploader,config.filename);
                 }else{
                    // setTimeout(mobilerecorder.confirm_s3_arrival,2000);
                     setTimeout(function(){

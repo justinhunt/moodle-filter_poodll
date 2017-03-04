@@ -108,7 +108,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader'
             var uploadbutton = $(uploadbuttonstring);
             if(uploadbutton){
                 if(opts['autosave']){
-                    uploadbutton.click(function(){utils.WhiteboardUploadHandler(opts['recorderid'],mfp.lc);});
+                    uploadbutton.click(function(){utils.WhiteboardUploadHandler(opts['recorderid'],mfp.lc,opts);});
                 }else{
                 	var cvs = utils.getCvs(opts['recorderid'],mfp.lc,opts);
                     uploadbutton.click(

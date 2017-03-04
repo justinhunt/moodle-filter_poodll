@@ -26,6 +26,10 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
             }//end of of drawing board
             return cvs;
         },
+
+        escapeColon: function(thestring){
+                return thestring.replace(/:/, '\\:');
+        },
         
         pokeVectorData: function(recid,wboard,opts){
           	var vectordata = "";
@@ -38,7 +42,10 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
             
             //need to do the poke here
             if(typeof opts['vectorcontrol'] !== 'undefined' && opts['vectorcontrol'] !==''){
-              $('#' + opts['vectorcontrol']).val(vectordata);
+                //the moodle question has a colon in the field ids, so we need to escape that away
+              $('#' + this.escapeColon(opts['vectorcontrol'])).val(vectordata);
+                log.debug('Vectorcontrol:' + opts['vectorcontrol'] );
+                log.debug('Vectordata:' + vectordata );
            }
         }//end of poke vectordata
     };

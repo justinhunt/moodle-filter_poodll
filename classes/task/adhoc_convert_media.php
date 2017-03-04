@@ -37,6 +37,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     const LOG_NO_FILE_FOUND_IN_DB = 3;
     const LOG_STORED_FILE_PROBLEM = 4;
     const LOG_SPLASHFILE_MAKE_FAIL = 5;
+    const LOG_UNABLE_TO_CONVERT = 6;
 
     public function execute() {   
     	//NB: seems any exceptions not thrown HERE, kill subsequent tasks
@@ -116,7 +117,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
                 }
             }
 		}else{
-		    $this->handle_error('unable to convert ' . $cd->originalfilename,$cd);
+		    $this->handle_error(self::LOG_UNABLE_TO_CONVERT,'unable to convert ' . $cd->originalfilename,$cd);
 		    return;
 		}
 		//if we got here then the task was completed successfully

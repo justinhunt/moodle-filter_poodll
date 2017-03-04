@@ -103,6 +103,7 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
         
         registerevents: function(widgetid){
 			var ip = this.fetch_instance_props(widgetid);
+			ip.audioblob = false;
 
         	ip.savebutton.click(function() {            
               //here we convert a string of base64 data into a blob which represents 
@@ -110,19 +111,33 @@ define(['jquery','core/log', 'filter_poodll/uploader','filter_poodll/lzflash'], 
               var audiodata = atob(ip.audiodatacontrol.val());
               
               //we check if there is actually any data,because if not we want to complain
-              if(!audiodata || audiodata.length ==0){
+			  //if this is a resubmit, impossible though, we pass through to upload
+				var haveaudiodata=audiodata && audiodata.length > 0;
+              if(!haveaudiodata && !ip.audioblob){
 			 	ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
 			 	return false;
 			  }
-              
-              var audioblobdata=[];
-              for(var i = 0; i < audiodata.length; i++) {audioblobdata.push(audiodata.charCodeAt(i));}
-              var audioBlob = new Blob([new Uint8Array(audioblobdata)],{type: 'audio/mpeg3'});
+
+			  //create our audioblob if it is empty .. most likely
+			  if(!ip.audioblob && haveaudiodata) {
+                  var audioblobdata = [];
+                  for (var i = 0; i < audiodata.length; i++) {
+                      audioblobdata.push(audiodata.charCodeAt(i));
+                  }
+                  ip.audioblob = new Blob([new Uint8Array(audioblobdata)], {type: 'audio/mpeg3'});
+              }
+
               //and we upload that blob
-              ip.uploader.uploadBlob(audioBlob,'audio/mpeg3');
+              ip.uploader.uploadBlob(ip.audioblob,'audio/mpeg3');
               //we would like to disable the recorder here
               var apicall = 'poodllapi.mp3_disable()';
               lz.embed[ip.config.widgetid].callMethod(apicall);
+
+              //we no longer need the data in the audiodata control and it will get submitted
+				//with the form which we don't want. So we clear it here. Justin 2017-03/03
+                ip.audiodatacontrol.val('');
+
+
               //just in case
               return false;
             });//end of save button click
