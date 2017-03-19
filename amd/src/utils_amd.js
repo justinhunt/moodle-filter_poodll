@@ -47,6 +47,50 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
                 log.debug('Vectorcontrol:' + opts['vectorcontrol'] );
                 log.debug('Vectordata:' + vectordata );
            }
-        }//end of poke vectordata
+        //end of poke vectordata
+        },
+        
+                
+        concatenateWavBlobs: function(blobs,callback){
+           
+           //fetch our header
+           var allbytes = []; //this will be an array of arraybuffers
+            var loadedblobs=0;
+            var totalbytes=0;
+           
+            // fetch the blob data
+            var lng = blobs.length;
+            for (var i = 0; i < lng; i++){
+                var fileReader = new FileReader();
+                fileReader.onload = function() {
+                    //load blob into arraybuffer
+                    var ab = this.result;
+                    
+                    //remove header and add audiodata to the all data array
+                    //the slice is from(inclusive) to end(exclusive)
+                    var audiodata=ab.slice(44);
+                    totalbytes+=audiodata.byteLength;
+                    allbytes.push(audiodata);
+                    loadedblobs++;
+                    
+                    //finally add the header and do callback if at end
+                    if(loadedblobs==lng){
+                        //get header from last blob, and just adjust the data length
+                        var header = ab.slice(0,44);
+                        var headerview = new DataView(header);
+                        headerview.setUint32(40,totalbytes, true);
+                        allbytes.unshift(header);
+                         
+                        //make our final binary blob and pass it to callback
+                        var wavblob = new Blob (allbytes, { type : 'audio/wav' } );
+                        callback(wavblob);
+                    }
+                };
+                fileReader.readAsArrayBuffer(blobs[i]);
+                
+            }//end of i loop
+            
+        } //end of concatenateWavBlobs
+        
     };
 });

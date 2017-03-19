@@ -51,13 +51,18 @@ class adhoc_completed extends  \core\event\base  {
         $contextid=$filerecord->contextid;
         $userid=$filerecord->userid;
         $context = \context::instance_by_id($contextid);
+        
+        //weird moodle event proc. complains if other field is an object
+        //and showhow it gets altered in json, so we do this to avoid a warning
+        $taskjson = json_encode($taskdata);
+        $taskvars = json_decode($taskjson,true);
 
         $data = array(
             'context' => $context,
             'objectid' => $filerecord->id,
             'userid' => $userid,
             'relateduserid' => $userid,
-            'other' => $taskdata
+            'other' => $taskvars
         );
         /** @var extension_granted $event */
         $event = self::create($data);

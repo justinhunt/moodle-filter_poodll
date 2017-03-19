@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll/gumadapter', 'filter_poodll/uploader','filter_poodll/timer'], function($, log, msr, gum, uploader,timer) {
+define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStreamRecorder', 'filter_poodll/gumadapter', 'filter_poodll/uploader','filter_poodll/timer'], function($, log, utils, msr, gum, uploader,timer) {
 
     "use strict"; // jshint ;_;
 
@@ -21,8 +21,20 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
         	if(M.cfg.wwwroot.indexOf('https:')==0
         	 	&& navigator && navigator.mediaDevices 
         	 	&& navigator.mediaDevices.getUserMedia){
-        	 	  log.debug('PoodLL Media Recorder: supports this browser');
-        		  return true;
+        	 	    var ret = false;
+        	 	    switch(config.mediatype){
+        	 	        case 'audio': 
+        	 	            ret = true;
+        	 	             break;
+        	 	        case 'video': 
+        	 	                var IsEdge = navigator.userAgent.indexOf('Edge') !== -1 &&
+        	 	                    (!!navigator.msSaveBlob || !!navigator.msSaveOrOpenBlob);
+        	 	               if(!IsEdge){ret=true;}
+        	 	    }
+        	 	    if(ret){
+        	 	        log.debug('PoodLL Media Recorder: supports this browser');
+        	 	    }
+        		  return ret;
         	}else{
         		  return false;
         	}
@@ -417,13 +429,26 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
                 this.disabled = true;
                 var preview = ip.controlbar.preview.get(0);
                 if(ip.blobs && ip.blobs.length > 0){
-                    ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                             var mediaurl = URL.createObjectURL(concatenatedBlob);
-                             preview.src= mediaurl;
-                             preview.controls =true;
-                             preview.volume = ip.previewvolume;
-                             preview.play();
-                    }); //end of concatenate blobs
+                    log.debug(ip.blobs[0].type);
+                    if(ip.blobs[0].type=='audio/wav'){
+                        //mediastreamrecorder adds a header to each wav blob, 
+                        //we remove them and combine audodata and new header
+                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                 var mediaurl = URL.createObjectURL(concatenatedBlob);
+                                 preview.src= mediaurl;
+                                 preview.controls =true;
+                                 preview.volume = ip.previewvolume;
+                                 preview.play();
+                        });
+                    }else{
+                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                 var mediaurl = URL.createObjectURL(concatenatedBlob);
+                                 preview.src= mediaurl;
+                                 preview.controls =true;
+                                 preview.volume = ip.previewvolume;
+                                 preview.play();
+                        }); //end of concatenate blobs
+                    }
                 }        
                 ip.controlbar.stopbutton.attr('disabled',false);
                 ip.controlbar.startbutton.attr('disabled',true);
@@ -431,23 +456,33 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
             
            ip.controlbar.savebutton.click(function() {
                 this.disabled = true;
+                 
+                //I know you want to allow multiple submissions off one page load BUT
+                //this will require a new filename. The filename is the basis of the 
+                //s3filename, s3uploadurl and filename for moodle. The problem with 
+                //allowing mulitple uploads is that once the placeholder is overwritten
+                //the subsequent submissions ad_hoc move task can no longer find the file to
+                //replace. So we need a whole new filename or to cancel the previous ad hoc move. 
+                //This should probably be
+                //an ajax request from the uploader, or even a set of 10 filenames/s3uploadurls
+                //pulled down at PHP time ..
+                //this is one of those cases where a simple thing is hard ...J 20160919
               if(ip.blobs && ip.blobs.length > 0){
-                    ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                            ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
-                            
-                            //I know you want to allow multiple submissions off one page load BUT
-                            //this will require a new filename. The filename is the basis of the 
-                            //s3filename, s3uploadurl and filename for moodle. The problem with 
-                            //allowing mulitple uploads is that once the placeholder is overwritten
-                            //the subsequent submissions ad_hoc move task can no longer find the file to
-                            //replace. So we need a whole new filename or to cancel the previous ad hoc move. 
-                            //This should probably be
-                            //an ajax request from the uploader, or even a set of 10 filenames/s3uploadurls
-                            //pulled down at PHP time ..
-                            //this is one of those cases where a simple thing is hard ...J 20160919
-                            ip.controlbar.startbutton.attr('disabled',true);
-                            ip.uploaded = true;
-                    }); //end of concatenate blobs
+                   if(ip.blobs[0].type=='audio/wav'){
+                        //mediastreamrecorder adds a header to each wav blob, 
+                        //we remove them and combine audodata and new header
+                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                ip.controlbar.startbutton.attr('disabled',true);
+                                ip.uploaded = true;
+                        });
+                   }else{
+                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                ip.controlbar.startbutton.attr('disabled',true);
+                                ip.uploaded = true;
+                        }); //end of concatenate blobs
+                   }//end of if audio/wav
                 }else{
                     ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if self.blobs		
@@ -725,14 +760,26 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
 				}
 				
                 if(ip.blobs && ip.blobs.length > 0){
-                    ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                             var mediaurl = URL.createObjectURL(concatenatedBlob);
-                             preview.src= mediaurl;
-                             preview.controls =true;
-                             preview.volume = ip.previewvolume;
-                             preview.play();
-                    }); //end of concatenate blobs
-                }        
+                    if(ip.blobs[0].type=='audio/wav'){
+                        //mediastreamrecorder adds a header to each wav blob, 
+                        //we remove them and combine audodata and new header
+                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                 var mediaurl = URL.createObjectURL(concatenatedBlob);
+                                 preview.src= mediaurl;
+                                 preview.controls =true;
+                                 preview.volume = ip.previewvolume;
+                                 preview.play();
+                        });
+                    }else{
+                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                 var mediaurl = URL.createObjectURL(concatenatedBlob);
+                                 preview.src= mediaurl;
+                                 preview.controls =true;
+                                 preview.volume = ip.previewvolume;
+                                 preview.play();
+                        }); //end of concatenate blobs
+                    }
+                }       
                 
 				ip.controlbar.startbutton.show();
             });
@@ -740,28 +787,32 @@ define(['jquery','core/log', 'filter_poodll/MediaStreamRecorder', 'filter_poodll
            ip.controlbar.savebutton.click(function() {
                 this.disabled = false;
 
+              //I know you want to allow multiple submissions off one page load BUT
+                //this will require a new filename. The filename is the basis of the 
+                //s3filename, s3uploadurl and filename for moodle. The problem with 
+                //allowing mulitple uploads is that once the placeholder is overwritten
+                //the subsequent submissions ad_hoc move task can no longer find the file to
+                //replace. So we need a whole new filename or to cancel the previous ad hoc move. 
+                //This should probably be
+                //an ajax request from the uploader, or even a set of 10 filenames/s3uploadurls
+                //pulled down at PHP time ..
+                //this is one of those cases where a simple thing is hard ...J 20160919
               if(ip.blobs && ip.blobs.length > 0){
-                    ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                            var uploaddd = ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
-                          
-                            //I know you want to allow multiple submissions off one page load BUT
-                            //this will require a new filename. The filename is the basis of the 
-                            //s3filename, s3uploadurl and filename for moodle. The problem with 
-                            //allowing mulitple uploads is that once the placeholder is overwritten
-                            //the subsequent submissions ad_hoc move task can no longer find the file to
-                            //replace. So we need a whole new filename or to cancel the previous ad hoc move. 
-                            //This should probably be
-                            //an ajax request from the uploader, or even a set of 10 filenames/s3uploadurls
-                            //pulled down at PHP time ..
-                            //this is one of those cases where a simple thing is hard ...J 20160919
-                            ip.controlbar.startbutton.attr('disabled',false);
-                            ip.uploaded = true;
-							ip.controlbar.savebutton.hide();
-
-							
-							
-                    }); //end of concatenate blobs
-                  
+                   if(ip.blobs[0].type=='audio/wav'){
+                        //mediastreamrecorder adds a header to each wav blob, 
+                        //we remove them and combine audodata and new header
+                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                ip.controlbar.startbutton.attr('disabled',true);
+                                ip.uploaded = true;
+                        });
+                   }else{
+                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                ip.controlbar.startbutton.attr('disabled',true);
+                                ip.uploaded = true;
+                        }); //end of concatenate blobs
+                   }//end of if audio/wav
                 }else{
                     ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if ip.blobs		

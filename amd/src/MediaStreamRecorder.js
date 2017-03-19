@@ -1,4 +1,4 @@
-// Last time updated: 2016-05-15 5:22:54 AM UTC
+// Last time updated: 2017-02-21 8:23:06 AM UTC
 
 // links:
 // Open-Sourced: https://github.com/streamproc/MediaStreamRecorder
@@ -51,7 +51,8 @@ function MediaStreamRecorder(mediaStream) {
         }
 
         // audio/wav is supported only via StereoAudioRecorder
-        if (this.mimeType === 'audio/wav') {
+        // audio/pcm (int16) is supported only via StereoAudioRecorder
+        if (this.mimeType === 'audio/wav' || this.mimeType === 'audio/pcm') {
             Recorder = StereoAudioRecorder;
         }
 
@@ -146,125 +147,271 @@ function MediaStreamRecorder(mediaStream) {
 // ______________________
 // MultiStreamRecorder.js
 
-function MultiStreamRecorder(mediaStream) {
-    if (!mediaStream) {
-        throw 'MediaStream is mandatory.';
+function MultiStreamRecorder(arrayOfMediaStreams) {
+    if (arrayOfMediaStreams instanceof MediaStream) {
+        arrayOfMediaStreams = [arrayOfMediaStreams];
     }
 
     var self = this;
-    var isMediaRecorder = isMediaRecorderCompatible();
 
-    this.stream = mediaStream;
+    if (!this.mimeType) {
+        this.mimeType = 'video/webm';
+    }
 
-    // void start(optional long timeSlice)
-    // timestamp to fire "ondataavailable"
+    if (!this.frameInterval) {
+        this.frameInterval = 10;
+    }
+
+    if (!this.video) {
+        this.video = {};
+    }
+
+    if (!this.video.width) {
+        this.video.width = 360;
+    }
+
+    if (!this.video.height) {
+        this.video.height = 240;
+    }
+
     this.start = function(timeSlice) {
-        audioRecorder = new MediaStreamRecorder(mediaStream);
-        videoRecorder = new MediaStreamRecorder(mediaStream);
+        isStoppedRecording = false;
+        var mixedVideoStream = getMixedVideoStream();
 
-        audioRecorder.mimeType = 'audio/ogg';
-        videoRecorder.mimeType = 'video/webm';
+        var mixedAudioStream = getMixedAudioStream();
+        if (mixedAudioStream) {
+            mixedAudioStream.getAudioTracks().forEach(function(track) {
+                mixedVideoStream.addTrack(track);
+            });
+        }
 
-        for (var prop in this) {
-            if (typeof this[prop] !== 'function') {
-                audioRecorder[prop] = videoRecorder[prop] = this[prop];
+        if (self.previewStream && typeof self.previewStream === 'function') {
+            self.previewStream(mixedVideoStream);
+        }
+
+        mediaRecorder = new MediaStreamRecorder(mixedVideoStream);
+
+        for (var prop in self) {
+            if (typeof self[prop] !== 'function') {
+                mediaRecorder[prop] = self[prop];
             }
         }
 
-        audioRecorder.ondataavailable = function(blob) {
-            if (!audioVideoBlobs[recordingInterval]) {
-                audioVideoBlobs[recordingInterval] = {};
-            }
-
-            audioVideoBlobs[recordingInterval].audio = blob;
-
-            if (audioVideoBlobs[recordingInterval].video && !audioVideoBlobs[recordingInterval].onDataAvailableEventFired) {
-                audioVideoBlobs[recordingInterval].onDataAvailableEventFired = true;
-                fireOnDataAvailableEvent(audioVideoBlobs[recordingInterval]);
-            }
+        mediaRecorder.ondataavailable = function(blob) {
+            self.ondataavailable(blob);
         };
 
-        videoRecorder.ondataavailable = function(blob) {
-            if (isMediaRecorder) {
-                return self.ondataavailable({
-                    video: blob,
-                    audio: blob
-                });
+        drawVideosToCanvas();
+
+        mediaRecorder.start(timeSlice);
+    };
+
+    this.stop = function(callback) {
+        isStoppedRecording = true;
+
+        if (!mediaRecorder) {
+            return;
+        }
+
+        mediaRecorder.stop(function(blob) {
+            callback(blob);
+        });
+    };
+
+    function getMixedAudioStream() {
+        // via: @pehrsons
+        self.audioContext = new AudioContext();
+        var audioSources = [];
+
+        var audioTracksLength = 0;
+        arrayOfMediaStreams.forEach(function(stream) {
+            if (!stream.getAudioTracks().length) {
+                return;
             }
 
-            if (!audioVideoBlobs[recordingInterval]) {
-                audioVideoBlobs[recordingInterval] = {};
+            audioTracksLength++;
+
+            audioSources.push(self.audioContext.createMediaStreamSource(stream));
+        });
+
+        if (!audioTracksLength) {
+            return;
+        }
+
+        self.audioDestination = self.audioContext.createMediaStreamDestination();
+        audioSources.forEach(function(audioSource) {
+            audioSource.connect(self.audioDestination);
+        });
+        return self.audioDestination.stream;
+    }
+
+    var videos = [];
+    var mediaRecorder;
+
+    function getMixedVideoStream() {
+        // via: @adrian-ber
+        arrayOfMediaStreams.forEach(function(stream) {
+            if (!stream.getVideoTracks().length) {
+                return;
             }
 
-            audioVideoBlobs[recordingInterval].video = blob;
+            var video = getVideo(stream);
+            video.width = self.video.width;
+            video.height = self.video.height;
+            videos.push(video);
+        });
 
-            if (audioVideoBlobs[recordingInterval].audio && !audioVideoBlobs[recordingInterval].onDataAvailableEventFired) {
-                audioVideoBlobs[recordingInterval].onDataAvailableEventFired = true;
-                fireOnDataAvailableEvent(audioVideoBlobs[recordingInterval]);
+        var capturedStream;
+
+        if ('captureStream' in canvas) {
+            capturedStream = canvas.captureStream();
+        } else if ('mozCaptureStream' in canvas) {
+            capturedStream = canvas.mozCaptureStream();
+        } else if (!self.disableLogs) {
+            console.error('Upgrade to latest Chrome or otherwise enable this flag: chrome://flags/#enable-experimental-web-platform-features');
+        }
+
+        return capturedStream;
+    }
+
+    function getVideo(stream) {
+        var video = document.createElement('video');
+        video.src = URL.createObjectURL(stream);
+        video.play();
+        return video;
+    }
+
+    var isStoppedRecording = false;
+
+    function drawVideosToCanvas() {
+        if (isStoppedRecording) {
+            return;
+        }
+
+        var videosLength = videos.length;
+
+        canvas.width = videosLength > 1 ? videos[0].width * 2 : videos[0].width;
+        canvas.height = videosLength > 2 ? videos[0].height * 2 : videos[0].height;
+
+        videos.forEach(function(video, idx) {
+            if (videosLength === 1) {
+                context.drawImage(video, 0, 0, video.width, video.height);
+                return;
             }
-        };
 
-        function fireOnDataAvailableEvent(blobs) {
-            recordingInterval++;
-            self.ondataavailable(blobs);
-        }
+            if (videosLength === 2) {
+                var x = 0;
+                var y = 0;
 
-        videoRecorder.onstop = audioRecorder.onstop = function(error) {
-            self.onstop(error);
-        };
+                if (idx === 1) {
+                    x = video.width;
+                }
 
-        if (!isMediaRecorder) {
-            // to make sure both audio/video are synced.
-            videoRecorder.onStartedDrawingNonBlankFrames = function() {
-                videoRecorder.clearOldRecordedFrames();
-                audioRecorder.start(timeSlice);
-            };
-            videoRecorder.start(timeSlice);
-        } else {
-            videoRecorder.start(timeSlice);
-        }
-    };
+                context.drawImage(video, x, y, video.width, video.height);
+                return;
+            }
 
-    this.stop = function() {
-        if (audioRecorder) {
-            audioRecorder.stop();
-        }
-        if (videoRecorder) {
-            videoRecorder.stop();
-        }
-    };
+            if (videosLength === 3) {
+                var x = 0;
+                var y = 0;
 
-    this.ondataavailable = function(blob) {
-        console.log('ondataavailable..', blob);
-    };
+                if (idx === 1) {
+                    x = video.width;
+                }
 
-    this.onstop = function(error) {
-        console.warn('stopped..', error);
-    };
+                if (idx === 2) {
+                    y = video.height;
+                }
+
+                context.drawImage(video, x, y, video.width, video.height);
+                return;
+            }
+
+            if (videosLength === 4) {
+                var x = 0;
+                var y = 0;
+
+                if (idx === 1) {
+                    x = video.width;
+                }
+
+                if (idx === 2) {
+                    y = video.height;
+                }
+
+                if (idx === 3) {
+                    x = video.width;
+                    y = video.height;
+                }
+
+                context.drawImage(video, x, y, video.width, video.height);
+                return;
+            }
+        });
+
+        setTimeout(drawVideosToCanvas, self.frameInterval);
+    }
+
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+
+    canvas.style = 'opacity:0;position:absolute;z-index:-1;top: -100000000;left:-1000000000;';
+
+    (document.body || document.documentElement).appendChild(canvas);
 
     this.pause = function() {
-        if (audioRecorder) {
-            audioRecorder.pause();
-        }
-        if (videoRecorder) {
-            videoRecorder.pause();
+        if (mediaRecorder) {
+            mediaRecorder.pause();
         }
     };
 
     this.resume = function() {
-        if (audioRecorder) {
-            audioRecorder.resume();
-        }
-        if (videoRecorder) {
-            videoRecorder.resume();
+        if (mediaRecorder) {
+            mediaRecorder.resume();
         }
     };
 
-    var audioRecorder;
-    var videoRecorder;
+    this.clearRecordedData = function() {
+        videos = [];
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        isStoppedRecording = false;
+        mediaRecorder = null;
 
-    var audioVideoBlobs = {};
-    var recordingInterval = 0;
+        if (mediaRecorder) {
+            mediaRecorder.clearRecordedData();
+        }
+    };
+
+    this.addStream = function(stream) {
+        if (stream instanceof Array && stream.length) {
+            stream.forEach(this.addStream);
+            return;
+        }
+        arrayOfMediaStreams.push(stream);
+
+        if (!mediaRecorder) {
+            return;
+        }
+
+        if (stream.getVideoTracks().length) {
+            var video = getVideo(stream);
+            video.width = self.video.width;
+            video.height = self.video.height;
+            videos.push(video);
+        }
+
+        if (stream.getAudioTracks().length && self.audioContext) {
+            var audioSource = self.audioContext.createMediaStreamSource(stream);
+            audioSource.connect(self.audioDestination);
+        }
+    };
+
+    this.ondataavailable = function(blob) {
+        if (self.disableLogs) {
+            return;
+        }
+        console.log('ondataavailable', blob);
+    };
 }
 
 if (typeof MediaStreamRecorder !== 'undefined') {
@@ -637,7 +784,6 @@ function MediaRecorderWrapper(mediaStream) {
             self.mimeType = IsChrome ? 'audio/webm' : 'audio/ogg';
         }
 
-        self.blob = null;
         self.dontFireOnDataAvailableEvent = false;
 
         var recorderHints = {
@@ -664,7 +810,13 @@ function MediaRecorderWrapper(mediaStream) {
 
         // starting a recording session; which will initiate "Reading Thread"
         // "Reading Thread" are used to prevent main-thread blocking scenarios
-        mediaRecorder = new MediaRecorder(mediaStream, recorderHints);
+        try {
+            mediaRecorder = new MediaRecorder(mediaStream, recorderHints);
+        } catch (e) {
+            // if someone passed NON_supported mimeType
+            // or if Firefox on Android
+            mediaRecorder = new MediaRecorder(mediaStream);
+        }
 
         if ('canRecordMimeType' in mediaRecorder && mediaRecorder.canRecordMimeType(self.mimeType) === false) {
             if (!self.disableLogs) {
@@ -676,15 +828,21 @@ function MediaRecorderWrapper(mediaStream) {
         // when video is resumed. E.g. yourStream.getVideoTracks()[0].muted = true; // it will auto-stop recording.
         mediaRecorder.ignoreMutedMedia = self.ignoreMutedMedia || false;
 
+        var firedOnDataAvailableOnce = false;
+
         // Dispatching OnDataAvailable Handler
         mediaRecorder.ondataavailable = function(e) {
             if (self.dontFireOnDataAvailableEvent) {
                 return;
             }
 
-            if (!e.data || !e.data.size || e.data.size < 100 || self.blob) {
+            // how to fix FF-corrupt-webm issues?
+            // should we leave this?          e.data.size < 26800
+            if (!e.data || !e.data.size || e.data.size < 26800 || firedOnDataAvailableOnce) {
                 return;
             }
+
+            firedOnDataAvailableOnce = true;
 
             var blob = self.getNativeBlob ? e.data : new Blob([e.data], {
                 type: self.mimeType || 'video/webm'
@@ -693,7 +851,10 @@ function MediaRecorderWrapper(mediaStream) {
             self.ondataavailable(blob);
 
             self.dontFireOnDataAvailableEvent = true;
-            mediaRecorder.stop();
+
+            if (!!mediaRecorder && mediaRecorder.state === 'recording') {
+                mediaRecorder.stop();
+            }
             mediaRecorder = null;
 
             // record next interval
@@ -723,7 +884,7 @@ function MediaRecorderWrapper(mediaStream) {
             // if the timeSlice value is small. Callers should 
             // consider timeSlice as a minimum value
 
-            if (mediaRecorder.state !== 'inactive' && mediaRecorder.state !== 'stopped') {
+            if (!!mediaRecorder && mediaRecorder.state !== 'inactive' && mediaRecorder.state !== 'stopped') {
                 mediaRecorder.stop();
             }
         };
@@ -733,7 +894,11 @@ function MediaRecorderWrapper(mediaStream) {
         // handler. "mTimeSlice < 0" means Session object does not push encoded data to
         // onDataAvailable, instead, it passive wait the client side pull encoded data
         // by calling requestData API.
-        mediaRecorder.start(3.6e+6);
+        try {
+            mediaRecorder.start(3.6e+6);
+        } catch (e) {
+            mediaRecorder = null;
+        }
 
         setTimeout(function() {
             if (!mediaRecorder) {
@@ -776,7 +941,7 @@ function MediaRecorderWrapper(mediaStream) {
 
             setTimeout(function() {
                 self.dontFireOnDataAvailableEvent = true;
-                if (mediaRecorder.state === 'recording') {
+                if (!!mediaRecorder && mediaRecorder.state === 'recording') {
                     mediaRecorder.stop();
                 }
                 mediaRecorder = null;
@@ -970,6 +1135,10 @@ function StereoAudioRecorderHelper(mediaStream, root) {
     var volume;
     var audioInput;
     var sampleRate = root.sampleRate || deviceSampleRate;
+
+    var mimeType = root.mimeType || 'audio/wav';
+    var isPCM = mimeType.indexOf('audio/pcm') > -1;
+
     var context;
 
     var numChannels = root.audioChannels || 2;
@@ -1004,13 +1173,24 @@ function StereoAudioRecorderHelper(mediaStream, root) {
 
         // we flat the left and right channels down
         var leftBuffer = mergeBuffers(internalLeftChannel, internalRecordingLength);
-        var rightBuffer = mergeBuffers(internalLeftChannel, internalRecordingLength);
+
+        var interleaved = leftBuffer;
 
         // we interleave both channels together
         if (numChannels === 2) {
-            var interleaved = interleave(leftBuffer, rightBuffer);
-        } else {
-            var interleaved = leftBuffer;
+            var rightBuffer = mergeBuffers(internalRightChannel, internalRecordingLength); // bug fixed via #70,#71
+            interleaved = interleave(leftBuffer, rightBuffer);
+        }
+
+        if (isPCM) {
+            // our final binary blob
+            var blob = new Blob([convertoFloat32ToInt16(interleaved)], {
+                type: 'audio/pcm'
+            });
+
+            console.debug('audio recorded blob size:', bytesToSize(blob.size));
+            root.ondataavailable(blob);
+            return;
         }
 
         // we create our wav file
@@ -1019,7 +1199,10 @@ function StereoAudioRecorderHelper(mediaStream, root) {
 
         // RIFF chunk descriptor
         writeUTFBytes(view, 0, 'RIFF');
-        view.setUint32(4, 44 + interleaved.length * 2, true);
+
+        // -8 (via #97)
+        view.setUint32(4, 44 + interleaved.length * 2 - 8, true);
+
         writeUTFBytes(view, 8, 'WAVE');
         // FMT sub-chunk
         writeUTFBytes(view, 12, 'fmt ');
@@ -1028,7 +1211,7 @@ function StereoAudioRecorderHelper(mediaStream, root) {
         // stereo (2 channels)
         view.setUint16(22, numChannels, true);
         view.setUint32(24, sampleRate, true);
-        view.setUint32(28, sampleRate * 4, true);
+        view.setUint32(28, sampleRate * numChannels * 2, true); // numChannels * 2 (via #71)
         view.setUint16(32, numChannels * 2, true);
         view.setUint16(34, 16, true);
         // data sub-chunk
@@ -1093,6 +1276,16 @@ function StereoAudioRecorderHelper(mediaStream, root) {
         for (var i = 0; i < lng; i++) {
             view.setUint8(offset + i, string.charCodeAt(i));
         }
+    }
+
+    function convertoFloat32ToInt16(buffer) {
+        var l = buffer.length;
+        var buf = new Int16Array(l)
+
+        while (l--) {
+            buf[l] = buffer[l] * 0xFFFF; //convert to 16 bit
+        }
+        return buf.buffer
     }
 
     // creates the audio context
