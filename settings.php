@@ -50,12 +50,22 @@ if (is_siteadmin()) {
     	$widget_settings->add($widget_item);
 	}
 	$ADMIN->add('filter_poodll_topcat', $widget_settings);
-	
-	//Templates
-        $template_category = new admin_category('filter_poodll_templatecat', 'Templates');
+
+	//Templates Launch Page
+    $templatetable_settings = new admin_settingpage('filter_poodll_templatetable',get_string('templates', 'filter_poodll'));
+    $templatetable_items =  \filter_poodll\settingstools::fetch_template_table();
+    foreach ($templatetable_items as $templatetable_item) {
+        $templatetable_settings->add($templatetable_item);
+    }
+    $ADMIN->add('filter_poodll_topcat', $templatetable_settings);
+
+    //Original Templates
+    //these are all "hidden" (4th param hidden=true) so display but don't show on nav
+    $template_category = new admin_category('filter_poodll_templatecat', get_string('templates', 'filter_poodll'),'moodle/site:config',true);
 	$ADMIN->add('filter_poodll_topcat', $template_category);
 	$template_pages =  \filter_poodll\settingstools::fetch_template_pages($conf);
 	foreach ($template_pages as $template_page) {
     	$ADMIN->add('filter_poodll_templatecat', $template_page);
 	}
+
 }

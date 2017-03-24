@@ -231,6 +231,12 @@ $string['datasetvars'] = 'Dataset Variables';
 $string['datasetvars_desc'] = 'Put a comma separated list of variables that make up the vars for the SQL. You can and probably will want to use variables here.';
 $string['value']='value';
 
+//Settings tree headings
+$string['templates']='Templates';
+$string['type']='Type';
+$string['playertype']='player';
+$string['widgettype']='widget';
+
 $string['poodllsupportinfo']='PoodLL Support Information';
 $string['exportdiagnostics']="Export";
 
