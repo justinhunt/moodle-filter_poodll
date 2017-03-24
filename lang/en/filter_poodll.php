@@ -236,6 +236,9 @@ $string['templates']='Templates';
 $string['type']='Type';
 $string['playertype']='player';
 $string['widgettype']='widget';
+$string['jumpcat_heading']='Poodll filter settings';
+$string['jumpcat_explanation']='The full set of Poodll filter settings can be found <a href="{$a}">here</a>.';
+
 
 $string['poodllsupportinfo']='PoodLL Support Information';
 $string['exportdiagnostics']="Export";

@@ -149,10 +149,28 @@ class poodlltemplatetable extends \admin_setting {
             for($tindex=1;$tindex<=$templatecount;$tindex++) {
                 $template_details = new \stdClass();
                 $template_details->title = \filter_poodll\settingstools::fetch_template_title($conf, $tindex,false);
-                $template_details->version = $conf->{'templateversion_' . $tindex};
-                $template_details->instructions = $conf->{'templateinstructions_' . $tindex};
-                $template_details->player = $conf->{'template_showplayers_' . $tindex};
-                $template_details->atto = $conf->{'template_showatto_' . $tindex};
+
+                $template_details->version = "";
+                if(property_exists($conf,'templateversion_' . $tindex)){
+                    $template_details->version = $conf->{'templateversion_' . $tindex};
+                }
+
+
+                $template_details->instructions ="";
+                if(property_exists($conf,'templateinstructions_' . $tindex)) {
+                    $template_details->instructions = $conf->{'templateinstructions_' . $tindex};
+                }
+
+                $template_details->player = '';
+                if(property_exists($conf,'template_showplayers_' . $tindex)) {
+                    $template_details->player = $conf->{'template_showplayers_' . $tindex};
+                }
+
+                $template_details->atto = '';
+                if(property_exists($conf,'template_showatto_' . $tindex)) {
+                    $template_details->atto = $conf->{'template_showatto_' . $tindex};
+                }
+
                 $template_details->url = new \moodle_url( '/admin/settings.php', array('section'=> 'filter_poodll_templatepage_' . $tindex));
                 $ret[]=$template_details;
             }

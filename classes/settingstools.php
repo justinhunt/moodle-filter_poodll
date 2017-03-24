@@ -34,7 +34,14 @@ require_once($CFG->libdir . '/filelib.php');
  
 class settingstools
 {
-	
+
+public static function fetch_jumpcat_items($poodllcat){
+    $items=array();
+    $url = new \moodle_url('/admin/category.php',array('category'=>$poodllcat));
+    $items[] = new \admin_setting_heading('filter_poodll_jumpcat_settings', get_string('jumpcat_heading', 'filter_poodll'), get_string('jumpcat_explanation', 'filter_poodll',$url->out(false)));
+    return $items;
+}
+
 public static function fetch_general_items(){
 	global $CFG;
 	$items = array();
@@ -242,7 +249,7 @@ public static function fetch_template_table(){
 
     $items=array();
     $items[] =new \filter_poodll\poodlltemplatetable('filter_poodll/templatetable',
-            'templates', get_string('templates', 'filter_poodll'));
+        get_string('templates', 'filter_poodll'), '');
     return $items;
 
 }
