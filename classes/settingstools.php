@@ -361,11 +361,12 @@ public static function fetch_template_pages($conf){
 			
 		
 			//template body script
-			 $settings_page->add(new \admin_setting_configtextarea('filter_poodll/templatescript_' . $tindex,
-						get_string('templatescript', 'filter_poodll',$tindex),
-						get_string('templatescript_desc', 'filter_poodll'),
-						'',PARAM_RAW));
-		
+            $setting=new \admin_setting_configtextarea('filter_poodll/templatescript_' . $tindex,
+                get_string('templatescript', 'filter_poodll',$tindex),
+                get_string('templatescript_desc', 'filter_poodll'),
+                '',PARAM_RAW);
+            $setting->set_updatedcallback('filter_poodll_update_revision');
+            $settings_page->add($setting);
 				 
 			//template page CSS heading
 			$settings_page->add(new \admin_setting_heading('filter_poodll/templateheading_css_' . $tindex, 
@@ -378,10 +379,12 @@ public static function fetch_template_pages($conf){
 					 '', PARAM_RAW,50));
 				 
 			//template body css
-			 $settings_page->add(new \admin_setting_configtextarea('filter_poodll/templatestyle_' . $tindex,
+			 $setting=new \admin_setting_configtextarea('filter_poodll/templatestyle_' . $tindex,
 						get_string('templatestyle', 'filter_poodll',$tindex),
 						get_string('templatestyle_desc', 'filter_poodll'),
-						'',PARAM_RAW));
+						'',PARAM_RAW);
+            $setting->set_updatedcallback('filter_poodll_update_revision');
+            $settings_page->add($setting);
 
 			//dataset
 			$settings_page->add(new \admin_setting_configtextarea('filter_poodll/dataset_' . $tindex,
