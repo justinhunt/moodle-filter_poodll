@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.0.32(Build 2017032405)
+-added better display of templates in navigation so that Boost doesn't completely mess it up
+-fixed broken link on manage filters page
+-added revision flag for automating cache refresh courtesy of agrowe
+
 Version 3.0.31(Build 2017031901)
 -Fixed erroneous error message from error log on s3 move complete
 -Added support for MS Edge audio recording via HTML5
