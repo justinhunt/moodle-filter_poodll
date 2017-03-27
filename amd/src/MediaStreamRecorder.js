@@ -784,7 +784,8 @@ function MediaRecorderWrapper(mediaStream) {
             self.mimeType = IsChrome ? 'audio/webm' : 'audio/ogg';
         }
 
-        self.dontFireOnDataAvailableEvent = false;
+       // JUSTIN we turned off this flag. Confusing, and blob size works as well(?)
+       //self.dontFireOnDataAvailableEvent = false;
 
         var recorderHints = {
             mimeType: self.mimeType
@@ -832,25 +833,35 @@ function MediaRecorderWrapper(mediaStream) {
 
         // Dispatching OnDataAvailable Handler
         mediaRecorder.ondataavailable = function(e) {
+
             if (self.dontFireOnDataAvailableEvent) {
                 return;
             }
 
             // how to fix FF-corrupt-webm issues?
             // should we leave this?          e.data.size < 26800
-            if (!e.data || !e.data.size || e.data.size < 26800 || firedOnDataAvailableOnce) {
+            //if (!e.data || !e.data.size || e.data.size < 26800 || firedOnDataAvailableOnce) {
+            
+            //JUSTIN removed flag and file size check(above). ITs really only for firefix
+            //problem was that < timeslice blob would get dropped
+            //firefox goes bananas after first timeslice and produces mamny small blobs of satic
+            //a low filesize check (<900) was good for that but somehow blew the blobs ability to play back in rec,
+            // (though they would convert). Just removed it altogetehr
+             if (!e.data || !e.data.size ) {
                 return;
             }
 
-            firedOnDataAvailableOnce = true;
-
+            // JUSTIN we turned off this flag. Confusing, and blob size works as well(?)
+            // firedOnDataAvailableOnce = true;
             var blob = self.getNativeBlob ? e.data : new Blob([e.data], {
                 type: self.mimeType || 'video/webm'
             });
 
             self.ondataavailable(blob);
 
-            self.dontFireOnDataAvailableEvent = true;
+
+            // JUSTIN we turned off this flag. Confusing, and blob size works as well(?)    
+            //self.dontFireOnDataAvailableEvent = true;
 
             if (!!mediaRecorder && mediaRecorder.state === 'recording') {
                 mediaRecorder.stop();
@@ -858,7 +869,7 @@ function MediaRecorderWrapper(mediaStream) {
             mediaRecorder = null;
 
             // record next interval
-            self.start(timeSlice, '__disableLogs');
+           self.start(timeSlice, '__disableLogs');
         };
 
         mediaRecorder.onerror = function(error) {

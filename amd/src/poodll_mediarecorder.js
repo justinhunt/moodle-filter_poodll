@@ -165,8 +165,10 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                // self.controlbar.preview.attr('src',URL.createObjectURL(stream));
                 ip.mediaRecorder.mimeType = ip.audiomimetype;
                 ip.mediaRecorder.audioChannels = 1;
-                ip.mediaRecorder.start(ip.timeInterval);
+                ip.mediaRecorder.start(ip.timeinterval);
+                log.debug(ip.timeinterval);
                 ip.mediaRecorder.ondataavailable =  function(blob) {
+                    log.debug('we got blob');
         			ip.blobs.push(blob);
         			};
                 ip.controlbar.preview.attr('src',null);               
@@ -214,7 +216,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 ip.mediaRecorder.videoHeight = ip.videocaptureheight;
                 
                 //staert recording
-                ip.mediaRecorder.start(self.timeInterval);
+                ip.mediaRecorder.start(self.timeinterval);
                 ip.mediaRecorder.ondataavailable =  function(blob) {
                     ip.blobs.push(blob);
             		//log.debug('We got a blobby');
@@ -376,7 +378,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 this.disabled = true;
                 ip.mediaRecorder.stop();
                 //this throws an error, do we worry?
-                //self.mediaRecorder.stream.stop();
+               // ip.mediaRecorder.stream.stop();
                 
                  var preview = ip.controlbar.preview;
                 if(preview && preview.get(0)){
@@ -429,25 +431,36 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 this.disabled = true;
                 var preview = ip.controlbar.preview.get(0);
                 if(ip.blobs && ip.blobs.length > 0){
-                    log.debug(ip.blobs[0].type);
-                    if(ip.blobs[0].type=='audio/wav'){
-                        //mediastreamrecorder adds a header to each wav blob, 
-                        //we remove them and combine audodata and new header
-                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                    switch(ip.blobs[0].type){
+                        case 'audio/wav':
+                            //log.debug('concat wavs');
+                            //mediastreamrecorder adds a header to each wav blob, 
+                            //we remove them and combine audodata and new header
+                            utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                     var mediaurl = URL.createObjectURL(concatenatedBlob);
+                                     preview.src= mediaurl;
+                                     preview.controls =true;
+                                     preview.volume = ip.previewvolume;
+                                     preview.play();
+                            });
+                            break;
+                       case 'audio/ogg':
+                                 var concatenatedBlob = new Blob(ip.blobs,{'type': ip.blobs[0].type});
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
-                        });
-                    }else{
-                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                 break;
+                      case 'audio/webm':
+                      default:
+                         ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
-                        }); //end of concatenate blobs
+                            }); //end of concatenate blobs
                     }
                 }        
                 ip.controlbar.stopbutton.attr('disabled',false);
@@ -760,24 +773,36 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 				}
 				
                 if(ip.blobs && ip.blobs.length > 0){
-                    if(ip.blobs[0].type=='audio/wav'){
-                        //mediastreamrecorder adds a header to each wav blob, 
-                        //we remove them and combine audodata and new header
-                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                    switch(ip.blobs[0].type){
+                        case 'audio/wav':
+                            //log.debug('concat wavs');
+                            //mediastreamrecorder adds a header to each wav blob, 
+                            //we remove them and combine audodata and new header
+                            utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                     var mediaurl = URL.createObjectURL(concatenatedBlob);
+                                     preview.src= mediaurl;
+                                     preview.controls =true;
+                                     preview.volume = ip.previewvolume;
+                                     preview.play();
+                            });
+                            break;
+                       case 'audio/ogg':
+                                 var concatenatedBlob = new Blob(ip.blobs,{'type': ip.blobs[0].type});
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
-                        });
-                    }else{
-                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                 break;
+                      case 'audio/webm':
+                      default:
+                         ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
-                        }); //end of concatenate blobs
+                            }); //end of concatenate blobs
                     }
                 }       
                 
