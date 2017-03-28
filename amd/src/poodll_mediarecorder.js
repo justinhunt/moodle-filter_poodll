@@ -165,6 +165,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                // self.controlbar.preview.attr('src',URL.createObjectURL(stream));
                 ip.mediaRecorder.mimeType = ip.audiomimetype;
                 ip.mediaRecorder.audioChannels = 1;
+                //ip.mediaRecorder.recorderType = StereoAudioRecorder;
                 ip.mediaRecorder.start(ip.timeinterval);
                 log.debug(ip.timeinterval);
                 ip.mediaRecorder.ondataavailable =  function(blob) {
@@ -216,10 +217,10 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 ip.mediaRecorder.videoHeight = ip.videocaptureheight;
                 
                 //staert recording
-                ip.mediaRecorder.start(self.timeinterval);
+                ip.mediaRecorder.start(ip.timeinterval);
                 ip.mediaRecorder.ondataavailable =  function(blob) {
                     ip.blobs.push(blob);
-            		//log.debug('We got a blobby');
+            		log.debug('We got a blobby');
             		//log.debug(URL.createObjectURL(blob));
         		};
                 
@@ -431,6 +432,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 this.disabled = true;
                 var preview = ip.controlbar.preview.get(0);
                 if(ip.blobs && ip.blobs.length > 0){
+                    log.debug('playing type:' + ip.blobs[0].type);
                     switch(ip.blobs[0].type){
                         case 'audio/wav':
                             //log.debug('concat wavs');
@@ -444,24 +446,27 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                                      preview.play();
                             });
                             break;
+                       case 'video/webm':
                        case 'audio/ogg':
-                                 var concatenatedBlob = new Blob(ip.blobs,{'type': ip.blobs[0].type});
+                       case 'audio/webm':
+                       default:
+                                 var concatenatedBlob = utils.simpleConcatenateBlobs(ip.blobs,ip.blobs[0].type);
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
                                  break;
-                      case 'audio/webm':
-                      default:
-                         ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                      
+                      case 'olddefault':
+                         utils.concatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
                             }); //end of concatenate blobs
-                    }
+                    }//end of switch
                 }        
                 ip.controlbar.stopbutton.attr('disabled',false);
                 ip.controlbar.startbutton.attr('disabled',true);
@@ -481,21 +486,32 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 //pulled down at PHP time ..
                 //this is one of those cases where a simple thing is hard ...J 20160919
               if(ip.blobs && ip.blobs.length > 0){
-                   if(ip.blobs[0].type=='audio/wav'){
-                        //mediastreamrecorder adds a header to each wav blob, 
-                        //we remove them and combine audodata and new header
-                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
-                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
-                                ip.controlbar.startbutton.attr('disabled',true);
-                                ip.uploaded = true;
-                        });
-                   }else{
-                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
-                                ip.controlbar.startbutton.attr('disabled',true);
-                                ip.uploaded = true;
-                        }); //end of concatenate blobs
-                   }//end of if audio/wav
+                   switch(ip.blobs[0].type){
+                        case 'audio/wav':
+                            //mediastreamrecorder adds a header to each wav blob, 
+                            //we remove them and combine audodata and new header
+                            utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                    ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                    ip.controlbar.startbutton.attr('disabled',true);
+                                    ip.uploaded = true;
+                            });
+                            break;
+                        case 'audio/ogg':
+                        case 'audio/webm':
+                         case 'video/webm':
+                        default:
+                            var concatenatedBlob = utils.simpleConcatenateBlobs(ip.blobs, ip.blobs[0].type);
+                            ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                            ip.controlbar.startbutton.attr('disabled',true);
+                            ip.uploaded = true;
+                            break;
+                        case 'old default':
+                            utils.concatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                    ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                    ip.controlbar.startbutton.attr('disabled',true);
+                                    ip.uploaded = true;
+                            }); //end of concatenate blobs
+                   }//end of switch case
                 }else{
                     ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if self.blobs		
@@ -771,9 +787,10 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 					preview.currentTime=0;
 					 return;
 				}
-				
+	
                 if(ip.blobs && ip.blobs.length > 0){
-                    switch(ip.blobs[0].type){
+                     log.debug('playig type:' + ip.blobs[0].type);
+                     switch(ip.blobs[0].type){
                         case 'audio/wav':
                             //log.debug('concat wavs');
                             //mediastreamrecorder adds a header to each wav blob, 
@@ -786,24 +803,27 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                                      preview.play();
                             });
                             break;
+                       case 'video/webm':
                        case 'audio/ogg':
-                                 var concatenatedBlob = new Blob(ip.blobs,{'type': ip.blobs[0].type});
+                       case 'audio/webm':
+                       default:
+                                 var concatenatedBlob = utils.simpleConcatenateBlobs(ip.blobs,ip.blobs[0].type);
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
                                  break;
-                      case 'audio/webm':
-                      default:
-                         ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                      
+                      case 'olddefault':
+                         utils.concatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
                                  var mediaurl = URL.createObjectURL(concatenatedBlob);
                                  preview.src= mediaurl;
                                  preview.controls =true;
                                  preview.volume = ip.previewvolume;
                                  preview.play();
                             }); //end of concatenate blobs
-                    }
+                    }//end of switch
                 }       
                 
 				ip.controlbar.startbutton.show();
@@ -823,21 +843,32 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 //pulled down at PHP time ..
                 //this is one of those cases where a simple thing is hard ...J 20160919
               if(ip.blobs && ip.blobs.length > 0){
-                   if(ip.blobs[0].type=='audio/wav'){
-                        //mediastreamrecorder adds a header to each wav blob, 
-                        //we remove them and combine audodata and new header
-                        utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
-                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
-                                ip.controlbar.startbutton.attr('disabled',true);
-                                ip.uploaded = true;
-                        });
-                   }else{
-                        ConcatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                                ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
-                                ip.controlbar.startbutton.attr('disabled',true);
-                                ip.uploaded = true;
-                        }); //end of concatenate blobs
-                   }//end of if audio/wav
+                    switch(ip.blobs[0].type){
+                        case 'audio/wav':
+                            //mediastreamrecorder adds a header to each wav blob, 
+                            //we remove them and combine audodata and new header
+                            utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
+                                    ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                    ip.controlbar.startbutton.attr('disabled',true);
+                                    ip.uploaded = true;
+                            });
+                            break;
+                        case 'audio/ogg':
+                        case 'audio/webm':
+                         case 'video/webm':
+                        default:
+                            var concatenatedBlob = utils.simpleConcatenateBlobs(ip.blobs, ip.blobs[0].type);
+                            ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                            ip.controlbar.startbutton.attr('disabled',true);
+                            ip.uploaded = true;
+                            break;
+                        case 'old default':
+                            utils.concatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
+                                    ip.uploader.uploadBlob(concatenatedBlob,ip.blobs[0].type);
+                                    ip.controlbar.startbutton.attr('disabled',true);
+                                    ip.uploaded = true;
+                            }); //end of concatenate blobs
+                   }//end of switch case
                 }else{
                     ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if ip.blobs		
