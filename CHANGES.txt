@@ -1,5 +1,7 @@
 Change List
 =========
+Version 2016061601
+Fixed a bug that caused IOS 10 and greater to be reported as v1, and report error
 
 Version 2016061600
 Fixed a bug that caused HTML5 widgets to report a "not licensed" error
