@@ -232,6 +232,10 @@ class filtertools
 	}//end of function
 
 	public static function fetch_filter_properties($filterstring){
+        //lets do a general clean of all input here
+        //see: https://github.com/justinhunt/moodle-filter_generico/issues/7
+        $filterstring=clean_param($filterstring,PARAM_TEXT);
+
 		//this just removes the {POODLL: .. } 
 		$rawproperties = explode ("{POODLL:", $filterstring);
 		$rawproperties = $rawproperties[1];
