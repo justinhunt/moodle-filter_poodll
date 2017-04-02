@@ -4,6 +4,7 @@ Change List
 Version 3.0.34(Build 2017032602)
 -Beefed up protection against any XSS attempt via the Poodll filter string inputs
 https://github.com/justinhunt/moodle-filter_generico/issues/7
+-Added support for pulling Generico presets from theme directory
 
 Version 3.0.33(Build 2017032601)
 - reworked the html5 recording to be more reliable and better on firefox
