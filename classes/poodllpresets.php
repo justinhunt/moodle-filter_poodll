@@ -163,10 +163,10 @@ class poodllpresets extends \admin_setting {
                     if (!$fileinfo->isDot()) {
                         $preset = self::parse_preset_template($fileinfo);
                         //if this is a generico template we want to set show_atto to true
-                        if(!array_key_exists('showatto',$preset)){
-                            $preset['showatto']="1";
-                        }
                         if ($preset) {
+                            if(!array_key_exists('showatto',$preset)){
+                                $preset['showatto']="1";
+                            }
                             $ret[] = $preset;
                         }
                     }
