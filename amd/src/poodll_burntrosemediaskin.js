@@ -7,7 +7,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
     return {
     
-		instanceprops: [],
+		instanceprops: null,
         media: null,
 
         //for making multiple instances
@@ -15,11 +15,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return $.extend(true,{},this);
         },
 
-        init: function(element,config){
+        init: function(ip, media, controlbarid){
+            this.instanceprops=ip;
+            this.media=media;
         },
 		
-		fetch_instanceprops : function(controlbarid){
-			return this.instanceprops[controlbarid];
+		fetch_instanceprops : function(){
+			return this.instanceprops;
 		},
 
 
@@ -57,13 +59,15 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
         },
 
-        skin_onMediaSuccessVideo: function(){
+        skin_onMediaSuccessVideo: function(controlbarid){
+            var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.pausebutton.attr('disabled',false);
             ip.controlbar.savebutton.attr('disabled',false);
         },
 
-        skin_onMediaSuccessAudio: function(){
+        skin_onMediaSuccessAudio: function(controlbarid){
+            var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.preview.attr('src',null);
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.pausebutton.attr('disabled',false);
@@ -197,7 +201,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         }, //end of fetch_control_bar_video_burntrose
 
         register_controlbar_events_video: function(onMediaSuccess, mediaConstraints,controlbarid) {
-                this.register_controlbar_events_audio(onMediaSuccess, mediaConstraints,controlbarid);
+              return  this.register_controlbar_events_audio(onMediaSuccess, mediaConstraints,controlbarid);
         },
 
         register_controlbar_events_audio: function(onMediaSuccess, mediaConstraints,controlbarid){
@@ -211,7 +215,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //clear messages
                 $('#' + ip.config.widgetid  + '_messages').text('');
 
-                 media.do_start_audio(ip);
+                 media.do_start_audio(ip, mediaConstraints, onMediaSuccess);
 
 			     ip.controlbar.playermic.hide();
 				 ip.controlbar.recordmic.show();

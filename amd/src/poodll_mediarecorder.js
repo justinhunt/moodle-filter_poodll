@@ -26,8 +26,9 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         supports_current_browser: function(config) {
 			
 			if(config.mediatype!='audio' && config.mediatype!='video'){return false;}
-			 	 
-        	if(M.cfg.wwwroot.indexOf('https:')==0
+			var protocol_ok = M.cfg.wwwroot.indexOf('https:')==0 ||
+                M.cfg.wwwroot.indexOf('http://localhost')==0 ;
+        	if(protocol_ok
         	 	&& navigator && navigator.mediaDevices 
         	 	&& navigator.mediaDevices.getUserMedia){
         	 	    var ret = false;
@@ -55,28 +56,29 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 			var controlbarid = "filter_poodll_controlbar_" + config.widgetid;
 			this.init_instance_props(controlbarid);
 			var ip = this.fetch_instanceprops(controlbarid);
-            this.init_skin(controlbarid, ip.config.media_skin, ip);
-
 			ip.config = config;
 			ip.timeinterval = config.media_timeinterval;
 			ip.audiomimetype = config.media_audiomimetype;
 			ip.videorecordertype = config.media_videorecordertype;
-			ip.videocaptureheight = config.media_videocaptureheight; 
-			
-			//add callbacks for uploadsuccess and upload failure
+			ip.videocaptureheight = config.media_videocaptureheight;
+
+			//init our skin
+            var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
+
+            //add callbacks for uploadsuccess and upload failure
             ip.config.onuploadsuccess = this.on_upload_success;
             ip.config.onuploadfailure = this.on_upload_failure;
             
 			switch(config.mediatype){
                 case 'audio':
-                    var preview = this.fetch_audio_preview(config.media_skin);
+                    var preview = theskin.fetch_audio_preview(config.media_skin);
                     ip.controlbar = this.insert_fetch_control_bar_audio(element,controlbarid, preview);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
                     this.register_audio_events(controlbarid);
                     break;
                 case 'video':
-                    var preview = this.fetch_video_preview(config.media_skin);
+                    var preview = theskin.fetch_video_preview(config.media_skin);
                     ip.controlbar = this.insert_fetch_control_bar_video(element,controlbarid,preview);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
@@ -111,17 +113,18 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
         init_skin: function (controlbarid,skinname,instanceprops){
             switch (skinname) {
+                case 'burntrose':
+                    this.skins[controlbarid] = burntroseskin.clone();
+                    break;
                 case 'plain':
                 case 'standard':
+                default:
                     this.skins[controlbarid] = baseskin.clone();
                     break;
-                case 'burntrose':
-                    this.skin[controlbarid] = burntroseskin.clone();
-                    break;
+
             }
-            this.skins[controlbarid].init(instanceprops);
-
-
+            this.skins[controlbarid].init(instanceprops, this);
+            return this.skins[controlbarid];
         },
 		
         on_upload_success: function(widgetid){
@@ -149,11 +152,11 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
         },
 
-        do_start_audio: function(ip){
+        do_start_audio: function(ip,mediaConstraints, onMediaSuccess){
             ip.blobs=[];
-            self.captureUserMedia(mediaConstraints, onMediaSuccess, self.onMediaError);
+            this.captureUserMedia(mediaConstraints, onMediaSuccess, this.onMediaError);
         },
-        do_start_video: function(ip){
+        do_start_video: function(ip, onMediaSuccess){
 
         },
 
@@ -264,7 +267,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         	
 			var self = this;
 			var ip = this.fetch_instanceprops(controlbarid);
-			
+			var skin = this.skins[controlbarid];
+
             var mediaConstraints = {
                 audio: true
             };       
@@ -286,7 +290,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         			ip.blobs.push(blob);
         			};
 
-                skin.skin_OnMediaSuccessAudio(stream);
+                skin.skin_onMediaSuccessAudio(controlbarid);
             };
             
             skin.register_controlbar_events_audio(onMediaSuccess, mediaConstraints, controlbarid);
@@ -335,7 +339,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             		//log.debug(URL.createObjectURL(blob));
         		};
 
-                skin.skin_onMediaSuccessVideo(stream);
+                skin.skin_onMediaSuccessVideo(controlbarid);
             };
             
              skin.register_controlbar_events(onMediaSuccess, mediaConstraints,controlbarid);
@@ -351,14 +355,14 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
          insert_fetch_control_bar_audio: function(element, controlbarid, preview){
         	var ip = this.fetch_instanceprops(controlbarid);
         	var skin= this.fetch_skin(controlbarid);
-        	var controlbar = skin.insert_fetch_control_bar_audio;
+        	var controlbar = skin.insert_fetch_control_bar_audio(element, controlbarid, preview);
          	return controlbar;
         },
         
         insert_fetch_control_bar_video: function(element,controlbarid,preview){
         	var ip = this.fetch_instanceprops(controlbarid);
             var skin= this.fetch_skin(controlbarid);
-            var controlbar = skin.insert_fetch_control_bar_video;
+            var controlbar = skin.insert_fetch_control_bar_video(element, controlbarid, preview);
         	return controlbar;
         }
     };//end of returned object

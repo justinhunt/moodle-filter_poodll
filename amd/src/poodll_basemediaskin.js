@@ -15,13 +15,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return $.extend(true,{},this);
         },
 
-        init: function(ip){
-                this.instanceprops=ip;
+        init: function(ip, media){
+            this.instanceprops=ip;
+            this.media=media;
         },
 
 
-        fetch_instanceprops : function(controlbarid){
-			return this.ip;
+        fetch_instanceprops : function(){
+			return this.instanceprops;
 		},
 
 
@@ -57,13 +58,15 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
         },
 
-        skin_onMediaSuccessVideo: function(){
+        skin_onMediaSuccessVideo: function(controlbarid){
+            var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.pausebutton.attr('disabled',false);
             ip.controlbar.savebutton.attr('disabled',false);
         },
 
-        skin_onMediaSuccessAudio: function(){
+        skin_onMediaSuccessAudio: function(controlbarid){
+            var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.preview.attr('src',null);
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.pausebutton.attr('disabled',false);
@@ -111,7 +114,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
         //insert the control bar and return it to be reused
         insert_fetch_control_bar_video: function(element,controlbarid, preview) {
-                this.insert_fetch_control_bar_audio(element,controlbarid,preview);
+              return this.insert_fetch_control_bar_audio(element,controlbarid,preview);
         },
         //insert the control bar and return it to be reused
         insert_fetch_control_bar_audio: function(element,controlbarid, preview){
@@ -151,13 +154,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 			var ip = this.fetch_instanceprops(controlbarid);
 
             ip.controlbar.startbutton.click(function() {
-                media.do_play_audio(ip);
+                media.do_start_audio(ip, mediaConstraints, onMediaSuccess);
 
                 //clear messages
             	$('#' + ip.config.widgetid  + '_messages').text('');
                 this.disabled = true;
                 ip.controlbar.playbutton.attr('disabled',true);
                 ip.controlbar.resumebutton.hide();
+                ip.controlbar.stopbutton.attr('disabled',false);
                 ip.controlbar.pausebutton.show();
                 ip.controlbar.pausebutton.attr('disabled',false);
                 self.set_visual_mode('recordmode',controlbarid);

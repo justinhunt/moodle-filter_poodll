@@ -121,7 +121,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
                     // BYTES_PER_ELEMENT == 2 for Uint16Array
                     var reusableByteLength = buffer.byteLength;
                     if (reusableByteLength % 2 != 0) {
-                        buffer = buffer.slice(0, reusableByteLength - 1)
+                        buffer = buffer.slice(0, reusableByteLength - 1);
                     }
                     tmp.set(new Uint16Array(buffer), lastOffset);
                     lastOffset += reusableByteLength;
@@ -156,5 +156,5 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
             return data.getUTCHours() + " hours, " + data.getUTCMinutes() + " minutes and " + data.getUTCSeconds() + " second(s)";
         }
         
-    }//end of return object
+    };//end of return object
 });
