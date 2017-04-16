@@ -1493,6 +1493,8 @@ class poodlltools
 
 	 	// set up task and add custom data
 	   $s3_task = new \filter_poodll\task\adhoc_s3_move();
+	   $s3_task->set_component('filter_poodll');
+
 	   $savedatetime = new \DateTime();
 	   $isodate=$savedatetime->format('Y-m-d H:i');
 	   $qdata = array(
@@ -1515,6 +1517,8 @@ class poodlltools
     public static function register_s3_transcode_task($mediatype,$s3filename){
 	 	// set up task and add custom data
 	   $s3_task = new \filter_poodll\task\adhoc_s3_transcode();
+	   $s3_task->set_component('filter_poodll');
+
 	   $savedatetime = new \DateTime();
            $isodate=$savedatetime->format('Y-m-d H:i');
 	   $qdata = array(
@@ -1587,6 +1591,8 @@ class poodlltools
 	public static function register_ffmpeg_task($filerecord,$originalfilename, $convfilenamebase,$convext){
 		 // set up task and add custom data
 	   $conv_task = new \filter_poodll\task\adhoc_convert_media();
+	   $conv_task->set_component('filter_poodll');
+
 	   $qdata = array(
 		   'filerecord' => $filerecord,
 		   'filename' => $filerecord->filename,

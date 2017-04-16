@@ -52,7 +52,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
-        embed: function(element, config) { 
+        embed: function(element, config) {
+            var that = this;
 			var controlbarid = "filter_poodll_controlbar_" + config.widgetid;
 			this.init_instance_props(controlbarid);
 			var ip = this.fetch_instanceprops(controlbarid);
@@ -66,8 +67,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
 
             //add callbacks for uploadsuccess and upload failure
-            ip.config.onuploadsuccess = this.on_upload_success;
-            ip.config.onuploadfailure = this.on_upload_failure;
+            ip.config.onuploadsuccess = function(widgetid){that.on_upload_success(widgetid,theskin)};
+            ip.config.onuploadfailure = function(widgetid){that.on_upload_failure(widgetid,theskin)};
             
 			switch(config.mediatype){
                 case 'audio':
@@ -127,20 +128,16 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             return this.skins[controlbarid];
         },
 		
-        on_upload_success: function(widgetid){
+        on_upload_success: function(widgetid,theskin){
         	 log.debug('from poodllmediarecorder: uploadsuccess');		
         	 var controlbarid = 'filter_poodll_controlbar_' + widgetid;
-			 /*
-        	 $('#' + controlbarid + ' > .poodll_save-recording').hide();
-            // $('#' + controlbarid  + '_messages').hide();
-             $('#' + controlbarid + ' > .poodll_savedsuccessfully').show();
-             */
-             this.skins[controlbarid].on_upload_success(controlbarid);
+             theskin.on_upload_success(controlbarid);
         },
         
-        on_upload_failure: function(controlbarid){
+        on_upload_failure: function(widgetid,theskin){
         	log.debug('from poodllmediarecorder: uploadfailure');
-            this.skins[controlbarid].on_upload_failure(controlbarid);
+            var controlbarid = 'filter_poodll_controlbar_' + widgetid;
+            theskin.on_upload_failure(controlbarid);
         },		
 		
 

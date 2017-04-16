@@ -8,16 +8,16 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
     return {
     
 		instanceprops: null,
-        media: null,
+        pmr: null,
 
         //for making multiple instances
         clone: function(){
             return $.extend(true,{},this);
         },
 
-        init: function(ip, media){
+        init: function(ip, pmr){
             this.instanceprops=ip;
-            this.media=media;
+            this.pmr=pmr;
         },
 
 
@@ -52,10 +52,6 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         
         onMediaError: function(e) {
                 console.error('media error', e);
-        },
-        
-        captureUserMedia: function(mediaConstraints, successCallback, errorCallback) {
-                navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
         },
 
         skin_onMediaSuccessVideo: function(controlbarid){
@@ -150,11 +146,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
         register_controlbar_events_audio: function(onMediaSuccess, mediaConstraints, controlbarid){
             var self = this;
-            var media=this.media;
+            var pmr=this.pmr;
 			var ip = this.fetch_instanceprops(controlbarid);
 
             ip.controlbar.startbutton.click(function() {
-                media.do_start_audio(ip, mediaConstraints, onMediaSuccess);
+                pmr.do_start_audio(ip, mediaConstraints, onMediaSuccess);
 
                 //clear messages
             	$('#' + ip.config.widgetid  + '_messages').text('');
@@ -174,7 +170,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             
             ip.controlbar.stopbutton.click(function() {
 
-                media.do_stop_audio(ip);
+                pmr.do_stop_audio(ip);
 
                 this.disabled = true;
                  var preview = ip.controlbar.preview;
@@ -201,7 +197,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 this.disabled = true;
                 $(this).hide();
                 ip.controlbar.resumebutton.show();
-                media.do_pause_audio(ip);
+                pmr.do_pause_audio(ip);
                 ip.controlbar.resumebutton.attr('disabled',false) ;
                 self.set_visual_mode('pausedmode',controlbarid);
                 
@@ -226,7 +222,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             ip.controlbar.playbutton.click(function() {
                 this.disabled = true;
                 var preview = ip.controlbar.preview.get(0);
-                media.do_play_audio(ip,preview);
+                pmr.do_play_audio(ip,preview);
 
                 ip.controlbar.stopbutton.attr('disabled',false);
                 ip.controlbar.startbutton.attr('disabled',true);
@@ -235,7 +231,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
            ip.controlbar.savebutton.click(function() {
                this.disabled = true;
               if(ip.blobs && ip.blobs.length > 0){
-                  media.do_save_audio(ip);
+                  pmr.do_save_audio(ip);
                   ip.uploaded = true;
                   ip.controlbar.startbutton.attr('disabled',true);
                 }else{

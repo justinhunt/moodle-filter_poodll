@@ -48,7 +48,8 @@ class debug_log extends  \core\event\base  {
      */
     public static function create_from_data($debugobject) {
         //store debug object
-        $data = array('other'=>$debugobject);
+        $json_debugobject = json_encode($debugobject);
+        $data = array('other'=>$json_debugobject);
         //set context if we have one
         if($debugobject->contextid !==false){
             $context = \context::instance_by_id($debugobject->contextid);

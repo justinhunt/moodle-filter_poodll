@@ -39,15 +39,15 @@ if (!isloggedin()) {
 
 $filename = required_param('filename', PARAM_TEXT);
 
-$dbresult = $DB->get_records('task_adhoc',array('component'=>'filter_poodll','classname'=>'\filter_poodll\task\adhoc_s3_move'));
+$dbresults = $DB->get_records('task_adhoc',array('component'=>'filter_poodll','classname'=>'\filter_poodll\task\adhoc_s3_move'));
 if($dbresults){}
     foreach($dbresults as $rec){
      $cd = $rec->customdata;
      $cd_object=json_decode($cd);
      if($cd_object && $cd_object->filename){
          if($cd_object->filename == $filename){
-             $result->code = 'have_s3_task';
-             $result->message = get_string('have_s3_task', 'filter_poodll');
+             $result->code = 'stillwaiting';
+             $result->message = get_string('have_s3_task', 'filter_poodll', $filename);
              echo json_encode($result);
              die();
          }
@@ -57,56 +57,17 @@ if($dbresults){}
 //lets see if we have a recent event
 $have_recent_event=false;
 if($have_recent_event){
-    $result->code = 'have_recent_event';
-    $result->message = get_string('have_recent_event', 'filter_poodll');
+    $result->code = 'mediaready';
+    $result->message = get_string('have_recent_event', 'filter_poodll', $filename);
     echo json_encode($result);
     die();
 }
 
 //if we got here we have nothing
-$result->code = 'no_event_or_task';
-$result->message = get_string('no_event_or_task', 'filter_poodll');
+$result->code = 'notask';
+$result->message = get_string('no_event_or_task', 'filter_poodll', $filename);
 echo json_encode($result);
 die();
-
-
-$cm = get_coursemodule_from_id('moodlecst', $id, 0, false, MUST_EXIST);
-$course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
-$moodlecst = $DB->get_record('moodlecst', array('id' => $cm->instance), '*', MUST_EXIST);
-
-header("Access-Control-Allow-Origin: *");
-
-//can't require login for this page. nodejs app and moodle cant share cookies . hmmmmmmmmm
-//require_sesskey();
-//require_login($course, false, $cm);
-
-
-$modulecontext = context_module::instance($cm->id);
-$PAGE->set_context($modulecontext);
-
-$jsonrenderer = $PAGE->get_renderer('mod_moodlecst','json');
-header("Access-Control-Allow-Origin: *");
-
-switch($type){
-    case 'ucatnext':
-        $responsedata = json_decode($responsedata);
-        $questiondata = json_decode($questiondata);
-        $next= \mod_moodlecst\ucat::fetch_next($moodlecst, $responsedata,$questiondata,$currenttaskid);
-        echo $jsonrenderer->render_next_json($next);
-        break;
-	case 'testproperties':
-		echo $jsonrenderer->render_testproperties_json($moodlecst);
-		break;
-	case 'mydetails':
-	case 'partnerdetails':
-	default:
-		$user = $DB->get_record('user',array('id'=>$userid));
-		if($user){			
-			echo $jsonrenderer->render_userdetails_json($type,$PAGE, $user);
-		}else{
-			echo $jsonrenderer->render_userdetails_json($type,$PAGE, false);
-		}
-}
 
 
 
