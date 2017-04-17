@@ -1,6 +1,11 @@
 Change List
 =========
 
+Version 3.0.35(Build 2017041700)
+-fixed up skinning in prep for really improving recorders
+-added support for refeshing players in realtime when conversion process completes
+-some minor bug fixes for logging
+
 Version 3.0.34(Build 2017032602)
 -Beefed up protection against any XSS attempt via the Poodll filter string inputs
 https://github.com/justinhunt/moodle-filter_generico/issues/7
