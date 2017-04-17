@@ -228,6 +228,9 @@ class filtertools
 			$proparray['AUTOPOSTERURLPNG'] = $autoposterurlpng;
 			$proparray['TITLE'] = $title;
 			$proparray['FILEEXT'] = $ext;
+			//hardcoding for now, later we will do something better
+            $proparray['AUDIOPLACEHOLDERDURATION'] = 6.138;
+            $proparray['VIDEOPLACEHOLDERDURATION'] = 10.28644;
 			return $proparray;
 	}//end of function
 

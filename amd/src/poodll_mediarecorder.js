@@ -299,6 +299,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 		
 			var self = this;
 			var ip = this.fetch_instanceprops(controlbarid);
+            var skin = this.skins[controlbarid];
         	
             var mediaConstraints = {
                 audio: !IsOpera && !IsEdge,
@@ -339,7 +340,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 skin.skin_onMediaSuccessVideo(controlbarid);
             };
             
-             skin.register_controlbar_events(onMediaSuccess, mediaConstraints,controlbarid);
+             skin.register_controlbar_events_video(onMediaSuccess, mediaConstraints,controlbarid);
         },//end of register video events
 	   
 	   update_status: function(controlbarid){
