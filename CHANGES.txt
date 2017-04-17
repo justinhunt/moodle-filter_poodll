@@ -1,5 +1,7 @@
 Change List
 =========
+Version 3.0.35(Build 2017041700)
+-fixed an issue where Chrome failed to get webcam because js stack maxed on getUserMedia call
 
 Version 3.0.35(Build 2017041700)
 -fixed up skinning in prep for really improving recorders
