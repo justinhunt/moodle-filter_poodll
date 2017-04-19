@@ -1,8 +1,8 @@
 /* jshint ignore:start */
 define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStreamRecorder',
-        'filter_poodll/gumadapter', 'filter_poodll/uploader','filter_poodll/timer',
+        'filter_poodll/adapter', 'filter_poodll/uploader','filter_poodll/timer',
         'filter_poodll/poodll_basemediaskin',
-        'filter_poodll/poodll_burntrosemediaskin'], function($, log, utils, msr, gum, uploader,timer,baseskin,burntroseskin) {
+        'filter_poodll/poodll_burntrosemediaskin'], function($, log, utils, msr, adapter, uploader,timer,baseskin,burntroseskin) {
 
     "use strict"; // jshint ;_;
 

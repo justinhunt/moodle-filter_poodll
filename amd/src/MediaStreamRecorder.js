@@ -623,13 +623,13 @@ function invokeSaveAsDialog(file, fileName) {
     if (!file) {
         throw 'Blob object is required.';
     }
-
+/*
     if (!file.type) {
         try {
             file.type = 'video/webm';
         } catch (e) {}
     }
-
+*/
     var fileExtension = (file.type || 'video/webm').split('/')[1];
 
     if (fileName && fileName.indexOf('.') !== -1) {
