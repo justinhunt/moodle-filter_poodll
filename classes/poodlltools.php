@@ -549,8 +549,9 @@ class poodlltools
 		switch($flashcardstype){
 	
 			case 'owl':
-				return self::fetch_flashcards_owl($cardset,$cardsetname, $cardwidth, $cardheight);
-				break;
+                //removed OWL flashcards. They were not being used and AMD was ugly
+				//return self::fetch_flashcards_owl($cardset,$cardsetname, $cardwidth, $cardheight);
+				//break;
 			case 'poodll':
 			default:
 			return self::fetch_flashcards_poodll($runtime, $cardset, $cardsetname, $frontcolor, $backcolor, $cardwidth, $cardheight, $randomize, $width, $height);
@@ -560,17 +561,14 @@ class poodlltools
 
 	}
 
+	/*
+	 * To be removed. No longer called as of 2017 04 18
+	 */
 	public static function fetch_flashcards_owl($cardset, $cardsetname, $cardwidth, $cardheight)
 	{
 		global $CFG, $COURSE, $PAGE;
 
 
-		//JS
-		//$PAGE->requires->js(new \moodle_url($CFG->wwwroot . '/filter/poodll/reveal.js/lib/js/head.min.js'));
-
-		//TO DO
-		// read AMD loader for reveal and rewrite for carousel
-		// add
 
 		//for AMD
 		$proparray = array();
