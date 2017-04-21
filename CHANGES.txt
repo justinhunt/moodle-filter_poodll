@@ -1,5 +1,11 @@
 Change List
 =========
+
+Version 3.0.38(Build 2017041703)
+-further attempted fix for recursive getUserMedia call problemo
+-refactor of player skin code
+-removal of Own carousel
+
 Version 3.0.37(Build 2017041702)
 -attempted fix for recursive getUserMedia call problemo
 

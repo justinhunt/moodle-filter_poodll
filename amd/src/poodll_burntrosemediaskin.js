@@ -25,14 +25,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 		},
 
 
-        on_upload_success: function(widgetid){
+        onUploadSuccess: function(widgetid){
         	 log.debug('from poodllmediarecorder: uploadsuccess');		
         	 var controlbarid = 'filter_poodll_controlbar_' + widgetid;
 			 $('#' + controlbarid + ' > .poodll_save-recording').hide();
              $('#' + controlbarid + ' > .poodll_savedsuccessfully').show();
         },
         
-        on_upload_failure: function(controlbarid){
+        onUploadFailure: function(controlbarid){
         	log.debug('from poodllmediarecorder: uploadfailure');
         },		
 		
@@ -41,11 +41,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return status;
         },
         
-		fetch_audio_preview: function(skin){
+		fetch_preview_audio: function(skin){
 			var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
             return preview;
         },
-        fetch_video_preview: function(skin){
+        fetch_preview_video: function(skin){
             var preview ='<video class="poodll_preview_' + skin + '" width="320" height="240"></video>';
             return preview;
         },
@@ -54,14 +54,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 console.error('media error', e);
         },
 
-        skin_onMediaSuccessVideo: function(controlbarid){
+        onMediaSuccess_video: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.pausebutton.attr('disabled',false);
             ip.controlbar.savebutton.attr('disabled',false);
         },
 
-        skin_onMediaSuccessAudio: function(controlbarid){
+        onMediaSuccess_audio: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.preview.attr('src',null);
             ip.controlbar.stopbutton.attr('disabled',false);
@@ -111,7 +111,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 		
         
         //insert the control bar and return it to be reused
-        insert_fetch_control_bar_audio: function(element,controlbarid, preview){
+        insert_controlbar_audio: function(element,controlbarid, preview){
             	var controls ='<div class="poodll_mediarecorderbox" id="' + controlbarid + '">' ;
             	var status = this.fetch_status_bar('burntrose');
                 controls += status,
@@ -151,7 +151,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         }, //end of fetch_control_bar_burntrose,
         
         //insert the control bar and return it to be reused
-        insert_fetch_control_bar_video: function(element,controlbarid, preview){
+        insert_controlbar_video: function(element,controlbarid, preview){
             	var controls ='<div class="poodll_mediavideobox" id="' + controlbarid + '">' ;
 			var status = this.fetch_status_bar('burntrose');
             controls += status,

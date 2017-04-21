@@ -26,13 +26,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 		},
 
 
-        on_upload_success: function(controlbarid){
+        onUploadSuccess: function(controlbarid){
 			 $('#' + controlbarid + ' > .poodll_save-recording').hide();
             // $('#' + controlbarid  + '_messages').hide();
              $('#' + controlbarid + ' > .poodll_savedsuccessfully').show();
         },
         
-        on_upload_failure: function(controlbarid){
+        onUploadFailure: function(controlbarid){
         	return;
         },		
 		
@@ -41,11 +41,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return status;
         },
         
-		fetch_audio_preview: function(skin){
+		fetch_preview_audio: function(skin){
 			var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
             return preview;
         },
-        fetch_video_preview: function(skin){
+        fetch_preview_video: function(skin){
             var preview ='<video class="poodll_preview_' + skin + '" width="320" height="240"></video>';
             return preview;
         },
@@ -54,14 +54,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 console.error('media error', e);
         },
 
-        skin_onMediaSuccessVideo: function(controlbarid){
+        onMediaSuccess_video: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.pausebutton.attr('disabled',false);
             ip.controlbar.savebutton.attr('disabled',false);
         },
 
-        skin_onMediaSuccessAudio: function(controlbarid){
+        onMediaSuccess_audio: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.preview.attr('src',null);
             ip.controlbar.stopbutton.attr('disabled',false);
@@ -109,11 +109,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 	   },
 
         //insert the control bar and return it to be reused
-        insert_fetch_control_bar_video: function(element,controlbarid, preview) {
-              return this.insert_fetch_control_bar_audio(element,controlbarid,preview);
+        insert_controlbar_video: function(element, controlbarid, preview) {
+              return this.insert_controlbar_audio(element,controlbarid,preview);
         },
         //insert the control bar and return it to be reused
-        insert_fetch_control_bar_audio: function(element,controlbarid, preview){
+        insert_controlbar_audio: function(element,controlbarid, preview){
             	var controls ='<div class="poodll_mediarecorderbox_standard" id="' + controlbarid + '">' ;
             	var status = this.fetch_status_bar('standard');
                 controls += status,

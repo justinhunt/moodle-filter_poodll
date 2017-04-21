@@ -67,23 +67,23 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
 
             //add callbacks for uploadsuccess and upload failure
-            ip.config.onuploadsuccess = function(widgetid){that.on_upload_success(widgetid,theskin)};
-            ip.config.onuploadfailure = function(widgetid){that.on_upload_failure(widgetid,theskin)};
+            ip.config.onuploadsuccess = function(widgetid){that.onUploadSuccess(widgetid,theskin)};
+            ip.config.onuploadfailure = function(widgetid){that.onUploadFailure(widgetid,theskin)};
             
 			switch(config.mediatype){
                 case 'audio':
-                    var preview = theskin.fetch_audio_preview(config.media_skin);
-                    ip.controlbar = this.insert_fetch_control_bar_audio(element,controlbarid, preview);
+                    var preview = theskin.fetch_preview_audio(config.media_skin);
+                    ip.controlbar = this.fetch_controlbar_audio(element,controlbarid, preview);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
-                    this.register_audio_events(controlbarid);
+                    this.register_events_audio(controlbarid);
                     break;
                 case 'video':
-                    var preview = theskin.fetch_video_preview(config.media_skin);
-                    ip.controlbar = this.insert_fetch_control_bar_video(element,controlbarid,preview);
+                    var preview = theskin.fetch_preview_video(config.media_skin);
+                    ip.controlbar = this.fetch_controlbar_video(element,controlbarid,preview);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
-                    this.register_video_events(controlbarid);
+                    this.register_events_video(controlbarid);
                     break;
                    
             }
@@ -128,16 +128,16 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             return this.skins[controlbarid];
         },
 		
-        on_upload_success: function(widgetid,theskin){
+        onUploadSuccess: function(widgetid,theskin){
         	 log.debug('from poodllmediarecorder: uploadsuccess');		
         	 var controlbarid = 'filter_poodll_controlbar_' + widgetid;
-             theskin.on_upload_success(controlbarid);
+             theskin.onUploadSuccess(controlbarid);
         },
         
-        on_upload_failure: function(widgetid,theskin){
+        onUploadFailure: function(widgetid,theskin){
         	log.debug('from poodllmediarecorder: uploadfailure');
             var controlbarid = 'filter_poodll_controlbar_' + widgetid;
-            theskin.on_upload_failure(controlbarid);
+            theskin.onUploadFailure(controlbarid);
         },		
 		
 
@@ -260,7 +260,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
 
         
-        register_audio_events: function(controlbarid){
+        register_events_audio: function(controlbarid){
         	
 			var self = this;
 			var ip = this.fetch_instanceprops(controlbarid);
@@ -287,7 +287,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         			ip.blobs.push(blob);
         			};
 
-                skin.skin_onMediaSuccessAudio(controlbarid);
+                skin.onMediaSuccess_audio(controlbarid);
             };
             
             skin.register_controlbar_events_audio(onMediaSuccess, mediaConstraints, controlbarid);
@@ -295,21 +295,21 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         },//end of register audio events
         
         
-        register_video_events: function(controlbarid){
+        register_events_video: function(controlbarid){
 		
 			var self = this;
 			var ip = this.fetch_instanceprops(controlbarid);
             var skin = this.skins[controlbarid];
         	
             var mediaConstraints = {
-                audio: !IsOpera && !IsEdge,
+                audio: !msr.IsOpera() && !msr.IsEdge(),
                 video: true
             };
 
             var onMediaSuccess =function(stream) {
 
                 //create recorder
-                ip.mediaRecorder= new MediaStreamRecorder(stream);
+                ip.mediaRecorder=  msr.fetch_mediaRecorder(stream);
                 //create preview
                // self.controlbar.preview.attr('src',stream.url);
                 ip.controlbar.preview.attr('src',window.URL.createObjectURL(stream));
@@ -337,7 +337,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             		//log.debug(URL.createObjectURL(blob));
         		};
 
-                skin.skin_onMediaSuccessVideo(controlbarid);
+                skin.onMediaSuccess_video(controlbarid);
             };
             
              skin.register_controlbar_events_video(onMediaSuccess, mediaConstraints,controlbarid);
@@ -350,17 +350,17 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
 
         
-         insert_fetch_control_bar_audio: function(element, controlbarid, preview){
+        fetch_controlbar_audio: function(element, controlbarid, preview){
         	var ip = this.fetch_instanceprops(controlbarid);
         	var skin= this.fetch_skin(controlbarid);
-        	var controlbar = skin.insert_fetch_control_bar_audio(element, controlbarid, preview);
+        	var controlbar = skin.insert_controlbar_audio(element, controlbarid, preview);
          	return controlbar;
         },
         
-        insert_fetch_control_bar_video: function(element,controlbarid,preview){
+        fetch_controlbar_video: function(element,controlbarid,preview){
         	var ip = this.fetch_instanceprops(controlbarid);
             var skin= this.fetch_skin(controlbarid);
-            var controlbar = skin.insert_fetch_control_bar_video(element, controlbarid, preview);
+            var controlbar = skin.insert_controlbar_video(element, controlbarid, preview);
         	return controlbar;
         }
     };//end of returned object
