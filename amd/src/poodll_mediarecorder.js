@@ -302,14 +302,14 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             var skin = this.skins[controlbarid];
         	
             var mediaConstraints = {
-                audio: !msr.IsOpera() && !msr.IsEdge(),
+                audio: !IsOpera && !IsEdge,
                 video: true
             };
 
             var onMediaSuccess =function(stream) {
 
                 //create recorder
-                ip.mediaRecorder=  msr.fetch_mediaRecorder(stream);
+                ip.mediaRecorder=  new MediaStreamRecorder(stream);
                 //create preview
                // self.controlbar.preview.attr('src',stream.url);
                 ip.controlbar.preview.attr('src',window.URL.createObjectURL(stream));
