@@ -275,7 +275,7 @@ function MultiStreamRecorder(arrayOfMediaStreams) {
 
     function getVideo(stream) {
         var video = document.createElement('video');
-        video.src = URL.createObjectURL(stream);
+        video.srcObject=stream;
         video.play();
         return video;
     }
@@ -1739,7 +1739,7 @@ function WhammyRecorderHelper(mediaStream, root) {
             video = this.video.cloneNode();
         } else {
             video = document.createElement('video');
-            video.src = URL.createObjectURL(mediaStream);
+            video.srcObject=mediaStream;
 
             video.width = this.video.width;
             video.height = this.video.height;
@@ -2122,7 +2122,7 @@ function GifRecorder(mediaStream) {
     var video = document.createElement('video');
     video.muted = true;
     video.autoplay = true;
-    video.src = URL.createObjectURL(mediaStream);
+    video.srcObject = mediaStream;
     video.play();
 
     var lastAnimationFrame = null;

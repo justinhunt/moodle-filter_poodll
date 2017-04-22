@@ -62,7 +62,8 @@ class adhoc_registered extends  \core\event\base  {
         );
         /** @var extension_granted $event */
         $event = self::create($data);
-        $event->add_record_snapshot('files', $filerecord);
+       //the data is file record is not sufficient for files ... for now we just comment this
+        // $event->add_record_snapshot('files', $filerecord);
 
         return $event;
     }

@@ -312,7 +312,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 ip.mediaRecorder=  new MediaStreamRecorder(stream);
                 //create preview
                // self.controlbar.preview.attr('src',stream.url);
-                ip.controlbar.preview.attr('src',window.URL.createObjectURL(stream));
+                ip.controlbar.preview[0].srcObject=stream;
                 ip.controlbar.preview.attr('controls',false);
                 ip.controlbar.preview.get(0).volume=0;
                 ip.controlbar.preview.get(0).play();

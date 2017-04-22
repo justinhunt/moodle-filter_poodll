@@ -71,8 +71,22 @@ class debug_log extends  \core\event\base  {
      *
      * @return string
      */
-    public function get_description() {
-        return "Debug message: " .  $this->data['other']->message ;
+    public function get_description()
+    {
+       if (array_key_exists('other', $this->data)) {
+           $other = $this->data['other'];
+           if (gettype($other)!='object') {
+               $other = json_decode($this->data['other']);
+           }
+
+           if(gettype($other)=='object'){
+               return "(Debug) source:" . $other->source . ' message:' . $other->message;
+           }else{
+               return "Debug message: " . $other;
+
+           }
+
+       }
     }
 
     /**
