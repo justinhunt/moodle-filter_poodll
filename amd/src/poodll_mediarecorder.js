@@ -309,13 +309,19 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             var onMediaSuccess =function(stream) {
 
                 //create recorder
-                ip.mediaRecorder=  new MediaStreamRecorder(stream);
+                ip.mediaRecorder = new MediaStreamRecorder(stream);
                 //create preview
-               // self.controlbar.preview.attr('src',stream.url);
-                ip.controlbar.preview[0].srcObject=stream;
-                ip.controlbar.preview.attr('controls',false);
-                ip.controlbar.preview.get(0).volume=0;
-                ip.controlbar.preview.get(0).play();
+                // self.controlbar.preview.attr('src',stream.url);
+               // debugger;
+
+                var preview = ip.controlbar.preview[0];
+                preview.srcObject = stream;
+                //preview.src=window.URL.createObjectURL(stream);
+                preview.controls=false;
+                preview.volume = 0;
+                preview.play();
+
+
               
                 //set recorder type
                 if (ip.videorecordertype === 'mediarec') {
