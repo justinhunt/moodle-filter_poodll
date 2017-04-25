@@ -264,6 +264,6 @@ $string['debug_enable'] = 'Enable Debugging';
 $string['debug_enable_details'] = 'If enabled, information about recordings will be stored in the Moodle logs. These are intended to assist in troubleshooting and support from the Poodll helpdesk. Turn off when not needed or you will have useless junk in your Moodle log.';
 
 //ajax media query responses
-$string['have_s3_task'] = 'Found a waiting move task for: {$a}';
+$string['have_task'] = 'Found a waiting move/convert task for: {$a}';
 $string['have_recent_event'] = 'Found a recently fired move-completed event for: {$a}';
 $string['no_event_or_task'] = 'Found neither a waiting move task, nor move-completed event for: {$a}';
