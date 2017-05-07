@@ -181,7 +181,7 @@ class taskrunner
             raise_memory_limit(MEMORY_EXTRA);
 
             // Emulate normal session - we use admin accoutn by default
-            cron_setup_user();
+           // cron_setup_user();
 
             // Start output log
             $timenow  = time();
