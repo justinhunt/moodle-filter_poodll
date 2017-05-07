@@ -57,6 +57,7 @@ public static function fetch_general_items(){
 		}
 		$items[] = new \admin_setting_configtextarea('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'), $regkey_desc, '');
         $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get_string('usecloudrecording', 'filter_poodll'), get_string('usecloudrecording_desc', 'filter_poodll'), 1);
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudnotifications', get_string('usecloudnotifications', 'filter_poodll'), get_string('usecloudnotifications_desc', 'filter_poodll'), 1);
 	
 	//removed aws 3.x version from distributable because it was too large and not required
 	//if its needed added aws sdk for php in a folder called aws-v3 in /filter/poodll/3rdparty

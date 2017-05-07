@@ -267,3 +267,8 @@ $string['debug_enable_details'] = 'If enabled, information about recordings will
 $string['have_task'] = 'Found a waiting move/convert task for: {$a}';
 $string['have_recent_event'] = 'Found a recently fired move-completed event for: {$a}';
 $string['no_event_or_task'] = 'Found neither a waiting move task, nor move-completed event for: {$a}';
+
+//cloud notifications
+$string['usecloudnotifications'] = 'Cloud notifications';
+$string['usecloudnotifications_desc'] = 'PoodLL cloud notifications. This enables instant notification that cloud transcoding is complete.';
+

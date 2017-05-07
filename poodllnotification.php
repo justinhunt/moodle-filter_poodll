@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,18 +16,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * PoodLL filter
+ * Poodll Notification
  *
  * @package    filter
  * @subpackage poodll
- * @copyright  2015 Justin Hunt poodllsupport@gmail.com
+ * @copyright  2017 onwards Justin Hunt  https://poodll.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2017050701;
-$plugin->requires  = 2016052300;//moodle 3.1.0
-$plugin->component = 'filter_poodll'; 
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.40(Build 2017050101)';
+if (defined('STDIN')) {
+    fwrite(STDERR, "ERROR: This script doesn't support CLI, please use /filter/poodll/cli/poodllcron.php instead\n");
+    exit(1);
+}
+
+
+require('../../config.php');
+$filename=required_param('filename',PARAM_TEXT);
+
+// extra safety
+\core\session\manager::write_close();
+
+
+// send mime type and encoding
+@header('Content-Type: text/plain; charset=utf-8');
+
+// we do not want html markup in emulated CLI
+@ini_set('html_errors', 'off');
+
+// execute the cron
+$taskclassname= '\filter_poodll\task\adhoc_s3_move';
+$starttime=false;
+$tr = new \filter_poodll\taskrunner($taskclassname,$starttime);
+$tr->run_task_by_filename($filename);
