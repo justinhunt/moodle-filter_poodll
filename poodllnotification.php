@@ -17,7 +17,8 @@
 
 /**
  * Poodll Notification
- *
+ * This responds to notifications from Poodll Cloud that a transcoding has completed and calls the relevant adhoc task
+ * to fetch back the file
  * @package    filter
  * @subpackage poodll
  * @copyright  2017 onwards Justin Hunt  https://poodll.com

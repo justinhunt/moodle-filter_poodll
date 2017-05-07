@@ -18,9 +18,8 @@
 /**
  * CLI cron
  *
- * This script looks through all the module directories for cron.php files
- * and runs them.  These files can contain cleanup functions, email functions
- * or anything that needs to be run on a regular basis.
+ * The poodll cron will look through the waiting adhoc s3 move tasks and perform them
+ *
  *
  * @package    filter
  * @subpackage poodll
@@ -64,12 +63,3 @@ $taskclassname= '\filter_poodll\task\adhoc_s3_move';
 $starttime=time();
 $tr = new \filter_poodll\taskrunner($taskclassname,$starttime);
 $tr->run_all_tasks();
-
-
-//execute a specific task by outfilename, if it exists
-/*
-$taskclassname= '\filter_poodll\task\adhoc_s3_move';
-$starttime=false;
-$tr = new \filter_poodll\taskrunner($taskclassname,$starttime);
-$tr->run_task_by_filename('poodllfile590ea2c1090581.mp4');
-*/
