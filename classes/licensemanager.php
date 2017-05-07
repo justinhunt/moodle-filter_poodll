@@ -164,7 +164,7 @@ class licensemanager
                 return self::FILTER_POODLL_IS_REGISTERED;
             //this will cover subdomain matches but only for institution license
             }elseif(($registered_bits['host']=== $wildcard_subdomain_wwwroot) &&
-                        $this->license_type===self::FILTER_POODLL_LICENSE_INSTITUTION){
+                        $this->license_type==self::FILTER_POODLL_LICENSE_INSTITUTION){
                  $this->validated = true;
                 return self::FILTER_POODLL_IS_REGISTERED;
             }else{
