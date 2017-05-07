@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.0.40(Build 2017050701)
+-Added cloud notifications, removing need for cron job
+-tweaks to presets to restore alternate content settings that got lost in 3.0.35
+-updated install defaults to set handler for youtube and other file extensions
+
 Version 3.0.39(Build 2017041704)
 -Added media refresh ability for FFMPEG conversions too
 -Added filename of converted file to FFMPEG log report
