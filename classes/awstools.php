@@ -78,7 +78,11 @@ class awstools
             }else{
                 $bits[] = '80';
             }
-            $bits[]=str_replace('/','!',$wwwroot_bits['path']);
+            if(array_key_exists('path',$wwwroot_bits)) {
+                $bits[] = str_replace('/', '!', $wwwroot_bits['path']);
+            }else{
+                $bits[] = '';
+            }
             $codedurl = implode('_',$bits);
             $codedurl = $codedurl . '_';
 
