@@ -1436,8 +1436,11 @@ class poodlltools
                     default:$contenthash = '';
 
             }
-                 
-            $select = "filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
+
+            //originally we were antsy about the draft file .... in case we synced badly
+           // $select = "filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
+            $select = "filename='" . $filename. "'  AND contenthash='" . $contenthash. "'";
+
             $params = null;
             $sort = "id DESC";
             $dbfiles = $DB->get_records_select('files',$select,$params,$sort);
