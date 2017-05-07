@@ -75,6 +75,8 @@ class awstools
             $bits[]=$wwwroot_bits['host'];
             if(array_key_exists('port',$wwwroot_bits)) {
                 $bits[] = $wwwroot_bits['port'];
+            }elseif($wwwroot_bits['scheme']=='https'){
+                $bits[] = '443';
             }else{
                 $bits[] = '80';
             }
