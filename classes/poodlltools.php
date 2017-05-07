@@ -1428,7 +1428,7 @@ class poodlltools
 
         
         public static function fetch_placeholder_file_record($mediatype, $filename){
-            global $DB;
+            global $DB, $CFG;
             
             switch($mediatype){
                     case 'audio': $contenthash = POODLL_AUDIO_PLACEHOLDER_HASH;break;
@@ -1437,9 +1437,14 @@ class poodlltools
 
             }
 
-            //originally we were antsy about the draft file .... in case we synced badly
-           // $select = "filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
-            $select = "filename='" . $filename. "'  AND contenthash='" . $contenthash. "'";
+            //replacing the draft file is a bit risky, but we will miss the notificationotherwise from AWS
+            //so lets try this and see how it goes
+            if($CFG->filter_poodll_cloudnotifications){
+                $select = "filename='" . $filename. "'  AND contenthash='" . $contenthash. "'";
+            }else{
+                $select = "filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
+            }
+
 
             $params = null;
             $sort = "id DESC";
