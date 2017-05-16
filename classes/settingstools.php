@@ -75,13 +75,26 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_autotryports', get_string('autotryports', 'filter_poodll'), '', 1);
 
 
-	
-	//PoodLL player type settings.
-        $items[] = new \admin_setting_configtext('filter_poodll_recorderorder', get_string('recorderorder', 'filter_poodll'), 
-                    get_string('recorderorder_desc', 'filter_poodll'), 'mobile,media,flashaudio,red5,snapshot,upload',PARAM_TEXT);
+    $items[] = new \admin_setting_heading('filter_poodll_recorderorder_heading', get_string('filter_poodll_recorderorder', 'filter_poodll'), get_string('filter_poodll_recorderorder_desc', 'filter_poodll'));
 
-        
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), '', 0);
+    //PoodLL player type settings.
+    $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_audio', get_string('recorderorder_audio', 'filter_poodll'),
+                    get_string('recorderorder_audio_desc', 'filter_poodll'), 'mobile,media,flashaudio,red5,upload',PARAM_TEXT);
+
+    //PoodLL player type settings.
+    $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_video', get_string('recorderorder_video', 'filter_poodll'),
+        get_string('recorderorder_video_desc', 'filter_poodll'), 'mobile,media,red5,upload',PARAM_TEXT);
+
+    //PoodLL player type settings.
+    $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_whiteboard', get_string('recorderorder_whiteboard', 'filter_poodll'),
+        get_string('recorderorder_whiteboard_desc', 'filter_poodll'), 'upload',PARAM_TEXT);
+
+    //PoodLL player type settings.
+    $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_snapshot', get_string('recorderorder_snapshot', 'filter_poodll'),
+        get_string('recorderorder_snapshot_desc', 'filter_poodll'), 'snapshot,upload',PARAM_TEXT);
+
+
+    $items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), '', 0);
 
 	// PoodLL Flashcards
 	$items[] = new \admin_setting_heading('filter_poodll_flashcards_settings', get_string('filter_poodll_flashcards_heading', 'filter_poodll'), '');

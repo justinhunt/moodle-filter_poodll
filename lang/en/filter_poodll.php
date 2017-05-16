@@ -57,6 +57,15 @@ $string['flashcardstype'] ='Flashcards Type';
 
 $string['recorderorder'] = 'Preferred Recorder Order';
 $string['recorderorder_desc'] = 'PoodLL will choose the best recorder it can if the user browser and platform support it. You set the order here.';
+$string['recorderorder_audio'] = 'Audio Recorder Order';
+$string['recorderorder_audio_desc'] = '';
+$string['recorderorder_video'] = 'Video Recorder Order';
+$string['recorderorder_video_desc'] = '';
+$string['recorderorder_whiteboard'] = 'Whiteboard Recorder Order';
+$string['recorderorder_whiteboard_desc'] = '';
+$string['recorderorder_snapshot'] = 'Snapshot Recorder Order';
+$string['recorderorder_snapshot_desc'] = '';
+
 $string['showdownloadicon'] = 'Show download icon under players';
 
 

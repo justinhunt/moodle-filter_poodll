@@ -117,7 +117,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 controls += status,
                 controls += preview,
                 controls +=  '<span class="poodll_start-recording" title="' + M.util.get_string('recui_record', 'filter_poodll') + '"></span>';
-                controls += '<span class="poodll_stop-recording hide" title="' + M.util.get_string('recui_stop', 'filter_poodll') + '></span>';
+                controls += '<span class="poodll_stop-recording hide" title="' + M.util.get_string('recui_stop', 'filter_poodll') + '"></span>';
                 controls += '<span class="poodll_pause-recording hide" title="' + M.util.get_string('recui_pause', 'filter_poodll') + '"></span>';
                 controls += ' <span class="poodll_resume-recording hide"title="' + M.util.get_string('recui_continue', 'filter_poodll') + '" ></span>';
                 controls += ' <span class="poodll_play-recording" ></span>';
