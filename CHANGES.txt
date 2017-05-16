@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.0.41(Build 2017051601)
+-fixed unclosed span tag in burntrose skin
+-added refresh ability to cachebuster preset
+-better error handling in refreshable player presets
+-implemented different recorder_order settings for different media types
+
 Version 3.0.40(Build 2017050701)
 -Added cloud notifications, removing need for cron job
 -tweaks to presets to restore alternate content settings that got lost in 3.0.35

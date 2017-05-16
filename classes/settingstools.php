@@ -75,7 +75,7 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_autotryports', get_string('autotryports', 'filter_poodll'), '', 1);
 
 
-    $items[] = new \admin_setting_heading('filter_poodll_recorderorder_heading', get_string('filter_poodll_recorderorder', 'filter_poodll'), get_string('filter_poodll_recorderorder_desc', 'filter_poodll'));
+    $items[] = new \admin_setting_heading('filter_poodll_recorderorder_heading', get_string('recorderorder', 'filter_poodll'), get_string('recorderorder_desc', 'filter_poodll'));
 
     //PoodLL player type settings.
     $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_audio', get_string('recorderorder_audio', 'filter_poodll'),
@@ -94,11 +94,11 @@ public static function fetch_general_items(){
         get_string('recorderorder_snapshot_desc', 'filter_poodll'), 'snapshot,upload',PARAM_TEXT);
 
 
-    $items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), '', 0);
+    $items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), get_string('showdownloadicon_desc', 'filter_poodll'), 0);
 
 	// PoodLL Flashcards
 	$items[] = new \admin_setting_heading('filter_poodll_flashcards_settings', get_string('filter_poodll_flashcards_heading', 'filter_poodll'), '');
-	$options = array('poodll' => 'PoodLL', 'owl'=>"Owl");
+	$options = array('poodll' => 'PoodLL');//removed owl  2017/05/16, 'owl'=>"Owl"
 	$items[] = new \admin_setting_configselect('filter_poodll_flashcards_type', get_string('flashcardstype', 'filter_poodll'), '', 'poodll', $options);
 
 
@@ -143,7 +143,7 @@ public static function fetch_general_items(){
 	/*
 	//File Conversions
 	*/
-	$items[] = new \admin_setting_heading('filter_poodll_transcode_settings', get_string('transcode_heading', 'filter_poodll'), '');
+	$items[] = new \admin_setting_heading('filter_poodll_transcode_settings', get_string('transcode_heading', 'filter_poodll'), get_string('transcode_heading_desc', 'filter_poodll'));
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_videotranscode', get_string('videotranscode', 'filter_poodll'), get_string('videotranscodedetails', 'filter_poodll'), 0);
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_audiotranscode', get_string('audiotranscode', 'filter_poodll'), get_string('audiotranscodedetails', 'filter_poodll'), 0);
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_ffmpeg', get_string('ffmpeg', 'filter_poodll'), get_string('ffmpeg_details', 'filter_poodll'), 0);

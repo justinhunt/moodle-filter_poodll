@@ -62,11 +62,12 @@ $string['recorderorder_audio_desc'] = '';
 $string['recorderorder_video'] = 'Video Recorder Order';
 $string['recorderorder_video_desc'] = '';
 $string['recorderorder_whiteboard'] = 'Whiteboard Recorder Order';
-$string['recorderorder_whiteboard_desc'] = '';
+$string['recorderorder_whiteboard_desc'] = '(This setting is currently not used and may be removed from Poodll soon)';
 $string['recorderorder_snapshot'] = 'Snapshot Recorder Order';
 $string['recorderorder_snapshot_desc'] = '';
 
 $string['showdownloadicon'] = 'Show download icon under players';
+$string['showdownloadicon_desc'] = '(This is currently not implemented in Poodll3 audio/video players but will be in an upcoming version)';
 
 
 $string['servername'] = 'PoodLL Host Address';
@@ -111,6 +112,7 @@ $string['mp3_nocloud_details'] ='Do not submit Flash mp3 recordings to cloud for
 
 //transcode settings
 $string['transcode_heading'] ='Audio/Video File Conversion Settings';
+$string['transcode_heading_desc'] ='The settings in this section are for FFMPEG and Red5, and do not apply when using cloud recording.';
 $string['videotranscode'] = 'Auto Conv. to MP4';
 $string['videotranscodedetails'] = 'Convert recorded/uploaded video files to MP4 format before storing in Moodle. This works for recordings made on tokyo.poodll.com, or uploaded recordings if using FFMPEG';
 $string['audiotranscode'] = 'Auto Conv. to MP3';
