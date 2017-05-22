@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.0.42(Build 2017052201)
+-tweaked logging which was still giving (unnecessary) warning messages
+-tweaked placeholder save logic which was not working well with Poodll assignment feedback
+
 Version 3.0.41(Build 2017051601)
 -fixed unclosed span tag in burntrose skin
 -added refresh ability to cachebuster preset

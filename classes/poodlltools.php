@@ -34,6 +34,7 @@ require_once($CFG->libdir . '/filelib.php');
 class poodlltools
 {
     const LOG_SAVE_PLACEHOLDER_FAIL = 1;
+    const LOG_NOTHING_TO_TRANSCODE = 2;
 
 	//this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
     public static function fetchSimpleAudioPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 
@@ -1438,17 +1439,20 @@ class poodlltools
             }
 
             //replacing the draft file is a bit risky, but we will miss the notificationotherwise from AWS
-            //so lets try this and see how it goes
-            if($CFG->filter_poodll_cloudnotifications){
-                $select = "filename='" . $filename. "'  AND contenthash='" . $contenthash. "'";
-            }else{
-                $select = "filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
-            }
+            //so lets try check first for the non draft file. And failing that lets check for the draft file
+            //previously we only replaced draft if using cloud notifications .. but its kind of the same really
+            //            if($CFG->filter_poodll_cloudnotifications)
 
-
+            $no_draft_select="filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
+            $with_draft_select = "filename='" . $filename. "'  AND contenthash='" . $contenthash. "'";
             $params = null;
             $sort = "id DESC";
-            $dbfiles = $DB->get_records_select('files',$select,$params,$sort);
+            $dbfiles = $DB->get_records_select('files',$no_draft_select,$params,$sort);
+            if(!$dbfiles){
+                $dbfiles = $DB->get_records_select('files',$with_draft_select,$params,$sort);
+            }
+
+            //if we did not get anything then just return
             if(!$dbfiles){
                 return false;
             }
@@ -1548,7 +1552,7 @@ class poodlltools
 			$awstools->create_one_transcoding_job($mediatype,$infilename,$outfilename);
 			$ret = true;
         }else{
-            self::send_debug_data(SELF::LOG_TRANSCODE,'Nothing to transcode:' . $infilename,$USER->id);
+            self::send_debug_data(SELF::LOG_NOTHING_TO_TRANSCODE,'Nothing to transcode:' . $infilename,$USER->id);
         }
         return $ret;
 	}
