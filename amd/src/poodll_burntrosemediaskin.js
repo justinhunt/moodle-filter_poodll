@@ -312,7 +312,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 this.disabled = true;
                 $(this).hide();
                 ip.controlbar.pausebutton.show();
-                ip.mediaRecorder.resume();
+                pmr.do_resume_audio(ip);
                 ip.controlbar.pausebutton.attr('disabled',false);
                 self.set_visual_mode('recordmode',controlbarid);
                 

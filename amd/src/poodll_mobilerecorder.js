@@ -91,7 +91,6 @@ define(['jquery','core/log', 'filter_poodll/uploader', 'filter_poodll/poodll_upl
               		uploadrec.embed(element,config);
                 }
             );
-
         },
         
         insert_video_button: function(element, widgetid){
