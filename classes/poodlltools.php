@@ -312,7 +312,9 @@ class poodlltools
 
 		if ($CFG->filter_poodll_autosavewhiteboard && $forsubmission) {
 			$opts['autosave'] = $CFG->filter_poodll_autosavewhiteboard;
-		}
+		}else{
+            $opts['autosave'] =false;
+        }
 
 		//are we allowing zoom, or not ...
 		$opts['whiteboardnozoom'] = $CFG->filter_poodll_whiteboardnozoom;
@@ -372,7 +374,7 @@ class poodlltools
 			$savecontrol = "";
 		}
 
-		if (array_key_exists('autosave', $opts)) {
+		if ($opts['autosave']) {
 			$buttonclass = "w_btn";
 		} else {
 			$buttonclass = "p_btn";

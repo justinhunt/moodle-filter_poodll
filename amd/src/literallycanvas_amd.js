@@ -27,7 +27,8 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader'
             //zoom feature
             var zoomMax = 4;
             var zoomMin = 0.2;
-            if(opts['whiteboardnozoom']){
+
+            if(opts['whiteboardnozoom']>0){
                 zoomMax =1;
                 zoomMin = 1;
             }
@@ -83,7 +84,6 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader'
             
             var opts = this.config;
             var recid = opts['recorderid'];
-        
             //handle autosave
             if(opts['autosave']){
                 //if user has drawn, commence countdown to save
@@ -122,9 +122,9 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader'
                 if(opts['autosave']){
                     uploadbutton.click(function(){utils.WhiteboardUploadHandler(recid,mfp.lc,opts);});
                 }else{
-                    var cvs = utils.getCvs(recid,mfp.lc,opts);
                     uploadbutton.click(
                         function(){
+                            var cvs = utils.getCvs(recid,mfp.lc,opts);
                             utils.pokeVectorData(recid,mfp.lc,opts);
                             uploader.uploadFile(cvs.toDataURL(),'image');
                         });

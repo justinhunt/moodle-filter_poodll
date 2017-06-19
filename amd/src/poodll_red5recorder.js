@@ -11,7 +11,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/uploader',
         supports_current_browser: function(config) { 
         	var iOS = utils.is_ios();
         	var isAndroid = utils.is_android();
-        	if (iOS || (!config.flashonandroid && isAndroid)){
+        	if (iOS || (config.flashonandroid<1 && isAndroid)){
         		return false;
         	}else{
 				if(config.mediatype!='audio' && config.mediatype!='video'){return false;}

@@ -166,7 +166,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
 
         is_android: function(){
             var ua = window.navigator.userAgent;
-            var isAndroid = ua.indexOf("android") > -1; //&& ua.indexOf("mobile");
+            var isAndroid = (ua.indexOf("android") > -1) || (ua.indexOf("Android") > -1) ; //&& ua.indexOf("mobile");
             return isAndroid;
         },
 
