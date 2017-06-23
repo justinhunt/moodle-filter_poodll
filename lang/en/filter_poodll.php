@@ -290,3 +290,6 @@ $string['flashonandroid_desc'] = 'It is possible to use Flash on Android, though
 //diable whiteboard zoom
 $string['wboardnozoom']='Disable Zoom ';
 $string['wboardnozoom_details']='Only applies to LiterallyCanvas. If checked sets the max and min zoom to 1.0, effectively disabling the zoom feature.';
+
+$string['awsregion']='AWS Region';
+$string['awsregion_desc']='';

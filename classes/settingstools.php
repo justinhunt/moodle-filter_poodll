@@ -66,7 +66,14 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_configselect('filter_poodll_aws_sdk', get_string('awssdkversion', 'filter_poodll'), 
 		get_string('awssdkversion_desc', 'filter_poodll'), '2.x', $options);
 
-		//PoodLL Network Settings.
+    //Adding Amazon AWS regions
+   // $options = array('2.x' => 'Version 2.x');
+   // $items[] = new \admin_setting_configselect('filter_poodll_aws_region', get_string('awsregion', 'filter_poodll'),
+    //    get_string('awsregion_desc', 'filter_poodll'), '', $options);
+
+
+
+    //PoodLL Network Settings.
 	$items[] = new \admin_setting_heading('filter_poodll_network_settings', get_string('filter_poodll_network_heading', 'filter_poodll'), '');
 	$items[] = new \admin_setting_configtext('filter_poodll_servername', get_string('servername', 'filter_poodll'), '', 'tokyo.poodll.com');
 	$items[] = new \admin_setting_configtext('filter_poodll_serverid', get_string('serverid', 'filter_poodll'), '', 'poodll');

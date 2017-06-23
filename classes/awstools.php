@@ -32,7 +32,24 @@ use Aws\S3\S3Client;
  */
 class awstools
 {
-	protected $awsversion="2.x";//3.x
+
+    const REGION_APS1 = 'ap-south-1'; //Asia Pacific (Mumbai)
+    const REGION_APN2 = 'ap-northeast-2'; //Asia Pacific (Seoul)
+    const REGION_APSE1 = 'ap-southeast-1'; //Asia Pacific (Singapore)
+    const REGION_APSE2 = 'ap-southeast-2'; //Asia Pacific (Sydney)
+    const REGION_APN1 = 'ap-northeast-1'; //Asia Pacific (Tokyo)
+    const REGION_USE2 ='us-east-2'; //US East (Ohio)
+    const REGION_USE1 = 'us-east-1'; //US East (N. Virginia)
+    const REGION_USW1 = 'us-west-1'; //US West (N. California)
+    const REGION_USW2 = 'us-west-2'; //US West (Oregon)
+    const REGION_CAC1 = 'ca-central-1'; //Canada (Central)
+    const REGION_EUC1 = 'eu-central-1'; //EU (Frankfurt)
+    const REGION_EUW1 = 'eu-west-1'; //EU (Ireland)
+    const REGION_EUW2 = 'eu-west-2'; //EU (London)
+    const REGION_SAE1 = 'sa-east-1'; //South America (São Paulo)
+
+
+    protected $awsversion="2.x";//3.x
 	protected $transcoder = false; //the single transcoder object
 	protected $s3client = false; //the single S3 object
 	protected $default_segment_size = 4;

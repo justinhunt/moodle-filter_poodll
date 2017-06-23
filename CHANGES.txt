@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.0.44(Build 2017062301)
+-Added AWS regions(not fully implemented)
+-Added active user and poodll user counts and media recorderorder to support info
+-fixed problem with amd loader for flash recorder
+
 Version 3.0.43(Build 2017061801)
 -fixed broken pause recording
 -added ability to allow/deny flash recorders on Android device
