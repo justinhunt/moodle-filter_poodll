@@ -291,7 +291,7 @@ $string['flashonandroid_desc'] = 'It is possible to use Flash on Android, though
 $string['wboardnozoom']='Disable Zoom ';
 $string['wboardnozoom_details']='Only applies to LiterallyCanvas. If checked sets the max and min zoom to 1.0, effectively disabling the zoom feature.';
 
-$string['awsregion']='AWS Region';
+$string['awsregion']='Cloud Region (AWS)';
 $string['awsregion_desc']='Choose the closest region to your Moodle server for best performance and to satisfy any data protection policies or regulations that apply to you.';
 $string['REGION_APS1'] = 'Asia Pacific (Mumbai)';
 $string['REGION_APN2'] = 'Asia Pacific (Seoul)';
