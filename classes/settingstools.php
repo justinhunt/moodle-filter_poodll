@@ -67,9 +67,13 @@ public static function fetch_general_items(){
 		get_string('awssdkversion_desc', 'filter_poodll'), '2.x', $options);
 
     //Adding Amazon AWS regions
-   // $options = array('2.x' => 'Version 2.x');
-   // $items[] = new \admin_setting_configselect('filter_poodll_aws_region', get_string('awsregion', 'filter_poodll'),
-    //    get_string('awsregion_desc', 'filter_poodll'), '', $options);
+    //for now we REMOVED the EUC1 and CAC1 regions, but they cost more and be slow
+   $options = array(awstools::REGION_APN1 => get_string('REGION_APN1', 'filter_poodll'),
+       awstools::REGION_APSE2 => get_string('REGION_APSE2', 'filter_poodll'),
+       awstools::REGION_EUW1 => get_string('REGION_EUW1', 'filter_poodll'),
+       awstools::REGION_USE1 => get_string('REGION_USE1', 'filter_poodll'));
+   $items[] = new \admin_setting_configselect('filter_poodll_aws_region', get_string('awsregion', 'filter_poodll'),
+       get_string('awsregion_desc', 'filter_poodll'), awstools::REGION_APN1, $options);
 
 
 

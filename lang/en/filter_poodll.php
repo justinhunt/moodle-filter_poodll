@@ -293,3 +293,17 @@ $string['wboardnozoom_details']='Only applies to LiterallyCanvas. If checked set
 
 $string['awsregion']='AWS Region';
 $string['awsregion_desc']='';
+$string['REGION_APS1'] = 'ap-south-1 | Asia Pacific (Mumbai)';
+$string['REGION_APN2'] = 'ap-northeast-2 | Asia Pacific (Seoul)';
+$string['REGION_APSE1'] = 'ap-southeast-1 | Asia Pacific (Singapore)';
+$string['REGION_APSE2'] = 'ap-southeast-2 | Asia Pacific (Sydney)';
+$string['REGION_APN1'] = 'ap-northeast-1 | Asia Pacific (Tokyo)';
+$string['REGION_USE2'] ='us-east-2 | US East (Ohio)';
+$string['REGION_USE1'] = 'us-east-1 | US East (N. Virginia)';
+$string['REGION_USW1'] = 'us-west-1 | US West (N. California)';
+$string['REGION_USW2'] = 'us-west-2 | US West (Oregon)';
+$string['REGION_CAC1'] = 'ca-central-1 | Canada (Central)';
+$string['REGION_EUC1'] = 'eu-central-1 | EU (Frankfurt)';
+$string['REGION_EUW1'] = 'eu-west-1 | EU (Ireland)';
+$string['REGION_EUW2'] = 'eu-west-2 | EU (London)';
+$string['REGION_SAE1'] = 'sa-east-1 | South America (São Paulo)';
