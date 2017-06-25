@@ -140,6 +140,7 @@ class diagnosticstools {
 		//poodll setting info		
 		$ds['cloudrecording']=$CFG->filter_poodll_cloudrecording;
         $ds['cloudnotifications']=$CFG->filter_poodll_cloudnotifications;
+        $ds['awsregion']=$CFG->filter_poodll_aws_region;
         $ds['filter_poodll_recorderorder_audio'] = $CFG->filter_poodll_recorderorder_audio;
         $ds['filter_poodll_recorderorder_video'] = $CFG->filter_poodll_recorderorder_video;
         $ds['filter_poodll_recorderorder_whiteboard'] = $CFG->filter_poodll_recorderorder_whiteboard;
