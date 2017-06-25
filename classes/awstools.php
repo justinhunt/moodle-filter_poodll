@@ -101,7 +101,7 @@ class awstools
                 $bucketsuffix='';
                 break;
 
-            case self::REGION_EUC1:
+
             case self::REGION_EUW1:
                 $this->pipeline_video ='1498301226886-igwgt8';
                 $this->pipeline_audio ='1498301312122-rfjmqr';
@@ -116,7 +116,7 @@ class awstools
                 $this->preset_mp3 = "1498353323686-ql5apg";
                 break;
 
-            case self::REGION_CAC1:
+
             case self::REGION_USE1:
                 $this->pipeline_video ='1498352710890-ybul2c';
                 $this->pipeline_audio ='1498352776647-bgnr1z';
@@ -124,7 +124,7 @@ class awstools
                 $this->preset_mp3 = "1498353166217-bfalp1";
                 break;
 
-            //canada region has no elastic transcoder, so we use USE1 . and a special pipeline NG
+            //canada region has no elastic transcoder, so we use USE1 elastic trans . and a special pipeline NG
             /*
             case self::REGION_CAC1:
                 $this->pipeline_video ='1498353689240-c4zdjs'; //special pipeline for diff region s3 buckets: COST
@@ -133,7 +133,7 @@ class awstools
                 $this->preset_mp3 = "1498353166217-bfalp1"; //USE1
                 break;
                */
-            //Frankfurt region has no elastic transcoder, so we use EUW1. and a special pipeline NG
+            //Frankfurt region has no elastic transcoder, so we use EUW1 elast_transe. and a special pipeline NG
             /*
             case self::REGION_EUC1:
                 $this->pipeline_video ='1498353981671-apvats'; //special pipeline for diff region s3 buckets: COST
@@ -144,6 +144,7 @@ class awstools
             */
 
             //buckets for these also created, but there was no Elastic transcoder service in the region
+            //and we were stuch by 4 pipeline limit on the nearest region with elastic transcoder
             //case self::REGION_EUW2
             //case self::REGION_SAE1
 
