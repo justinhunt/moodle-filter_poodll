@@ -293,11 +293,11 @@ class filter_poodll extends moodle_text_filter {
 		$js_custom_script = $conf['templatescript_' . $tempindex];
 
         //if we have a download variable in the template
-        $filterprops['CANDOWNLOAD']='filter_poodll_candownload_no';
+        $filterprops['CANDOWNLOAD']='hide';
         if ($CFG->filter_poodll_download_media_ok ) {
             $context = context_course::instance($COURSE->id);
             if(has_capability('filter/poodll:candownloadmedia',$context)){
-                $filterprops['CANDOWNLOAD']='filter_poodll_candownload_yes';
+                $filterprops['CANDOWNLOAD']='filter_poodll_download_button';
             };
         }
 	

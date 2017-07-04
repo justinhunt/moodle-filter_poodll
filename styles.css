@@ -2,6 +2,12 @@
 	display: none;
 }
 
+.filter_poodll_download_button{
+    border: 1px solid #333;
+    padding: 5px;
+    background-color: #ccc;
+    color: #fff;
+}
 
 .filter_poodll_mp3skinned_recorder {
 	width: 240px;
