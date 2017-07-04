@@ -95,7 +95,7 @@ class diagnosticstools {
         }
 
         //get poodll users
-        $sql="SELECT COUNT(DISTINCT(userid)) as poodllusers FROM `mdl_logstore_standard_log` WHERE component = 'filter_poodll' AND timecreated > ?";
+        $sql="SELECT COUNT(DISTINCT(userid)) as poodllusers FROM {logstore_standard_log} WHERE component = 'filter_poodll' AND timecreated > ?";
         $rec = $DB->get_record_sql($sql,array($oneyearago));
         if ($rec) {
             $ds['poodllusers'] = $rec->poodllusers;

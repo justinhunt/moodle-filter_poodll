@@ -1,6 +1,9 @@
 Change List
 =========
 
+Version 3.0.47(Build 2017070401)
+-fixed error in support info file from a bad SQL statement
+
 Version 3.0.46(Build 2017070301)
 -added download feature to players
 
