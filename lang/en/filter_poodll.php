@@ -67,7 +67,7 @@ $string['recorderorder_snapshot'] = 'Snapshot Recorder Order';
 $string['recorderorder_snapshot_desc'] = '';
 
 $string['showdownloadicon'] = 'Show download icon under players';
-$string['showdownloadicon_desc'] = '(This is currently not implemented in Poodll3 audio/video players but will be in an upcoming version)';
+$string['showdownloadicon_desc'] = 'This is implemented in some players. native players, mediaelement players, audiojs_shim, flowplayer first frame and Video JS';
 
 
 $string['servername'] = 'PoodLL Host Address';
