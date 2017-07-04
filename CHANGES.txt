@@ -1,5 +1,9 @@
 Change List
 =========
+
+Version 3.0.46(Build 2017070301)
+-added download feature to players
+
 Version 3.0.45(Build 2017062501)
 -added 4 working AWS regions
 
