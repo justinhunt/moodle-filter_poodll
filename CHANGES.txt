@@ -1,6 +1,9 @@
 Change List
 =========
 
+Version 3.0.48(Build 2017071001)
+-fixed error in whiteboads preventing multiple players on same page from saving properly
+
 Version 3.0.47(Build 2017070401)
 -fixed error in support info file from a bad SQL statement
 
