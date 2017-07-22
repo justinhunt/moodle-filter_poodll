@@ -112,7 +112,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 			this.instanceprops[controlbarid].uploaded= false;
 		},
 
-        init_skin: function (controlbarid,skinname,instanceprops){
+        init_skin: function (controlbarid,skinname, instanceprops){
             switch (skinname) {
                 case 'burntrose':
                     this.skins[controlbarid] = burntroseskin.clone();

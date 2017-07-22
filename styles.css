@@ -687,3 +687,48 @@ audio.poodll_preview_standard{
 	display: inline-block;
 }
 
+/*
+Charcoal skin for Poodll standard media recorder
+ */
+.charcoal .poodll_status_standard{
+    padding: 30px;
+    border: 1px solid #333;
+    background-color: #333;
+    height: 40px;
+    padding: 10px;
+    background-color: #fff;
+}
+.charcoal .poodll_mediarecorder_button_standard{
+    padding: 0px 10px;
+    border: none;
+    background-color: #fff;
+    border-radius: 0px !important;
+    color: red;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    height: 40px;
+}
+
+
+.charcoal .poodll_save-recording_standard{
+    height: 40px;
+    background-color: #fff;
+    border: none;
+}
+
+.charcoal.poodll_mediarecorderbox_standard{
+    padding: 30px;
+    border: 1px solid;
+    background-color: #333;
+}
+/*
+.charcoal.p_messages{
+    color: black;
+}
+.charcoal.p_progress {
+    width: 85%;
+    padding-top: 10px;
+    margin: 0 auto;
+}
+*/
+

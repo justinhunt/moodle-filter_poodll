@@ -2411,7 +2411,8 @@ class poodlltools
         $params['media_videorecordertype'] = 'auto';//or mediarec or webp
         $params['media_videocapturewidth'] = 320;
         $params['media_videocaptureheight'] = 240;   
-        $params['media_skin'] = $CFG->filter_poodll_html5recorder_skin; 
+        $params['media_skin'] = $CFG->filter_poodll_html5recorder_skin;
+        $params['media_skin_style'] = $CFG->filter_poodll_html5recorder_skin_style;
 		return $params;
 	}
         

@@ -66,7 +66,7 @@ $string['recorderorder_whiteboard_desc'] = '(This setting is currently not used 
 $string['recorderorder_snapshot'] = 'Snapshot Recorder Order';
 $string['recorderorder_snapshot_desc'] = '';
 
-$string['showdownloadicon'] = 'Show download icon under players';
+$string['showdownloadicon'] = 'Show download button under players';
 $string['showdownloadicon_desc'] = 'This is implemented in some players. native players, mediaelement players, audiojs_shim, flowplayer first frame and Video JS';
 
 
@@ -258,6 +258,8 @@ $string['exportdiagnostics']="Export";
 $string['plain_recorder']="Plain";
 $string['burntrose_recorder']="Burnt Rose";
 $string['html5recorder_skin']="HTML5 Recorder Skin";
+$string['skinstyle']="Skin style";
+$string['skinstyle_details']="A CSS class name that will be added to the recorder to assist in customizing recorder appearance.";
 $string['filter_poodll_html5recorder_heading']="HTML5 Recorder Settings";
 
 //events
