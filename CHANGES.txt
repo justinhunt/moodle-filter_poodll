@@ -4,6 +4,7 @@ Change List
 Version 3.0.49(Build 2017071701)
 -fixed issue with players that do not "refresh" properly on Firefox
 -added recorder skin styles
+- added a new once player
 
 Version 3.0.48(Build 2017071001)
 -fixed error in whiteboads preventing multiple players on same page from saving properly
