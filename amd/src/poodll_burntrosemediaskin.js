@@ -112,7 +112,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         
         //insert the control bar and return it to be reused
         insert_controlbar_audio: function(element,controlbarid, preview){
-                var controls ='<div class="poodll_mediarecorderbox" id="' + controlbarid + '">' ;
+            var ip = this.fetch_instanceprops(controlbarid);
+            var skin_style = ip.config.media_skin_style;
+
+                var controls ='<div class="poodll_mediarecorderbox ' + skin_style + '" id="' + controlbarid + '">' ;
                 var status = this.fetch_status_bar('burntrose');
                 controls += status,
                 controls += preview,
@@ -152,7 +155,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         
         //insert the control bar and return it to be reused
         insert_controlbar_video: function(element,controlbarid, preview){
-                var controls ='<div class="poodll_mediavideobox" id="' + controlbarid + '">' ;
+            var ip = this.fetch_instanceprops(controlbarid);
+            var skin_style = ip.config.media_skin_style;
+
+            var controls ='<div class="poodll_mediavideobox '+ skin_style + '" id="' + controlbarid + '">' ;
             var status = this.fetch_status_bar('burntrose');
             controls += status,
             controls += preview,

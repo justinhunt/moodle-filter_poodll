@@ -117,7 +117,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var ip = this.fetch_instanceprops(controlbarid);
                 var skin_style = ip.config.media_skin_style;
 
-                var controls ='<div class="poodll_mediarecorderbox_standard ' + skin_style + '" id="' + controlbarid + '">' ;
+                var controls ='<div class="poodll_mediarecorderholder_standard ' + skin_style + '" id="holder_' + controlbarid + '">' ;
+                controls +='<div class="poodll_mediarecorderbox_standard ' + skin_style + '" id="' + controlbarid + '">' ;
                 var status = this.fetch_status_bar('standard');
                 controls += status,
                 controls += preview,
@@ -127,7 +128,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
                 controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_play-recording_standard" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
                 controls += '<button type="button" class="poodll_save-recording_standard" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
-                controls += '</div>';
+                controls += '</div></div>';
                 $(element).prepend(controls);
                 var controlbar ={
                     status: $('#' + controlbarid + ' > .poodll_status_standard'),
