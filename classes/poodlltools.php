@@ -1921,11 +1921,13 @@ class poodlltools
 		$widgetopts->s3filename = $s3filename;
 		$widgetopts->using_s3 = intval($using_s3);
 
-        //recorder order of preference
+        //recorder order of preference and media skin style
+        $skinstyle = $CFG->filter_poodll_html5recorder_skinstyle_audio;
         switch($mediatype) {
 
             case 'video':
                 $rec_order = explode(',', $CFG->filter_poodll_recorderorder_video);
+                $skinstyle = $CFG->filter_poodll_html5recorder_skinstyle_video;
                 break;
             case 'whiteboard':
                 $rec_order = explode(',', $CFG->filter_poodll_recorderorder_whiteboard);
@@ -1935,10 +1937,12 @@ class poodlltools
                 break;
             case 'audio':
             default:
+                $skinstyle = $CFG->filter_poodll_html5recorder_skinstyle_audio;
                 $rec_order = explode(',', $CFG->filter_poodll_recorderorder_audio);
                 break;
         }
         $widgetopts->rec_order = $rec_order;// array('mobile','media','flashaudio','red5','upload','flash');
+        $widgetopts->media_skin_style= $skinstyle;
 
 		//do we use flash on android
         $widgetopts->flashonandroid=$CFG->filter_poodll_flash_on_android;
@@ -2412,7 +2416,6 @@ class poodlltools
         $params['media_videocapturewidth'] = 320;
         $params['media_videocaptureheight'] = 240;   
         $params['media_skin'] = $CFG->filter_poodll_html5recorder_skin;
-        $params['media_skin_style'] = $CFG->filter_poodll_html5recorder_skin_style;
 		return $params;
 	}
         

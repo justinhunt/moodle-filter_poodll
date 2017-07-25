@@ -258,8 +258,11 @@ $string['exportdiagnostics']="Export";
 $string['plain_recorder']="Plain";
 $string['burntrose_recorder']="Burnt Rose";
 $string['html5recorder_skin']="HTML5 Recorder Skin";
-$string['skinstyle']="Skin style";
-$string['skinstyle_details']="A CSS class name that will be added to the recorder to assist in customizing recorder appearance.";
+$string['skinstyleaudio']="Skin style(audio)";
+$string['skinstyleaudio_details']="A CSS class name that will be added to the audio recorder to assist in customizing recorder appearance.";
+$string['skinstylevideo']="Skin style(video)";
+$string['skinstylevideo_details']="A CSS class name that will be added to the video recorder to assist in customizing recorder appearance.";
+
 $string['filter_poodll_html5recorder_heading']="HTML5 Recorder Settings";
 
 //events

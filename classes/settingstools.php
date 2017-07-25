@@ -151,8 +151,10 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_heading('filter_poodll_html5recorder_settings', get_string('filter_poodll_html5recorder_heading', 'filter_poodll'), '');
 	$options = array('standard' => get_string('plain_recorder', 'filter_poodll'), 'burntrose' => get_string('burntrose_recorder', 'filter_poodll'));
 	$items[] = new \admin_setting_configselect('filter_poodll_html5recorder_skin', get_string('html5recorder_skin', 'filter_poodll'), '', 'standard', $options);
-    $items[] = new \admin_setting_configtext('filter_poodll_html5recorder_skin_style', get_string('skinstyle', 'filter_poodll'),
-        get_string('skinstyle_details', 'filter_poodll'), '');
+    $items[] = new \admin_setting_configtext('filter_poodll_html5recorder_skinstyle_audio', get_string('skinstyleaudio', 'filter_poodll'),
+        get_string('skinstyleaudio_details', 'filter_poodll'), '');
+    $items[] = new \admin_setting_configtext('filter_poodll_html5recorder_skinstyle_video', get_string('skinstylevideo', 'filter_poodll'),
+        get_string('skinstylevideo_details', 'filter_poodll'), '');
 
 
 
