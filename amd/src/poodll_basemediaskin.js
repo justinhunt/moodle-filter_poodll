@@ -69,6 +69,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             ip.controlbar.savebutton.attr('disabled',false);
         },
 
+        handle_timer_update: function(controlbarid){
+            var ip = this.fetch_instanceprops(controlbarid);
+            ip.controlbar.status.html(ip.timer.fetch_display_time());
+            if(ip.timer.seconds==0 && ip.timer.initseconds >0){
+                 ip.controlbar.stopbutton.click();
+            }
+        },
 
        update_status: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);

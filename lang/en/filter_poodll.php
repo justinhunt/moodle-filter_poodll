@@ -257,6 +257,7 @@ $string['exportdiagnostics']="Export";
 //html5 recorder
 $string['plain_recorder']="Plain";
 $string['burntrose_recorder']="Burnt Rose";
+$string['onetwothree_recorder']="One Two Three";
 $string['html5recorder_skin']="HTML5 Recorder Skin";
 $string['skinstyleaudio']="Skin style(audio)";
 $string['skinstyleaudio_details']="A CSS class name that will be added to the audio recorder to assist in customizing recorder appearance.";

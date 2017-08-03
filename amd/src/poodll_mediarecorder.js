@@ -2,7 +2,8 @@
 define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStreamRecorder',
         'filter_poodll/adapter', 'filter_poodll/uploader','filter_poodll/timer',
         'filter_poodll/poodll_basemediaskin',
-        'filter_poodll/poodll_burntrosemediaskin'], function($, log, utils, msr, adapter, uploader,timer,baseskin,burntroseskin) {
+        'filter_poodll/poodll_burntrosemediaskin',
+        'filter_poodll/poodll_onetwothreemediaskin'], function($, log, utils, msr, adapter, uploader,timer,baseskin,burntroseskin,onetwothreeskin) {
 
     "use strict"; // jshint ;_;
 
@@ -58,6 +59,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 			this.init_instance_props(controlbarid);
 			var ip = this.fetch_instanceprops(controlbarid);
 			ip.config = config;
+			ip.controlbarid = controlbarid;
 			ip.timeinterval = config.media_timeinterval;
 			ip.audiomimetype = config.media_audiomimetype;
 			ip.videorecordertype = config.media_videorecordertype;
@@ -89,10 +91,13 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             }
 			//init timer
             ip.timer = timer.clone();
-			ip.timer.init(0,function(){
-					ip.controlbar.status.html(ip.timer.fetch_display_time());
+			ip.timer.init(ip.config.timelimit,function(){
+			            theskin.handle_timer_update(controlbarid);
+					//ip.controlbar.status.html(ip.timer.fetch_display_time());
 					}
 				);
+			 theskin.handle_timer_update(controlbarid);
+			 
         },
 		
 		init_instance_props: function(controlbarid){
@@ -114,6 +119,9 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
         init_skin: function (controlbarid,skinname, instanceprops){
             switch (skinname) {
+                case 'onetwothree':
+                    this.skins[controlbarid] = onetwothreeskin.clone();
+                    break;
                 case 'burntrose':
                     this.skins[controlbarid] = burntroseskin.clone();
                     break;
@@ -156,6 +164,10 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         do_start_video: function(ip, onMediaSuccess){
 
         },
+        
+        do_stopplay_audio: function(ip,preview){
+            preview.pause();
+        },
 
         do_play_audio: function(ip,preview){
             if(ip.blobs && ip.blobs.length > 0) {
@@ -194,6 +206,10 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                             preview.play();
                         }); //end of concatenate blobs
                 }//end of switch
+                
+                //Click the stop button if playback ends;
+                preview.onended=function(){ip.controlbar.stopbutton.click();};
+                
             }//end of if blobs
         },
         do_play_video: function(ip){

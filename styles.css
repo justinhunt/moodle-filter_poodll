@@ -304,6 +304,26 @@ a.filter_poodll_uploadafilelink:active {
     width:320px;
 }
 
+/* ONETWOTHREE Recorder Skin */
+.poodll_preview_onetwothree{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+}
+audio.poodll_preview_onetwothree{
+    height:37px;
+}
+
+.poodll_preview_onetwothree.poodll_recording{
+	border: red;
+}
+
+button.poodll_mediarecorder_button_onetwothree {
+    width: 100%;
+}
 
 /* MEDIA RECORDER STANDARD SKIN .. need to remove '_standard' */
 .poodll_preview_standard{
@@ -364,7 +384,7 @@ audio.poodll_preview_standard{
 }
 
 
-	.poodll_mediarecorderbox {
+	.poodll_mediarecorderbox_burntrose {
 		background: #eee url([[pix:filter_poodll|vc11]]) 100% no-repeat;
 		width: 352px !important;
 		height: 120px !important;
@@ -593,7 +613,7 @@ audio.poodll_preview_standard{
         background-position:0px 0px !important;
         outline:none !important;
     }
-	.poodll_mediavideobox > .poodll_status_burntrose {
+	.poodll_mediarecorderbox_burntrose > .poodll_status_burntrose {
 		margin-left: 176px !important;
 		margin-top: 263px !important;
 		position: absolute;
@@ -731,4 +751,142 @@ Charcoal skin for Poodll standard media recorder
     margin: 0 auto;
 }
 */
+
+
+
+
+
+
+
+
+
+/*-----GLEN CSS-----*/
+
+
+
+/*---- audio recorder on tinymcs-----*/
+#tinymce_poodll_container #insert{
+margin-top: 20px !important;
+}
+#tinymce_poodll_container #cancel{
+margin-top: 20px !important;
+}
+#tinymce_poodll_container .charcoal.poodll_mediarecorderbox_standard{
+padding: 10px 0px;
+}
+#tinymce_poodll_container .charcoal .poodll_status_standard{
+height: 15px;
+}
+#tinymce_poodll_container  .charcoal .poodll_mediarecorder_button_standard{
+margin-top: 10px;
+margin-bottom: 10px;
+}
+
+/*----- Flame Theme ------*/
+
+/*submission*/
+#page-mod-assign-editsubmission .charcoal .poodll_mediarecorderbox_standard{
+width: 600px;
+    padding: 20px;
+    height: 300px;
+    background-image: url(https://media.giphy.com/media/mjORAqVKYtW7e/giphy.gif);
+    background-size: cover;
+}
+#page-mod-assign-editsubmission .charcoal .poodll_status_standard{
+    height: 10px;
+    width: 90%;
+    line-height: 10px;
+    background-color: transparent;
+    color: red;
+    font-size: 25px;
+   border: none;
+}
+#page-mod-assign-editsubmission .charcoal .poodll_preview_standard{
+width: 50%;
+float: left;
+}
+.charcoal .poodll_save-recording_standard{
+    height: 40px;
+    background-color: #fff;
+    border: none;
+    width: 40%;
+    margin-top: 20px;
+    background: transparent;
+    color: red;
+    opacity: 1;
+    border: 1px solid red;
+    border-radius: 0px;
+    box-shadow: 0px 0px 10px 0px #c2c2c2;
+    text-shadow: 1px 2px 1px;
+}
+#page-mod-assign-editsubmission .charcoal .poodll_mediarecorder_button_standard {
+    border-radius: 3px !important;
+    background: transparent;
+    text-shadow: 1px 1px 1px #ccc;
+    border: none;
+    box-shadow: none;
+}
+#page-mod-assign-editsubmission .charcoal .poodll_preview_standard{
+    background: rgba(255,255,255,0.2);
+    border: 1px solid #ccc;
+}
+
+
+
+
+
+/*----- 123 recorders ------*/
+
+
+.poodll_mediarecorderholder_onetwothree{
+ width: 300px;
+    padding: 20px;
+    border: 3px solid #333;
+}
+.poodll_mediarecorder_button_onetwothree{
+    width: 83% !important;
+    margin: 5px auto;
+    border: 3px solid #333;
+    background: none !important;
+    color: #333 !important;
+    text-shadow: 1px 2px 1px #c2c2c2;
+}
+.poodll_preview_onetwothree{
+    border: 3px solid #333;
+    background-color: transparent;
+width: 100%;
+margin-bottom: 10px;
+}
+.poodll_status_onetwothree{
+    text-align: center;
+    margin-bottom: 10px;
+    width: 100%;
+    border: 3px solid #333;
+}
+.poodll_mediarecorderholder_onetwothree  input[type="checkbox"]{
+    width: 30px;
+    height: 15px;
+    margin-top: 10px;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
