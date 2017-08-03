@@ -18,6 +18,8 @@ if(!isset($CFG)){
 require_once("../../config.php");
 }
 
+require_login();
+
 //added for moodle 2
 require_once($CFG->libdir . '/filelib.php');
 
