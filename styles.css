@@ -374,6 +374,16 @@ audio.poodll_preview_standard{
 }
 
 /* MEDIA RECORDER SKIN BURNT ROSE*/
+.poodll_mediarecorderbox_burntrose .poodll_mic{
+    margin-top: 30px !important;
+}
+.poodll_mediarecorderbox_burntrose .poodll_savebtn{
+    /* margin-top: 165px !important; */
+}
+.poodll_mediavideobox{
+    background: black !important;
+    background-image: none !important;
+}
 .poodll_mediavideobox2>.poodll_savebtn {
     margin-left: 152px!important;
     margin-top: 5px!important;
@@ -390,9 +400,10 @@ audio.poodll_preview_standard{
 
 
 	.poodll_mediarecorderbox_burntrose {
-		background: #eee url([[pix:filter_poodll|vc11]]) 100% no-repeat;
+		background:black !important;
 		width: 352px !important;
 		height: 120px !important;
+		background-image: none !important;
 	}
 
 	.poodll_status_burntrose {
@@ -726,27 +737,40 @@ audio.poodll_preview_standard{
 /*
 Default skin for Poodll standard media recorder
 */
-.poodll_mediarecorderholder_standard{
+/*
+.filter_poodll_recorder_placeholder{
+    background-color: #333;
+}
+*/
+.charcoal.poodll_mediarecorderholder_standard{
     padding: 20px;
     background-color: #333;
     
 }
-.poodll_status_standard{
+.charcoal .poodll_status_standard{
     padding: 5px;
     background-color: #fff;
 }
-.poodll_mediarecorder_button_standard{
+.charcoal .poodll_mediarecorder_button_standard{
     background: #fff;
     border: none;
     padding: 5px 10px;
     margin-bottom: 20px;
      color: red;
 }
-.poodll_save-recording_standard{
+.charcoal .poodll_save-recording_standard{
     padding: 5px;
     background-color: #fff;
     border: none;
-    color: #c2c2c2;
+    color: red;
+}
+
+.charcoal button.pmr_disabled{
+    color: #BBB;
+}
+
+.messages_charcoal.p_messages{
+    color: #333;
 }
 /*-----end-----*/
 
@@ -876,7 +900,7 @@ width: 100% !important;
  width: 100% !important;
 }
 
-.filter_poodll_recorder_placeholder  > .child{
+.child{
  background-image: url('https://lh3.ggpht.com/JewQJGPf9_W6TUknkxmnQgyIN87wH_lbyVnChk1SHNfYxWwzBIz7wvzO0Lytyy_KltY=h900');
 padding: 10px;
 background-size: cover;
@@ -990,17 +1014,54 @@ margin-bottom: 10px;
     border: none;
  width: 100% !important;
 }
-.p_messages{
-    color: white;
-    width: 100% !important;
-}
-.p_progress {
-    width: 100%;
-    margin: 0 auto;
+.poodll_mediarecorderbox_onetwothree button.pmr_disabled{
+    color: #BBB;
 }
 .poodll_mediarecorderbox_onetwothree .poodll_mediarecorderbox_standard{
     width: 280px !important;
 }
 .poodll_mediarecorderbox_onetwothree .poodll_preview_standard{
     width: 100% !important;
+}
+
+/* this is global  ... not just 123 player */
+.p_messages{
+    color: #333;
+    width: 100%!important;
+}
+.p_progress {
+    width: 100%;
+    margin: 0 auto;
+}
+
+
+/*one two three fixes*/
+.poodll_mediarecorderholder_onetwothree{
+    background-image: none !important;
+    background: #fff !important;
+}
+.poodll_mediarecorderholder_onetwothree .poodll_mediarecorderbox_onetwothree{
+     background-image: none !important;
+     background: #fff !important;
+}
+
+.pmr_disabled{
+    opacity: 0.4 !important;
+}
+
+
+
+/*
+Fixes
+*/
+.poodll_multiplayer{
+    height: 120px !important;
+    width: 250px !important;
+}
+.poodll_multiplayer .meter{
+    width: 165px !important;
+}
+.vol-but{
+    border-radius: 3px !important;
+    border: none !important;
 }

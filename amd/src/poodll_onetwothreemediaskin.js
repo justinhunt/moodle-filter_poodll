@@ -132,12 +132,12 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 controls += status,
                 controls += preview,
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_start-recording_onetwothree">' + M.util.get_string('recui_record', 'filter_poodll') + '</button> <input type="checkbox" class="step-1"/>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree hide" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_pause-recording_onetwothree hide" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_onetwothree poodll_resume-recording_onetwothree hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_play-recording_onetwothree" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button> </button> <input type="checkbox" class="step-2" />';
-                 controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-playing_onetwothree hide" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_save-recording_onetwothree" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button> </button> <input type="checkbox" class="step-3" />';
+                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree pmr_disabled hide" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_pause-recording_onetwothree pmr_disabled hide" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '</button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_onetwothree poodll_resume-recording_onetwothree pmr_disabled hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_play-recording_onetwothree pmr_disabled" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button> </button> <input type="checkbox" class="step-2" />';
+                 controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-playing_onetwothree pmr_disabled hide" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_save-recording_onetwothree pmr_disabled" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button> </button> <input type="checkbox" class="step-3" />';
                 controls += '</div></div>';
                 $(element).prepend(controls);
                 var controlbar ={
