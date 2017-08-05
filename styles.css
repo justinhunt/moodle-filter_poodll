@@ -915,7 +915,7 @@ background-size: cover;
     font-size: 8px;
     color: #fff;
     font-weight: 600;
-    background-color: rgba(0,0,0,0.4);
+    background-color: rgba(0,0,0,0.7);
     padding: 0px!important;
     border: 2px solid seagreen;
     text-shadow: 1px 2px 1px #ccc;
@@ -930,6 +930,12 @@ background-size: cover;
     background-color: rgba(0,0,0,0.4);
     border: 2px solid seagreen;
     text-shadow: 1px 2px 1px #ccc;
+}
+
+.poodll_mediarecorderholder_onetwothree  .pmr_disabled{
+   background: rgba(194, 194, 194, 0.7) !important;
+   color: #333 !important;
+   opacity: 1 !important;
 }
 
 
@@ -1064,4 +1070,33 @@ Fixes
 .vol-but{
     border-radius: 3px !important;
     border: none !important;
+}
+
+
+/*
+Editor Fixes
+*/
+
+
+#page-lib-editor-atto-plugins-poodll-dialog-poodll{
+    background-color: transparent !important;
+}
+#atto_poodll_container > div{
+    text-align:left !important;
+}
+#page-lib-editor-atto-plugins-poodll-dialog-poodll .poodll_mediavideobox2{
+    width:100% !important;
+}
+#page-lib-editor-atto-plugins-poodll-dialog-poodll .poodll_savebtn{
+    margin-top: 55px !important;
+} 
+#page-lib-editor-atto-plugins-poodll-dialog-poodll .filter_poodll_recorder_placeholder{
+    
+}
+#page-lib-editor-atto-plugins-poodll-dialog-poodll .poodll_mediarecorderbox_burntrose .poodll_savebtn{
+       margin-top: 80px!important;
+    margin-left: 160px!important;
+}
+#page-lib-editor-atto-plugins-poodll-dialog-poodll .poodll_mediavideobox2 .poodll_recmic {
+    margin-top: 5px !important;
 }
