@@ -315,6 +315,9 @@ class dataset_manager {
 		//work out our directory structure
 		$baseDir = $CFG->{'dirroot'} . "/" . $CFG->{'filter_poodll_datadir'}  . "/" . $path;
 		$baseURL = $CFG->{'wwwroot'} . "/" . $CFG->{'filter_poodll_datadir'}  . "/" . $path . "/";
+        if (strpos(realpath($baseDir), $CFG->{'dirroot'}) !== 0) {
+			return '';
+		}
 
 		
 		//set up xml to return
@@ -451,7 +454,9 @@ class dataset_manager {
 
 		//Handle directories
 		$fullpath = $CFG->{'dataroot'} . "/" . $courseid . "/" . $startpath;
-		
+        if (strpos(realpath($fullpath), $CFG->{'dataroot'}) !== 0) {
+            return '';
+        }
 			//open xml to return
 		$xml_output = "<directorylist>";
 		
