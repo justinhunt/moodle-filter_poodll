@@ -373,6 +373,55 @@ audio.poodll_preview_standard{
 	border: red;
 }
 
+/* MEDIA RECORDER GOLD SKIN .. */
+.poodll_preview_gold{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+}
+audio.poodll_preview_gold{
+    height:37px;
+}
+
+.poodll_preview_gold.poodll_recording{
+	border: red;
+}
+
+.poodll_save-recording_gold{
+    clear: both;
+    width:320px;
+}
+
+.poodll_mediarecorderbox_gold {
+    width: 370px;
+    text-align: center;
+}
+
+.poodll_mediarecorder_button_gold {
+    margin: 5px;
+}
+
+.poodll_status_gold{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 8px;
+}
+
+.poodll_status_gold.poodll_recording{
+	color: red;
+	border: red;
+}
+
+
 /* MEDIA RECORDER SKIN BURNT ROSE*/
 .poodll_mediarecorderbox_burntrose .poodll_mic{
     margin-top: 30px !important;
