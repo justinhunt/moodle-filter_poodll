@@ -568,35 +568,6 @@ class poodlltools
 
 	}
 
-	/*
-	 * To be removed. No longer called as of 2017 04 18
-	 */
-	public static function fetch_flashcards_owl($cardset, $cardsetname, $cardwidth, $cardheight)
-	{
-		global $CFG, $COURSE, $PAGE;
-
-
-
-		//for AMD
-		$proparray = array();
-		$proparray['FLASHCARDS_ID'] = "owlcards_" . time() . rand(10000, 999999);
-		$proparray['CARDWIDTH'] = $cardwidth;
-		$proparray['CARDHEIGHT'] = $cardheight;
-		$proparray['SINGLEITEM'] = true;
-		$proparray['AUTOHEIGHT'] = false;
-		$proparray['CSS_INJECT'] = true;
-		$proparray['CSS_OWL'] = $CFG->wwwroot . '/filter/poodll/3rdparty/owl/owl-carousel/owl.carousel.css';
-		$proparray['CSS_THEME'] = $CFG->wwwroot . '/filter/poodll/3rdparty/owl/owl-carousel/owl.theme.css';
-
-		$PAGE->requires->js_call_amd('filter_poodll/owl_amd', 'loadowl', array($proparray));
-
-		$dm = new \filter_poodll\dataset_manager();
-		$renderer = $PAGE->get_renderer('filter_poodll');
-		$carddata = $dm->fetch_flashcard_data($cardset, $cardsetname);
-		return $renderer->fetch_owl_flashcards($carddata, $proparray);
-	}
-
-
 	public static function fetch_flashcards_poodll($runtime, $cardset, $cardsetname, $frontcolor, $backcolor, $cardwidth, $cardheight, $randomize, $width, $height)
 	{
 
