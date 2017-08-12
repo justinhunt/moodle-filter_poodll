@@ -373,56 +373,6 @@ audio.poodll_preview_standard{
 	border: red;
 }
 
-
-/* MEDIA RECORDER BMR SKIN .. */
-.poodll_preview_bmr{
-    border: black;
-    border-style:solid;
-    border-width: 2px;
-    background-color: #DDD;
-    clear:both;
-    width:320px;
-}
-audio.poodll_preview_bmr{
-    height:37px;
-}
-
-.poodll_preview_bmr.poodll_recording{
-	border: red;
-}
-
-.poodll_save-recording_bmr{
-    clear: both;
-    width:320px;
-}
-
-.poodll_mediarecorderbox_bmr {
-    width: 370px;
-    text-align: center;
-}
-
-.poodll_mediarecorder_button_bmr {
-    margin: 5px;
-}
-
-.poodll_status_bmr{
-    border: black;
-    border-style:solid;
-    border-width: 2px;
-    background-color: #DDD;
-    clear:both;
-    width:320px;
-    margin-left: auto;
-    margin-right: auto;
-    margin-bottom: 8px;
-}
-
-.poodll_status_bmr.poodll_recording{
-	color: red;
-	border: red;
-}
-
-
 /* MEDIA RECORDER GOLD SKIN .. */
 .poodll_preview_gold{
     border: black;
@@ -1209,11 +1159,68 @@ Editor Fixes
 
 
 
+/*
+	Glen's Point of view!
+*/
 
 
 
 
 
+
+/* MEDIA RECORDER BMR SKIN .. */
+.vjs-control-bar{
+    display:none !important;
+}
+.poodll_preview_bmr:hover .vjs-control-bar{
+    display:none !important;
+}
+.poodll_preview_bmr{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+}
+audio.poodll_preview_bmr{
+    height:37px;
+}
+
+.poodll_preview_bmr.poodll_recording{
+	border: red;
+}
+
+.poodll_save-recording_bmr{
+    clear: both;
+    width:320px;
+}
+
+.poodll_mediarecorderbox_bmr {
+    width: 370px;
+    text-align: center;
+}
+
+.poodll_mediarecorder_button_bmr {
+    margin: 5px;
+}
+
+.poodll_status_bmr{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 8px;
+}
+
+.poodll_status_bmr.poodll_recording{
+	color: red;
+	border: red;
+}
 /*
 	New Burnt Rose
 */
@@ -1245,8 +1252,8 @@ Editor Fixes
 	border: 1px solid #333;
     padding: 20px;
     background-color: #333;
-    text-align: left;
-    height: 230px;
+    text-align: center;
+    height: auto;
 }
 .poodll_mediarecorderbox_bmr .pmr_disabled{
 	display: none !important;
@@ -1257,7 +1264,7 @@ Editor Fixes
 	width: 100%;
 	padding: 10px 0px;
 }
-.poodll_mediarecorderbox_bmr .poodll_preview_bmr{
+.poodll_mediarecorderbox_bmr audio.poodll_preview_bmr{
 	display: none !important;
 }
 .poodll_save-recording_bmr{
@@ -1273,6 +1280,7 @@ Editor Fixes
     color: #fff;
     font-size: 45px;
 }
+
 
 
 /* I class */ 
@@ -1295,14 +1303,20 @@ Editor Fixes
     top: 7px;
     color: #333;
 }
+.poodll_mediarecorderbox_bmr .bmr_disabled{
+	display: inline-block;
+	color: transparent;
+	background-color: rgba(194,194,194,0.7);
+}
+.poodll_mediarecorderbox_bmr .bmr_disabled i{
+	color: rgba(0,0,0,0.7);
+}
 
 
 
-
-
-
-
-
+.poodll_mediarecorderbox_bmr  .poodll_resume-recording_bmr{
+	display: none;
+}
 
 
 

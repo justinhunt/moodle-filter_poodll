@@ -5,6 +5,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
     log.debug('PoodLL Base Skin: initialising');
 
+
+	
     return {
     
         instanceprops: null,
@@ -47,7 +49,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return preview;
         },
         fetch_preview_video: function(skin){
-            var preview ='<video class="poodll_preview_' + skin + '" width="320" height="240"></video>';
+            var preview ='<video class="poodll_preview_' + skin + '" id="bmr_video"></video>';
             return preview;
         },
         
@@ -125,17 +127,17 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var ip = this.fetch_instanceprops(controlbarid);
                 var skin_style = ip.config.media_skin_style;
 
-                var controls ='<div class="poodll_mediarecorderholder_bmr ' + skin_style + '" id="holder_' + controlbarid + '">' ;
+                var controls ='<div class="poodll_mediarecorderholder_bmr poodll_videorecorderholder_bmr' + skin_style + '" id="holder_' + controlbarid + '">' ;
                 controls +='<div class="poodll_mediarecorderbox_bmr ' + skin_style + '" id="' + controlbarid + '">' ;
                 var status = this.fetch_status_bar('bmr');
                 controls += status,
                 controls += preview,
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_bmr poodll_start-recording_bmr">' + M.util.get_string('recui_record', 'filter_poodll') + '<i class="fa fa-microphone" aria-hidden="true"></i></button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_stop-recording_bmr pmr_disabled" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '<i class="fa fa-stop" aria-hidden="true"></i></button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_pause-recording_bmr pmr_disabled" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '<i class="fa fa-pause" aria-hidden="true"></i></button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_resume-recording_bmr pmr_disabled hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '<i class="fa fa-microphone" aria-hidden="true"></i></button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_play-recording_bmr pmr_disabled" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '<i class="fa fa-play" aria-hidden="true"></i></button>';
-                controls += '<button type="button" class="poodll_save-recording_bmr pmr_disabled" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_stop-recording_bmr bmr_disabled" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '<i class="fa fa-stop" aria-hidden="true"></i></button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_pause-recording_bmr bmr_disabled" disabled>' + M.util.get_string('recui_pause', 'filter_poodll') + '<i class="fa fa-pause" aria-hidden="true"></i></button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_resume-recording_bmr bmr_disabled hide" disabled>' + M.util.get_string('recui_continue', 'filter_poodll') + '<i class="fa fa-microphone" aria-hidden="true"></i></button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_play-recording_bmr bmr_disabled" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '<i class="fa fa-play" aria-hidden="true"></i></button>';
+                controls += '<button type="button" class="poodll_save-recording_bmr" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
                 controls += '</div></div>';
                 $(element).prepend(controls);
                 var controlbar ={
@@ -257,31 +259,32 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //probably not necessary  ... but getting odd ajax errors occasionally
                 return false;
             });//end of save recording
-            
+            function hide_controls() {
+				document.getElementById("bmr_video").controls = false;
+    
+			}
             window.onbeforeunload = function() {
                 self.enable_button(ip.controlbar.startbutton);
                 var preview = ip.controlbar.preview;
+				hide_controls();
                 if(preview && preview.get(0)){
                     preview.get(0).pause();
                 }
             };
 			
         }, //end of register_control_bar_events_bmr
-
+			
         enable_button: function(button){
             $(button).attr('disabled',false);
-            $(button).removeClass('pmr_disabled');
+			$(button).removeClass('bmr_disabled');		
         },
         disable_button: function(button){
             $(button).attr('disabled',true);
-			$(button).addClass('pmr_disabled');   
+			$(button).addClass('bmr_disabled');   
         },
-
+		
     };//end of returned object
 	
-	$(window).load(function(){
-		$('.poodll_save-recording_bmr').show();
-	});
 	
 	
 	
