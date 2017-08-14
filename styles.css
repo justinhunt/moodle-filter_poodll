@@ -1168,13 +1168,27 @@ Editor Fixes
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* MEDIA RECORDER BMR SKIN .. */
-.vjs-control-bar{
-    display:none !important;
-}
-.poodll_preview_bmr:hover .vjs-control-bar{
-    display:none !important;
-}
 .poodll_preview_bmr{
     border: black;
     border-style:solid;
@@ -1221,6 +1235,8 @@ audio.poodll_preview_bmr{
 	color: red;
 	border: red;
 }
+
+
 /*
 	New Burnt Rose
 */
@@ -1229,22 +1245,18 @@ audio.poodll_preview_bmr{
     width: 60px;
     border: none;
     z-index: 99999;
-    border: 3px solid #333;
+    border: 3px solid #f5f5f5;
     border-radius: 50%;
     font-size: 12px;
     padding: 0px;
 	position: relative;
 	color: transparent; 
-	/*
-    background-image: url(pix/glen_images/record-button-thumb.png);
-    background-color: transparent;
-	*/
 }
 .poodll_mediarecorder_button_bmr i.fa{
     position: absolute;
-    left: 9px;
-    font-size: 40px;
-    top: 7px;
+    left: 11px;
+    font-size: 36px;
+    top: 9px;
     color: #333;
 	transition: visibility 0s, opacity 0.5s linear;
 }
@@ -1284,18 +1296,19 @@ audio.poodll_preview_bmr{
 
 
 /* I class */ 
-.poodll_start-recording_bmr i.fa{
+.poodll_start-recording_bmr i.fa.fa-microphone,.poodll_resume-recording_bmr i.fa.fa-microphone{
 	font-size: 42px;
-    left: 12px;
-    top: 5px;
+	left: 13px;
+    top: 7px;
     color: red;
 }
-.poodll_resume-recording_bmr i.fa{
-	font-size: 42px;
-    left: 12px;
-    top: 5px;
+.poodll_start-recording_bmr i.fa.fa-video-camera, .poodll_resume-recording_bmr i.fa.fa-video-camera{
+	font-size: 40px;
+	left: 8px;
+    top: 7px;
     color: red;
 }
+
 .poodll_play-recording_bmr i.fa{
 	position: absolute;
     left: 14px;
@@ -1306,7 +1319,7 @@ audio.poodll_preview_bmr{
 .poodll_mediarecorderbox_bmr .bmr_disabled{
 	display: inline-block;
 	color: transparent;
-	background-color: rgba(194,194,194,0.7);
+	background-color: rgba(126,126,126,0.7);
 }
 .poodll_mediarecorderbox_bmr .bmr_disabled i{
 	color: rgba(0,0,0,0.7);
@@ -1317,6 +1330,77 @@ audio.poodll_preview_bmr{
 .poodll_mediarecorderbox_bmr  .poodll_resume-recording_bmr{
 	display: none;
 }
+@media (max-width: 768px) { 
+	.poodll_videorecorderholder_bmr .poodll_mediarecorderbox_bmr {
+		padding: 10px;
+		
+	}
+	.poodll_videorecorderholder_bmr video.poodll_preview_bmr{
+		width: 100% !important;
+	}
+	.poodll_mediarecorderbox_bmr {
+		padding: 20px 40px;
+		width: 100%;
+
+	}
+	
+	.poodll_mediarecorder_button_bmr{
+		height: 30px;
+		width: 30px;
+	}
+	.poodll_mediarecorder_button_bmr i.fa{
+		left: 5px;
+		font-size: 17px;
+		top: 3px;
+	}
+	.poodll_play-recording_bmr i.fa{
+		left: 6px;
+		font-size: 20px;
+		top: 3px;
+	}
+	.poodll_start-recording_bmr i.fa.fa-microphone, .poodll_resume-recording_bmr i.fa.fa-microphone{
+		font-size: 19px;
+		left: 6px;
+		top: 3px;
+		color: red;
+	}
+	
+	.poodll_start-recording_bmr i.fa.fa-video-camera, .poodll_resume-recording_bmr i.fa.fa-video-camera{
+		font-size: 17px;
+		left: 4px;
+		top: 3px;
+		color: red;
+	}
+	
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

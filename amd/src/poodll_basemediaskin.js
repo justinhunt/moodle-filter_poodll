@@ -9,6 +9,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
     
         instanceprops: null,
         pmr: null,
+        uploaded: false,
 
         //for making multiple instances
         clone: function(){
@@ -197,10 +198,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                self.update_status(controlbarid);
                 
                self.enable_button(ip.controlbar.playbutton);
-               self.enable_button(ip.controlbar.savebutton);
                self.disable_button(ip.controlbar.pausebutton);
-              if(!ip.uploaded){
+              if(!self.uploaded){
                 self.enable_button(ip.controlbar.startbutton);
+                self.enable_button(ip.controlbar.savebutton);
               } 
                ip.controlbar.resumebutton.hide();
                ip.controlbar.pausebutton.show();
@@ -248,7 +249,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
               self.disable_button(this);
               if(ip.blobs && ip.blobs.length > 0){
                   pmr.do_save_audio(ip);
-                  ip.uploaded = true;
+                  self.uploaded = true;
                   self.disable_button(ip.controlbar.startbutton);
                 }else{
                     ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));

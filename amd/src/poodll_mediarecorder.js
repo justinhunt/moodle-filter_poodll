@@ -359,11 +359,11 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 ip.mediaRecorder.videoWidth = ip.videocapturewidth;
                 ip.mediaRecorder.videoHeight = ip.videocaptureheight;
                 
-                //staert recording
+                //start recording
                 ip.mediaRecorder.start(ip.timeinterval);
                 ip.mediaRecorder.ondataavailable =  function(blob) {
                     ip.blobs.push(blob);
-            		log.debug('We got a blobby');
+            		//log.debug('We got a blobby');
             		//log.debug(URL.createObjectURL(blob));
         		};
 

@@ -10,6 +10,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         instanceprops: null,
         pmr: null,
         stage: 'none',
+        uploaded: false,
 
         //for making multiple instances
         clone: function(){
@@ -171,10 +172,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         
         
             ip.controlbar.startbutton.click(function() {
-                
-                
-               
-                //Glen
+    
                  log.debug('video starting');
                //  $('.step-1').hide();
                  
@@ -218,13 +216,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
             
             ip.controlbar.stoprecbutton.click(function() {
-                
-                
-                
-                  //Glen
+   
                 $('.step-1').show();
                 $('.step-1').attr('checked', true);
-                //hi boss
+
                 self.disable_button(this);
                 $(this).hide();
               pmr.do_stop_audio(ip);
@@ -301,7 +296,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
               // ip.controlbar.pausebutton.attr('disabled',true);
              //  ip.controlbar.pausebutton.hide();
              
-              if(!ip.uploaded){
+              if(!self.uploaded){
                 self.enable_button(ip.controlbar.savebutton);
                 self.enable_button(ip.controlbar.startbutton);
         
@@ -354,7 +349,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                log.debug('save');
               if(ip.blobs && ip.blobs.length > 0){
                   pmr.do_save_audio(ip);
-                  ip.uploaded = true;
+                  self.uploaded = true;
                   self.disable_button(ip.controlbar.startbutton);
                   
                   //set recording stage
