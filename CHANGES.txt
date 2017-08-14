@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.0.51(Build 2017081101)
+-added rewritten burnt rose recorder skin (need to manually update it from general settings page)
+-added nomediaplugin switch to players to prevent double filtering
+-removed lots of old code from poodlllogiclib and paoodlldatamanager
+-removed blob templates that we do not need anymore
+
 Version 3.0.50(Build 2017080401)
 -Added more skins
 -added multiplayer and scroller templates
