@@ -282,7 +282,6 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             window.onbeforeunload = function() {
                 self.enable_button(ip.controlbar.startbutton);
                 var preview = ip.controlbar.preview;
-				hide_controls();
                 if(preview && preview.get(0)){
                     preview.get(0).pause();
                     preview.get(0).controls = false;
