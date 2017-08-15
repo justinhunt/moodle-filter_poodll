@@ -79,6 +79,7 @@ class taskrunner
             $record = $DB->get_record('task_adhoc', array('id' => $record->id));
             if (!$record) {
                 $lock->release();
+                $cronlock->release();
                 return false;
             }
 
@@ -86,6 +87,7 @@ class taskrunner
             // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
             if (!$task) {
                 $lock->release();
+                $cronlock->release();
                 return false;
             }
 
