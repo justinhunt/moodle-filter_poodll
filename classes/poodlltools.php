@@ -35,6 +35,9 @@ class poodlltools
 {
     const LOG_SAVE_PLACEHOLDER_FAIL = 1;
     const LOG_NOTHING_TO_TRANSCODE = 2;
+    
+    const AUDIO_PLACEHOLDER_HASH ='e118549e4fc88836f418b6da6028f1fec571cd43';
+    const VIDEO_PLACEHOLDER_HASH ='c2a342a0a664f2f1c4ea5387554a67caf3dd158e';
 
 	//this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
     public static function fetchSimpleAudioPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 
@@ -1409,8 +1412,8 @@ class poodlltools
             global $DB, $CFG;
             
             switch($mediatype){
-                    case 'audio': $contenthash = POODLL_AUDIO_PLACEHOLDER_HASH;break;
-                    case 'video': $contenthash = POODLL_VIDEO_PLACEHOLDER_HASH;break;
+                    case 'audio': $contenthash = self::AUDIO_PLACEHOLDER_HASH;break;
+                    case 'video': $contenthash = self::VIDEO_PLACEHOLDER_HASH;break;
                     default:$contenthash = '';
 
             }
