@@ -141,21 +141,21 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
-                    status: $('#' + controlbarid + ' > .poodll_status_burntrose'),
-                    preview: $('#' + controlbarid + ' > .poodll_preview_burntrose'),
-                    startbutton: $('#' + controlbarid + ' > .poodll_start-recording'),
-                    stopbutton: $('#' + controlbarid + ' > .poodll_stop-recording'),
-                    pausebutton: $('#' + controlbarid + ' > .poodll_pause-recording'),
-                    resumebutton: $('#' + controlbarid + ' > .poodll_resume-recording'),
-                    play1: $('#' + controlbarid + ' > .poodll_play-recording'),
+                    status: $('#' + controlbarid + ' .poodll_status_burntrose'),
+                    preview: $('#' + controlbarid + ' .poodll_preview_burntrose'),
+                    startbutton: $('#' + controlbarid + ' .poodll_start-recording'),
+                    stopbutton: $('#' + controlbarid + '  .poodll_stop-recording'),
+                    pausebutton: $('#' + controlbarid + ' .poodll_pause-recording'),
+                    resumebutton: $('#' + controlbarid + ' .poodll_resume-recording'),
+                    play1: $('#' + controlbarid + ' .poodll_play-recording'),
                     playbutton: $('#' + controlbarid + ' > .poodll_playsave'),
-                    save1: $('#' + controlbarid + ' > .poodll_savebtn'),
-                    savebutton: $('#' + controlbarid + ' > .poodll_save-recording_burntrose'),
-                    savesuccess: $('#' + controlbarid + ' > .poodll_savedsuccessfully'),
+                    save1: $('#' + controlbarid + ' .poodll_savebtn'),
+                    savebutton: $('#' + controlbarid + ' .poodll_save-recording_burntrose'),
+                    savesuccess: $('#' + controlbarid + ' .poodll_savedsuccessfully'),
 
-                    playermic: $('#'+controlbarid + '> .poodll_mic'),
-                    recordmic: $('#'+controlbarid + '> .poodll_recmic'),
-                    resumemic: $('#'+controlbarid + '> .poodll_resume_mic')
+                    playermic: $('#'+controlbarid + ' .poodll_mic'),
+                    recordmic: $('#'+controlbarid + ' .poodll_recmic'),
+                    resumemic: $('#'+controlbarid + ' .poodll_resume_mic')
                 };
                 return controlbar;
         }, //end of fetch_control_bar_burntrose,
