@@ -130,8 +130,20 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var skin_style = ip.config.media_skin_style;
                 
                 var recorder_class = mediatype=='video' ?  'poodll_mediarecorder_video' : 'poodll_mediarecorder_audio';
+                
+                var size_class = 'poodll_mediarecorder_size_auto';
+                switch(ip.config.size){
+                	case 'small':
+	                	size_class = 'poodll_mediarecorder_size_small';
+                		break;
+                	case 'big':
+                		size_class = 'poodll_mediarecorder_size_big';
+                		break;
+                	case 'auto':
+	                	size_class = 'poodll_mediarecorder_size_auto';		
+                }
 
-                var controls ='<div class="one-two-three-main-wrapper poodll_mediarecorderholder_onetwothree ' + recorder_class + '" id="holder_' + controlbarid + '">' ;
+                var controls ='<div class="one-two-three-main-wrapper poodll_mediarecorderholder_onetwothree ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
                 	
 					controls +='<div class="poodll_mediarecorderbox_onetwothree one-two-three-wrap" id="' + controlbarid + '">' ;
 						controls +='<div class="style-holder ' + skin_style + '">' ;
