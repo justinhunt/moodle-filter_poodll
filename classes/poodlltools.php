@@ -35,6 +35,9 @@ class poodlltools
 {
     const LOG_SAVE_PLACEHOLDER_FAIL = 1;
     const LOG_NOTHING_TO_TRANSCODE = 2;
+    
+    const AUDIO_PLACEHOLDER_HASH ='e118549e4fc88836f418b6da6028f1fec571cd43';
+    const VIDEO_PLACEHOLDER_HASH ='c2a342a0a664f2f1c4ea5387554a67caf3dd158e';
 
 	//this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
     public static function fetchSimpleAudioPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 
@@ -281,10 +284,10 @@ class poodlltools
     * The old fetch MP3 Recorder fetch call now delegates to the AMD based universal recorder
    *
    */
-	public static function fetchMP3RecorderForSubmission($updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
+	public static function fetchMP3RecorderForSubmission($updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false,$hints=[])
 	{
 		return self::fetchAMDRecorderCode('audio', $updatecontrol, $contextid, 
-					$component, $filearea, $itemid, $timelimit, $callbackjs);
+					$component, $filearea, $itemid, $timelimit, $callbackjs,$hints);
 
 	}
 
@@ -1409,8 +1412,8 @@ class poodlltools
             global $DB, $CFG;
             
             switch($mediatype){
-                    case 'audio': $contenthash = POODLL_AUDIO_PLACEHOLDER_HASH;break;
-                    case 'video': $contenthash = POODLL_VIDEO_PLACEHOLDER_HASH;break;
+                    case 'audio': $contenthash = self::AUDIO_PLACEHOLDER_HASH;break;
+                    case 'video': $contenthash = self::VIDEO_PLACEHOLDER_HASH;break;
                     default:$contenthash = '';
 
             }
@@ -1807,32 +1810,32 @@ class poodlltools
 	
 	
 	//This a legacy call from client plugins, that ais mapped to amd recorder code
-	public static function fetchAudioRecorderForSubmission($runtime, $assigname, $updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
+	public static function fetchAudioRecorderForSubmission($runtime, $assigname, $updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false,$hints=[])
 	{
-		  return self::fetchAMDRecorderCode('audio', $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);      
+		  return self::fetchAMDRecorderCode('audio', $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs,$hints);      
 	}
 
 	//This a legacy call from client plugins, that ais mapped to amd recorder code
-	public static function fetchVideoRecorderForSubmission($runtime, $assigname, $updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
+	public static function fetchVideoRecorderForSubmission($runtime, $assigname, $updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false,$hints=[])
 	{
-                return self::fetchAMDRecorderCode('video', $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs);
+                return self::fetchAMDRecorderCode('video', $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit, $callbackjs,$hints);
 	}
 	
     //This a legacy call from client plugins, that ais mapped to amd recorder code
-	public static function fetchHTML5SnapshotCamera($updatecontrol = "saveflvvoice", $width,$height,$contextid, $component, $filearea, $itemid, $callbackjs = false)
+	public static function fetchHTML5SnapshotCamera($updatecontrol = "saveflvvoice", $width,$height,$contextid, $component, $filearea, $itemid, $callbackjs = false,$hints=[])
 	{
 		$mediatype = "snapshot";
-		return self::fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, 0, $callbackjs);
+		return self::fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, 0, $callbackjs,$hints);
 	}
 	
 	//This a legacy call from client plugins, that ais mapped to amd recorder code
-	public static function fetch_HTML5RecorderForSubmission($updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $mediatype = "image", $fromrepo = false, $callbackjs = false)
+	public static function fetch_HTML5RecorderForSubmission($updatecontrol = "saveflvvoice", $contextid, $component, $filearea, $itemid, $mediatype = "image", $fromrepo = false, $callbackjs = false,$hints=[])
 	{
-		return self::fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, 0, $callbackjs);
+		return self::fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, 0, $callbackjs,$hints);
 	}
 	
 	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the recorders
-	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false)
+	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false, $hints=[])
 	{
 		global $CFG, $PAGE;
 
@@ -1914,6 +1917,13 @@ class poodlltools
         }
         $widgetopts->rec_order = $rec_order;// array('mobile','media','flashaudio','red5','upload','flash');
         $widgetopts->media_skin_style= $skinstyle;
+        
+        //size profile
+        if(array_key_exists('size',$hints)){
+        	$widgetopts->size= $hints['size'];
+        }else{
+        	$widgetopts->size= 'auto';
+        }
 
 		//do we use flash on android
         $widgetopts->flashonandroid=$CFG->filter_poodll_flash_on_android;

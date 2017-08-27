@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.0.52(Build 2017081501)
+-fixed bug introduced in 3.0.51 where aws notifications would fail
+
 Version 3.0.51(Build 2017081101)
 -added rewritten burnt rose recorder skin (need to manually update it from general settings page)
 -added nomediaplugin switch to players to prevent double filtering
