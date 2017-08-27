@@ -1938,7 +1938,7 @@ class poodlltools
 		}
                 
 		//for mediarecorder amd params
-		$rawparams = self::fetchMediaRecorderAMDParams($mediatype);
+		$rawparams = self::fetchMediaRecorderAMDParams($mediatype,$hints);
 		foreach ($rawparams as $key => $value) {
 						$widgetopts->{$key} = $value;
 		}
@@ -2384,7 +2384,7 @@ class poodlltools
 	 * Fetch any special parameters required by the Media Recorder
 	 *
 	 */
-	public static function fetchMediaRecorderAMDParams($mediatype)
+	public static function fetchMediaRecorderAMDParams($mediatype, $hints)
 	{
 		global $CFG, $COURSE;
 
@@ -2395,8 +2395,13 @@ class poodlltools
         $params['media_videocapturewidth'] = 320;
         $params['media_videocaptureheight'] = 240;
 
-        $coursecontext = \context_course::instance($COURSE->id);
-        $localconfig = filtertools::fetch_local_filter_props('poodll',$coursecontext->id);
+        $coursecontextid = \context_course::instance($COURSE->id)->id;
+        if(array_key_exists('modulecontextid',$hints)){
+            $localconfig = filtertools::fetch_local_filter_props('poodll',$hints['modulecontextid']);
+        }else{
+            $localconfig = false;
+        }
+        $courseconfig = filtertools::fetch_local_filter_props('poodll',$coursecontextid);
         $adminconfig = get_config('filter_poodll');
 
         switch($mediatype) {
@@ -2404,15 +2409,19 @@ class poodlltools
             case 'video':
 
                 $prop= "html5recorder_skin_video";
-                if(isset($localconfig[$prop]) && $localconfig[$prop] != 'sitedefault'){
+                if($localconfig && isset($localconfig[$prop]) && $localconfig[$prop] != 'sitedefault'){
                     $params['media_skin'] = $localconfig[$prop];
+                }elseif( isset($courseconfig[$prop]) && $courseconfig[$prop] != 'sitedefault'){
+                    $params['media_skin'] = $courseconfig[$prop];
                 }else{
                     $params['media_skin'] = $adminconfig->{$prop};
                 }
 
                 $prop= "skinstylevideo";
-                if(isset($localconfig[$prop]) && $localconfig[$prop] != ''){
+                if($localconfig && isset($localconfig[$prop]) && $localconfig[$prop] != ''){
                     $params['media_skin_style'] = $localconfig[$prop];
+                }elseif(isset($courseconfig[$prop]) && $courseconfig[$prop] != ''){
+                    $params['media_skin_style'] = $courseconfig[$prop];
                 }else{
                     $params['media_skin_style'] = $adminconfig->{$prop};
                 }
@@ -2421,15 +2430,19 @@ class poodlltools
             case 'audio':
             default:
                 $prop= "html5recorder_skin_audio";
-                if(isset($localconfig[$prop]) && $localconfig[$prop] != 'sitedefault'){
+                if($localconfig && isset($localconfig[$prop]) && $localconfig[$prop] != 'sitedefault'){
                     $params['media_skin'] = $localconfig[$prop];
+                }elseif( isset($courseconfig[$prop]) && $courseconfig[$prop] != 'sitedefault'){
+                    $params['media_skin'] = $courseconfig[$prop];
                 }else{
                     $params['media_skin'] = $adminconfig->{$prop};
                 }
 
                 $prop= "skinstyleaudio";
-                if(isset($localconfig[$prop]) && $localconfig[$prop] != ''){
+                if($localconfig && isset($localconfig[$prop]) && $localconfig[$prop] != ''){
                     $params['media_skin_style'] = $localconfig[$prop];
+                }elseif(isset($courseconfig[$prop]) && $courseconfig[$prop] != ''){
+                    $params['media_skin_style'] = $courseconfig[$prop];
                 }else{
                     $params['media_skin_style'] = $adminconfig->{$prop};
                 }

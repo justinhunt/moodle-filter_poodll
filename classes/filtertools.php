@@ -272,6 +272,10 @@ class filtertools
 		return $itemprops;
 	}//end of function
 
+    /*
+     * $filter = 'poodll'
+     *
+     */
     public static function fetch_local_filter_props($filter,$contextid){
 	    global $CFG;
 	    require_once ($CFG->libdir . '/filterlib.php');
