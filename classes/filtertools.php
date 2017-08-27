@@ -278,28 +278,5 @@ class filtertools
         $props = filter_get_local_config($filter, $contextid);
         return $props;
     }
-/*
-    private function fetchconf($prop){
-        global $COURSE;
-
-        //I don't know why we need this whole courseconfig business.
-        //we are supposed to be able to just call $this->localconfig / $this->localconfig[$propertyname]
-        //as per here:https://docs.moodle.org/dev/Filters#Local_configuration , but its always empty
-        //at least at course context, in mod context it works ...
-        //I just gave up and do it myself and stuff it in $this->courseconfig . bug?? Justin 20150106
-        if($this->localconfig && !empty($this->localconfig)){
-            $this->courseconfig = $this->localconfig;
-        }
-        if(!$this->courseconfig){
-            $this->courseconfig = filter_get_local_config('poodll', context_course::instance($COURSE->id)->id);
-        }
-
-        if($this->courseconfig && isset($this->courseconfig[$prop]) && $this->courseconfig[$prop] != 'sitedefault') {
-            return $this->courseconfig[$prop];
-        }else{
-            return isset($this->adminconfig->{$prop}) ? $this->adminconfig->{$prop} : false;
-        }
-    }
-*/
 
 }//end of class

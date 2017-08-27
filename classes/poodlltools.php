@@ -1896,12 +1896,11 @@ class poodlltools
 		$widgetopts->using_s3 = intval($using_s3);
 
         //recorder order of preference and media skin style
-        $skinstyle = $CFG->filter_poodll_html5recorder_skinstyle_audio;
+        $skinstyle = '';
         switch($mediatype) {
 
             case 'video':
                 $rec_order = explode(',', $CFG->filter_poodll_recorderorder_video);
-                $skinstyle = $CFG->filter_poodll_html5recorder_skinstyle_video;
                 break;
             case 'whiteboard':
                 $rec_order = explode(',', $CFG->filter_poodll_recorderorder_whiteboard);
@@ -1911,13 +1910,11 @@ class poodlltools
                 break;
             case 'audio':
             default:
-                $skinstyle = $CFG->filter_poodll_html5recorder_skinstyle_audio;
                 $rec_order = explode(',', $CFG->filter_poodll_recorderorder_audio);
                 break;
         }
         $widgetopts->rec_order = $rec_order;// array('mobile','media','flashaudio','red5','upload','flash');
-        $widgetopts->media_skin_style= $skinstyle;
-        
+
         //size profile
         if(array_key_exists('size',$hints)){
         	$widgetopts->size= $hints['size'];
@@ -1941,7 +1938,7 @@ class poodlltools
 		}
                 
 		//for mediarecorder amd params
-		$rawparams = self::fetchMediaRecorderAMDParams();
+		$rawparams = self::fetchMediaRecorderAMDParams($mediatype);
 		foreach ($rawparams as $key => $value) {
 						$widgetopts->{$key} = $value;
 		}
@@ -2387,16 +2384,57 @@ class poodlltools
 	 * Fetch any special parameters required by the Media Recorder
 	 *
 	 */
-	public static function fetchMediaRecorderAMDParams()
+	public static function fetchMediaRecorderAMDParams($mediatype)
 	{
-		global $CFG;
+		global $CFG, $COURSE;
+
 		$params=array();
 		$params['media_timeinterval'] = 2000;
 		$params['media_audiomimetype'] = 'audio/webm';//or audio/wav
         $params['media_videorecordertype'] = 'auto';//or mediarec or webp
         $params['media_videocapturewidth'] = 320;
-        $params['media_videocaptureheight'] = 240;   
-        $params['media_skin'] = $CFG->filter_poodll_html5recorder_skin;
+        $params['media_videocaptureheight'] = 240;
+
+        $coursecontext = \context_course::instance($COURSE->id);
+        $localconfig = filtertools::fetch_local_filter_props('poodll',$coursecontext->id);
+        $adminconfig = get_config('filter_poodll');
+
+        switch($mediatype) {
+
+            case 'video':
+
+                $prop= "html5recorder_skin_video";
+                if(isset($localconfig[$prop]) && $localconfig[$prop] != 'sitedefault'){
+                    $params['media_skin'] = $localconfig[$prop];
+                }else{
+                    $params['media_skin'] = $adminconfig->{$prop};
+                }
+
+                $prop= "skinstylevideo";
+                if(isset($localconfig[$prop]) && $localconfig[$prop] != ''){
+                    $params['media_skin_style'] = $localconfig[$prop];
+                }else{
+                    $params['media_skin_style'] = $adminconfig->{$prop};
+                }
+
+                break;
+            case 'audio':
+            default:
+                $prop= "html5recorder_skin_audio";
+                if(isset($localconfig[$prop]) && $localconfig[$prop] != 'sitedefault'){
+                    $params['media_skin'] = $localconfig[$prop];
+                }else{
+                    $params['media_skin'] = $adminconfig->{$prop};
+                }
+
+                $prop= "skinstyleaudio";
+                if(isset($localconfig[$prop]) && $localconfig[$prop] != ''){
+                    $params['media_skin_style'] = $localconfig[$prop];
+                }else{
+                    $params['media_skin_style'] = $adminconfig->{$prop};
+                }
+        }
+
 		return $params;
 	}
         
