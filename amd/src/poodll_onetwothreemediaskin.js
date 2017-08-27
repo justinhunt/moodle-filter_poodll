@@ -43,11 +43,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
         
         fetch_preview_audio: function(skin){
-            var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
+            var preview = '<audio class="poodll_preview_' + skin + ' hide" width="100%" height="100%" controls></audio>';
             return preview;
         },
         fetch_preview_video: function(skin){
-            var preview ='<video class="poodll_preview_' + skin + '" width="320" height="240"></video>';
+            var preview ='<video class="poodll_preview_' + skin + '" width="100%" height="100%"></video>';
             return preview;
         },
         

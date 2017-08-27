@@ -1434,7 +1434,7 @@ audio.poodll_preview_bmr{
 	width: 320px;
 }
 .one-two-three-main-wrapper .one-two-three-wrap button{
-	height: 75px!important;
+	height: 60px!important;
     width: 30% !important;
 }
 .one-two-three-main-wrapper .task-helper{
@@ -1444,7 +1444,7 @@ audio.poodll_preview_bmr{
 .one-two-three-main-wrapper .task-helper p{
     width: 33%;
     float: left;
-    font-size: 24px;
+    font-size: 18px;
 	margin-bottom: 0px;
 }
 .one-two-three-main-wrapper .task-helper i.fa{
@@ -1458,25 +1458,81 @@ audio.poodll_preview_bmr{
 	margin-right: 5px;
 }
 .one-two-three-main-wrapper .one-two-three-wrap button i.fa{
-	font-size: 60px;
+	font-size: 45px;
 	color: #333;
 }
 
+/*
+	recorder-small
+*/
+.poodll_mediarecorder_size_small{
+	width: 300px;
+    margin: 0 auto;
+	padding: 10px;
+}
+
+.poodll_mediarecorder_size_small .one-two-three-wrap button{
+	height: 60px!important;
+    width: 25%!important;
+}
+.poodll_mediarecorder_size_small .one-two-three-wrap button i.fa{
+	font-size: 35px;
+    color: #333;
+}
+.poodll_mediarecorder_size_small .task-helper i.fa{
+	font-size: 24px;	
+}
+.poodll_mediarecorder_size_small .task-helper p{
+	font-size: 14px;
+}
+.poodll_mediarecorder_size_small .task-helper p.step-3{
+	    margin-right: 25px;
+}
+.poodll_mediarecorder_size_small .task-helper p.step-1 {
+    margin-left: 25px;
+}
 
 
+.poodll_mediarecorder_size_small .poodll_preview_burntrose{
+	width: 280px;
+}
+.poodll_mediarecorder_size_small .poodll_mediarecorderbox_standard{
+	width: 285px !important;
+}
+.poodll_mediarecorder_size_small .child{
+	background-size: cover;
+}
+/*
+	recorder-auto
+*/
+.filter_poodll_recorder_placeholder{
+	max-width: 100%;
+	width: 100%;
+}
+.poodll_mediarecorder_size_auto{
+	width: auto;
+}
 
+.poodll_mediarecorder_size_auto .poodll_preview_burntrose{
+	width: 100%;
+}
 
+.poodll_mediarecorder_size_auto .poodll_mediavideobox2{
+    width: 90%!important;
+    margin: 0 auto;
+    background-color: transparent !important;
+    background: none;
+}
+.poodll_mediarecorder_size_auto .poodll_status_burntrose{
+	width: 600px !important;
+    text-align: center;
+    margin: 0 auto;
+}
 
-
-
-
-
-
-
-
-
-
-
+.poodll_mediarecorder_size_auto .one-two-three-wrap{
+	min-width: 200px;
+	max-width: 100%;
+}
 
 
 

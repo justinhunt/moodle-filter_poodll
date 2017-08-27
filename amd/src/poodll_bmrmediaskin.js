@@ -136,11 +136,24 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var ip = this.fetch_instanceprops(controlbarid);
                 var skin_style = ip.config.media_skin_style;
                 
+                var size_class = 'poodll_mediarecorder_size_auto';
+                switch(ip.config.size){
+                	case 'small':
+	                	size_class = 'poodll_mediarecorder_size_small';
+                		break;
+                	case 'big':
+                		size_class = 'poodll_mediarecorder_size_big';
+                		break;
+                	case 'auto':
+	                	size_class = 'poodll_mediarecorder_size_auto';		
+                }
+
+                
                 var record_icon = mediatype=='video' ?  'fa-video-camera' : 'fa-microphone';
 				var recorder_class = mediatype=='video' ?  'poodll_mediarecorder_video' : 'poodll_mediarecorder_audio';
 
                 var controls ='<div class="poodll_mediarecorderholder_bmr poodll_videorecorderholder_bmr ' 
-                	+ recorder_class + '" id="holder_' + controlbarid + '">' ;
+                	+ recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
                 	
                 controls +='<div class="poodll_mediarecorderbox_bmr" id="' + controlbarid + '">' ;
                 controls +='<div class="style-holder ' + skin_style + '">' ;
