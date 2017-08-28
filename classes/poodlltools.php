@@ -2395,7 +2395,11 @@ class poodlltools
         $params['media_videocapturewidth'] = 320;
         $params['media_videocaptureheight'] = 240;
 
-        $coursecontextid = \context_course::instance($COURSE->id)->id;
+		if(array_key_exists('coursecontextid',$hints)){
+        	$coursecontextid = $hints['coursecontextid'];
+        }else{
+        	$coursecontextid = \context_course::instance($COURSE->id)->id;
+        }
         if(array_key_exists('modulecontextid',$hints)){
             $localconfig = filtertools::fetch_local_filter_props('poodll',$hints['modulecontextid']);
         }else{
