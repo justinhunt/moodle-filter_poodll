@@ -332,7 +332,7 @@ button.poodll_mediarecorder_button_onetwothree {
     border-width: 2px;
     background-color: #DDD;
     clear:both;
-    width:320px;
+    width:100%;
 }
 audio.poodll_preview_standard{
     height:37px;
@@ -812,6 +812,7 @@ Default skin for Poodll standard media recorder
     background-color: #fff;
     border: none;
     color: red;
+	width: 100%;
 }
 
 .charcoal button.pmr_disabled{
@@ -974,7 +975,7 @@ Flame skin for Poodll standard media recorder
 .poodll_mediarecorderbox_standard .child{
 	background-image: url([[pix:filter_poodll|child]]);
 	padding: 10px;
-	background-size: 100% 100%;
+	background-size: cover;
 }
 .poodll_mediarecorderbox_standard .filter_poodll_recorder_placeholder  > .child .poodll_mediarecorder_button_standard{
     border: none;
@@ -1535,6 +1536,52 @@ audio.poodll_preview_bmr{
 }
 
 
+
+/*
+	Standard - Charcoal Skin
+*/
+
+.poodll_mediarecorder_size_auto .poodll_mediarecorderbox_standard button{
+	padding: 5px 7px;
+}
+.poodll_mediarecorderholder_standard .poodll_mediarecorderbox_standard .charcoal{
+	background-color: #333;
+	padding:20px;
+}
+.poodll_mediarecorderbox_standard .poodll_status_standard{
+	width: 100% !important;
+}
+.poodll_mediarecorder_size_small .poodll_status_standard .poodll_preview_standard{
+	width: 100% !important;
+}
+.poodll_mediarecorder_size_small .poodll_mediarecorderbox_standard button{
+	padding: 5px;
+}
+
+.poodll_mediarecorder_size_small .poodll_mediarecorderbox_standard .charcoal{
+	padding: 15px;
+}
+
+.poodll_mediarecorder_size_small .poodll_save-recording_standard{
+	width: 100%;
+}
+.poodll_mediarecorder_size_small{
+	border: 1px solid #333;
+}
+.poodll_mediarecorder_size_small .poodll_mediarecorderbox_standard{
+	width: 100% !important;
+}
+
+.poodll_mediarecorder_size_auto{
+	border: 1px solid #333;
+	padding: 20px;
+}
+.poodll_mediarecorder_size_auto .poodll_mediarecorderbox_standard{
+	width: 100%;
+}
+.poodll_mediarecorder_size_auto  .poodll_save-recording_standard{
+	width: 100%;
+}
 
 
 

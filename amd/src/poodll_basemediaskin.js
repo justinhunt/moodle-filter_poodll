@@ -38,7 +38,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },		
 
         fetch_status_bar: function(skin){
-            var status = '<div class="poodll_status_' + skin + '" width="320" height="50">00:00:00</div>';
+            var status = '<div class="poodll_status_' + skin + '" width="100%" height="50">00:00:00</div>';
             return status;
         },
         
@@ -47,7 +47,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return preview;
         },
         fetch_preview_video: function(skin){
-            var preview ='<video class="poodll_preview_' + skin + '" width="320" height="240"></video>';
+            var preview ='<video class="poodll_preview_' + skin + '" width="100%" height="100%"></video>';
             return preview;
         },
         
