@@ -77,14 +77,16 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 			switch(config.mediatype){
                 case 'audio':
                     var preview = theskin.fetch_preview_audio(config.media_skin);
-                    ip.controlbar = this.fetch_controlbar_audio(element,controlbarid, preview);
+                    var resource = theskin.fetch_resource_audio(config.media_skin);
+                    ip.controlbar = this.fetch_controlbar_audio(element,controlbarid, preview, resource);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
                     this.register_events_audio(controlbarid);
                     break;
                 case 'video':
                     var preview = theskin.fetch_preview_video(config.media_skin);
-                    ip.controlbar = this.fetch_controlbar_video(element,controlbarid,preview);
+                    var resource = theskin.fetch_resource_video(config.media_skin);
+                    ip.controlbar = this.fetch_controlbar_video(element,controlbarid,preview,resource);
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
                     this.register_events_video(controlbarid);

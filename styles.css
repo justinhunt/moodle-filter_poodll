@@ -373,6 +373,56 @@ audio.poodll_preview_standard{
 	border: red;
 }
 
+
+/* MEDIA RECORDER FluencyBuilder SKI */
+.poodll_preview_fbuilder{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:100%;
+}
+audio.poodll_preview_fbuilder{
+    height:37px;
+}
+
+.poodll_preview_fbuilder.poodll_recording{
+    border: red;
+}
+
+.poodll_save-recording_fbuilder{
+    clear: both;
+    width:320px;
+}
+
+.poodll_mediarecorderbox_fbuilder {
+    width: 370px;
+    text-align: center;
+}
+
+.poodll_mediarecorder_button_fbuilder {
+    margin: 5px;
+}
+
+.poodll_status_fbuilder{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 8px;
+}
+
+.poodll_status_standard.poodll_recording{
+    color: red;
+    border: red;
+}
+
+
 /* MEDIA RECORDER GOLD SKIN .. */
 .poodll_preview_gold{
     border: black;

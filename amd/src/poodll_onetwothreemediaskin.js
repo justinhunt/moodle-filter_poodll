@@ -50,6 +50,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var preview ='<video class="poodll_preview_' + skin + '" width="100%" height="100%"></video>';
             return preview;
         },
+        fetch_resource_audio: function(skin){
+            var resourceplayer = '';
+            return resourceplayer;
+        },
+        fetch_resource_video: function(skin){
+            var resourceplayer = '';
+            return resourceplayer;
+        },
         
         onMediaError: function(e) {
                 console.error('media error', e);
@@ -114,18 +122,18 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
        },
 
        //insert the control bar and return it to be reused
-        insert_controlbar_video: function(element, controlbarid, preview) {
-            var controlbar = this.prepare_controlbar(element,controlbarid, preview,'video');
+        insert_controlbar_video: function(element, controlbarid, preview, resource) {
+            var controlbar = this.prepare_controlbar(element,controlbarid, preview,resource,'video');
         	return controlbar;
         },
         //insert the control bar and return it to be reused
-        insert_controlbar_audio: function(element,controlbarid, preview){
-        	var controlbar = this.prepare_controlbar(element,controlbarid, preview,'audio');
+        insert_controlbar_audio: function(element,controlbarid, preview, resource){
+        	var controlbar = this.prepare_controlbar(element,controlbarid, preview,resource,'audio');
         	return controlbar;
         },
         
         //insert the control bar and return it to be reused
-        prepare_controlbar: function(element,controlbarid, preview, mediatype){
+        prepare_controlbar: function(element,controlbarid, preview,resource, mediatype){
                 var ip = this.fetch_instanceprops(controlbarid);
                 var skin_style = ip.config.media_skin_style;
                 
