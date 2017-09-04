@@ -5,7 +5,9 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         'filter_poodll/poodll_burntrosemediaskin',
         'filter_poodll/poodll_onetwothreemediaskin',
         'filter_poodll/poodll_goldmediaskin',
-        'filter_poodll/poodll_bmrmediaskin'], function($, log, utils, msr, adapter, uploader,timer,baseskin,burntroseskin,onetwothreeskin,goldskin,bmrskin) {
+        'filter_poodll/poodll_bmrmediaskin',
+        'filter_poodll/poodll_shadowmediaskin',
+    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, msr, adapter, uploader,timer,baseskin,burntroseskin,onetwothreeskin,goldskin,bmrskin,shadowskin,fluencybuilderskin) {
 
     "use strict"; // jshint ;_;
 
@@ -122,6 +124,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 		},
 
         init_skin: function (controlbarid,skinname, instanceprops){
+
             switch (skinname) {
                 case 'onetwothree':
                     this.skins[controlbarid] = onetwothreeskin.clone();
@@ -134,6 +137,12 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                     break;
                 case 'bmr':
                     this.skins[controlbarid] = bmrskin.clone();
+                    break;
+                case 'fluencybuilder':
+                    this.skins[controlbarid] = fluencybuilderskin.clone();
+                    break;
+                case 'shadow':
+                    this.skins[controlbarid] = shadowskin.clone();
                     break;
                 case 'plain':
                 case 'standard':
@@ -382,17 +391,17 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
 
         
-        fetch_controlbar_audio: function(element, controlbarid, preview){
+        fetch_controlbar_audio: function(element, controlbarid, preview, resource){
         	var ip = this.fetch_instanceprops(controlbarid);
         	var skin= this.fetch_skin(controlbarid);
-        	var controlbar = skin.insert_controlbar_audio(element, controlbarid, preview);
+        	var controlbar = skin.insert_controlbar_audio(element, controlbarid, preview, resource);
          	return controlbar;
         },
         
-        fetch_controlbar_video: function(element,controlbarid,preview){
+        fetch_controlbar_video: function(element,controlbarid,preview, resource){
         	var ip = this.fetch_instanceprops(controlbarid);
             var skin= this.fetch_skin(controlbarid);
-            var controlbar = skin.insert_controlbar_video(element, controlbarid, preview);
+            var controlbar = skin.insert_controlbar_video(element, controlbarid, preview, resource);
         	return controlbar;
         }
     };//end of returned object

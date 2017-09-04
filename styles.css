@@ -374,8 +374,8 @@ audio.poodll_preview_standard{
 }
 
 
-/* MEDIA RECORDER FluencyBuilder SKI */
-.poodll_preview_fbuilder{
+/* MEDIA RECORDER Shadow SKIN */
+.poodll_preview_shadow{
     border: black;
     border-style:solid;
     border-width: 2px;
@@ -383,29 +383,79 @@ audio.poodll_preview_standard{
     clear:both;
     width:100%;
 }
-audio.poodll_preview_fbuilder{
+audio.poodll_preview_shadow{
     height:37px;
 }
 
-.poodll_preview_fbuilder.poodll_recording{
+.poodll_preview_shadow.poodll_recording{
     border: red;
 }
 
-.poodll_save-recording_fbuilder{
+.poodll_save-recording_shadow{
     clear: both;
     width:320px;
 }
 
-.poodll_mediarecorderbox_fbuilder {
+.poodll_mediarecorderbox_shadow {
     width: 370px;
     text-align: center;
 }
 
-.poodll_mediarecorder_button_fbuilder {
+.poodll_mediarecorder_button_shadow {
     margin: 5px;
 }
 
-.poodll_status_fbuilder{
+.poodll_status_shadow{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:320px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 8px;
+}
+
+.poodll_status_standard.poodll_recording{
+    color: red;
+    border: red;
+}
+
+
+
+/* MEDIA RECORDER FluencyBuilder SKIN */
+.poodll_preview_fluencybuilder{
+    border: black;
+    border-style:solid;
+    border-width: 2px;
+    background-color: #DDD;
+    clear:both;
+    width:100%;
+}
+audio.poodll_preview_fluencybuilder{
+    height:37px;
+}
+
+.poodll_preview_fluencybuilder.poodll_recording{
+    border: red;
+}
+
+.poodll_save-recording_fluencybuilder{
+    clear: both;
+    width:320px;
+}
+
+.poodll_mediarecorderbox_fluencybuilder {
+    width: 370px;
+    text-align: center;
+}
+
+.poodll_mediarecorder_button_fluencybuilder {
+    margin: 5px;
+}
+
+.poodll_status_fluencybuilder{
     border: black;
     border-style:solid;
     border-width: 2px;

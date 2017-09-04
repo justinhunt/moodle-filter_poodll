@@ -1922,6 +1922,20 @@ class poodlltools
         	$widgetopts->size= 'auto';
         }
 
+        //resource
+        if(array_key_exists('resource',$hints)){
+            $widgetopts->resource= $hints['resource'];
+        }else{
+            $widgetopts->resource= '';
+        }
+
+        //model url
+        if(array_key_exists('resource2',$hints)){
+            $widgetopts->resource2= $hints['resource2'];
+        }else{
+            $widgetopts->resource2= '';
+        }
+
 		//do we use flash on android
         $widgetopts->flashonandroid=$CFG->filter_poodll_flash_on_android;
                 
@@ -2408,6 +2422,7 @@ class poodlltools
         $courseconfig = filtertools::fetch_local_filter_props('poodll',$coursecontextid);
         $adminconfig = get_config('filter_poodll');
 
+
         switch($mediatype) {
 
             case 'video':
@@ -2451,6 +2466,12 @@ class poodlltools
                     $params['media_skin_style'] = $adminconfig->{$prop};
                 }
         }
+
+        //the above mediaskin selection goes out the window if its passed in the hints array
+        if(array_key_exists('mediaskin',$hints)){
+            $params['media_skin']= $hints['mediaskin'];
+        }
+
 
 		return $params;
 	}
