@@ -150,9 +150,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     controls += modelplayer,
                 controls += checkplayer,
                 controls += resourceplayer,
-                controls +=  '<div class="fb_bwrapper bwrapper_play-resource mod_fluencybuilder_autobutton_inactive"><button type="button" class="poodll_mediarecorder_button_fluencybuilder poodll_play-resource_fluencybuilder">' + M.util.get_string('recui_play', 'filter_poodll') + '</button></div>';
-                controls +=  '<div class="fb_bwrapper bwrapper_start-recording mod_fluencybuilder_autobutton_inactive"><button type="button" class="poodll_mediarecorder_button_fluencybuilder poodll_start-recording_fluencybuilder" disabled>' + M.util.get_string('recui_record', 'filter_poodll') + '</button></div>';
-                controls += '<div class="fb_bwrapper bwrapper_play-model mod_fluencybuilder_autobutton_inactive"> <button type="button" class="poodll_mediarecorder_button_fluencybuilder poodll_play-model_fluencybuilder" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button></div>';
+                controls +=  '<div class="fb_bwrapper bwrapper_play-resource mod_fluencybuilder_autobutton_inactive"><button type="button" class="poodll_mediarecorder_button_fluencybuilder poodll_play-resource_fluencybuilder"><i class="fa fa-assistive-listening-systems" aria-hidden="true"></i></button></div>';
+                controls +=  '<div class="fb_bwrapper bwrapper_start-recording mod_fluencybuilder_autobutton_inactive"><button type="button" class="poodll_mediarecorder_button_fluencybuilder poodll_start-recording_fluencybuilder" disabled><i class="fa fa-microphone" aria-hidden="true"></i></button></div>';
+                controls += '<div class="fb_bwrapper bwrapper_play-model mod_fluencybuilder_autobutton_inactive"> <button type="button" class="poodll_mediarecorder_button_fluencybuilder poodll_play-model_fluencybuilder" disabled><i class="fa fa-play-circle" aria-hidden="true"></i></button></div>';
 
                 /* hidden buttons: they still are used internally so we need them, but user doesn't see them */
                 controls += '<button type="button" class="poodll_mediarecorder_button_fluencybuilder poodll_play-recording_fluencybuilder hide">' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';

@@ -1683,5 +1683,84 @@ audio.poodll_preview_bmr{
 	width: 100%;
 }
 
+/*FBMEDIA*/
+
+.poodll_mediarecorderholder_fluencybuilder{
+	width: 120px;
+	padding: 20px;
+	margin: 20px 0px;
+	background-color: rgba(0,0,0,1);
+}
+.poodll_mediarecorderbox_fluencybuilder{
+	width: 100%;
+}
+.fb_bwrapper {
+	border: 0px !important
+}
+.fb_bwrapper button{
+    -webkit-appearance: button;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: none;
+    font-size: 30px;
+    color: #333;	
+}
+
+.mod_fluencybuilder_autobutton_inactive{
+	color: #c2c2c2;
+}
+.mod_fluencybuilder_autobutton_active button{
+	box-shadow:
+        inset 0 0 50px #fff,      /* inner white */
+        inset 20px 0 80px #f0f,   /* inner left magenta short */
+        inset -20px 0 80px #0ff,  /* inner right cyan short */
+        inset 20px 0 300px #f0f,  /* inner left magenta broad */
+        inset -20px 0 300px #0ff, /* inner right cyan broad */
+        0 0 50px #fff,            /* outer white */
+        -10px 0 80px #f0f,        /* outer left magenta */
+        10px 0 80px #0ff;  
+	color: #fff;
+}
+
+
+.mod_fluencybuilder_dialogcontentbox button i.fa{
+	font-size: 50px;
+	color: #333;
+}
+.mod_fluencybuilder_me_play {
+	margin-right: 20px;
+}
+
+.mod_fluencybuilder_dialogcontentbox button.mod_fluencybuilder_me_ok{
+	border: 0px;
+    background-color: transparent
+}
+.mod_fluencybuilder_dialogcontentbox button.mod_fluencybuilder_me_ng{
+	border: 0px;
+    background-color: transparent;
+}
+.mod_fluencybuilder_dialogcontentbox .mod_fluencybuilder_dbutton i.fa:hover{
+	color: cadetblue;
+	-webkit-transition: color 1s ease-out;
+	-moz-transition: color 1s ease-out;
+	-o-transition: color 1s ease-out;
+	transition: color 1s ease-out;
+}
+.mod_fluencybuilder_dialogcontentbox .mod_fluencybuilder_me_play{
+	border: 2px solid;
+	margin-right: 50px;
+}
+.mod_fluencybuilder_dialogcontentbox .mod_fluencybuilder_me_play:hover{
+	border-color: cadetblue;
+	-webkit-transition: border-color 1s ease-out;
+	-moz-transition: border-color 1s ease-out;
+	-o-transition: border-color 1s ease-out;
+	transition: border-color 1s ease-out;
+}
+
+
+
+
 
 
