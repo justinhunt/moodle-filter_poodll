@@ -193,6 +193,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 log.debug('playing type:' + ip.blobs[0].type);
                 switch (ip.blobs[0].type) {
                     case 'audio/wav':
+		    case 'audio/pcm':
                         //log.debug('concat wavs');
                         //mediastreamrecorder adds a header to each wav blob,
                         //we remove them and combine audodata and new header

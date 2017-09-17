@@ -43,6 +43,10 @@ function MediaStreamRecorder(mediaStream) {
             } else if (this.mimeType.indexOf('audio') !== -1) {
                 Recorder = StereoAudioRecorder;
             }
+        //ADDED JUSTIN
+        } else if (IsSafari){
+	        //this.mimeType === 'audio/pcm';
+        	Recorder = StereoAudioRecorder;
         }
 
         // video recorder (in GIF format)
