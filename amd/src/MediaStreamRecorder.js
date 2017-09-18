@@ -32,7 +32,7 @@ function MediaStreamRecorder(mediaStream) {
 
     // void start(optional long timeSlice)
     // timestamp to fire "ondataavailable"
-    this.start = function(timeSlice) {
+    this.start = function(timeSlice,audioctx) {
         var Recorder;
 
         if (typeof MediaRecorder !== 'undefined') {
@@ -43,10 +43,6 @@ function MediaStreamRecorder(mediaStream) {
             } else if (this.mimeType.indexOf('audio') !== -1) {
                 Recorder = StereoAudioRecorder;
             }
-        //ADDED JUSTIN
-        } else if (IsSafari){
-	        //this.mimeType === 'audio/pcm';
-        	Recorder = StereoAudioRecorder;
         }
 
         // video recorder (in GIF format)
@@ -78,7 +74,7 @@ function MediaStreamRecorder(mediaStream) {
 
         // Merge all data-types except "function"
         mediaRecorder = mergeProps(mediaRecorder, this);
-        mediaRecorder.start(timeSlice);
+        mediaRecorder.start(timeSlice,audioctx);
     };
 
     this.onStartedDrawingNonBlankFrames = function() {};
@@ -529,6 +525,8 @@ if (typeof navigator !== 'undefined') {
 }
 
 var IsEdge = navigator.userAgent.indexOf('Edge') !== -1 && (!!navigator.msSaveBlob || !!navigator.msSaveOrOpenBlob);
+//JUSTIN added safari check
+var IsSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 var IsOpera = false;
 if (typeof opera !== 'undefined' && navigator.userAgent && navigator.userAgent.indexOf('OPR/') !== -1) {
@@ -1326,10 +1324,9 @@ if (typeof MediaStreamRecorder !== 'undefined') {
 function StereoAudioRecorder(mediaStream) {
     // void start(optional long timeSlice)
     // timestamp to fire "ondataavailable"
-    this.start = function(timeSlice) {
+    this.start = function(timeSlice,audioctx) {
         timeSlice = timeSlice || 1000;
-
-        mediaRecorder = new StereoAudioRecorderHelper(mediaStream, this);
+        mediaRecorder = new StereoAudioRecorderHelper(mediaStream, this,audioctx);
 
         mediaRecorder.record();
 
@@ -1377,13 +1374,13 @@ if (typeof MediaStreamRecorder !== 'undefined') {
 
 // source code from: http://typedarray.org/wp-content/projects/WebAudioRecorder/script.js
 
-function StereoAudioRecorderHelper(mediaStream, root) {
+function StereoAudioRecorderHelper(mediaStream, root,audioctx) {
 
     // variables    
     var deviceSampleRate = 44100; // range: 22050 to 96000
 
     if (!ObjectStore.AudioContextConstructor) {
-        ObjectStore.AudioContextConstructor = new ObjectStore.AudioContext();
+        ObjectStore.AudioContextConstructor =audioctx;// new ObjectStore.AudioContext();
     }
 
     // check device sample rate

@@ -2405,9 +2405,9 @@ class poodlltools
 		$params=array();
 		$params['media_timeinterval'] = 2000;
 		$params['media_audiomimetype'] = 'audio/webm';//or audio/wav
-        $params['media_videorecordertype'] = 'auto';//or mediarec or webp
-        $params['media_videocapturewidth'] = 320;
-        $params['media_videocaptureheight'] = 240;
+        	$params['media_videorecordertype'] = 'auto';//or mediarec or webp
+        	$params['media_videocapturewidth'] = 320;
+        	$params['media_videocaptureheight'] = 240;
 
 		if(array_key_exists('coursecontextid',$hints)){
         	$coursecontextid = $hints['coursecontextid'];

@@ -44,7 +44,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         	 	        case 'video': 
         	 	                var IsEdge = utils.is_edge() !== -1 &&
         	 	                    (!!navigator.msSaveBlob || !!navigator.msSaveOrOpenBlob);
-        	 	               if(!IsEdge){ret=true;}
+					var IsSafari = utils.is_safari();
+        	 	               if(!IsEdge && ! IsSafari){ret=true;}
         	 	    }
         	 	    if(ret){
         	 	        log.debug('PoodLL Media Recorder: supports this browser');
@@ -59,24 +60,24 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         //into the element passed in. with config
         embed: function(element, config) {
             var that = this;
-			var controlbarid = "filter_poodll_controlbar_" + config.widgetid;
-			this.init_instance_props(controlbarid);
-			var ip = this.fetch_instanceprops(controlbarid);
-			ip.config = config;
-			ip.controlbarid = controlbarid;
-			ip.timeinterval = config.media_timeinterval;
-			ip.audiomimetype = config.media_audiomimetype;
-			ip.videorecordertype = config.media_videorecordertype;
-			ip.videocaptureheight = config.media_videocaptureheight;
+		var controlbarid = "filter_poodll_controlbar_" + config.widgetid;
+		this.init_instance_props(controlbarid);
+		var ip = this.fetch_instanceprops(controlbarid);
+		ip.config = config;
+		ip.controlbarid = controlbarid;
+		ip.timeinterval = config.media_timeinterval;
+		ip.audiomimetype = config.media_audiomimetype;
+		ip.videorecordertype = config.media_videorecordertype;
+		ip.videocaptureheight = config.media_videocaptureheight;
 
-			//init our skin
+	    //init our skin
             var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
 
             //add callbacks for uploadsuccess and upload failure
             ip.config.onuploadsuccess = function(widgetid){that.onUploadSuccess(widgetid,theskin)};
             ip.config.onuploadfailure = function(widgetid){that.onUploadFailure(widgetid,theskin)};
             
-			switch(config.mediatype){
+	    switch(config.mediatype){
                 case 'audio':
                     var preview = theskin.fetch_preview_audio(config.media_skin);
                     var resource = theskin.fetch_resource_audio(config.media_skin);
@@ -95,33 +96,40 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                     break;
                    
             }
-			//init timer
-            ip.timer = timer.clone();
-			ip.timer.init(ip.config.timelimit,function(){
-			            theskin.handle_timer_update(controlbarid);
-					//ip.controlbar.status.html(ip.timer.fetch_display_time());
-					}
-				);
-			 theskin.handle_timer_update(controlbarid);
-			 
+
+		//init timer
+    		ip.timer = timer.clone();
+		ip.timer.init(ip.config.timelimit,function(){
+		            theskin.handle_timer_update(controlbarid);
+				//ip.controlbar.status.html(ip.timer.fetch_display_time());
+				}
+			);
+		 theskin.handle_timer_update(controlbarid);
+		 
         },
+
 		
-		init_instance_props: function(controlbarid){
-			this.instanceprops[controlbarid] = {};
-			this.instanceprops[controlbarid].recorded_index= 0;
-			this.instanceprops[controlbarid].mediaRecorder= null;
-			this.instanceprops[controlbarid].blobs= [];
-			this.instanceprops[controlbarid].timeinterval= 5000;
-			this.instanceprops[controlbarid].audiomimetype= 'audio/webm';
-			this.instanceprops[controlbarid].videorecordertype= 'auto';//mediarec or webp
-			this.instanceprops[controlbarid].videocapturewidth= 320;
-			this.instanceprops[controlbarid].videocaptureheight= 240;
-			this.instanceprops[controlbarid].controlbar= '';
-			this.instanceprops[controlbarid].previewvolume= 1;
-			this.instanceprops[controlbarid].timer= {};
-			this.instanceprops[controlbarid].uploader= {};
-			this.instanceprops[controlbarid].uploaded= false;
-		},
+	init_instance_props: function(controlbarid){
+		this.instanceprops[controlbarid] = {};
+		this.instanceprops[controlbarid].recorded_index= 0;
+		this.instanceprops[controlbarid].mediaRecorder= null;
+		this.instanceprops[controlbarid].blobs= [];
+		this.instanceprops[controlbarid].timeinterval= 5000;
+		this.instanceprops[controlbarid].audiomimetype= 'audio/webm';
+		this.instanceprops[controlbarid].videorecordertype= 'auto';//mediarec or webp
+		this.instanceprops[controlbarid].videocapturewidth= 320;
+		this.instanceprops[controlbarid].videocaptureheight= 240;
+		this.instanceprops[controlbarid].controlbar= '';
+		this.instanceprops[controlbarid].previewvolume= 1;
+		this.instanceprops[controlbarid].timer= {};
+		this.instanceprops[controlbarid].uploader= {};
+		this.instanceprops[controlbarid].uploaded= false;
+
+		//we create the audio context object here because so its created in the init and passed around
+		//video context is associated with a player so it seems to be ok.
+		this.instanceprops[controlbarid].audioctx= new AudioContext();
+		this.instanceprops[controlbarid].previewstillcold= true;
+	},
 
         init_skin: function (controlbarid,skinname, instanceprops){
 
@@ -173,12 +181,30 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         },
         
         captureUserMedia: function(mediaConstraints, successCallback, errorCallback) {
+
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
+
         },
 
         do_start_audio: function(ip,mediaConstraints, onMediaSuccess){
-            ip.blobs=[];
+
+	//we warm up the context object
+	  var ctx = ip.audioctx;
+          var buffer = ctx.createBuffer(1, 1, 22050);
+	  var source = ctx.createBufferSource();
+	  source.buffer = buffer;
+	  source.connect(ctx.destination);
+	  source.start(0);
+	//warmup. the preview object
+	var preview = ip.controlbar.preview;
+	if(ip.previewstillcold && preview && preview.get(0)){
+	  ip.controlbar.preview[0].play();
+	  ip.previewstillcold = false;
+	}
+	
+	    ip.blobs=[];
             this.captureUserMedia(mediaConstraints, onMediaSuccess, this.onMediaError);
+	   
         },
         do_start_video: function(ip, onMediaSuccess){
 
@@ -193,7 +219,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 log.debug('playing type:' + ip.blobs[0].type);
                 switch (ip.blobs[0].type) {
                     case 'audio/wav':
-		    case 'audio/pcm':
+ 		    case 'audio/pcm':
                         //log.debug('concat wavs');
                         //mediastreamrecorder adds a header to each wav blob,
                         //we remove them and combine audodata and new header
@@ -249,6 +275,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             if(ip.blobs && ip.blobs.length > 0){
                 switch(ip.blobs[0].type){
                     case 'audio/wav':
+		    case 'audio/pcm':
                         //mediastreamrecorder adds a header to each wav blob,
                         //we remove them and combine audodata and new header
                         utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
@@ -310,13 +337,46 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
         	log.debug('onmediasuccess');
 
+
+		//this is hacky, but just to make safari work
+		if(utils.is_safari()){
+
+			//fix mime type to wav
+			ip.audiomimetype = 'audio/wav';
+
+			// Select final audio device, if this is safari. Just for me?
+			// desktop safari by default uses first device, not os defailt. Bug I think
+			navigator.mediaDevices.enumerateDevices()
+			.then(function(devices) {
+			  devices.forEach(function(device) {
+			    	
+				if(device.kind=='audioinput'){
+					var constraints = { deviceId: device.deviceId };
+					mediaConstraints.audio=constraints;
+				}
+			  });
+
+			})
+			.catch(function(err) {
+			  console.log(err.name + ": " + err.message);
+			});
+		}
+
+		//really we need to deal with preferences properly
+		//this will get the available media constraints that need to be set like deviceid above
+		/*
+			var sc = navigator.mediaDevices.getSupportedConstraints();
+			log.debug(sc);
+		*/ 
+
+
                 // get blob after specific time interval
                 ip.mediaRecorder= new MediaStreamRecorder(stream);
-               // self.controlbar.preview.attr('src',URL.createObjectURL(stream));
-                ip.mediaRecorder.mimeType = ip.audiomimetype;
+ 		ip.mediaRecorder.mimeType = ip.audiomimetype;
                 ip.mediaRecorder.audioChannels = 1;
-                //ip.mediaRecorder.recorderType = StereoAudioRecorder;
-                ip.mediaRecorder.start(ip.timeinterval);
+		//we pass in the context object because it needs to be activated right on the event.
+		//so its created in the init and passed around
+                ip.mediaRecorder.start(ip.timeinterval,ip.audioctx);
                 log.debug(ip.timeinterval);
                 ip.mediaRecorder.ondataavailable =  function(blob) {
                     log.debug('we got blob');

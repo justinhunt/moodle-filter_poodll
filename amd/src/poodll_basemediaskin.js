@@ -43,11 +43,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
         
         fetch_preview_audio: function(skin){
-            var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
+            var preview = '<audio class="poodll_preview_' + skin + ' playsinline hide" controls></audio>';
             return preview;
         },
         fetch_preview_video: function(skin){
-            var preview ='<video class="poodll_preview_' + skin + '" width="100%" height="100%"></video>';
+            var preview ='<video class="poodll_preview_' + skin + '" playsinline width="100%" height="100%"></video>';
             return preview;
         },
         fetch_resource_audio: function(skin){
@@ -196,6 +196,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var ip = this.fetch_instanceprops(controlbarid);
 
             ip.controlbar.startbutton.click(function() {
+
                 pmr.do_start_audio(ip, mediaConstraints, onMediaSuccess);
 
                 //clear messages
