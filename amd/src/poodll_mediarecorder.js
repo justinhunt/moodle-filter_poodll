@@ -430,7 +430,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             };
             
             var mediaConstraints = this.fetch_audio_constraints(ip);
-            skin.register_controlbar_events_audio(onMediaSuccess, mediaConstraints, controlbarid);
+            skin.register_controlbar_events_audio(onMediaSuccess,  controlbarid);
           
         },//end of register audio events
         
