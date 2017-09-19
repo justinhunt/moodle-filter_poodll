@@ -18,6 +18,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
         init: function(ip, pmr){
             this.instanceprops=ip;
+	    this.instanceprops.warmedup=false;
             this.pmr=pmr;
         },
 
@@ -55,16 +56,16 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return checkplayer;
         },
         fetch_resource_audio: function(skin){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURLx@@" ></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skin){
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" ></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURLx@@" ></video>';
             return resourceplayer;
         },
         fetch_ding_player: function() {
             var skin = 'fluencybuilder';
-            var dingplayer = '<audio class="poodll_dingplayer_' + skin + ' hide"  src="' + M.cfg.wwwroot + '/mod/fluencybuilder/ding.mp3"></audio>';
+            var dingplayer = '<audio class="poodll_dingplayer_' + skin + ' hide"  src="@@DINGURLx@@"></audio>';
             return dingplayer;
         },
         onMediaError: function(e) {
@@ -239,6 +240,22 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
         },
 
+	warmup_recorder: function(controlbarid){
+		var dingurl = M.cfg.wwwroot + '/filter/poodll/ding.mp3';
+		var ip = this.fetch_instanceprops(controlbarid);
+		var model = ip.controlbar.modelplayer.get(0);
+		var ding = ip.controlbar.dingplayer.get(0);
+		var resource = ip.controlbar.resourceplayer.get(0);
+		model.play();
+		model.pause();
+		ding.play();
+		resource.play();
+		$(model).attr('src',ip.config.resource2);
+		$(ding).attr('src',dingurl);
+		$(resource).attr('src',ip.config.resource);
+		ip.warmedup=true;
+	},
+
         register_controlbar_events_audio: function(onMediaSuccess, controlbarid){
             var self = this;
             var pmr=this.pmr;
@@ -246,7 +263,12 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
             //when audio prompt finishes , play ding, then start recording
             //AUTOMATION
-            ip.controlbar.resourceplayer.on('ended',function(){self.play_ding('click_start', controlbarid)});
+            ip.controlbar.resourceplayer.on('ended',function(){
+		if(ip.warmedup){
+			self.play_ding('click_start', controlbarid);
+		}
+	     });
+		
             ip.controlbar.modelplayer.on('ended',function(){
                 self.highlight_button('', controlbarid);
             });
@@ -309,6 +331,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
             //when the play prompt button is pressed
             ip.controlbar.resourcebutton.click(function(){
+
+		self.warmup_recorder(controlbarid);
+
                 self.disable_button(this);
                 var resourceplayer = ip.controlbar.resourceplayer.get(0);
                 resourceplayer.play();
