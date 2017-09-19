@@ -99,6 +99,7 @@ class diagnosticstools {
         }
 
         //get poodll users
+        /*
         $sql="SELECT COUNT(DISTINCT(userid)) as poodllusers FROM {logstore_standard_log} WHERE component = 'filter_poodll' AND timecreated > ?";
         try{
         	$rec = $DB->get_record_sql($sql,array($oneyearago));
@@ -110,7 +111,7 @@ class diagnosticstools {
         }else{
             $ds['poodllusers'] = 'unknown';
         }
-
+	*/
         //site info
 		$ds['wwwroot'] = $CFG->wwwroot;
 		$ds['dirroot'] = $CFG->dirroot;

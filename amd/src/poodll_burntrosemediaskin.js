@@ -240,11 +240,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 return controlbar;
         }, //end of fetch_control_bar_video_burntrose
 
-        register_controlbar_events_video: function(onMediaSuccess, mediaConstraints,controlbarid) {
-              return  this.register_controlbar_events_audio(onMediaSuccess, mediaConstraints,controlbarid);
+        register_controlbar_events_video: function(onMediaSuccess, controlbarid) {
+              return  this.register_controlbar_events_audio(onMediaSuccess, controlbarid);
         },
 
-        register_controlbar_events_audio: function(onMediaSuccess, mediaConstraints,controlbarid){
+        register_controlbar_events_audio: function(onMediaSuccess, controlbarid){
             var self = this;
             var pmr = this.pmr;
             var ip = this.fetch_instanceprops(controlbarid);
@@ -255,7 +255,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //clear messages
                 $('#' + ip.config.widgetid  + '_messages').text('');
 
-                 pmr.do_start_audio(ip, mediaConstraints, onMediaSuccess);
+                 pmr.do_start_audio(ip,  onMediaSuccess);
 
                  ip.controlbar.playermic.hide();
                  ip.controlbar.recordmic.show();

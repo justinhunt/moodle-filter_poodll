@@ -1384,7 +1384,7 @@ audio.poodll_preview_bmr{
     left: 11px;
     font-size: 36px;
     top: 9px;
-    color: #333;
+    color: black; /* #333; */
 	transition: visibility 0s, opacity 0.5s linear;
 }
 .poodll_mediarecorderbox_bmr{

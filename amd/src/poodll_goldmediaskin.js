@@ -184,17 +184,17 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         }, //end of fetch_control_bar_gold
 
 
-        register_controlbar_events_video: function(onMediaSuccess, mediaConstraints, controlbarid) {
-            return this.register_controlbar_events_audio(onMediaSuccess, mediaConstraints, controlbarid);
+        register_controlbar_events_video: function(onMediaSuccess, controlbarid) {
+            return this.register_controlbar_events_audio(onMediaSuccess,controlbarid);
         },
 
-        register_controlbar_events_audio: function(onMediaSuccess, mediaConstraints, controlbarid){
+        register_controlbar_events_audio: function(onMediaSuccess,controlbarid){
             var self = this;
             var pmr=this.pmr;
             var ip = this.fetch_instanceprops(controlbarid);
 
             ip.controlbar.startbutton.click(function() {
-                pmr.do_start_audio(ip, mediaConstraints, onMediaSuccess);
+                pmr.do_start_audio(ip,  onMediaSuccess);
 
                 //clear messages
                 $('#' + ip.config.widgetid  + '_messages').text('');

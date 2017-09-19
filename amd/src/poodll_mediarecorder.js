@@ -127,6 +127,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
 		//we create the audio context object here because so its created in the init and passed around
 		//video context is associated with a player so it seems to be ok.
+		this.instanceprops[controlbarid].useraudiodeviceid= false;
+		this.instanceprops[controlbarid].uservideodeviceid= false;
 		this.instanceprops[controlbarid].audioctx= new AudioContext();
 		this.instanceprops[controlbarid].previewstillcold= true;
 	},
@@ -186,23 +188,30 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
         },
 
-        do_start_audio: function(ip,mediaConstraints, onMediaSuccess){
+        do_start_audio: function(ip, onMediaSuccess){
 
-	//we warm up the context object
-	  var ctx = ip.audioctx;
-          var buffer = ctx.createBuffer(1, 1, 22050);
-	  var source = ctx.createBufferSource();
-	  source.buffer = buffer;
-	  source.connect(ctx.destination);
-	  source.start(0);
-	//warmup. the preview object
-	var preview = ip.controlbar.preview;
-	if(ip.previewstillcold && preview && preview.get(0)){
-	  ip.controlbar.preview[0].play();
-	  ip.previewstillcold = false;
-	}
+			//we warm up the context object
+			var ctx = ip.audioctx;
+			var buffer = ctx.createBuffer(1, 1, 22050);
+			var source = ctx.createBufferSource();
+			source.buffer = buffer;
+			source.connect(ctx.destination);
+			source.start(0);
+			//warmup. the preview object
+			var preview = ip.controlbar.preview;
+			if(ip.previewstillcold && preview && preview.get(0)){
+			  ip.controlbar.preview[0].play();
+			  ip.previewstillcold = false;
+			}
 	
-	    ip.blobs=[];
+	    	ip.blobs=[];
+	    	switch(ip.config.mediatype){
+				case 'audio':
+					var mediaConstraints = this.fetch_audio_constraints(ip);
+					break;
+				case 'video':
+					var mediaConstraints = this.fetch_video_constraints(ip);
+	    	}
             this.captureUserMedia(mediaConstraints, onMediaSuccess, this.onMediaError);
 	   
         },
@@ -219,7 +228,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 log.debug('playing type:' + ip.blobs[0].type);
                 switch (ip.blobs[0].type) {
                     case 'audio/wav':
- 		    case 'audio/pcm':
+ 		    		case 'audio/pcm':
                         //log.debug('concat wavs');
                         //mediastreamrecorder adds a header to each wav blob,
                         //we remove them and combine audodata and new header
@@ -275,7 +284,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             if(ip.blobs && ip.blobs.length > 0){
                 switch(ip.blobs[0].type){
                     case 'audio/wav':
-		    case 'audio/pcm':
+		    		case 'audio/pcm':
                         //mediastreamrecorder adds a header to each wav blob,
                         //we remove them and combine audodata and new header
                         utils.concatenateWavBlobs(ip.blobs,  function(concatenatedBlob) {
@@ -321,61 +330,95 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
         },
 
+		/* fetch the audio constraints for passing to mediastream */
+		fetch_video_constraints: function(ip){
+			 var mediaConstraints = {
+                audio: !IsOpera && !IsEdge,
+                video: true
+            };
+            
+            //check for a user video selected device
+            if(ip.uservideodeviceid){
+            	var constraints = { deviceId: ip.uservideodeviceid};
+				mediaConstraints.video=constraints;
+            }
+            //check for a user audio selected device
+            if(ip.useraudiodeviceid){
+            	var constraints = { deviceId: ip.useraudiodeviceid};
+				mediaConstraints.audio=constraints;
+            }
+            
+            return mediaConstraints;
+		
+		},
+		
+		/* fetch the audio constraints for passing to mediastream */
+		fetch_audio_constraints: function(ip){
+		
+			//really we need to deal with preferences properly
+			//this will get the available media constraints that need to be set like deviceid above
+			/*
+				var sc = navigator.mediaDevices.getSupportedConstraints();
+				log.debug(sc);
+			*/
+		
+			//init return object
+			var mediaConstraints = {
+                audio: true
+            };   
+            
+            //check for a user selected device
+            if(ip.useraudiodeviceid){
+            	var constraints = { deviceId: ip.useraudiodeviceid};
+				mediaConstraints.audio=constraints;
+            	return mediaConstraints;
+            }
+            
+			//this is hacky, but just to make safari work
+			if(utils.is_safari()){
 
+				//fix mime type to wav
+				ip.audiomimetype = 'audio/wav';
+
+				// Select final audio device, if this is safari. Just for me?
+				// desktop safari by default uses first device, not os defailt. Bug I think
+				navigator.mediaDevices.enumerateDevices()
+				.then(function(devices) {
+				  devices.forEach(function(device) {
+					if(device.kind=='audioinput'){
+						var constraints = { deviceId: device.deviceId };
+						mediaConstraints.audio=constraints;
+						log.debug('using audio device');
+						log.debug(device);
+					}
+				  });
+
+				})
+				.catch(function(err) {
+				  console.log(err.name + ": " + err.message);
+				});
+			}//end of if Safari
+			
+			return mediaConstraints;
+		},
         
+        /* register audio events, including those of skin*/
         register_events_audio: function(controlbarid){
         	
 			var self = this;
 			var ip = this.fetch_instanceprops(controlbarid);
 			var skin = this.skins[controlbarid];
 
-            var mediaConstraints = {
-                audio: true
-            };       
-            
             var onMediaSuccess =function(stream) {
 
-        	log.debug('onmediasuccess');
-
-
-		//this is hacky, but just to make safari work
-		if(utils.is_safari()){
-
-			//fix mime type to wav
-			ip.audiomimetype = 'audio/wav';
-
-			// Select final audio device, if this is safari. Just for me?
-			// desktop safari by default uses first device, not os defailt. Bug I think
-			navigator.mediaDevices.enumerateDevices()
-			.then(function(devices) {
-			  devices.forEach(function(device) {
-			    	
-				if(device.kind=='audioinput'){
-					var constraints = { deviceId: device.deviceId };
-					mediaConstraints.audio=constraints;
-				}
-			  });
-
-			})
-			.catch(function(err) {
-			  console.log(err.name + ": " + err.message);
-			});
-		}
-
-		//really we need to deal with preferences properly
-		//this will get the available media constraints that need to be set like deviceid above
-		/*
-			var sc = navigator.mediaDevices.getSupportedConstraints();
-			log.debug(sc);
-		*/ 
-
-
+        		log.debug('onmediasuccess');
+		
                 // get blob after specific time interval
                 ip.mediaRecorder= new MediaStreamRecorder(stream);
- 		ip.mediaRecorder.mimeType = ip.audiomimetype;
+ 				ip.mediaRecorder.mimeType = ip.audiomimetype;
                 ip.mediaRecorder.audioChannels = 1;
-		//we pass in the context object because it needs to be activated right on the event.
-		//so its created in the init and passed around
+				//we pass in the context object because it needs to be activated right on the event.
+				//so its created in the init and passed around
                 ip.mediaRecorder.start(ip.timeinterval,ip.audioctx);
                 log.debug(ip.timeinterval);
                 ip.mediaRecorder.ondataavailable =  function(blob) {
@@ -386,22 +429,18 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 skin.onMediaSuccess_audio(controlbarid);
             };
             
+            var mediaConstraints = this.fetch_audio_constraints(ip);
             skin.register_controlbar_events_audio(onMediaSuccess, mediaConstraints, controlbarid);
           
         },//end of register audio events
         
-        
+        /* fetch the video events */
         register_events_video: function(controlbarid){
 		
 			var self = this;
 			var ip = this.fetch_instanceprops(controlbarid);
             var skin = this.skins[controlbarid];
-        	
-            var mediaConstraints = {
-                audio: !IsOpera && !IsEdge,
-                video: true
-            };
-
+   
             var onMediaSuccess =function(stream) {
 
                 //create recorder
@@ -442,7 +481,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 skin.onMediaSuccess_video(controlbarid);
             };
             
-             skin.register_controlbar_events_video(onMediaSuccess, mediaConstraints,controlbarid);
+             skin.register_controlbar_events_video(onMediaSuccess,controlbarid);
         },//end of register video events
 	   
 	   update_status: function(controlbarid){
