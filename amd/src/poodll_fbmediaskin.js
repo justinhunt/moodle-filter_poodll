@@ -18,7 +18,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
         init: function(ip, pmr){
             this.instanceprops=ip;
-	    this.instanceprops.warmedup=false;
+	    	this.instanceprops.warmedup=false;
             this.pmr=pmr;
         },
 
@@ -241,18 +241,30 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
 
 	warmup_recorder: function(controlbarid){
-		var dingurl = M.cfg.wwwroot + '/filter/poodll/ding.mp3';
-		var ip = this.fetch_instanceprops(controlbarid);
+     	var ip = this.fetch_instanceprops(controlbarid);
+		//warm up preview player and audiocontext
+		this.pmr.warmup_context(ip);
+		this.pmr.warmup_preview(ip);
+		
+		//fetch players and info	
 		var model = ip.controlbar.modelplayer.get(0);
 		var ding = ip.controlbar.dingplayer.get(0);
 		var resource = ip.controlbar.resourceplayer.get(0);
+		
+		//play from players
+		resource.play();
+		ding.play();
 		model.play();
 		model.pause();
-		ding.play();
-		resource.play();
+		
+		
+		
+		//set src on urls
+		var dingurl = M.cfg.wwwroot + '/filter/poodll/ding.mp3';
 		$(model).attr('src',ip.config.resource2);
 		$(ding).attr('src',dingurl);
 		$(resource).attr('src',ip.config.resource);
+		//flag all warmed up
 		ip.warmedup=true;
 	},
 

@@ -187,22 +187,30 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
 
         },
-
-        do_start_audio: function(ip, onMediaSuccess){
-
-			//we warm up the context object
-			var ctx = ip.audioctx;
+        
+        warmup_context: function(ip){
+        	var ctx = ip.audioctx;
 			var buffer = ctx.createBuffer(1, 1, 22050);
 			var source = ctx.createBufferSource();
 			source.buffer = buffer;
 			source.connect(ctx.destination);
 			source.start(0);
-			//warmup. the preview object
-			var preview = ip.controlbar.preview;
+        },
+        warmup_preview: function(ip){
+        	var preview = ip.controlbar.preview;
 			if(ip.previewstillcold && preview && preview.get(0)){
 			  ip.controlbar.preview[0].play();
 			  ip.previewstillcold = false;
 			}
+        
+        },
+        do_start_audio: function(ip, onMediaSuccess){
+
+			//we warm up the context object
+			this.warmup_context(ip);
+			
+			//warmup. the preview object
+			this.warmup_preview(ip);
 	
 	    	ip.blobs=[];
 	    	switch(ip.config.mediatype){

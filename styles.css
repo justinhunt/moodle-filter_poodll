@@ -1704,6 +1704,7 @@ audio.poodll_preview_bmr{
     border-radius: 50%;
     border: none;
     font-size: 30px;
+    padding: 0px;
     color: #333;	
 }
 
