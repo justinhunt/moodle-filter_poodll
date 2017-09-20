@@ -90,11 +90,11 @@ public static function fetch_general_items(){
 
     //PoodLL player type settings.
     $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_audio', get_string('recorderorder_audio', 'filter_poodll'),
-                    get_string('recorderorder_audio_desc', 'filter_poodll'), 'mobile,media,flashaudio,red5,upload',PARAM_TEXT);
+                    get_string('recorderorder_audio_desc', 'filter_poodll'), 'media,mobile,flashaudio,red5,upload',PARAM_TEXT);
 
     //PoodLL player type settings.
     $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_video', get_string('recorderorder_video', 'filter_poodll'),
-        get_string('recorderorder_video_desc', 'filter_poodll'), 'mobile,media,red5,upload',PARAM_TEXT);
+        get_string('recorderorder_video_desc', 'filter_poodll'), 'media,mobile,red5,upload',PARAM_TEXT);
 
     //PoodLL player type settings.
     $items[] = new \admin_setting_configtext('filter_poodll_recorderorder_whiteboard', get_string('recorderorder_whiteboard', 'filter_poodll'),
