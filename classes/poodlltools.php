@@ -1765,9 +1765,9 @@ class poodlltools
 				}else{
 					$filerecord->filename = $convfilename;
 				}
-				//error_log('we converted successfully');
+
 				$stored_file = 	$fs->create_file_from_pathname($filerecord, $tempdir . $convfilename);
-				//error_log('we stashed successfully');
+
 				//need to kill the two temp files here
 				if(is_readable(realpath($tempdir . $convfilename))){
 					unlink(realpath($tempdir . $convfilename));

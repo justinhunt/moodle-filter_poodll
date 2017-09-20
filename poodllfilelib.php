@@ -213,7 +213,7 @@ function filter_poodll_uploadfile($filedata,  $fileextension, $mediatype, $actio
 
 	//setup our return object
 	$return=filter_poodll_fetchReturnArray(true);
-//error_log('FE:' . $fileextension);
+
 	//make sure nobodyapassed in a bogey file extension
 	switch($fileextension){
 		case "mp3":

@@ -114,14 +114,14 @@ class adhoc_s3_move extends \core\task\adhoc_task {
     		if($diffInSeconds > (60 * 60 * 2) || $giveup){
     			//we do not retry after two hours, we just report an error and return quietly
                 $errorstring .= ' :will not retry';
-                error_log('s3file:' . $errorstring);
+                mtrace('s3file:' . $errorstring);
                 //send to debug log
                 $this->send_debug_data($errorcode,
                     $errorstring,$userid,$contextid);
     		}else{
                 $errorstring .= ' :will retry';
-                error_log(print_r($cd,true));
-                error_log('s3file:' . $errorstring);
+                mtrace(print_r($cd,true));
+                mtrace('s3file:' . $errorstring);
                 //send to debug log
                 $this->send_debug_data($errorcode,
                     $errorstring,$userid,$contextid);

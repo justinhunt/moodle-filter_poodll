@@ -144,8 +144,8 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 
             throw new \file_exception('storedfileproblem', $errorstring);
 		}else{
-			error_log('storedfileproblem:' . $errorstring);
-			error_log(print_r($cd,true));
+			mtrace('storedfileproblem:' . $errorstring);
+			mtrace(print_r($cd,true));
 
             $this->send_debug_data($errorcode,
                 $errorstring,$userid,$contextid);
