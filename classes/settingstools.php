@@ -143,8 +143,6 @@ public static function fetch_general_items(){
 	$options = array('normal' => get_string('normal', 'filter_poodll'), 'tiny' => get_string('tiny', 'filter_poodll'));
 	$items[] = new \admin_setting_configselect('filter_poodll_mp3recorder_size', get_string('size', 'filter_poodll'), '', 'normal', $options);
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_miccanpause', get_string('miccanpause', 'filter_poodll'), '', 0);
-	$items[] = new \admin_setting_configtext('filter_poodll_mp3skin', get_string('mp3skin', 'filter_poodll'), 
-			get_string('mp3skin_details', 'filter_poodll'), 'none');
 	$items[] = new \admin_setting_configcheckbox('filter_poodll_mp3recorder_nocloud', get_string('mp3_nocloud', 'filter_poodll'), get_string('mp3_nocloud_details', 'filter_poodll'), 0);
 
    //html5 recorder settings.
