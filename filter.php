@@ -228,6 +228,13 @@ class filter_poodll extends moodle_text_filter {
 			if(empty($filterprops['TITLE'])){return $link[0];}
 		}
 
+		//if this was a link but it had a "nopoodll" class on it then we ought to ignore it
+        if($ext) {
+            if (preg_match('/class="[^"]*nopoodll/i', $link[0])) {
+                return $link[0];
+            }
+        }
+
 		//if we want to ignore the filter (for "how to use poodll" or "cut and paste" this style use) we let it go
 		//to use this, make the last parameter of the filter passthrough=1
 		if (!empty($filterprops['passthrough'])) return str_replace( ",passthrough=1","",$link[0]);
