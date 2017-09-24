@@ -1,5 +1,12 @@
 Change List
 =========
+Version 3.0.54(Build 2017092401)
+-support for iOS html5 audio recording
+-support for recorders as widgets
+-removed unneeded AWS libs to trim size and possible issues
+-removed legacy mp3 recorder skins
+-tweaks to remove certain calls to file_put_contents in 3rd party libs
+
 Version 3.0.53(Build 2017082601)
 -More and better recorder skins
 -Support for hints so we can set recorder sizes and skins at diff levels
