@@ -156,7 +156,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 	                	size_class = 'poodll_mediarecorder_size_auto';		
                 }
 
-                
+                var ss = this.pmr.fetch_strings();
+				var hideshowupload = ip.showupload ? '' : 'hide';
                 var record_icon = mediatype=='video' ?  'fa-video-camera' : 'fa-microphone';
 				var recorder_class = mediatype=='video' ?  'poodll_mediarecorder_video' : 'poodll_mediarecorder_audio';
 
@@ -173,7 +174,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_stop-recording_bmr bmr_disabled" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_pause-recording_bmr bmr_disabled" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
                 controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_play-recording_bmr bmr_disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></button>';
-                controls += '<button type="button" class="poodll_save-recording_bmr" disabled>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+                controls += '<button type="button" class="poodll_save-recording_bmr ' + hideshowupload + '" disabled>' + ss['recui_save'] +'</button>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
                 var controlbar ={

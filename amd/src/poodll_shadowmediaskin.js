@@ -43,7 +43,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
         
         fetch_preview_audio: function(skin){
-            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" ></audio>';
+            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" controls></audio>';
             return checkplayer;
         },
         fetch_preview_video: function(skin){
@@ -152,7 +152,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 	                	size_class = 'poodll_mediarecorder_size_auto';		
                 }
 
-
+				var ss = this.pmr.fetch_strings();
                 var controls ='<div class="poodll_mediarecorderholder_shadow '
                 	+ recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
                 	
@@ -161,12 +161,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var status = this.fetch_status_bar('shadow');
                 controls += status,
                 controls += checkplayer,
-                    controls += resourceplayer,
-                    controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_play-resource_shadow">' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_start-recording_shadow">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-recording_shadow pmr_disabled hide" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_play-recording_shadow pmr_disabled" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+                controls += resourceplayer,
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_play-resource_shadow">' + ss['recui_play'] +  '</button>';
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-resource_shadow  hide">' + ss['recui_stop'] +  '</button>';
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_start-recording_shadow">' + ss['recui_record'] +  '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-recording_shadow pmr_disabled hide" disabled>' + ss['recui_stop'] +  '</button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_play-recording_shadow pmr_disabled" disabled>' + ss['recui_play'] +  '</button>';
+                controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
 
@@ -174,7 +175,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     status: $('#' + controlbarid + '  .poodll_status_shadow'),
                     resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_shadow'),
                     checkplayer: $('#' + controlbarid + '  .poodll_checkplayer_shadow'),
-                    resourcebutton: $('#' + controlbarid + '  .poodll_play-resource_shadow'),
+                    resourceplaybutton: $('#' + controlbarid + '  .poodll_play-resource_shadow'),
+                    resourcestopbutton: $('#' + controlbarid + '  .poodll_stop-resource_shadow'),
                     startbutton: $('#' + controlbarid + '  .poodll_start-recording_shadow'),
                     stopbutton: $('#' + controlbarid + '  .poodll_stop-recording_shadow'),
                     playbutton: $('#' + controlbarid + '  .poodll_play-recording_shadow'),
@@ -195,6 +197,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
             ip.controlbar.startbutton.click(function() {
                 pmr.do_start_audio(ip, onMediaSuccess);
+                //also start the model audio playback
+                ip.controlbar.resourceplaybutton.click();
 
                 //clear messages
                 $('#' + ip.config.widgetid  + '_messages').text('');
@@ -214,8 +218,15 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
             
             ip.controlbar.stopbutton.click(function() {
-
+				 pmr.do_stop_audio(ip);
                 self.disable_button(this);
+                var preview = ip.controlbar.checkplayer;
+                if(preview && preview.get(0)){
+                    preview.get(0).pause();
+                }
+                
+                
+                
                 ip.controlbar.stopbutton.hide();
                 self.enable_button(ip.controlbar.startbutton);
                 ip.controlbar.startbutton.show();
@@ -225,6 +236,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                //timer and status bar
                ip.timer.stop()
                self.update_status(controlbarid);
+               
+               //stop model playback
+               ip.controlbar.resourcestopbutton.click();
 
 
               if(!self.uploaded){
@@ -239,14 +253,26 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var checkplayer = ip.controlbar.checkplayer.get(0);
                 pmr.do_play_audio(ip,checkplayer);
 
-                self.enable_button(ip.controlbar.stopbutton);
-                self.disable_button(ip.controlbar.startbutton);
-                self.disable_button(ip.controlbar.savebutton);
+               // self.enable_button(ip.controlbar.stopbutton);
+               // self.disable_button(ip.controlbar.startbutton);
+               // self.disable_button(ip.controlbar.savebutton);
             });
 
-            ip.controlbar.resourcebutton.click(function(){
+            ip.controlbar.resourceplaybutton.click(function(){
                 var resourceplayer = ip.controlbar.resourceplayer.get(0);
                 resourceplayer.play();
+                resourceplayer.currentTime = 0;
+                 $(this).hide();
+                ip.controlbar.resourcestopbutton.show();
+                
+            });
+            
+             ip.controlbar.resourcestopbutton.click(function(){
+                var resourceplayer = ip.controlbar.resourceplayer.get(0);
+                resourceplayer.pause();
+                $(this).hide();
+                ip.controlbar.resourceplaybutton.show();
+                
             });
 
            ip.controlbar.savebutton.click(function() {
@@ -268,7 +294,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 if(checkplayer && checkplayer.get(0)){
                     checkplayer.get(0).pause();
                 }
-            };
+            };           
+            
         }, //end of register_control_bar_events_shadow
 
         enable_button: function(button){

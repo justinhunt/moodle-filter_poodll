@@ -161,9 +161,9 @@ define(['jquery','core/log'], function($, log) {
             return navigator.userAgent.indexOf('Edge');
         },
 
-	is_safari: function(){
-		return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-	},
+		is_safari: function(){
+			return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+		},
 
         is_ios: function(){
             return  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;

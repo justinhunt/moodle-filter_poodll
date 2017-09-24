@@ -39,12 +39,16 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         	 	    var ret = false;
         	 	    switch(config.mediatype){
         	 	        case 'audio': 
+        	 	        	//sadly desktop safari has a bug which prevents us enabling it
+        	 	        	if(utils.is_safari() && !(utils.is_ios())){
+        	 	        		ret =false;
+        	 	        	}
         	 	            ret = true;
         	 	             break;
         	 	        case 'video': 
         	 	                var IsEdge = utils.is_edge() !== -1 &&
         	 	                    (!!navigator.msSaveBlob || !!navigator.msSaveOrOpenBlob);
-					var IsSafari = utils.is_safari();
+								var IsSafari = utils.is_safari();
         	 	               if(!IsEdge && ! IsSafari){ret=true;}
         	 	    }
         	 	    if(ret){
@@ -65,6 +69,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 		var ip = this.fetch_instanceprops(controlbarid);
 		ip.config = config;
 		ip.controlbarid = controlbarid;
+		if(config.hideupload){ip.showupload=false;}
 		ip.timeinterval = config.media_timeinterval;
 		ip.audiomimetype = config.media_audiomimetype;
 		ip.videorecordertype = config.media_videorecordertype;
@@ -85,6 +90,14 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
                     this.register_events_audio(controlbarid);
+                    navigator.mediaDevices.getUserMedia({"audio": true});
+                    //force permissions;
+                    /*
+                    navigator.mediaDevices.getUserMedia({"audio": true}).
+                    then(this.fetch_audio_constraints(ip)).
+                    catch(function(){log.debug('no permission')});
+                    */
+		
                     break;
                 case 'video':
                     var preview = theskin.fetch_preview_video(config.media_skin);
@@ -93,6 +106,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
                     this.register_events_video(controlbarid);
+                    navigator.mediaDevices.getUserMedia({"audio": true,"video": true});
                     break;
                    
             }
@@ -122,6 +136,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 		this.instanceprops[controlbarid].controlbar= '';
 		this.instanceprops[controlbarid].previewvolume= 1;
 		this.instanceprops[controlbarid].timer= {};
+		this.instanceprops[controlbarid].timer= {};
+		this.instanceprops[controlbarid].showupload=true;
 		this.instanceprops[controlbarid].uploader= {};
 		this.instanceprops[controlbarid].uploaded= false;
 
@@ -129,8 +145,12 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 		//video context is associated with a player so it seems to be ok.
 		this.instanceprops[controlbarid].useraudiodeviceid= false;
 		this.instanceprops[controlbarid].uservideodeviceid= false;
+		this.instanceprops[controlbarid].devices= [];
 		this.instanceprops[controlbarid].audioctx= new AudioContext();
 		this.instanceprops[controlbarid].previewstillcold= true;
+		
+		
+		
 	},
 
         init_skin: function (controlbarid,skinname, instanceprops){
@@ -183,7 +203,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         },
         
         captureUserMedia: function(mediaConstraints, successCallback, errorCallback) {
-
+		//log.debug(mediaConstraints);
+		//log.debug('printed nedia constraints');
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
 
         },
@@ -354,10 +375,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             if(ip.useraudiodeviceid){
             	var constraints = { deviceId: ip.useraudiodeviceid};
 				mediaConstraints.audio=constraints;
-            }
-            
+            } 
             return mediaConstraints;
-		
 		},
 		
 		/* fetch the audio constraints for passing to mediastream */
@@ -375,28 +394,28 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 audio: true
             };   
             
-            //check for a user selected device
-            if(ip.useraudiodeviceid){
-            	var constraints = { deviceId: ip.useraudiodeviceid};
-				mediaConstraints.audio=constraints;
-            	return mediaConstraints;
-            }
-            
-			//this is hacky, but just to make safari work
-			if(utils.is_safari()){
+            //this is as good a place as any to force safari to audio/wav
+            if(utils.is_safari() && !ip.useraudiodeviceid && false){
+				//fix mime type to wav
+				ip.audiomimetype = 'audio/wav';
+			}
+			
+            //tried Oh so hard on this but just gave up. Its buggy and flakey and a drag
+            // desktop safari uses first device, not os defailt. its a bug of some sort
+            //sorry Safari. I got it going one day, and then it never worked again ...
+			if(utils.is_safari() && !ip.useraudiodeviceid && false){
 
 				//fix mime type to wav
 				ip.audiomimetype = 'audio/wav';
 
-				// Select final audio device, if this is safari. Just for me?
-				// desktop safari by default uses first device, not os defailt. Bug I think
+				// Select final audio device, 
 				navigator.mediaDevices.enumerateDevices()
 				.then(function(devices) {
 				  devices.forEach(function(device) {
 					if(device.kind=='audioinput'){
-						var constraints = { deviceId: device.deviceId };
-						mediaConstraints.audio=constraints;
-						log.debug('using audio device');
+						ip.useraudiodeviceid = device.deviceId;
+						//mediaConstraints.audio=constraints;
+						//log.debug('using audio device');
 						log.debug(device);
 					}
 				  });
@@ -406,6 +425,12 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 				  console.log(err.name + ": " + err.message);
 				});
 			}//end of if Safari
+            
+            //check for a user selected device
+            if(ip.useraudiodeviceid){
+            	var constraints = { "deviceId": ip.useraudiodeviceid};
+				mediaConstraints.audio=constraints;
+            }
 			
 			return mediaConstraints;
 		},
@@ -418,9 +443,8 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 			var skin = this.skins[controlbarid];
 
             var onMediaSuccess =function(stream) {
-
         		log.debug('onmediasuccess');
-		
+       
                 // get blob after specific time interval
                 ip.mediaRecorder= new MediaStreamRecorder(stream);
  				ip.mediaRecorder.mimeType = ip.audiomimetype;
@@ -436,8 +460,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 
                 skin.onMediaSuccess_audio(controlbarid);
             };
-            
-            var mediaConstraints = this.fetch_audio_constraints(ip);
+
             skin.register_controlbar_events_audio(onMediaSuccess,  controlbarid);
           
         },//end of register audio events
@@ -511,6 +534,16 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             var skin= this.fetch_skin(controlbarid);
             var controlbar = skin.insert_controlbar_video(element, controlbarid, preview, resource);
         	return controlbar;
+        }, 
+        
+        fetch_strings: function(){
+        	var ss = [];
+        	var keys =['record','play','pause','continue','stop','save'];
+        	$.each(keys, function (index, key) {
+        		ss['recui_' + key]=M.util.get_string('recui_' + key, 'filter_poodll');
+        		if(ss['recui_' + key].indexOf(',filter_poodll]]') > 1){ss['recui_' + key]=key};
+        	});
+        	return ss;
         }
     };//end of returned object
 });//total end

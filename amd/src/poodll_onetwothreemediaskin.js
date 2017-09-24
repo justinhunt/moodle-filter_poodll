@@ -150,7 +150,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 	case 'auto':
 	                	size_class = 'poodll_mediarecorder_size_auto';		
                 }
-
+				var ss = this.pmr.fetch_strings();
                 var controls ='<div class="one-two-three-main-wrapper poodll_mediarecorderholder_onetwothree ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
                 	
 					controls +='<div class="poodll_mediarecorderbox_onetwothree one-two-three-wrap" id="' + controlbarid + '">' ;
@@ -167,9 +167,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_save-recording_onetwothree pmr_disabled" disabled><i class="fa fa-upload" aria-hidden="true"></i></button>';
 							controls += '<div style="clear:both;">';
 							controls += '<div class="task-helper">';
-								controls += '<p class="step-1">'+ M.util.get_string('recui_record', 'filter_poodll') +'</p>';
-								controls += '<p class="step-2">' + M.util.get_string('recui_play', 'filter_poodll') + '</p>';
-								controls += '<p class="step-3">' + M.util.get_string('recui_save', 'filter_poodll') + '</p>';
+								controls += '<p class="step-1">'+ ss['recui_record'] +'</p>';
+								controls += '<p class="step-2">' + ss['recui_play'] +'</p>';
+								controls += '<p class="step-3">' + ss['recui_save'] + '</p>';
 							controls += '</div>';
 						controls += '</div>';
 					controls += '</div>';
@@ -207,7 +207,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         
         
             ip.controlbar.startbutton.click(function() {
-                 log.debug('video starting');
+  
                 pmr.do_start_audio(ip, onMediaSuccess);
 
                 //clear messages
