@@ -90,7 +90,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element,config);
                     this.register_events_audio(controlbarid);
-                    navigator.mediaDevices.getUserMedia({"audio": true});
+                    //navigator.mediaDevices.getUserMedia({"audio": true});
                     //force permissions;
                     /*
                     navigator.mediaDevices.getUserMedia({"audio": true}).
@@ -403,7 +403,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
             //tried Oh so hard on this but just gave up. Its buggy and flakey and a drag
             // desktop safari uses first device, not os defailt. its a bug of some sort
             //sorry Safari. I got it going one day, and then it never worked again ...
-			if(utils.is_safari() && !ip.useraudiodeviceid && false){
+			if(utils.is_safari() && !ip.useraudiodeviceid ){
 
 				//fix mime type to wav
 				ip.audiomimetype = 'audio/wav';
