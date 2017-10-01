@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.0.55(Build 2017092601)
+-fixed display and volume button bugs in multi/twice/thriceplayers
+
 Version 3.0.54(Build 2017092401)
 -support for iOS html5 audio recording
 -support for recorders as widgets

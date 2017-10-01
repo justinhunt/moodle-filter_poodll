@@ -292,7 +292,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
                 }//end of switch
                 
                 //Click the stop button if playback ends;
-                preview.onended=function(){ip.controlbar.stopbutton.click();};
+                $(preview).bind('ended',function(){ip.controlbar.stopbutton.click();});
                 
             }//end of if blobs
         },

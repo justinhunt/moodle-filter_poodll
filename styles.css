@@ -375,6 +375,14 @@ audio.poodll_preview_standard{
 
 
 /* MEDIA RECORDER Shadow SKIN */
+
+.poodll_mediarecorderholder_shadow{
+    width: 370px !important;
+	height: auto;
+	padding: 0px !important;
+	margin: 0 auto;
+}
+
 .poodll_preview_shadow{
     border: black;
     border-style:solid;
@@ -383,6 +391,69 @@ audio.poodll_preview_standard{
     clear:both;
     width:100%;
 }
+.poodll_mediarecorderbox_shadow button{
+    width: 25%;
+    height: 150px;
+    margin-bottom: 10px;
+    border-radius: 5%;
+    border: 0;
+    background-color: #0040ad;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.poodll_mediarecorderbox_shadow hr{
+ border: none;
+}
+
+button.poodll_mediarecorder_button_shadow.poodll_play-resource_shadow
+{
+    background-color: #009e0f;
+}
+button.poodll_mediarecorder_button_shadow.poodll_stop-resource_shadow
+{
+    background-color: #009e0f;
+}
+button.poodll_mediarecorder_button_shadow.poodll_start-recording_shadow{
+    background-color: #2b78e4;
+}
+button.poodll_mediarecorder_button_shadow.poodll_stop-recording_shadow{
+    background-color: #cc0000;
+}
+button.poodll_mediarecorder_button_shadow.poodll_playback-recording_shadow
+{
+    background-color: #ff00ff;
+}
+button.poodll_mediarecorder_button_shadow.poodll_stopplayback-recording_shadow
+{
+    background-color: #ff00ff;
+}
+
+
+/* ANIMATION */
+.shadow-active{
+	-webkit-animation: POODLL-BUTTON-ANIMATION 1s infinite;
+    -moz-animation: POODLL-BUTTON-ANIMATION 1s infinite;
+    -o-animation: POODLL-BUTTON-ANIMATION 1s infinite;
+    animation: POODLL-BUTTON-ANIMATION 1s infinite;
+}
+@-webkit-keyframes POODLL-BUTTON-ANIMATION{
+  0%, 49% {
+    background-color: rgba(0, 64, 173, 1);
+    border: 3px solid rgba(212, 116, 41, 1);
+  }
+  50%, 100% {
+    background-color: rgba(212, 116, 41, 1);
+    border: 3px solid rgba(0, 64, 173, 1);
+  }
+}
+
+
+
+
+
+
 audio.poodll_preview_shadow{
     height:37px;
 }
@@ -406,9 +477,6 @@ audio.poodll_preview_shadow{
 }
 
 .poodll_status_shadow{
-    border: black;
-    border-style:solid;
-    border-width: 2px;
     background-color: #DDD;
     clear:both;
     width:320px;
@@ -1726,9 +1794,6 @@ audio.poodll_preview_bmr{
 	-o-transition: border-color 1s ease-out;
 	transition: border-color 1s ease-out;
 }
-
-
-
 
 
 
