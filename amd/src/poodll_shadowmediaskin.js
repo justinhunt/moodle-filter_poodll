@@ -10,6 +10,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         instanceprops: null,
         pmr: null,
         uploaded: false,
+        recorded: false,
+        mustResetResourcePlayer : false,
 
         //for making multiple instances
         clone: function(){
@@ -43,7 +45,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
         
         fetch_preview_audio: function(skin){
-            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" ></audio>';
+            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" controls></audio>';
             return checkplayer;
         },
         fetch_preview_video: function(skin){
@@ -51,7 +53,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return checkplayer;
         },
         fetch_resource_audio: function(skin){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" playsinline controls></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skin){
@@ -91,30 +93,104 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
 
         //set visuals for different states (ie recording or playing)
-        set_visual_mode: function(mode, controlbarid){
+        set_visual_mode: function(mode, ip){
             var self = this;
-            var ip = this.fetch_instanceprops(controlbarid);
 
            switch(mode){
 
-               case 'recordmode':
-                    ip.controlbar.checkplayer.addClass('poodll_recording');
-                    ip.controlbar.status.addClass('poodll_recording');
-                    if(ip.config.mediatype=='audio'){
-                        ip.controlbar.checkplayer.addClass('hide');
-                    }
-                    ip.controlbar.status.removeClass('hide');
+               case 'recordingmode':
+               //hide  buttons
+              	self.disable_button(ip.controlbar.startbutton);
+                ip.controlbar.startbutton.hide();
+                 self.disable_button(ip.controlbar.stopplaybackbutton);
+                ip.controlbar.stopplaybackbutton.hide();
+                self.disable_button(ip.controlbar.resourcestopbutton);
+                ip.controlbar.resourcestopbutton.hide();
+                  
+                
+                //show  buttons  
+                self.enable_button(ip.controlbar.stopbutton);
+                ip.controlbar.stopbutton.show();
+                self.disable_button(ip.controlbar.playbackbutton);
+                ip.controlbar.playbackbutton.show();
+                self.disable_button(ip.controlbar.resourceplaybutton);
+                ip.controlbar.resourceplaybutton.show();
+               
+                break;
+
                     break;
 
-               case 'previewmode':
-                    ip.controlbar.checkplayer.removeClass('poodll_recording');
-                    ip.controlbar.status.removeClass('poodll_recording');
-                    break;
+               case 'resourceplayingmode':
+               //hide  buttons
+              	self.disable_button(ip.controlbar.stopbutton);
+                ip.controlbar.stopbutton.hide();
+                 self.disable_button(ip.controlbar.playbackbutton);
+                ip.controlbar.playbackbutton.hide();
+                self.disable_button(ip.controlbar.resourceplaybutton);
+                ip.controlbar.resourceplaybutton.hide(); 
+                
+                //show buttons  
+                self.disable_button(ip.controlbar.startbutton);
+                ip.controlbar.startbutton.show();
+                self.disable_button(ip.controlbar.stopplaybackbutton);
+                ip.controlbar.stopplaybackbutton.show();
+                self.enable_button(ip.controlbar.resourcestopbutton);
+                ip.controlbar.resourcestopbutton.show();
+                break;
 
-               case 'pausedmode':
-                    ip.controlbar.checkplayer.removeClass('poodll_recording');
-                    ip.controlbar.status.removeClass('poodll_recording');
+               case 'playingbackmode':
+               	//hide  buttons
+              	self.disable_button(ip.controlbar.stopbutton);
+                ip.controlbar.stopbutton.hide();
+                 self.disable_button(ip.controlbar.playbackbutton);
+                ip.controlbar.playbackbutton.hide();
+                self.disable_button(ip.controlbar.resourcestopbutton);
+                ip.controlbar.resourcestopbutton.hide();
+                
+                //show buttons  
+                self.disable_button(ip.controlbar.startbutton);
+                ip.controlbar.startbutton.show();
+                self.enable_button(ip.controlbar.stopplaybackbutton);
+                ip.controlbar.stopplaybackbutton.show();
+                self.disable_button(ip.controlbar.resourceplaybutton);
+                ip.controlbar.resourceplaybutton.show(); 
+                break;
+            
+               case 'neverrecordedmode':
+               	//hide buttons
+              	self.disable_button(ip.controlbar.stopbutton);
+                ip.controlbar.stopbutton.hide();
+                self.disable_button(ip.controlbar.stopplaybackbutton);
+                ip.controlbar.stopplaybackbutton.hide();
+                self.disable_button(ip.controlbar.resourcestopbutton);
+                ip.controlbar.resourcestopbutton.hide();
+              
+              //show  buttons  
+                self.enable_button(ip.controlbar.startbutton);
+                ip.controlbar.startbutton.show();
+                self.disable_button(ip.controlbar.playbackbutton);
+                ip.controlbar.playbackbutton.show();
+                self.enable_button(ip.controlbar.resourceplaybutton);
+                ip.controlbar.resourceplaybutton.show(); 
                     break;
+                    
+              case 'allstoppedmode':
+              //hide buttons
+              	self.disable_button(ip.controlbar.stopbutton);
+                ip.controlbar.stopbutton.hide();
+                self.disable_button(ip.controlbar.stopplaybackbutton);
+                ip.controlbar.stopplaybackbutton.hide();
+                self.disable_button(ip.controlbar.resourcestopbutton);
+                ip.controlbar.resourcestopbutton.hide();
+              
+              //show  buttons  
+                self.enable_button(ip.controlbar.startbutton);
+                ip.controlbar.startbutton.show();
+                self.enable_button(ip.controlbar.playbackbutton);
+                ip.controlbar.playbackbutton.show();
+                self.enable_button(ip.controlbar.resourceplaybutton);
+                ip.controlbar.resourceplaybutton.show();    
+                break;
            }
 
        },
@@ -152,7 +228,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 	                	size_class = 'poodll_mediarecorder_size_auto';		
                 }
 
-
+				var ss = this.pmr.fetch_strings();
                 var controls ='<div class="poodll_mediarecorderholder_shadow '
                 	+ recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
                 	
@@ -161,12 +237,35 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var status = this.fetch_status_bar('shadow');
                 controls += status,
                 controls += checkplayer,
-                    controls += resourceplayer,
-                    controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_play-resource_shadow">' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_start-recording_shadow">' + M.util.get_string('recui_record', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-recording_shadow pmr_disabled hide" disabled>' + M.util.get_string('recui_stop', 'filter_poodll') + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_play-recording_shadow pmr_disabled" disabled>' + M.util.get_string('recui_play', 'filter_poodll') + '</button>';
-                controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+                controls += resourceplayer,
+                
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_play-resource_shadow">' 
+                + '<span class="fa fa-play-circle fa-4x"></span>' 
+				+ '</button>';
+               
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-resource_shadow  hide">' 
+                + '<span class="fa fa-stop-circle fa-4x"></span>' 
+				+ '</button>';
+                
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_start-recording_shadow">'
+                + '<span class="fa fa-play-circle fa-4x"></span>' 
+				+ '<hr style="color: white">'
+ 				+ '<span class="fa fa-microphone fa-4x"></span>' 
+                +  '</button>';
+                
+                controls += '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-recording_shadow pmr_disabled hide" disabled>'
+                + '<span class="fa fa-stop-circle fa-4x"></span>' 
+				+ '</button>';
+				
+                controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_playback-recording_shadow pmr_disabled" disabled>' 
+                + '<span class="fa fa-play-circle fa-4x"></span>' 
+				+ '</button>';
+				
+                controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_stopplayback-recording_shadow hide">'
+                + '<span class="fa fa-stop-circle fa-4x"></span>' 
+				+ '</button>';
+                
+                controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
 
@@ -174,10 +273,12 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     status: $('#' + controlbarid + '  .poodll_status_shadow'),
                     resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_shadow'),
                     checkplayer: $('#' + controlbarid + '  .poodll_checkplayer_shadow'),
-                    resourcebutton: $('#' + controlbarid + '  .poodll_play-resource_shadow'),
+                    resourceplaybutton: $('#' + controlbarid + '  .poodll_play-resource_shadow'),
+                    resourcestopbutton: $('#' + controlbarid + '  .poodll_stop-resource_shadow'),
                     startbutton: $('#' + controlbarid + '  .poodll_start-recording_shadow'),
                     stopbutton: $('#' + controlbarid + '  .poodll_stop-recording_shadow'),
-                    playbutton: $('#' + controlbarid + '  .poodll_play-recording_shadow'),
+                    playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_shadow'),
+                    stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_shadow'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_shadow')
                 };
                 return controlbar;
@@ -194,59 +295,112 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var ip = this.fetch_instanceprops(controlbarid);
 
             ip.controlbar.startbutton.click(function() {
+				/* RECORD BUTTON */ 
+				
+				/* glen */
+				/*
+				$('.poodll_mediarecorderbox_shadow button').removeClass('shadow-active');
+				$('poodll_stop-recording_shadow').addClass('shadow-active');
+					*/		
+
                 pmr.do_start_audio(ip, onMediaSuccess);
-
-                //clear messages
-                $('#' + ip.config.widgetid  + '_messages').text('');
-                self.disable_button(this);
-                self.disable_button(ip.controlbar.playbutton);
-                self.enable_button(ip.controlbar.stopbutton);
-                ip.controlbar.stopbutton.show();
-                ip.controlbar.startbutton.hide();
-                self.disable_button(ip.controlbar.savebutton);
-
-                self.set_visual_mode('recordmode',controlbarid);
+                self.recorded = true;
                 
-                //timer and status bar
-                ip.timer.reset();
-                ip.timer.start();
-                self.update_status(controlbarid);
+                //also start the model audio playback
+                self.do_play_resource(ip);
+                 ip.controlbar.resourceplayer.bind('ended',function(){
+                 	ip.controlbar.stopbutton.click();
+                 });
+
+                self.set_visual_mode('recordingmode',ip);
             });
             
             ip.controlbar.stopbutton.click(function() {
-
+				 pmr.do_stop_audio(ip);
                 self.disable_button(this);
-                ip.controlbar.stopbutton.hide();
-                self.enable_button(ip.controlbar.startbutton);
-                ip.controlbar.startbutton.show();
-                self.enable_button(ip.controlbar.playbutton);
-                //turn border black etc
-               self.set_visual_mode('previewmode',controlbarid);
-               //timer and status bar
-               ip.timer.stop()
-               self.update_status(controlbarid);
+                var preview = ip.controlbar.resourceplayer;
+                if(preview && preview.get(0)){
+                    preview.get(0).pause();
+                }
+  
+              	self.set_visual_mode('allstoppedmode',ip);
+               
+               //stop model playback
+               self.do_stop_resource(ip);
 
-
-              if(!self.uploaded){
-                self.enable_button(ip.controlbar.startbutton);
-                self.enable_button(ip.controlbar.savebutton);
-              } 
 
             });
 
-            ip.controlbar.playbutton.click(function() {
+            ip.controlbar.playbackbutton.click(function() {				
                 self.disable_button(this);
-                var checkplayer = ip.controlbar.checkplayer.get(0);
-                pmr.do_play_audio(ip,checkplayer);
-
-                self.enable_button(ip.controlbar.stopbutton);
-                self.disable_button(ip.controlbar.startbutton);
-                self.disable_button(ip.controlbar.savebutton);
-            });
-
-            ip.controlbar.resourcebutton.click(function(){
+                
                 var resourceplayer = ip.controlbar.resourceplayer.get(0);
-                resourceplayer.play();
+                pmr.do_play_audio(ip,resourceplayer);
+                //flag resource player as needing reset
+                ip.mustResetResourcePlayer = true;
+ 
+                ////reset buttons when finished
+                 ip.controlbar.resourceplayer.bind('ended',function(){
+					self.set_visual_mode('allstoppedmode',ip);
+            	 });
+            	 
+            	 //do visuals
+                 self.set_visual_mode('playingbackmode',ip);
+
+            });
+            
+             ip.controlbar.stopplaybackbutton.click(function(){
+
+				self.do_stop_resource(ip); 
+				                
+                //do visuals
+                 self.set_visual_mode('allstoppedmode',ip);
+    
+            });
+
+            ip.controlbar.resourceplaybutton.click(function(){
+				
+				/*GLEN*/
+				/*
+				$(this).removeClass('shadow-active');
+				$('.poodll_stop-resource_shadow').addClass('shadow-active');
+				*/
+				
+				//actually play resource (or recording)
+				self.do_play_resource(ip);
+				
+				////reset buttons when finished
+                 ip.controlbar.resourceplayer.bind('ended',function(){
+					 if(self.recorded){
+                  		self.set_visual_mode('allstoppedmode',ip);
+                	}else{
+                  		self.set_visual_mode('neverrecordedmode',ip);
+                	}
+            	 });
+				
+                //do visuals
+                 self.set_visual_mode('resourceplayingmode',ip);
+                
+            });
+            
+             ip.controlbar.resourcestopbutton.click(function(){
+				 
+				/* GLEN */ 
+				//console.log('clicked');
+				/*
+				$(this).removeClass('shadow-active');
+				$('.poodll_start-recording_shadow').addClass('shadow-active');
+				*/
+				
+				self.do_stop_resource(ip); 
+                
+               //do visuals
+               if(self.recorded){
+                  self.set_visual_mode('allstoppedmode',ip);
+                }else{
+                  self.set_visual_mode('neverrecordedmode',ip);
+                }
+                
             });
 
            ip.controlbar.savebutton.click(function() {
@@ -268,8 +422,41 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 if(checkplayer && checkplayer.get(0)){
                     checkplayer.get(0).pause();
                 }
-            };
+            };           
+            
         }, //end of register_control_bar_events_shadow
+        
+     
+        //DO stop playing the resource
+        do_stop_resource: function(ip){
+        	console.log('stopped the resource');
+        	var resourceplayer = ip.controlbar.resourceplayer.get(0);
+            resourceplayer.pause();
+            resourceplayer.currentTime=0;
+            
+             if(ip.mustResetResourcePlayer){
+                ip.mustResetResourcePlayer = false;
+                resourceplayer.src=ip.config.resource;                
+                var ppromise = resourceplayer.load(); 
+                /* 
+				// playPromise won’t be defined.
+				if (ppromise !== undefined) {
+					ppromise.then(function() {resourceplayer.pause();});
+				}else{
+					resourceplayer.oncanplay(resourceplayer.pause());
+				}
+				*/
+			}
+		},
+        
+        
+        //do the play of resource
+        do_play_resource: function(ip){
+        	//if was used to play recording, we need to reset it
+                var resourceplayer = ip.controlbar.resourceplayer.get(0);
+                resourceplayer.play();
+                resourceplayer.currentTime = 0;
+        },
 
         enable_button: function(button){
             $(button).attr('disabled',false);
@@ -281,4 +468,37 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
 
     };//end of returned object
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	/* glen Testg area*/
+$( ".poodll_play-resource_shadow" ).click(function() {
+	
+	
+ console.log('Event started');
+  
+  
+  
+});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 });//total end
