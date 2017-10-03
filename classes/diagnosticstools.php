@@ -161,7 +161,8 @@ class diagnosticstools {
 		$ds['filter_poodll_ffmpeg']=$CFG->filter_poodll_ffmpeg;
 		$ds['filter_poodll_bgtranscode_video']=$CFG->filter_poodll_bgtranscode_video;
 		$ds['filter_poodll_bgtranscode_audio']=$CFG->filter_poodll_bgtranscode_audio;
-		$ds['filter_poodll_html5recorder_skin']=$CFG->filter_poodll_html5recorder_skin;
+		$ds['filter_poodll_html5recorder_skin_audio']=$CFG->filter_poodll_html5recorder_skin_audio;
+        $ds['filter_poodll_html5recorder_skin_video']=$CFG->filter_poodll_html5recorder_skin_video;
 		$ds['extensions']=get_config('filter_poodll','extensions');
 		$ds['handlemp3']=get_config('filter_poodll','handlemp3');
 		$ds['handlemp4']=get_config('filter_poodll','handlemp4');

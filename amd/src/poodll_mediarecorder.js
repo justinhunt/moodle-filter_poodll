@@ -44,7 +44,7 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         	 	        case 'video': 
         	 	                var IsEdge = utils.is_edge() !== -1 &&
         	 	                    (!!navigator.msSaveBlob || !!navigator.msSaveOrOpenBlob);
-					var IsSafari = utils.is_safari();
+					            var IsSafari = utils.is_safari();
         	 	               if(!IsEdge && ! IsSafari){ret=true;}
         	 	    }
         	 	    if(ret){
@@ -60,52 +60,51 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         //into the element passed in. with config
         embed: function(element, config) {
             var that = this;
-		var controlbarid = "filter_poodll_controlbar_" + config.widgetid;
-		this.init_instance_props(controlbarid);
-		var ip = this.fetch_instanceprops(controlbarid);
-		ip.config = config;
-		ip.controlbarid = controlbarid;
-		ip.timeinterval = config.media_timeinterval;
-		ip.audiomimetype = config.media_audiomimetype;
-		ip.videorecordertype = config.media_videorecordertype;
-		ip.videocaptureheight = config.media_videocaptureheight;
+            var controlbarid = "filter_poodll_controlbar_" + config.widgetid;
+            this.init_instance_props(controlbarid);
+            var ip = this.fetch_instanceprops(controlbarid);
+            ip.config = config;
+            ip.controlbarid = controlbarid;
+            ip.timeinterval = config.media_timeinterval;
+            ip.audiomimetype = config.media_audiomimetype;
+            ip.videorecordertype = config.media_videorecordertype;
+            ip.videocaptureheight = config.media_videocaptureheight;
 
-	    //init our skin
-            var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
+            //init our skin
+                var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
 
-            //add callbacks for uploadsuccess and upload failure
-            ip.config.onuploadsuccess = function(widgetid){that.onUploadSuccess(widgetid,theskin)};
-            ip.config.onuploadfailure = function(widgetid){that.onUploadFailure(widgetid,theskin)};
-            
-	    switch(config.mediatype){
-                case 'audio':
-                    var preview = theskin.fetch_preview_audio(config.media_skin);
-                    var resource = theskin.fetch_resource_audio(config.media_skin);
-                    ip.controlbar = this.fetch_controlbar_audio(element,controlbarid, preview, resource);
-					ip.uploader = uploader.clone();
-                    ip.uploader.init(element,config);
-                    this.register_events_audio(controlbarid);
-                    break;
-                case 'video':
-                    var preview = theskin.fetch_preview_video(config.media_skin);
-                    var resource = theskin.fetch_resource_video(config.media_skin);
-                    ip.controlbar = this.fetch_controlbar_video(element,controlbarid,preview,resource);
-					ip.uploader = uploader.clone();
-                    ip.uploader.init(element,config);
-                    this.register_events_video(controlbarid);
-                    break;
-                   
-            }
+                //add callbacks for uploadsuccess and upload failure
+                ip.config.onuploadsuccess = function(widgetid){that.onUploadSuccess(widgetid,theskin)};
+                ip.config.onuploadfailure = function(widgetid){that.onUploadFailure(widgetid,theskin)};
 
-		//init timer
-    		ip.timer = timer.clone();
-		ip.timer.init(ip.config.timelimit,function(){
-		            theskin.handle_timer_update(controlbarid);
-				//ip.controlbar.status.html(ip.timer.fetch_display_time());
-				}
-			);
-		 theskin.handle_timer_update(controlbarid);
-		 
+            switch(config.mediatype){
+                    case 'audio':
+                        var preview = theskin.fetch_preview_audio(config.media_skin);
+                        var resource = theskin.fetch_resource_audio(config.media_skin);
+                        ip.controlbar = this.fetch_controlbar_audio(element,controlbarid, preview, resource);
+                        ip.uploader = uploader.clone();
+                        ip.uploader.init(element,config);
+                        this.register_events_audio(controlbarid);
+                        break;
+                    case 'video':
+                        var preview = theskin.fetch_preview_video(config.media_skin);
+                        var resource = theskin.fetch_resource_video(config.media_skin);
+                        ip.controlbar = this.fetch_controlbar_video(element,controlbarid,preview,resource);
+                        ip.uploader = uploader.clone();
+                        ip.uploader.init(element,config);
+                        this.register_events_video(controlbarid);
+                        break;
+
+                }
+
+            //init timer
+            ip.timer = timer.clone();
+            ip.timer.init(ip.config.timelimit,function(){
+                        theskin.handle_timer_update(controlbarid);
+                    //ip.controlbar.status.html(ip.timer.fetch_display_time());
+                    }
+                );
+             theskin.handle_timer_update(controlbarid);
         },
 
 		
