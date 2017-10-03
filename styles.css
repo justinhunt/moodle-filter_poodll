@@ -377,10 +377,9 @@ audio.poodll_preview_standard{
 /* MEDIA RECORDER Shadow SKIN */
 
 .poodll_mediarecorderholder_shadow{
-    width: 370px !important;
-	height: auto;
-	padding: 0px !important;
-	margin: 0 auto;
+	width: 370px!important;
+    height: 220px;
+    margin: 0 auto;
 }
 
 .poodll_preview_shadow{
@@ -392,7 +391,7 @@ audio.poodll_preview_standard{
     width:100%;
 }
 .poodll_mediarecorderbox_shadow button{
-    width: 25%;
+    width: 27%;
     height: 150px;
     margin-bottom: 10px;
     border-radius: 5%;
@@ -401,6 +400,7 @@ audio.poodll_preview_standard{
     color: #fff;
     text-transform: uppercase;
     font-weight: 600;
+    float: left;
 }
 
 .poodll_mediarecorderbox_shadow hr{
