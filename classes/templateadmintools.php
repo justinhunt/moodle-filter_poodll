@@ -21,61 +21,22 @@ defined('MOODLE_INTERNAL') || die();
 require_once($CFG->libdir . '/adminlib.php');
 
 /**
- * No setting - just heading and text.
+ *
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class poodlltemplatetable extends \admin_setting {
+class templateadmintools {
 
-    public $visiblename;
-    public $information;
-
-    /**
-     * not a setting, just text
-     * @param string $name unique ascii name, either 'mysetting' for settings that in config, or 'myplugin/mysetting' for ones in config_plugins.
-     * @param string $heading heading
-     * @param string $information text in box
-     */
-    public function __construct($name, $visiblename, $information) {
-        $this->nosave = true;
-        $this->visiblename=$visiblename;
-        $this->information=$information;
-        parent::__construct($name, $visiblename, $information,'');
-    }
-
-    /**
-     * Always returns true
-     * @return bool Always returns true
-     */
-    public function get_setting() {
-        return true;
-    }//end of get_setting
-
-    /**
-     * Always returns true
-     * @return bool Always returns true
-     */
-    public function get_defaultsetting() {
-        return true;
-    }//get_defaultsetting
-
-    /**
-     * Never write settings
-     * @return string Always returns an empty string
-     */
-    public function write_setting($data) {
-    // do not write any setting
-        return '';
-    }//write_setting
 
     /**
      * Returns an HTML string
      * @return string Returns an HTML string
      */
-    public function output_html($data, $query='') {
-        global $PAGE;
+    public static function fetch_template_table() {
+        global $OUTPUT,$CFG;
         $conf = get_config('filter_poodll');
         $template_details = self::fetch_template_details($conf);
+        $have_updates=false;
 
 
 
@@ -89,7 +50,7 @@ class poodlltemplatetable extends \admin_setting {
         );
         $table->headspan = array(1,1,1,1);
         $table->colclasses = array(
-            'templatenamecol','templatetypecol', 'templateversioncol', 'templateinstructionscol'
+            'templatenamecol','templatetypecol', 'templateversioncol' ,'templateinstructionscol'
         );
 
         //loop through templates and add to table
@@ -98,7 +59,22 @@ class poodlltemplatetable extends \admin_setting {
 
             $titlelink = $editlink = \html_writer::link($item->url,$item->title);
             $titlecell = new \html_table_cell($titlelink);
-            $versioncell = new \html_table_cell($item->version);
+
+            //version cell
+
+            $updateversion = poodllpresets::template_has_update($item->index);
+            if($updateversion) {
+                $button =  new \single_button(
+                    new \moodle_url($CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php',array('updatetemplate'=>$item->index)),
+                    get_string('updatetoversion','filter_poodll',$updateversion));
+                $update_html = $OUTPUT->render($button);
+                $versioncell = new \html_table_cell($item->version . $update_html);
+                $have_updates=true;
+            }else{
+                $versioncell = new \html_table_cell($item->version);
+            }
+
+
             $instructionscell = new \html_table_cell($item->instructions);
 
             $typetext='';
@@ -124,10 +100,18 @@ class poodlltemplatetable extends \admin_setting {
 
         $template_table= \html_writer::table($table);
 
+        //if have_updates
+        $update_all_html='';
+        if($have_updates){
+            $all_button =  new \single_button(
+                new \moodle_url($CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php',array('updatetemplate'=>-1)),
+                get_string('updateall','filter_poodll'));
+            $update_all_html = $OUTPUT->render($all_button);
+        }
 
-		return format_admin_setting($this, $this->visiblename,
-			$template_table,
-			$this->information, true, '','', $query);
+
+		return $update_all_html . $template_table;
+
 	}//end of output html
         
 
@@ -145,7 +129,10 @@ class poodlltemplatetable extends \admin_setting {
 
             for($tindex=1;$tindex<=$templatecount;$tindex++) {
                 $template_details = new \stdClass();
-                $template_details->title = \filter_poodll\settingstools::fetch_template_title($conf, $tindex,false);
+
+                $template_details->index = $tindex;
+
+                $template_details->title = settingstools::fetch_template_title($conf, $tindex,false);
 
                 $template_details->version = "";
                 if(property_exists($conf,'templateversion_' . $tindex)){

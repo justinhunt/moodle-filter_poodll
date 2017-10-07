@@ -522,7 +522,6 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
 		    ip.controlbar.status.html(ip.timer.fetch_display_time());
 		},
 
-
         
         fetch_controlbar_audio: function(element, controlbarid, preview, resource){
         	var ip = this.fetch_instanceprops(controlbarid);

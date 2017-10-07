@@ -288,6 +288,7 @@ public static function fetch_template_title($conf,$tindex,$typeprefix=true){
     return $templatetitle;
 }
 
+/*
 public static function fetch_template_table(){
 
     $items=array();
@@ -296,6 +297,7 @@ public static function fetch_template_table(){
     return $items;
 
 }
+*/
 
 public static function fetch_template_pages($conf){
 		$pages = array();

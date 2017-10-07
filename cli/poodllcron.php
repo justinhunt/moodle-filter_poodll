@@ -58,7 +58,6 @@ Example:
 }
 
 // execute all the waiting Poodll move tasks
-
 $taskclassname= '\filter_poodll\task\adhoc_s3_move';
 $starttime=time();
 $tr = new \filter_poodll\taskrunner($taskclassname,$starttime);

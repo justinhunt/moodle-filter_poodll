@@ -264,7 +264,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_stopplayback-recording_shadow hide">'
                 + '<span class="fa fa-stop-circle fa-4x"></span>' 
 				+ '</button>';
-                
+
+                //completioncheck
+                controls += ' <div class="poodll_mediarecorder_completion_shadow fa fa-circle fa-4x"></div>';
+
                 controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
@@ -279,6 +282,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     stopbutton: $('#' + controlbarid + '  .poodll_stop-recording_shadow'),
                     playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_shadow'),
                     stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_shadow'),
+                    completioncheck: $('#' + controlbarid + '  .poodll_mediarecorder_completion_shadow'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_shadow')
                 };
                 return controlbar;
@@ -346,6 +350,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             	 
             	 //do visuals
                  self.set_visual_mode('playingbackmode',ip);
+
+                 //complete the 'activity'
+                self.set_completion(true,ip);
 
             });
             
@@ -426,7 +433,18 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             
         }, //end of register_control_bar_events_shadow
         
-     
+
+        set_completion: function(completed,ip){
+            var completioncheck = ip.controlbar.completioncheck;
+            if(completed){
+                completioncheck.removeClass('fa-circle');
+                completioncheck.addClass('fa-check-circle');
+            }else{
+                completioncheck.removeClass('fa-check-circle');
+                completioncheck.addClass('fa-circle');
+            }
+        },
+
         //DO stop playing the resource
         do_stop_resource: function(ip){
         	console.log('stopped the resource');
@@ -468,37 +486,6 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
 
     };//end of returned object
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	/* glen Testg area*/
-$( ".poodll_play-resource_shadow" ).click(function() {
-	
-	
- console.log('Event started');
-  
-  
-  
-});
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	
 });//total end

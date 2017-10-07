@@ -316,3 +316,9 @@ $string['REGION_EUC1'] = 'EU (Frankfurt)';
 $string['REGION_EUW1'] = 'EU (Ireland)';
 $string['REGION_EUW2'] = 'EU (London)';
 $string['REGION_SAE1'] = 'South America (São Paulo)';
+
+//updated templates message
+$string['templateupdated'] = '{$a} Poodll Templates Updated.';
+$string['updatetoversion'] = 'Update to {$a}';
+$string['updateall'] = 'Update all.';
+$string['poodlltemplatesadmin'] = 'Poodll Filter Templates Admin';

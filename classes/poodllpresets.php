@@ -149,7 +149,7 @@ class poodllpresets extends \admin_setting {
             $ret = array();
             $dirs=array();
 
-            //we search the Generico "presets" and the themes "generico" folders for presets
+            //we search the Poodll "presets" and the themes "poodll" folders for presets
             $poodll_presets_dir=$CFG->dirroot . '/filter/poodll/presets';
             $theme_generico_dir=$PAGE->theme->dir . '/generico';
             if(file_exists($poodll_presets_dir)) {
@@ -204,4 +204,46 @@ class poodllpresets extends \admin_setting {
 				set_config($fieldname . '_' . $templateindex, $fieldvalue, 'filter_poodll');
 			}
 		}//End of set_preset_to_config
+
+    public static function template_has_update($templateindex){
+        $presets = self::fetch_presets();
+        foreach($presets as $preset) {
+            if(get_config('filter_poodll', 'templatekey_' . $templateindex)==$preset['key']) {
+                $template_version = get_config('filter_poodll', 'templateversion_' . $templateindex);
+                $preset_version = $preset['version'];
+                if (version_compare($preset_version, $template_version) > 0) {
+                    return $preset_version;
+                }//end of version compare
+            }//end of if keys match
+        }//end of presets loop
+        return false;
+    }
+
+    public static function update_all_templates(){
+		    $templatecount = get_config('filter_poodll','templatecount');
+		    $updatecount=0;
+		    for($x=1;$x<$templatecount+1;$x++){
+		        $updated=self::update_template($x);
+		        if($updated){$updatecount++;}
+            }//end of templatecount loop
+            return $updatecount;
+    }//end of function
+
+    public static function update_template($templateindex){
+        $updated=false;
+        $presets = self::fetch_presets();
+        foreach($presets as $preset) {
+            if(get_config('filter_poodll', 'templatekey_' . $templateindex)==$preset['key']) {
+                $template_version = get_config('filter_poodll', 'templateversion_' . $templateindex);
+                $preset_version = $preset['version'];
+                if (version_compare($preset_version, $template_version) > 0) {
+                    self::set_preset_to_config($preset, $templateindex);
+                    $updated =true;
+                }//end of version compare
+                return $updated;
+            }//end of if keys match
+        }//end of presets loop
+        return false;
+    }//end of function
+
 }//end of class
