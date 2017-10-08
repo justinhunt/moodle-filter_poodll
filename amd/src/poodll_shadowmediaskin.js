@@ -265,8 +265,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 + '<span class="fa fa-stop-circle fa-4x"></span>' 
 				+ '</button>';
 
-                //completioncheck
-                controls += ' <div class="poodll_mediarecorder_completion_shadow fa fa-circle fa-4x"></div>';
+                //completioncheck /*On hold for now Justin 20171007 */
+               // controls += ' <div class="poodll_mediarecorder_completion_shadow fa fa-circle fa-4x"></div>';
 
                 controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
                 controls += '</div></div></div>';
@@ -282,7 +282,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     stopbutton: $('#' + controlbarid + '  .poodll_stop-recording_shadow'),
                     playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_shadow'),
                     stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_shadow'),
-                    completioncheck: $('#' + controlbarid + '  .poodll_mediarecorder_completion_shadow'),
+                    /*On hold for now Justin 20171007 */
+                    //completioncheck: $('#' + controlbarid + '  .poodll_mediarecorder_completion_shadow'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_shadow')
                 };
                 return controlbar;
@@ -435,6 +436,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         
 
         set_completion: function(completed,ip){
+            /*On hold for now Justin 20171007 */
+            return;
+
             var completioncheck = ip.controlbar.completioncheck;
             if(completed){
                 completioncheck.removeClass('fa-circle');

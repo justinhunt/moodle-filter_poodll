@@ -42,8 +42,10 @@ define(['jquery','core/log','filter_poodll/utils_amd',  'filter_poodll/MediaStre
         	 	        	//sadly desktop safari has a bug which prevents us enabling it
         	 	        	if(utils.is_safari() && !(utils.is_ios())){
         	 	        		ret =false;
-        	 	        	}
-        	 	            ret = true;
+        	 	        	}else{
+        	 	        	    ret=true;
+                            }
+
         	 	             break;
         	 	        case 'video': 
         	 	                var IsEdge = utils.is_edge() !== -1 &&
