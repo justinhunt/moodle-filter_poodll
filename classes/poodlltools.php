@@ -929,7 +929,7 @@ class poodlltools
 		$paramobj->id = $widgetid;
 		$paramobj->accessible = true;
 		$paramobj->serverroot = '/';
-		$paramobj->appenddivid = $widgetid + 'Container';
+		$paramobj->appenddivid = $widgetid . 'Container';
 
 		$retjson = json_encode($paramobj);
 		return $retjson;
