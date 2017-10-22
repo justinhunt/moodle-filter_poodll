@@ -1193,7 +1193,6 @@ function PlainMediaRecorderWrapper(mediaStream) {
         // by calling requestData API.
         try {
             mediaRecorder.start(timeSlice);
-            console.log('JUSTIN .... started' + timeSlice);
         } catch (e) {
             mediaRecorder = null;
         }
