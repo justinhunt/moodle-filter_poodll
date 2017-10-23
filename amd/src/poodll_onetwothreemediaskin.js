@@ -158,6 +158,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 							var status = this.fetch_status_bar('onetwothree');
 							controls += status,
 							controls += preview,
+							controls += '<div class="hp_slide"><div class="hp_timer"></div><div class="hp_range"></div></div>';
 							controls +=  '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_start-recording_onetwothree"><i class="fa fa-microphone" aria-hidden="true"></i></button> ';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_pause-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
@@ -241,6 +242,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
             
             ip.controlbar.stoprecbutton.click(function() {
+				/* glen*/
+				$('.poodll_status_onetwothree').fadeOut();
+				$('.hp_slide').fadeIn();
+				
+				
+				/*end*/
+				
 				$('#holder_' + controlbarid + ' .task-helper p.step-1').empty();
 				$('#holder_' + controlbarid + ' .task-helper p.step-1').append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);;
 				
@@ -332,6 +340,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             
             ip.controlbar.playbutton.click(function() {
 				
+				
 				if(!$(this).hasClass('played')){
 					$(this).addClass('played');
 					$('#holder_' + controlbarid + ' .task-helper p.step-2').empty();
@@ -392,6 +401,24 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     preview.get(0).pause();
                 }
             };
+
+	   /*GLEN*/
+		
+		ip.controlbar.preview.on('timeupdate', function(){		
+			var finalSeconds = ip.timer.finalseconds;					
+			var currentTime = this.currentTime;
+			var duration = this.duration;
+                        if(!isFinite(duration)){duration=finalSeconds};
+			var current_time = currentTime/duration;
+			if(current_time > 1){current_time=1};
+			
+			$('.hp_timer').html(ip.timer.fetch_display_time(currentTime));
+			$('.hp_range').stop(true,true).animate({'width':current_time * 100 +'%'},250,'linear');
+		});
+				
+				
+		/*end*/
+
         }, //end of register_control_bar_events_onetwothree
         
         enable_button: function(button){
