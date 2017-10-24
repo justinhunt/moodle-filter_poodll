@@ -1,13 +1,14 @@
 /* jshint ignore:start */
 define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/MediaStreamRecorder',
         'filter_poodll/adapter', 'filter_poodll/uploader', 'filter_poodll/timer',
+        'filter_poodll/audioanalyser',
         'filter_poodll/poodll_basemediaskin',
         'filter_poodll/poodll_burntrosemediaskin',
         'filter_poodll/poodll_onetwothreemediaskin',
         'filter_poodll/poodll_goldmediaskin',
         'filter_poodll/poodll_bmrmediaskin',
         'filter_poodll/poodll_shadowmediaskin',
-    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, msr, adapter, uploader, timer, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
+    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, msr, adapter, uploader, timer, audioanalyser, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
 
     "use strict"; // jshint ;_;
 

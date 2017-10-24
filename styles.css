@@ -1,3 +1,71 @@
+
+
+
+/*
+	One button
+*/
+
+.poodll_status_gold{
+	display: none;
+}
+.poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold{
+	position: relative;
+}
+.poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold .pmr_disabled{
+	display: none;
+}
+
+.poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button{
+    position: absolute;
+    left: 130px;
+    top: 15%;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: none;
+}
+
+
+
+
+
+
+/*
+
+Integration
+
+*/
+
+.poodll_mediarecorder_video .hp_slide{
+	display: none !Important;
+}
+
+.hp_slide{
+	width: 100%;
+    border: 3px solid #333;
+    position: relative;
+    height: 30px;
+	display: none;
+	margin-bottom: 10px;
+}
+.hp_timer{
+	width: 100%;
+	position: absolute;
+	text-align: center;
+	color: #333;
+	font-size: 16px;
+}
+.hp_range{
+    width:0;
+    background: #c2c2c2;
+    height:25px;
+}
+
+
+.audio_preview_123{
+	display: none !important;
+}
+
 .hide {
 	display: none;
 }
@@ -1497,6 +1565,15 @@ audio.poodll_preview_bmr{
 
 
 @media (max-width: 768px) { 
+
+	/*
+		onetwothree
+	*/
+	.video_preview_123 {
+		height: 150px;	
+	}
+	
+	
 	/*
 	BMR - NEW BURNT ROSE
 	*/
@@ -1647,6 +1724,7 @@ audio.poodll_preview_bmr{
 }
 .poodll_mediarecorder_size_auto{
 	width: auto;
+	max-width:500px;
 }
 
 .poodll_mediarecorder_size_auto .poodll_preview_burntrose{
