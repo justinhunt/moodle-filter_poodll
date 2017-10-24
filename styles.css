@@ -16,9 +16,9 @@
 }
 
 .poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button{
-	position: absolute;
-    left: 70px;
-    top: 30%;
+    position: absolute;
+    left: 130px;
+    top: 15%;
     height: 100px;
     width: 100px;
     border-radius: 50%;
@@ -36,7 +36,9 @@ Integration
 
 */
 
-
+.poodll_mediarecorder_video .hp_slide{
+	display: none !Important;
+}
 
 .hp_slide{
 	width: 100%;
@@ -60,7 +62,7 @@ Integration
 }
 
 
-.poodll_preview_onetwothree{
+.audio_preview_123{
 	display: none !important;
 }
 
@@ -1563,6 +1565,15 @@ audio.poodll_preview_bmr{
 
 
 @media (max-width: 768px) { 
+
+	/*
+		onetwothree
+	*/
+	.video_preview_123 {
+		height: 150px;	
+	}
+	
+	
 	/*
 	BMR - NEW BURNT ROSE
 	*/
@@ -1713,6 +1724,7 @@ audio.poodll_preview_bmr{
 }
 .poodll_mediarecorder_size_auto{
 	width: auto;
+	max-width:500px;
 }
 
 .poodll_mediarecorder_size_auto .poodll_preview_burntrose{

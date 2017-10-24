@@ -43,11 +43,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
         
         fetch_preview_audio: function(skin){
-            var preview = '<audio class="poodll_preview_' + skin + ' hide" width="100%" height="100%" controls></audio>';
+            var preview = '<audio class="audio_preview_123 poodll_preview_' + skin + ' hide" width="100%" height="100%" controls></audio>';
             return preview;
         },
         fetch_preview_video: function(skin){
-            var preview ='<video class="poodll_preview_' + skin + '" width="100%" height="100%"></video>';
+            var preview ='<video class="video_preview_123 poodll_preview_' + skin + '" width="100%" height="300px"></video>';
             return preview;
         },
         fetch_resource_audio: function(skin){
@@ -243,7 +243,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             
             ip.controlbar.stoprecbutton.click(function() {
 				/* glen*/
-				$('.poodll_status_onetwothree').fadeOut();
+				$('.poodll_mediarecorder_audio .poodll_status_onetwothree').fadeOut();
 				$('.hp_slide').fadeIn();
 				
 				

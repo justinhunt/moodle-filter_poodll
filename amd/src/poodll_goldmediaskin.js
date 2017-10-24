@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) {
+define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress'], function($, log, utils,radialprogress) {
 
     "use strict"; // jshint ;_;
 
@@ -163,7 +163,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var status = this.fetch_status_bar('gold');
                 controls += status,
                 controls += preview,
-				controls += '<canvas id="myCanvas" width="250" height="250"></canvas>';
+				controls += '<canvas id="' + controlbarid + '_playcanvas"> width="250" height="250"></canvas>';
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_gold poodll_start-recording_gold glen_class">' + ss['recui_record'] + '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_gold poodll_stop-recording_gold pmr_disabled" disabled>' + ss['recui_stop'] + '</button>';
                 //controls += '<button type="button" class="poodll_mediarecorder_button_gold poodll_pause-recording_gold pmr_disabled" disabled>' + ss['recui_pause'] + '</button>';
@@ -180,7 +180,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     pausebutton: $('#' + controlbarid + ' .poodll_pause-recording_gold'),
                     resumebutton: $('#' + controlbarid + ' .poodll_resume-recording_gold'),
                     playbutton: $('#' + controlbarid + ' .poodll_play-recording_gold'),
-                    savebutton: $('#' + controlbarid + ' .poodll_save-recording_gold')    
+                    savebutton: $('#' + controlbarid + ' .poodll_save-recording_gold'),
+                    playcanvas: $('#' + controlbarid + '_playcanvas')    
                 };
                 return controlbar;
         }, //end of fetch_control_bar_gold
@@ -194,6 +195,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var self = this;
             var pmr=this.pmr;
             var ip = this.fetch_instanceprops(controlbarid);
+            var rprogress = radialprogress.clone();
+            rprogress.init(ip.controlbar.playcanvas);
 
             ip.controlbar.startbutton.click(function() {
                 pmr.do_start_audio(ip,  onMediaSuccess);
@@ -228,8 +231,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                //turn border black etc
              //  self.set_visual_mode('previewmode',controlbarid);
                //timer and status bar
-              // ip.timer.stop()
-               //self.update_status(controlbarid);
+               ip.timer.stop()
+               self.update_status(controlbarid);
                 
                self.enable_button(ip.controlbar.playbutton);
               // self.enable_button(ip.controlbar.savebutton);
@@ -246,10 +249,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 self.disable_button(this);
                 var preview = ip.controlbar.preview.get(0);
                 pmr.do_play_audio(ip,preview);
-
                 //self.enable_button(ip.controlbar.stopbutton);
                 //self.disable_button(ip.controlbar.startbutton);
                 self.enable_button(ip.controlbar.savebutton);
+                rprogress.clear();
             });
             
            ip.controlbar.savebutton.click(function() {
@@ -264,6 +267,15 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //probably not necessary  ... but getting odd ajax errors occasionally
                 return false;
             });//end of save recording
+            
+            ip.controlbar.preview.on("timeupdate", function() {
+				// Variables
+				var currentTime = this.currentTime;
+				var duration = this.duration;
+				if(duration==0 || true){duration = ip.timer.finalseconds;}
+				var current_time = currentTime/duration;
+				rprogress.draw(current_time);
+			});
             
             window.onbeforeunload = function() {
                 self.enable_button(ip.controlbar.startbutton);
