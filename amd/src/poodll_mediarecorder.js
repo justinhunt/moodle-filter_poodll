@@ -224,14 +224,14 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/MediaStr
         	var preview = ip.controlbar.preview;
 			if (ip.previewstillcold && preview && preview.get(0)) {
 			  var pPromise = ip.controlbar.preview[0].play();
-			    //the promise thing here is just to suppress console warnings
+			    // the promise thing here is just to suppress console warnings
                 if (pPromise !== undefined) {
                     pPromise.then(function() {
                         // playback started we do not need to do anything
                     }).catch(function(error) {
                         // playback could not start or was interrupted.
-                        //most likely that enter here. but we need to handle this
-                        //to suppress an error
+                        // most likely that enter here. but we need to handle this
+                        // to suppress an error
                     });
                 }
 			  ip.previewstillcold = false;
