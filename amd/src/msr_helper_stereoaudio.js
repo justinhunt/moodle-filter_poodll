@@ -9,13 +9,17 @@ define(['jquery',
 
     return {
 
+        //globals??
+        scriptprocessornode: null,
+        requestDataInvoked: false,
+        recordingLength: 0,
+        isPaused: false,
+
         // variables
         deviceSampleRate: 44100, // range: 22050 to 96000
         leftchannel: [],
         rightchannel: [],
-        scriptprocessornode: null,
         recording:  false,
-        recordingLength:  0,
         volume: null,
         audioInput: null,
         context: null,
@@ -23,36 +27,47 @@ define(['jquery',
         mimeType: 0,
         isPCM: false,
         numChannels: 1,
+        audioctx: null,
+        mediaStream: null,
+        volumeGainNode: null,
+
+        //for making multiple instances
+        clone: function(){
+            return $.extend(true,{},this);
+        },
 
 
-        init: function(){
+        init: function(msr,mediaStream,audioctx){
 
-            if (!ObjectStore.AudioContextConstructor) {
-                ObjectStore.AudioContextConstructor =audioctx;// new ObjectStore.AudioContext();
-            }
-            this.deviceSampleRate= ObjectStore.AudioContextConstructor.sampleRate;
-            this.sampleRate = root.sampleRate || this.deviceSampleRate;
-            this.mimeType= root.mimeType || 'audio/wav';
+            this.msr=msr;
+            this.audioctx = audioctx;
+            this.mediaStream = mediaStream;
+            this.deviceSampleRate= audioctx.sampleRate;
+            this.sampleRate = msr.sampleRate || this.deviceSampleRate;
+            this.mimeType= msr.mimeType || 'audio/wav';
             this.isPCM= this.mimeType.indexOf('audio/pcm') > -1;
-            this.numChannels= root.audioChannels || 2;
+            this.numChannels= msr.audioChannels || 2;
 
+            //and then further init'ing
+            this.misc();
 
         },
 
         misc: function(){
+            var that=this;
             // creates the audio context
-            var context = ObjectStore.AudioContextConstructor;
+            var context = this.audioctx;
 
             // creates a gain node
-            ObjectStore.VolumeGainNode = context.createGain();
+            this.volumeGainNode = context.createGain();
 
-            var volume = ObjectStore.VolumeGainNode;
-
-            // creates an audio node from the microphone incoming stream
-            ObjectStore.AudioInput = context.createMediaStreamSource(mediaStream);
+            var volume = this.volumeGainNode;
 
             // creates an audio node from the microphone incoming stream
-            var audioInput = ObjectStore.AudioInput;
+            this.audioInput = context.createMediaStreamSource(this.mediaStream);
+
+            // creates an audio node from the microphone incoming stream
+            var audioInput = this.audioInput;
 
             // connect the stream to the gain node
             audioInput.connect(volume);
@@ -62,105 +77,106 @@ define(['jquery',
              Lower values for buffer size will result in a lower (better) latency.
              Higher values will be necessary to avoid audio breakup and glitches
              Legal values are 256, 512, 1024, 2048, 4096, 8192, and 16384.*/
-            var bufferSize = root.bufferSize || 2048;
-            if (root.bufferSize === 0) {
+            var bufferSize = this.msr.bufferSize || 2048;
+            if (this.msr.bufferSize === 0) {
                 bufferSize = 0;
             }
 
             if (context.createJavaScriptNode) {
-                scriptprocessornode = context.createJavaScriptNode(bufferSize, numChannels, numChannels);
+                this.scriptprocessornode = context.createJavaScriptNode(bufferSize, this.numChannels, this.numChannels);
             } else if (context.createScriptProcessor) {
-                scriptprocessornode = context.createScriptProcessor(bufferSize, numChannels, numChannels);
+                this.scriptprocessornode = context.createScriptProcessor(bufferSize, this.numChannels, this.numChannels);
             } else {
                 throw 'WebAudio API has no support on this browser.';
             }
 
-            bufferSize = scriptprocessornode.bufferSize;
+            this.bufferSize = this.scriptprocessornode.bufferSize;
 
             console.debug('using audio buffer-size:', bufferSize);
 
-            var requestDataInvoked = false;
+            this.requestDataInvoked = false;
 
             // sometimes "scriptprocessornode" disconnects from he destination-node
             // and there is no exception thrown in this case.
             // and obviously no further "ondataavailable" events will be emitted.
             // below global-scope variable is added to debug such unexpected but "rare" cases.
-            window.scriptprocessornode = scriptprocessornode;
+            window.scriptprocessornode = this.scriptprocessornode;
 
-            if (numChannels === 1) {
+            if (this.numChannels === 1) {
                 console.debug('All right-channels are skipped.');
             }
 
-            var isPaused = false;
+            this.isPaused = false;
 
             //http://webaudio.github.io/web-audio-api/#the-scriptprocessornode-interface
-            scriptprocessornode.onaudioprocess = function(e) {
-                if (!recording || requestDataInvoked || isPaused) {
+            this.scriptprocessornode.onaudioprocess = function(e) {
+                if (!that.recording || that.requestDataInvoked || that.isPaused) {
                     return;
                 }
+                console.log('audioprocessing');
 
                 var left = e.inputBuffer.getChannelData(0);
-                leftchannel.push(new Float32Array(left));
+                that.leftchannel.push(new Float32Array(left));
 
-                if (numChannels === 2) {
+                if (that.numChannels === 2) {
                     var right = e.inputBuffer.getChannelData(1);
-                    rightchannel.push(new Float32Array(right));
+                    that.rightchannel.push(new Float32Array(right));
                 }
-                recordingLength += bufferSize;
+                that.recordingLength += that.bufferSize;
             };
 
-            volume.connect(scriptprocessornode);
-            scriptprocessornode.connect(context.destination);
+            volume.connect(this.scriptprocessornode);
+            this.scriptprocessornode.connect(context.destination);
 
         },
 
         record: function() {
-            recording = true;
+            this.recording = true;
             // reset the buffers for the new recording
-            leftchannel.length = rightchannel.length = 0;
-            recordingLength = 0;
+            this.leftchannel.length = this.rightchannel.length = 0;
+            this.recordingLength = 0;
         },
 
         requestData:  function() {
-            if (isPaused) {
+
+            if (this.isPaused) {
                 return;
             }
 
-            if (recordingLength === 0) {
-                requestDataInvoked = false;
+            if (this.recordingLength === 0) {
+                this.requestDataInvoked = false;
                 return;
             }
 
-            requestDataInvoked = true;
+            this.requestDataInvoked = true;
             // clone stuff
-            var internalLeftChannel = leftchannel.slice(0);
-            var internalRightChannel = rightchannel.slice(0);
-            var internalRecordingLength = recordingLength;
+            var internalLeftChannel = this.leftchannel.slice(0);
+            var internalRightChannel = this.rightchannel.slice(0);
+            var internalRecordingLength = this.recordingLength;
 
             // reset the buffers for the new recording
-            leftchannel.length = rightchannel.length = [];
-            recordingLength = 0;
-            requestDataInvoked = false;
+            this.leftchannel.length = this.rightchannel.length = [];
+            this.recordingLength = 0;
+            this.requestDataInvoked = false;
 
             // we flat the left and right channels down
-            var leftBuffer = mergeBuffers(internalLeftChannel, internalRecordingLength);
+            var leftBuffer = this.mergeBuffers(internalLeftChannel, internalRecordingLength);
 
             var interleaved = leftBuffer;
 
             // we interleave both channels together
-            if (numChannels === 2) {
-                var rightBuffer = mergeBuffers(internalRightChannel, internalRecordingLength); // bug fixed via #70,#71
-                interleaved = interleave(leftBuffer, rightBuffer);
+            if (this.numChannels === 2) {
+                var rightBuffer = this.mergeBuffers(internalRightChannel, internalRecordingLength); // bug fixed via #70,#71
+                this.interleaved = this.interleave(leftBuffer, rightBuffer);
             }
 
-            if (isPCM) {
+            if (this.isPCM) {
                 // our final binary blob
-                var blob = new Blob([convertoFloat32ToInt16(interleaved)], {
+                var blob = new Blob([this.convertoFloat32ToInt16(interleaved)], {
                     type: 'audio/pcm'
                 });
 
-                console.debug('audio recorded blob size:', bytesToSize(blob.size));
-                root.ondataavailable(blob);
+                this.msr.ondataavailable(blob);
                 return;
             }
 
@@ -169,24 +185,24 @@ define(['jquery',
             var view = new DataView(buffer);
 
             // RIFF chunk descriptor
-            writeUTFBytes(view, 0, 'RIFF');
+            this.writeUTFBytes(view, 0, 'RIFF');
 
             // -8 (via #97)
             view.setUint32(4, 44 + interleaved.length * 2 - 8, true);
 
-            writeUTFBytes(view, 8, 'WAVE');
+            this.writeUTFBytes(view, 8, 'WAVE');
             // FMT sub-chunk
-            writeUTFBytes(view, 12, 'fmt ');
+            this.writeUTFBytes(view, 12, 'fmt ');
             view.setUint32(16, 16, true);
             view.setUint16(20, 1, true);
             // stereo (2 channels)
-            view.setUint16(22, numChannels, true);
-            view.setUint32(24, sampleRate, true);
-            view.setUint32(28, sampleRate * numChannels * 2, true); // numChannels * 2 (via #71)
-            view.setUint16(32, numChannels * 2, true);
+            view.setUint16(22, this.numChannels, true);
+            view.setUint32(24, this.sampleRate, true);
+            view.setUint32(28, this.sampleRate * this.numChannels * 2, true); // numChannels * 2 (via #71)
+            view.setUint16(32, this.numChannels * 2, true);
             view.setUint16(34, 16, true);
             // data sub-chunk
-            writeUTFBytes(view, 36, 'data');
+            this.writeUTFBytes(view, 36, 'data');
             view.setUint32(40, interleaved.length * 2, true);
 
             // write the PCM samples
@@ -202,18 +218,14 @@ define(['jquery',
             var blob = new Blob([view], {
                 type: 'audio/wav'
             });
-
-            console.debug('audio recorded blob size:', bytesToSize(blob.size));
-
-            root.ondataavailable(blob);
+            this.msr.ondataavailable(blob);
         },
 
         stop: function() {
             // we stop recording
-            recording = false;
+            this.recording = false;
             this.requestData();
-
-            audioInput.disconnect();
+            this.audioInput.disconnect();
         },
 
         interleave: function(leftChannel, rightChannel) {
@@ -262,11 +274,11 @@ define(['jquery',
 
 
         pause: function() {
-            isPaused = true;
+            this.isPaused = true;
         },
 
         resume: function() {
-            isPaused = false;
+            this.isPaused = false;
         }
 
     };// end of returned object

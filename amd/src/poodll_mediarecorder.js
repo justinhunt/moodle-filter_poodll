@@ -1,6 +1,7 @@
 /* jshint ignore:start */
-define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/MediaStreamRecorder',
+define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         'filter_poodll/adapter', 'filter_poodll/uploader', 'filter_poodll/timer',
+    'filter_poodll/msr_poodll',
         'filter_poodll/audioanalyser',
         'filter_poodll/poodll_basemediaskin',
         'filter_poodll/poodll_burntrosemediaskin',
@@ -8,7 +9,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/MediaStr
         'filter_poodll/poodll_goldmediaskin',
         'filter_poodll/poodll_bmrmediaskin',
         'filter_poodll/poodll_shadowmediaskin',
-    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, msr, adapter, uploader, timer, audioanalyser, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
+    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,poodll_msr, audioanalyser, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
 
     "use strict"; // jshint ;_;
 
@@ -460,13 +461,14 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/MediaStr
         		log.debug('onmediasuccess');
 
                 // get blob after specific time interval
-                ip.mediaRecorder = new MediaStreamRecorder(stream);
- 				ip.mediaRecorder.mimeType = ip.audiomimetype;
+                ip.mediaRecorder = poodll_msr;
+                ip.mediaRecorder.init(stream, ip.audioctx); // new MediaStreamRecorder(stream);
+                ip.mediaRecorder.mimeType = ip.audiomimetype;
                 ip.mediaRecorder.audioChannels = 1;
+
 				// we pass in the context object because it needs to be activated right on the event.
 				// so its created in the init and passed around
                 ip.mediaRecorder.start(ip.timeinterval, ip.audioctx);
-                log.debug(ip.timeinterval);
                 ip.mediaRecorder.ondataavailable = function(blob) {
                     log.debug('we got blob');
         			ip.blobs.push(blob);
@@ -489,7 +491,14 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/MediaStr
             var onMediaSuccess = function(stream) {
 
                 // create recorder
-                ip.mediaRecorder = new MediaStreamRecorder(stream);
+               // ip.mediaRecorder = new MediaStreamRecorder(stream);
+
+                ip.mediaRecorder = poodll_msr;
+                ip.mediaRecorder.init(stream, ip.audioctx); // new MediaStreamRecorder(stream);
+
+
+
+
                 // create preview
                 // self.controlbar.preview.attr('src',stream.url);
                // debugger;
