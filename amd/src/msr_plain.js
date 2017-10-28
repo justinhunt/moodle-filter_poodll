@@ -1,7 +1,7 @@
 /* jshint ignore:start */
 define(['jquery',
-    'core/log'],
-    function($, log) {
+    'core/log','filter_poodll/utils_amd'],
+    function($, log, utils) {
 
     "use strict"; // jshint ;_;
 
@@ -13,6 +13,7 @@ define(['jquery',
         mediaStream: null,
         audioctx: null, //unused
         msr: null,
+        mediaType: null,
 
 
         //for making multiple instances
@@ -21,10 +22,11 @@ define(['jquery',
         },
 
         // init the recorder
-        init: function(msr,mediaStream, audioctx) {
+        init: function(msr,mediaStream, audioctx, mediaType) {
                 this.msr= msr;
                 this.mediaStream= mediaStream;
                 this.audioctx = audioctx; //unused
+                this.mediaType=mediaType;
         },
 
         /**
@@ -36,11 +38,11 @@ define(['jquery',
          */
         start: function(timeSlice, __disableLogs) {
         var that = this;
-        if (!this.mimeType) {
+        if (!this.mimeType && this.mediaType == 'video') {
             this.mimeType = 'video/webm';
         }
 
-        if (this.mimeType.indexOf('audio') !== -1) {
+        if (this.mediaType == 'audio') {
             if (this.mediaStream.getVideoTracks().length && this.mediaStream.getAudioTracks().length) {
                 var stream;
                 if (!!navigator.mozGetUserMedia) {
@@ -54,8 +56,8 @@ define(['jquery',
             }
         }
 
-        if (this.mimeType.indexOf('audio') !== -1) {
-            this.mimeType = IsChrome ? 'audio/webm' : 'audio/ogg';
+        if (this.mediaType == 'audio') {
+            this.mimeType = utils.is_chrome() ? 'audio/webm' : 'audio/ogg';
         }
 
         var recorderHints = {
@@ -126,6 +128,10 @@ define(['jquery',
                 that.mediaRecorder.stop();
             }
         };
+
+        //We need a source node to connect the analyser to. The analyser is for visualisations
+        var audioInput = this.audioctx.createMediaStreamSource(this.mediaStream);
+        audioInput.connect(this.msr.audioanalyser.core);
 
         // void start(optional long mTimeSlice)
         // The interval of passing encoded data from EncodedBufferCache to onDataAvailable

@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress'], function($, log, utils,radialprogress) {
+define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress', 'filter_poodll/anim_hwave'], function($, log, utils,radialprogress, hwave) {
 
     "use strict"; // jshint ;_;
 
@@ -195,8 +195,16 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
             var self = this;
             var pmr=this.pmr;
             var ip = this.fetch_instanceprops(controlbarid);
+
+            //init radial progress
             var rprogress = radialprogress.clone();
             rprogress.init(ip.controlbar.playcanvas);
+
+            //init wav anim
+            var horiz_wave = hwave.clone();
+            horiz_wave.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
+
+
 
             ip.controlbar.startbutton.click(function() {
                 pmr.do_start_audio(ip,  onMediaSuccess);
@@ -211,6 +219,9 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 //ip.controlbar.pausebutton.show();
                 self.enable_button(ip.controlbar.pausebutton);
                 self.set_visual_mode('recordmode',controlbarid);
+
+                //wave animation
+                horiz_wave.start();
                 
                 //timer and status bar
                 ip.timer.reset();
@@ -221,6 +232,9 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
             ip.controlbar.stopbutton.click(function() {
 
                 pmr.do_stop_audio(ip);
+
+                //wave animation
+                horiz_wave.clear();
 				/*
                 self.disable_button(this);
                  var preview = ip.controlbar.preview;

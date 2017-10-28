@@ -161,12 +161,39 @@ define(['jquery','core/log'], function($, log) {
             return navigator.userAgent.indexOf('Edge');
         },
 
+        is_chrome: function(){
+                var isChromium = window.chrome,
+                    winNav = window.navigator,
+                    vendorName = winNav.vendor,
+                    isOpera = winNav.userAgent.indexOf("OPR") > -1,
+                    isIEedge = winNav.userAgent.indexOf("Edge") > -1,
+                    isIOSChrome = winNav.userAgent.match("CriOS");
+
+                if (isIOSChrome) {
+                    return true;
+                } else if (
+                    isChromium !== null &&
+                    typeof isChromium !== "undefined" &&
+                    vendorName === "Google Inc." &&
+                    isOpera === false &&
+                    isIEedge === false
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+        },
+
 		is_safari: function(){
 			return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 		},
 
         is_ios: function(){
             return  /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        },
+
+        is_opera: function(){
+            return (typeof opera !== 'undefined' && navigator.userAgent && navigator.userAgent.indexOf('OPR/') !== -1);
         },
 
         is_android: function(){

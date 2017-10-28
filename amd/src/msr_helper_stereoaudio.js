@@ -27,6 +27,7 @@ define(['jquery',
         mimeType: 0,
         isPCM: false,
         numChannels: 1,
+        msr: null,
         audioctx: null,
         mediaStream: null,
         volumeGainNode: null,
@@ -64,6 +65,7 @@ define(['jquery',
             var volume = this.volumeGainNode;
 
             // creates an audio node from the microphone incoming stream
+            //the node chain is audioinput -> volume -> analyser -> scriptprocessingnode
             this.audioInput = context.createMediaStreamSource(this.mediaStream);
 
             // creates an audio node from the microphone incoming stream
@@ -82,25 +84,23 @@ define(['jquery',
                 bufferSize = 0;
             }
 
+            var scriptprocessornode = null;
             if (context.createJavaScriptNode) {
-                this.scriptprocessornode = context.createJavaScriptNode(bufferSize, this.numChannels, this.numChannels);
+                scriptprocessornode = context.createJavaScriptNode(bufferSize, this.numChannels, this.numChannels);
             } else if (context.createScriptProcessor) {
-                this.scriptprocessornode = context.createScriptProcessor(bufferSize, this.numChannels, this.numChannels);
+                scriptprocessornode = context.createScriptProcessor(bufferSize, this.numChannels, this.numChannels);
             } else {
                 throw 'WebAudio API has no support on this browser.';
             }
 
-            this.bufferSize = this.scriptprocessornode.bufferSize;
-
-            console.debug('using audio buffer-size:', bufferSize);
-
+            this.bufferSize = scriptprocessornode.bufferSize;
             this.requestDataInvoked = false;
 
             // sometimes "scriptprocessornode" disconnects from he destination-node
             // and there is no exception thrown in this case.
             // and obviously no further "ondataavailable" events will be emitted.
             // below global-scope variable is added to debug such unexpected but "rare" cases.
-            window.scriptprocessornode = this.scriptprocessornode;
+            this.scriptprocessornode = scriptprocessornode;
 
             if (this.numChannels === 1) {
                 console.debug('All right-channels are skipped.');
@@ -109,11 +109,10 @@ define(['jquery',
             this.isPaused = false;
 
             //http://webaudio.github.io/web-audio-api/#the-scriptprocessornode-interface
-            this.scriptprocessornode.onaudioprocess = function(e) {
+            scriptprocessornode.onaudioprocess = function(e) {
                 if (!that.recording || that.requestDataInvoked || that.isPaused) {
                     return;
                 }
-                console.log('audioprocessing');
 
                 var left = e.inputBuffer.getChannelData(0);
                 that.leftchannel.push(new Float32Array(left));
@@ -125,8 +124,10 @@ define(['jquery',
                 that.recordingLength += that.bufferSize;
             };
 
-            volume.connect(this.scriptprocessornode);
-            this.scriptprocessornode.connect(context.destination);
+            volume.connect(this.msr.audioanalyser.aanalyser);
+           // volume.connect(this.scriptprocessornode);
+            this.msr.audioanalyser.core.connect(scriptprocessornode);
+            scriptprocessornode.connect(context.destination);
 
         },
 

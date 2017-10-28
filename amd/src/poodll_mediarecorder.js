@@ -1,15 +1,15 @@
 /* jshint ignore:start */
 define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         'filter_poodll/adapter', 'filter_poodll/uploader', 'filter_poodll/timer',
+    'filter_poodll/audioanalyser',
     'filter_poodll/msr_poodll',
-        'filter_poodll/audioanalyser',
         'filter_poodll/poodll_basemediaskin',
         'filter_poodll/poodll_burntrosemediaskin',
         'filter_poodll/poodll_onetwothreemediaskin',
         'filter_poodll/poodll_goldmediaskin',
         'filter_poodll/poodll_bmrmediaskin',
         'filter_poodll/poodll_shadowmediaskin',
-    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,poodll_msr, audioanalyser, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
+    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,audioanalyser,poodll_msr, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
 
     "use strict"; // jshint ;_;
 
@@ -152,7 +152,11 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 		this.instanceprops[controlbarid].useraudiodeviceid = false;
 		this.instanceprops[controlbarid].uservideodeviceid = false;
 		this.instanceprops[controlbarid].devices = [];
-		this.instanceprops[controlbarid].audioctx = new AudioContext();
+		var ac= new AudioContext();
+		this.instanceprops[controlbarid].audioctx = ac;
+		var aa = audioanalyser.clone();
+		aa.init(ac);
+        this.instanceprops[controlbarid].audioanalyser = aa;
 		this.instanceprops[controlbarid].previewstillcold = true;
 
 
@@ -268,6 +272,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         },
 
         do_play_audio: function(ip, preview) {
+
+
+
             if (ip.blobs && ip.blobs.length > 0) {
                 log.debug('playing type:' + ip.blobs[0].type);
                 switch (ip.blobs[0].type) {
@@ -459,10 +466,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             var onMediaSuccess = function(stream) {
         		log.debug('onmediasuccess');
-
                 // get blob after specific time interval
                 ip.mediaRecorder = poodll_msr;
-                ip.mediaRecorder.init(stream, ip.audioctx); // new MediaStreamRecorder(stream);
+                ip.mediaRecorder.init( stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype); // new MediaStreamRecorder(stream);
                 ip.mediaRecorder.mimeType = ip.audiomimetype;
                 ip.mediaRecorder.audioChannels = 1;
 
@@ -470,7 +476,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 				// so its created in the init and passed around
                 ip.mediaRecorder.start(ip.timeinterval, ip.audioctx);
                 ip.mediaRecorder.ondataavailable = function(blob) {
-                    log.debug('we got blob');
         			ip.blobs.push(blob);
         			};
 
@@ -494,7 +499,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                // ip.mediaRecorder = new MediaStreamRecorder(stream);
 
                 ip.mediaRecorder = poodll_msr;
-                ip.mediaRecorder.init(stream, ip.audioctx); // new MediaStreamRecorder(stream);
+                ip.mediaRecorder.init(stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype); // new MediaStreamRecorder(stream);
 
 
 

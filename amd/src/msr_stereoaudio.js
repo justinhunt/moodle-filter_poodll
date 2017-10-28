@@ -12,6 +12,7 @@ define(['jquery',
         mediaRecorder: null,
         mediaStream: null,
         msr: null,
+        mediaType: 'audio',
 
         //for making multiple instances
         clone: function(){
@@ -20,10 +21,11 @@ define(['jquery',
 
         // init the poodll recorder
         // basically we check the users preferred recorders and if the rec supports the browser
-        init: function(msr,mediaStream,audioctx) {
+        init: function(msr,mediaStream,audioctx,mediaType) {
             this.msr = msr;
             this.mediaStream = mediaStream;
             this.audioctx = audioctx;
+            this.mediaType= mediaType;//always audio
         },
 
         start:  function(timeSlice,audioctx) {

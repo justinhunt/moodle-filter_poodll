@@ -125,7 +125,7 @@ define(['jquery',
 
             this.whammy.compile(function(whammyBlob) {
                 that.msr.ondataavailable(whammyBlob);
-                log.debug('video recorded blob size:', bytesToSize(whammyBlob.size));
+                log.debug('video recorded blob size:' + bytesToSize(whammyBlob.size));
             });
 
             this.whammy.frames = [];
