@@ -3,7 +3,7 @@ define(['jquery','core/log'], function($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('anim_horizontal_wave: initialising');
+    log.debug('anim_ripple: initialising');
 
     return {
 
@@ -56,24 +56,18 @@ define(['jquery','core/log'], function($, log) {
 
                 canvasCtx.beginPath();
 
-                var sliceWidth = cwidth * 1.0 / bufferLength;
-                var x = 0;
-
-                for (var i = 0; i < bufferLength; i++) {
-
-                    var v = dataArray[i] / 128.0;
-                    var y = v * cheight / 2;
-
-                    if (i === 0) {
-                        canvasCtx.moveTo(x, y);
-                    } else {
-                        canvasCtx.lineTo(x, y);
-                    }
-
-                    x += sliceWidth;
+                var recwidth= 0;
+                if(bufferLength>0) {
+                    var stepsize = 1 + bufferLength / 5;
                 }
 
-                canvasCtx.lineTo(cwidth, cheight / 2);
+
+                for (var i = 0; i < bufferLength; i=i+stepsize) {
+                    var v = dataArray[i] / 128.0;
+                    var y = v * cheight / 2;
+                    var radius = recwidth + y
+                    canvasCtx.arc(cwidth/2,cheight/2,radius,0,2*Math.PI);
+                }
                 canvasCtx.stroke();
             };
 

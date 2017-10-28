@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress', 'filter_poodll/anim_hwave'], function($, log, utils,radialprogress, hwave) {
+define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress', 'filter_poodll/anim_hwave','filter_poodll/anim_fbars','filter_poodll/anim_ripple'], function($, log, utils,radialprogress, hwave,fbars,ripple) {
 
     "use strict"; // jshint ;_;
 
@@ -200,9 +200,14 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
             var rprogress = radialprogress.clone();
             rprogress.init(ip.controlbar.playcanvas);
 
-            //init wav anim
-            var horiz_wave = hwave.clone();
-            horiz_wave.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
+            //init recording anim
+            var recanim=false;
+            switch(ip.config.recanim) {
+                case 'hwave': recanim=hwave.clone();break;
+                case 'fbars': recanim=fbars.clone();break;
+                case 'ripple': recanim=ripple.clone();break;
+            }
+            recanim.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
 
 
 
@@ -221,7 +226,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 self.set_visual_mode('recordmode',controlbarid);
 
                 //wave animation
-                horiz_wave.start();
+                recanim.start();
                 
                 //timer and status bar
                 ip.timer.reset();
@@ -234,7 +239,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 pmr.do_stop_audio(ip);
 
                 //wave animation
-                horiz_wave.clear();
+                recanim.clear();
 				/*
                 self.disable_button(this);
                  var preview = ip.controlbar.preview;

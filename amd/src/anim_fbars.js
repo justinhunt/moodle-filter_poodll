@@ -3,7 +3,7 @@ define(['jquery','core/log'], function($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('anim_horizontal_wave: initialising');
+    log.debug('anim_freq bars: initialising');
 
     return {
 
@@ -29,8 +29,8 @@ define(['jquery','core/log'], function($, log) {
         },
 
         start: function(){
-            this.analyser.core.fftSize = 2048;
-            var bufferLength = this.analyser.core.fftSize;
+            this.analyser.core.fftSize = 256;
+            var bufferLength = this.analyser.core.frequencyBinCount;
             var dataArray = new Uint8Array(bufferLength);
             var cwidth = this.cvs.width;
             var cheight = this.cvs.height;
@@ -39,42 +39,29 @@ define(['jquery','core/log'], function($, log) {
             this.clear();
 
             var draw = function () {
-
-
+                //this sets up the loop
                 var drawVisual = requestAnimationFrame(draw);
 
                 //cancel out if the theinterval is null
                 if(!analyser.theinterval){return;}
 
-                analyser.core.getByteTimeDomainData(dataArray);
+                analyser.core.getByteFrequencyData(dataArray);
 
-                canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+                canvasCtx.fillStyle = 'rgb(0, 0, 0)';
                 canvasCtx.fillRect(0, 0, cwidth, cheight);
 
-                canvasCtx.lineWidth = 2;
-                canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
-
-                canvasCtx.beginPath();
-
-                var sliceWidth = cwidth * 1.0 / bufferLength;
+                var barWidth = (cwidth / bufferLength) * 2.5;
+                var barHeight;
                 var x = 0;
 
-                for (var i = 0; i < bufferLength; i++) {
+                for(var i = 0; i < bufferLength; i++) {
+                    barHeight = dataArray[i];
 
-                    var v = dataArray[i] / 128.0;
-                    var y = v * cheight / 2;
+                    canvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
+                    canvasCtx.fillRect(x,cheight-barHeight/2,barWidth,barHeight/2);
 
-                    if (i === 0) {
-                        canvasCtx.moveTo(x, y);
-                    } else {
-                        canvasCtx.lineTo(x, y);
-                    }
-
-                    x += sliceWidth;
+                    x += barWidth + 1;
                 }
-
-                canvasCtx.lineTo(cwidth, cheight / 2);
-                canvasCtx.stroke();
             };
 
             draw();
