@@ -201,7 +201,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
             rprogress.init(ip.controlbar.playcanvas);
 
             //init recording anim
-            var recanim=false;
+            var recanim=ripple;
             switch(ip.config.recanim) {
                 case 'hwave': recanim=hwave.clone();break;
                 case 'fbars': recanim=fbars.clone();break;
