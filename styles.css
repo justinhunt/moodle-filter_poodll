@@ -25,9 +25,9 @@
     border: none;
 }
 
-
-
-
+.poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button:focus {
+    outline-style: none;
+}
 
 
 /*

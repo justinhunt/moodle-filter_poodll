@@ -40,7 +40,6 @@ define(['jquery','core/log'], function($, log) {
 
             var draw = function () {
 
-
                 var drawVisual = requestAnimationFrame(draw);
 
                 //cancel out if the theinterval is null
@@ -48,8 +47,9 @@ define(['jquery','core/log'], function($, log) {
 
                 analyser.core.getByteTimeDomainData(dataArray);
 
-                canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-                canvasCtx.fillRect(0, 0, cwidth, cheight);
+                //this fills grey, but its lame lets just leave it clear
+                //canvasCtx.fillStyle = 'rgb(200, 200, 200)';
+                canvasCtx.clearRect(0, 0, cwidth,cheight);
 
                 canvasCtx.lineWidth = 2;
                 canvasCtx.strokeStyle = 'rgb(0, 0, 0)';

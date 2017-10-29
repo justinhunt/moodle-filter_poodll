@@ -41,6 +41,8 @@ define(['jquery','core/log'], function($, log) {
             var draw = function () {
 
 
+
+
                 var drawVisual = requestAnimationFrame(draw);
 
                 //cancel out if the theinterval is null

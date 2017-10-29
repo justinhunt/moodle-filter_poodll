@@ -564,7 +564,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         fetch_strings: function() {
         	var ss = [];
-        	var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save'];
+        	var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save','restart'];
         	$.each(keys, function(index, key) {
         		ss['recui_' + key] = M.util.get_string('recui_' + key, 'filter_poodll');
         		if (ss['recui_' + key].indexOf(',filter_poodll]]') > 1) { ss['recui_' + key] = key; }

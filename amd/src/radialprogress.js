@@ -48,16 +48,19 @@ define(['jquery','core/log'], function($, log) {
 
         stop: function () {
         	this.enabled= false;
+        	this.clear();
         },
 
         start: function () {
+            this.clear();
         	this.enabled=true;
         	var that = this;
 
 			var draw= function () {
+                if(!that.enabled){
+                   return;
+                }
 				var radius = 65;
-				var endPercent = 100;
-				var curPerc = 0;
 				var counterClockwise = false;
 				var circ = Math.PI * 2;
 				var quart = Math.PI / 2;
@@ -67,10 +70,8 @@ define(['jquery','core/log'], function($, log) {
 
 				var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
 								  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
-				if(that.enabled){
-						requestAnimationFrame(draw);
-				}
-log.debug(that.fetchCurrent());
+                requestAnimationFrame(draw);
+
 			}//end of draw
 			draw();
     	}//end of enable

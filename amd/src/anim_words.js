@@ -50,7 +50,7 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
             var cheight = this.cvs.height;
 
             //clear the canvas
-            this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+            this.cvsctx.clearRect(0, 0, cwidth,this.ceight);
 
             //set up speechrecognizer to fill words array
             var words = ['..','..','..','..','..','..','..','..'];
@@ -62,8 +62,7 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
 
             var draw = function () {
 
-
-                //cancel out if no longer active is null
+                //cancel out if no longer active is null.
                 if(!that.enabled){return;}
 
                 //this is the loop that continually calls itself to draw
@@ -71,12 +70,15 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
                     window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 var drawVisual = reqAnimFrame(draw);
 
+
+
                 //this is the audio data
                 that.analyser.core.getByteTimeDomainData(dataArray);
 
-                //this fills grey
-                that.cvsctx.fillStyle = 'rgb(200, 200, 200)';
-                that.cvsctx.fillRect(0, 0, cwidth, cheight);
+                //this fills grey, but its lame lets just leave it clear
+                //that.cvsctx.fillStyle = 'rgb(200, 200, 200)';
+                that.cvsctx.clearRect(0, 0, cwidth,cheight);
+
                 //sets up the pen
                 that.cvsctx.lineWidth = 2;
                 that.cvsctx.strokeStyle = 'rgb(0, 0, 0)';
