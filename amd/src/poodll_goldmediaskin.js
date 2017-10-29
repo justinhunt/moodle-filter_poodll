@@ -251,8 +251,6 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 //wave animation
                 recanim.clear();
 
-                //speech rec
-             //   speechrec.stop();
 
 				/*
                 self.disable_button(this);
@@ -306,16 +304,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 //probably not necessary  ... but getting odd ajax errors occasionally
                 return false;
             });//end of save recording
-            /*
-            ip.controlbar.preview.on("timeupdate", function() {
-				// Variables
-				var currentTime = this.currentTime;
-				var duration = this.duration;
-				if(duration==0 || true){duration = ip.timer.finalseconds;}
-				var current_time = currentTime/duration;
-				rprogress.setProgress(current_time);
-			});
-			*/
+
             
             window.onbeforeunload = function() {
                 self.enable_button(ip.controlbar.startbutton);

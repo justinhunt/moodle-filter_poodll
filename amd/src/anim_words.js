@@ -11,6 +11,7 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
         cvs: null,
         cvsctx: null,
         speechrec: null,
+        enabled: false,
 
         //for making multiple instances
         clone: function () {
@@ -28,23 +29,31 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
             this.speechrec.init('en-US');
 
         },
-
+        //clear
+        //more specifically stop, but to be consistent with how we do other anims, we call it clear
         clear: function(){
             this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+            this.enabled=false;
+            this.speechrec.stop();
         },
 
 
+        //start the anim
         start: function(){
-
+            //set up variables used in drawing
+            this.enabled = true;
+            var that = this;
             this.analyser.core.fftSize = 2048;
             var bufferLength = this.analyser.core.fftSize;
             var dataArray = new Uint8Array(bufferLength);
             var cwidth = this.cvs.width;
             var cheight = this.cvs.height;
-            var canvasCtx = this.cvsctx;
-            var analyser = this.analyser;
-            this.clear();
-            var words = [];//['','..','..','..','','..','..',''];
+
+            //clear the canvas
+            this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+
+            //set up speechrecognizer to fill words array
+            var words = ['..','..','..','..','..','..','..','..'];
             this.speechrec.oninterimspeechcapture = function(speechtext){
                 var newwords= speechtext.split(' ');
                 words = words.concat(newwords);
@@ -54,53 +63,55 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
             var draw = function () {
 
 
-                var drawVisual = requestAnimationFrame(draw);
+                //cancel out if no longer active is null
+                if(!that.enabled){return;}
 
-                //cancel out if the theinterval is null
-                if(!analyser.theinterval){return;}
+                //this is the loop that continually calls itself to draw
+                var reqAnimFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                var drawVisual = reqAnimFrame(draw);
 
-                analyser.core.getByteTimeDomainData(dataArray);
+                //this is the audio data
+                that.analyser.core.getByteTimeDomainData(dataArray);
 
-                canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-                canvasCtx.fillRect(0, 0, cwidth, cheight);
-
-                canvasCtx.lineWidth = 2;
-                canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
-
-                canvasCtx.beginPath();
-
+                //this fills grey
+                that.cvsctx.fillStyle = 'rgb(200, 200, 200)';
+                that.cvsctx.fillRect(0, 0, cwidth, cheight);
+                //sets up the pen
+                that.cvsctx.lineWidth = 2;
+                that.cvsctx.strokeStyle = 'rgb(0, 0, 0)';
+                that.cvsctx.beginPath();
+                //how long to drw each datapoint
                 var sliceWidth = cwidth * 1.0 / bufferLength;
                 var x = 0;
-
+                //draw all the points
                 for (var i = 0; i < bufferLength; i++) {
 
                     var v = dataArray[i] / 128.0;
                     var y = v * cheight / 2;
 
                     if (i === 0) {
-                        canvasCtx.moveTo(x, y);
+                        that.cvsctx.moveTo(x, y);
                     } else {
-                        canvasCtx.lineTo(x, y);
+                        that.cvsctx.lineTo(x, y);
                     }
 
                     x += sliceWidth;
                 }
 
-                canvasCtx.lineTo(cwidth, cheight / 2);
-                canvasCtx.stroke();
+                that.cvsctx.lineTo(cwidth, cheight / 2);
+                that.cvsctx.stroke();
 
                 //draw words
-                canvasCtx.font = "14px Comic Sans MS";
-                canvasCtx.fillStyle = "black";
-                canvasCtx.textAlign = "center";
+                that.cvsctx.font = "14px Comic Sans MS";
+                that.cvsctx.fillStyle = "black";
+                that.cvsctx.textAlign = "center";
                 var cellvcenter = cheight/4;
                 var cellwidth=cwidth / 4;
                 var cellhcenter = cwidth / 8;
                 for (i=1; i<9;i++){
-                    canvasCtx.fillText(words[words.length-i], (cellwidth * (i % 4)) + cellhcenter, i <5 ? cellvcenter : cellvcenter *3);
+                    that.cvsctx.fillText(words[words.length-i], (cellwidth * (i % 4)) + cellhcenter, i <5 ? cellvcenter : cellvcenter *3);
                 }
-
-
             };
 
             draw();
