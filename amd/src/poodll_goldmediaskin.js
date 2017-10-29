@@ -1,5 +1,7 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress', 'filter_poodll/anim_hwave','filter_poodll/anim_fbars','filter_poodll/anim_ripple'], function($, log, utils,radialprogress, hwave,fbars,ripple) {
+define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress',
+    'filter_poodll/anim_hwave','filter_poodll/anim_fbars','filter_poodll/anim_ripple',
+    'filter_poodll/anim_words','filter_poodll/speech_poodll'], function($, log, utils,radialprogress, hwave,fbars,ripple,words, speechrecognition) {
 
     "use strict"; // jshint ;_;
 
@@ -206,9 +208,14 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 case 'hwave': recanim=hwave.clone();break;
                 case 'fbars': recanim=fbars.clone();break;
                 case 'ripple': recanim=ripple.clone();break;
+                case 'words': recanim=words.clone();break;
             }
+            log.debug('recanim=' + ip.config.recanim);
             recanim.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
 
+            //init speech recognition
+           // var speechrec = speechrecognition.clone();
+           // speechrec.init('en-US');
 
 
             ip.controlbar.startbutton.click(function() {
@@ -227,6 +234,9 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
 
                 //wave animation
                 recanim.start();
+
+                //speech recognition
+               // speechrec.start();
                 
                 //timer and status bar
                 ip.timer.reset();
@@ -240,6 +250,10 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
 
                 //wave animation
                 recanim.clear();
+
+                //speech rec
+             //   speechrec.stop();
+
 				/*
                 self.disable_button(this);
                  var preview = ip.controlbar.preview;
@@ -272,6 +286,12 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 //self.disable_button(ip.controlbar.startbutton);
                 self.enable_button(ip.controlbar.savebutton);
                 rprogress.clear();
+                rprogress.fetchCurrent=function(){
+                    var ct = ip.controlbar.preview.prop('currentTime');
+                    var duration = ip.timer.finalseconds;
+                    return ct/duration;
+                };
+                rprogress.start();
             });
             
            ip.controlbar.savebutton.click(function() {
@@ -286,15 +306,16 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 //probably not necessary  ... but getting odd ajax errors occasionally
                 return false;
             });//end of save recording
-            
+            /*
             ip.controlbar.preview.on("timeupdate", function() {
 				// Variables
 				var currentTime = this.currentTime;
 				var duration = this.duration;
 				if(duration==0 || true){duration = ip.timer.finalseconds;}
 				var current_time = currentTime/duration;
-				rprogress.draw(current_time);
+				rprogress.setProgress(current_time);
 			});
+			*/
             
             window.onbeforeunload = function() {
                 self.enable_button(ip.controlbar.startbutton);
