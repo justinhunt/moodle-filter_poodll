@@ -52,6 +52,7 @@ define(['jquery','core/log'], function($, log) {
                 canvasCtx.clearRect(0, 0, cwidth,cheight);
 
                 canvasCtx.lineWidth = 2;
+                canvasCtx.setLineDash([15, 5]);
                 canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
 
                 canvasCtx.beginPath();

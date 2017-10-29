@@ -28,15 +28,6 @@ define(['jquery','core/log'], function($, log) {
             this.y = this.playcanvas.height / 2;
             this.context = this.playcanvas.getContext('2d');
 
-            //set draw params, later could make this configurable
-            this.context.lineWidth = 10;
-            this.context.strokeStyle = '#ad2323';
-            this.context.setLineDash([15, 5]);
-            this.context.shadowOffsetX = 0;
-            this.context.shadowOffsetY = 0;
-            this.context.shadowBlur = 10;
-            this.context.shadowColor = '#fff';
-
         },
 
         clear: function () {
@@ -56,10 +47,20 @@ define(['jquery','core/log'], function($, log) {
         	this.enabled=true;
         	var that = this;
 
+            //set draw params, later could make this configurable
+            this.context.lineWidth = 10;
+            this.context.strokeStyle = '#ad2323';
+            this.context.setLineDash([]);
+            this.context.shadowOffsetX = 0;
+            this.context.shadowOffsetY = 0;
+            this.context.shadowBlur = 10;
+            this.context.shadowColor = '#fff';
+
 			var draw= function () {
                 if(!that.enabled){
                    return;
                 }
+
 				var radius = 65;
 				var counterClockwise = false;
 				var circ = Math.PI * 2;
