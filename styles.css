@@ -1,4 +1,90 @@
 
+/*
+	Boss Justin's One Button Recorders
+*/
+@font-face {
+    font-family: 'Indie Flower';
+    src: url('https://fonts.googleapis.com/css?family=Indie+Flower');
+}
+
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_gold{
+	text-align: center;
+}
+.poodll_mediarecorderbox_gold button{
+	font-size: 32px;
+	transition: filter 0.5s ease;
+	
+}
+.poodll_mediarecorderbox_gold button:hover{
+	cursor: pointer;
+	filter: brightness(120%);
+}
+.poodll_mediarecorderbox_gold .poodll_start-recording_gold{
+	background-color: #93c47d;
+}
+.poodll_mediarecorderbox_gold .poodll_stop-recording_gold{
+	background-color: #ea9999;
+}
+.poodll_mediarecorderbox_gold .poodll_play-recording_gold{
+	background-color: #9fc5f8;
+}
+.gold-save-button-wrapper{
+	width: 100%;
+    margin-bottom: 10px;
+}
+.gold-save-button-wrapper .poodll_save-recording_gold{
+	width: 20%;
+    color: #333;
+    background-color: #93c47d;
+    border: #333;
+    font-weight: 600;
+    -webkit-box-shadow: 1px 2px 3px #333;
+    box-shadow: 1px 2px 3px #333;
+    text-shadow: 1px 2px 2px #ccc;
+    text-transform: capitalize;
+}
+.gold-restart-button-wrapper{
+	width: 100%;
+}
+.gold-restart-button-wrapper .poodll_restart_gold{
+	background: transparent;
+    border: none;
+    text-transform: capitalize;
+    font-size: 20px;
+    color: #0c5394;
+    font-weight: 400;
+}
+.poodll_mediarecorderbox_gold canvas{
+	margin-bottom: 10px;
+}
+.poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button{
+    position: absolute;
+    left: 130px;
+    top: 8%;
+    height: 100px;
+    width: 100px;
+    border-radius: 50%;
+    border: none;
+}
+
+.poodll_mediarecorderbox_gold .gold-save-button-wrapper a.pmr_disabled{
+	display: block !important;
+	margin: 0 auto;
+	background-color: #c2c2c2;
+	pointer-events: none;
+}
+.poodll_mediarecorderbox_gold .gold-restart-button-wrapper a.pmr_disabled{
+	display: block !important;
+	margin: 0 auto;
+	color: #c2c2c2;
+	pointer-events: none;
+}
+
+
+/*********************************************END****************************************/
+
+
+
 
 
 /*
@@ -15,15 +101,7 @@
 	display: none;
 }
 
-.poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button{
-    position: absolute;
-    left: 130px;
-    top: 15%;
-    height: 100px;
-    width: 100px;
-    border-radius: 50%;
-    border: none;
-}
+
 
 .poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button:focus {
     outline-style: none;

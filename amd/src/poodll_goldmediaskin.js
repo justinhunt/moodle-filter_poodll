@@ -174,11 +174,11 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 controls += status,
                 controls += preview,
 				controls += '<canvas id="' + controlbarid + '_playcanvas"> width="250" height="250"></canvas>';
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_gold poodll_start-recording_gold">' + ss['recui_record'] + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_gold poodll_stop-recording_gold">' + ss['recui_stop'] + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_gold poodll_play-recording_gold">' + ss['recui_play'] + '</button>';
-                controls += '<a class="btn btn-primary poodll_save-recording_gold ' + hideshowupload + '">' + ss['recui_save'] + '</a>';
-                controls += '<a class="btn btn-success poodll_restart_gold " >' + ss['recui_restart'] + '</a>';
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_gold poodll_start-recording_gold"><i class="fa fa-microphone" aria-hidden="true"></i></button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_gold poodll_stop-recording_gold"><i class="fa fa-stop" aria-hidden="true"></i></button>';
+                controls += '<div class="gold-save-button-wrapper"><a class="btn btn-primary poodll_save-recording_gold">Upload</a></div>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_gold poodll_play-recording_gold"><i class="fa fa-play" aria-hidden="true"></i></button>';
+                controls += '<div class="gold-restart-button-wrapper"><a class="btn btn-success poodll_restart_gold " >' + ss['recui_restart'] + '</a></div>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
                 var controlbar ={
@@ -251,7 +251,12 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
             });
 
             ip.controlbar.stopbutton.click(function() {
-
+				
+				//show save button
+				$('a.poodll_save-recording_gold').removeClass('hide');
+				$('a.poodll_save-recording_gold').removeClass('pmr_disabled');
+				$('a.poodll_save-recording_gold').attr('disabled',false);
+				
                 //stop recording
                 pmr.do_stop_audio(ip);
 

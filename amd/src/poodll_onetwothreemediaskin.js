@@ -152,7 +152,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 }
 				var ss = this.pmr.fetch_strings();
                 var controls ='<div class="one-two-three-main-wrapper poodll_mediarecorderholder_onetwothree ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
-                	
+  	
 					controls +='<div class="poodll_mediarecorderbox_onetwothree one-two-three-wrap" id="' + controlbarid + '">' ;
 						controls +='<div class="style-holder ' + skin_style + '">' ;
 							var status = this.fetch_status_bar('onetwothree');
@@ -208,9 +208,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         
         
             ip.controlbar.startbutton.click(function() {
-  
+				
+				$('.hp_slide').hide();
+				
                 pmr.do_start_audio(ip, onMediaSuccess);
-
                 //clear messages
                 $('#' + ip.config.widgetid  + '_messages').text('');
                self.disable_button(this);
@@ -243,9 +244,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             
             ip.controlbar.stoprecbutton.click(function() {
 				/* glen*/
-				$('.poodll_mediarecorder_audio .poodll_status_onetwothree').fadeOut();
-				$('.hp_slide').fadeIn();
 				
+				if(ip.config.mediatype=='audio'){
+					
+					$('.hp_timer').html(ip.timer.fetch_display_time(ip.timer.fetch_display_time()));
+					$('.poodll_mediarecorder_audio .poodll_status_onetwothree').addClass('hide');
+					$('.hp_slide').show();
+				}
 				
 				/*end*/
 				
@@ -257,7 +262,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 				
                 self.disable_button(this);
                 $(this).hide();
-              pmr.do_stop_audio(ip);
+				pmr.do_stop_audio(ip);
               
                  self.enable_button(ip.controlbar.startbutton);
                  ip.controlbar.startbutton.show();
@@ -275,50 +280,27 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 ip.timer.reset();
                 self.update_status(controlbarid);
             });
-            
-            // currently not used
-            ip.controlbar.pausebutton.click(function() {
-                this.disabled = true;
-                $(this).hide();
-               
-                ip.controlbar.resumebutton.show();
-                pmr.do_pause_audio(ip);
-                self.enable_button(ip.controlbar.resumebutton);
                 
-                 self.enable_button(ip.controlbar.playbutton);
-                 ip.controlbar.playbutton.show();
-                 
-                 self.enable_button(ip.controlbar.savebutton);
-                 ip.controlbar.savebutton.show();
-                
-                self.set_visual_mode('pausedmode',controlbarid);
-                
-                //timer and status bar
-                ip.timer.pause();
-                self.update_status(controlbarid);
-            });
-            
-            //currently not used
-            ip.controlbar.resumebutton.click(function() {
-                self.disable_button(this);
-                $(this).hide();
-                ip.controlbar.pausebutton.show();
-                pmr.do_resume_audio(ip);
-                self.enable_button(ip.controlbar.pausebutton);
-                self.set_visual_mode('recordmode',controlbarid);
-                
-                //timer and status bar
-                ip.timer.resume();
-                self.update_status(controlbarid);
-            });
-            
             
             ip.controlbar.stopbutton.click(function() {
 
+			 if(ip.config.mediatype == 'audio'){
+				console.log('stop');
 				
-
+				if($('.hp_slide .hp_range').hasClass('hide')){
+					
+				}else{
+					$('.hp_slide .hp_range').addClass('hide');
+					$('.hp_slide .hp_range').hide();
+				}
 				
 				
+			 }
+				
+			
+			
+			
+			
              //stop playing
              var preview = ip.controlbar.preview.get(0);
               pmr.do_stopplay_audio(ip,preview);
@@ -339,6 +321,19 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
             
             ip.controlbar.playbutton.click(function() {
+				
+				//$('.hp_range').removeClass('hide');
+				if(ip.config.mediatype == 'audio'){
+					if ( $('.hp_slide .hp_range').hasClass("hide") ) {
+						$('.hp_slide .hp_range').removeClass('hide');
+						 $('.hp_slide .hp_range').show();
+						console.log('has_class');
+					}	
+				}
+				
+				
+				
+				console.log('played');
 				
 				
 				if(!$(this).hasClass('played')){
@@ -367,6 +362,17 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 
                 //set recording stage
                 stage="played";
+				
+				
+				 if(ip.config.mediatype != 'audio'){
+					console.log('remove hide');
+					$('.poodll_status_onetwothree').removeClass('hide');
+				 }else{
+					 
+				 }
+				
+				
+				
                 
             });
             
@@ -408,12 +414,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 			var finalSeconds = ip.timer.finalseconds;					
 			var currentTime = this.currentTime;
 			var duration = this.duration;
-                        if(!isFinite(duration)){duration=finalSeconds};
+			if(!isFinite(duration)){duration=finalSeconds};
 			var current_time = currentTime/duration;
 			if(current_time > 1){current_time=1};
-			
-			$('.hp_timer').html(ip.timer.fetch_display_time(currentTime));
-			$('.hp_range').stop(true,true).animate({'width':current_time * 100 +'%'},250,'linear');
+			$('.hp_range').stop(true,true).animate({'width':current_time * 100 +'%'},500,'linear');
 		});
 				
 				
