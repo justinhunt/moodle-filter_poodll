@@ -57,7 +57,7 @@ define(['jquery','core/log'], function($, log) {
 
                 canvasCtx.beginPath();
 
-                var recwidth= 0;
+                var recwidth= 100;
                 if(bufferLength>0) {
                     var stepsize = 1 + bufferLength / 5;
                 }
@@ -65,8 +65,8 @@ define(['jquery','core/log'], function($, log) {
 
                 for (var i = 0; i < bufferLength; i=i+stepsize) {
                     var v = dataArray[i] / 128.0;
-                    var y = v * cheight / 2;
-                    var radius = recwidth + y
+                    var y = v * (cheight - recwidth) / 4;
+                    var radius = recwidth / 2  + y
                     canvasCtx.arc(cwidth/2,cheight/2,radius,0,2*Math.PI);
                 }
                 canvasCtx.stroke();

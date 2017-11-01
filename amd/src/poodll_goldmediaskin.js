@@ -113,6 +113,12 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                     break;
 
                case 'previewmode':
+
+                   //show save button
+                   ip.controlbar.savebutton.removeClass('hide');
+                   ip.controlbar.savebutton.removeClass('pmr_disabled');
+                   ip.controlbar.savebutton.attr('disabled',false);
+
                    if(!ip.uploaded){
                        self.enable_button(ip.controlbar.startbutton);
                        self.enable_button(ip.controlbar.restartbutton);
@@ -251,12 +257,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
             });
 
             ip.controlbar.stopbutton.click(function() {
-				
-				//show save button
-				$('a.poodll_save-recording_gold').removeClass('hide');
-				$('a.poodll_save-recording_gold').removeClass('pmr_disabled');
-				$('a.poodll_save-recording_gold').attr('disabled',false);
-				
+
                 //stop recording
                 pmr.do_stop_audio(ip);
 
