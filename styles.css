@@ -132,11 +132,13 @@ Integration
 	text-align: center;
 	color: #333;
 	font-size: 16px;
+    z-index: 99;
 }
 .hp_range{
-    width:0;
-    background: #c2c2c2;
     height:25px;
+    width: 100%;
+    position: absolute;
+    display: block;
 }
 
 
@@ -342,7 +344,6 @@ left: -50%;
     margin-top:5px;
     float:right;
 }
-
 div.filter_poodll_dragging {
    border:2px dashed #0000FF;
 }

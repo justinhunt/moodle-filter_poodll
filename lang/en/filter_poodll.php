@@ -322,3 +322,4 @@ $string['templateupdated'] = '{$a} Poodll Templates Updated.';
 $string['updatetoversion'] = 'Update to {$a}';
 $string['updateall'] = 'Update all.';
 $string['poodlltemplatesadmin'] = 'Poodll Filter Templates Admin';
+$string['cleartemplate'] = 'Clear template';

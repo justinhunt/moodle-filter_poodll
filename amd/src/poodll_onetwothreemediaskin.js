@@ -38,7 +38,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
         },		
 
         fetch_status_bar: function(skin){
-            var status = '<div class="poodll_status_' + skin + '" width="320" height="50">00:00:00</div>';
+            var status = '<div class="poodll_status_' + skin + '" height="50">00:00:00</div>';
             return status;
         },
         
@@ -209,7 +209,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 							var status = this.fetch_status_bar('onetwothree');
 							controls += status,
 							controls += '<div class="hp_slide" id="slide_'+controlbarid+'">';
-							controls += '<div class="hp_timer"></div><canvas class="hp_range" width="320" height="50"></canvas></div>';
+							controls += '<div class="hp_timer"></div><canvas class="hp_range"></canvas></div>';
 							controls += preview,
 							controls +=  '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_start-recording_onetwothree"><i class="fa fa-microphone" aria-hidden="true"></i></button> ';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';

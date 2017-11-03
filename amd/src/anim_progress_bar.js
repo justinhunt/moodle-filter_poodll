@@ -9,10 +9,10 @@ define(['jquery','core/log'], function($, log) {
 
         playcanvas: null,
         context: null,
-        x: null,
-        y: null,
-        cwidth: null,
-        cheight: null,
+        startx: null,
+        starty: null,
+        barwidth: null,
+        barheight: null,
 		enabled: false,
 
 
@@ -34,7 +34,7 @@ define(['jquery','core/log'], function($, log) {
         },
  
         clear: function () {
-            this.context.clearRect(0, 0, this.cwidth, this.cheight);
+            this.context.clearRect(this.startx, this.starty, this.barwidth, this.barheight);
         },
         //this function to be overridden by calling class
         //0= 0% 1=100%
@@ -52,7 +52,7 @@ define(['jquery','core/log'], function($, log) {
         	this.enabled=true;
         	var that = this;
             //set draw params, later could make this configurable
-            this.context.fillStyle = '#000';
+            this.context.fillStyle = '#C2C2C2';
            
 
 			var draw= function () {
