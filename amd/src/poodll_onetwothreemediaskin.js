@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) {
+define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_bar'], function($, log, utils, anim_progress_bar) {
 
     "use strict"; // jshint ;_;
 
@@ -95,12 +95,30 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
            switch(mode){
 
                case 'recordmode':
+					ip.controlbar.progress.hide();
                     ip.controlbar.preview.addClass('poodll_recording');
                     ip.controlbar.status.addClass('poodll_recording');
                     if(ip.config.mediatype=='audio'){
                         ip.controlbar.preview.addClass('hide');
                     }
                     ip.controlbar.status.removeClass('hide');
+					
+					
+					self.disable_button(this);
+
+					self.disable_button(ip.controlbar.playbutton);
+					ip.controlbar.playbutton.show();
+					   
+					self.disable_button(ip.controlbar.stopbutton);
+					ip.controlbar.stopbutton.hide();
+			  
+					self.disable_button(ip.controlbar.savebutton);
+					ip.controlbar.savebutton.show();          
+
+					self.enable_button(ip.controlbar.stoprecbutton);
+					ip.controlbar.stoprecbutton.show();
+					
+					
                     break;
 
                case 'previewmode':
@@ -110,11 +128,44 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                         ip.controlbar.preview.removeClass('hide');
                     }
                     ip.controlbar.status.addClass('hide');
+					if(ip.config.mediatype == 'audio'){
+						if ( ip.controlbar.progresscanvas.hasClass("hide") ) {
+							ip.controlbar.progresscanvas.removeClass('hide');
+							 ip.controlbar.progresscanvas.show();
+						}	
+					}
+					
+					
+					if(!$(this).hasClass('played')){
+						$(this).addClass('played');
+						$('#holder_' + controlbarid + ' .task-helper p.step-2').empty();
+						$('#holder_' + controlbarid + ' .task-helper p.step-2').append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
+					}
+					
+					
                     break;
 
                case 'pausedmode':
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
+					
+					/*GLEN*/
+					if(ip.config.mediatype=='audio'){
+						console.log('ip_timer');
+						
+						ip.controlbar.timer.html('00:00:00');    
+						ip.controlbar.preview.on('timeupdate', function(){	
+							var currentTime = this.currentTime;
+							ip.controlbar.timer.html(ip.timer.fetch_display_time(currentTime));	
+						});
+						ip.controlbar.status.addClass('hide');
+						ip.controlbar.progress.show();
+					}
+				
+					$('#holder_' + controlbarid + ' .task-helper p.step-1').empty();
+					$('#holder_' + controlbarid + ' .task-helper p.step-1').append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
+					/*end*/
+					self.disable_button(this);
                     break;
                 
            }
@@ -157,8 +208,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 						controls +='<div class="style-holder ' + skin_style + '">' ;
 							var status = this.fetch_status_bar('onetwothree');
 							controls += status,
+							controls += '<div class="hp_slide" id="slide_'+controlbarid+'">';
+							controls += '<div class="hp_timer"></div><canvas class="hp_range" width="320" height="50"></canvas></div>';
 							controls += preview,
-							controls += '<div class="hp_slide"><div class="hp_timer"></div><div class="hp_range"></div></div>';
 							controls +=  '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_start-recording_onetwothree"><i class="fa fa-microphone" aria-hidden="true"></i></button> ';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_pause-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
@@ -177,7 +229,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 controls += '</div>';
 				
                 $(element).prepend(controls);
-                var controlbar ={
+             
+                var controlbar ={   
+                    progresscanvas: $('#' + controlbarid + ' .hp_range'),
+                	progress: $('#' + controlbarid + ' .hp_slide'),
+					timer: $('#' + controlbarid + ' .hp_timer'),
                     status: $('#' + controlbarid + ' .poodll_status_onetwothree'),
                     preview: $('#' + controlbarid + ' .poodll_preview_onetwothree'),
                     startbutton: $('#' + controlbarid + ' .poodll_start-recording_onetwothree'),
@@ -201,35 +257,16 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var pmr=this.pmr;
             var stage= this.stage;
             var ip = this.fetch_instanceprops(controlbarid);
+            
+            //init radial progress
+            var hprogress = anim_progress_bar.clone();
+            hprogress.init(ip.controlbar.progresscanvas);
 
 
-
-      
-        
-        
             ip.controlbar.startbutton.click(function() {
-				
-				$('.hp_slide').hide();
-				
-                pmr.do_start_audio(ip, onMediaSuccess);
-                //clear messages
-                $('#' + ip.config.widgetid  + '_messages').text('');
-               self.disable_button(this);
-
-                self.disable_button(ip.controlbar.playbutton);
-               ip.controlbar.playbutton.show();
-               
-               self.disable_button(ip.controlbar.stopbutton);
-               ip.controlbar.stopbutton.hide();
-      
-               self.disable_button(ip.controlbar.savebutton);
-                ip.controlbar.savebutton.show();          
-           
-                self.enable_button(ip.controlbar.stoprecbutton);
-                ip.controlbar.stoprecbutton.show();
-               
-                
-                
+				pmr.do_start_audio(ip, onMediaSuccess);
+				//clear messages
+				$('#' + ip.config.widgetid  + '_messages').text('');
                 $(this).hide();
                 self.set_visual_mode('recordmode',controlbarid);
                 
@@ -243,37 +280,15 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
             
             ip.controlbar.stoprecbutton.click(function() {
-				/* glen*/
-				
-				if(ip.config.mediatype=='audio'){
-					
-					$('.hp_timer').html(ip.timer.fetch_display_time(ip.timer.fetch_display_time()));
-					$('.poodll_mediarecorder_audio .poodll_status_onetwothree').addClass('hide');
-					$('.hp_slide').show();
-				}
-				
-				/*end*/
-				
-				$('#holder_' + controlbarid + ' .task-helper p.step-1').empty();
-				$('#holder_' + controlbarid + ' .task-helper p.step-1').append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);;
-				
-				
-				
-				
-                self.disable_button(this);
                 $(this).hide();
 				pmr.do_stop_audio(ip);
-              
-                 self.enable_button(ip.controlbar.startbutton);
-                 ip.controlbar.startbutton.show();
-                
-                 self.enable_button(ip.controlbar.playbutton);
-                 ip.controlbar.playbutton.show();
-                 
-                 self.disable_button(ip.controlbar.savebutton);
-                 ip.controlbar.savebutton.show();
-                
-                self.set_visual_mode('pausedmode',controlbarid);
+				self.enable_button(ip.controlbar.startbutton);
+				ip.controlbar.startbutton.show();
+				self.enable_button(ip.controlbar.playbutton);
+				ip.controlbar.playbutton.show();
+				self.disable_button(ip.controlbar.savebutton);
+				ip.controlbar.savebutton.show();
+				self.set_visual_mode('pausedmode',controlbarid);
                 
                 //timer and status bar
                 ip.timer.stop();
@@ -286,99 +301,75 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
 			 if(ip.config.mediatype == 'audio'){
 				console.log('stop');
-				
-				if($('.hp_slide .hp_range').hasClass('hide')){
+				if(ip.controlbar.progresscanvas.hasClass('hide')){
 					
 				}else{
-					$('.hp_slide .hp_range').addClass('hide');
-					$('.hp_slide .hp_range').hide();
+					$('#slide_'+controlbarid+' .hp_timer').html('00:00:00');
+					ip.controlbar.progresscanvas.addClass('hide');
+					ip.controlbar.progresscanvas.hide();
 				}
-				
-				
 			 }
-				
 			
-			
-			
-			
-             //stop playing
-             var preview = ip.controlbar.preview.get(0);
-              pmr.do_stopplay_audio(ip,preview);
+				//stop playing
+				var preview = ip.controlbar.preview.get(0);
+				pmr.do_stopplay_audio(ip,preview);
              
                self.enable_button(ip.controlbar.playbutton);
                ip.controlbar.playbutton.show();
 
-              if(!self.uploaded){
-                self.enable_button(ip.controlbar.savebutton);
-                self.enable_button(ip.controlbar.startbutton);
-        
-              } 
+				if(!self.uploaded){
+					self.enable_button(ip.controlbar.savebutton);
+					self.enable_button(ip.controlbar.startbutton);
+
+				} 
       
-              ip.controlbar.startbutton.show();
+				ip.controlbar.startbutton.show();
               
-               self.disable_button(this);
+				self.disable_button(this);
                 $(this).hide();
-            });
-            
-            ip.controlbar.playbutton.click(function() {
-				
-				//$('.hp_range').removeClass('hide');
-				if(ip.config.mediatype == 'audio'){
-					if ( $('.hp_slide .hp_range').hasClass("hide") ) {
-						$('.hp_slide .hp_range').removeClass('hide');
-						 $('.hp_slide .hp_range').show();
-						console.log('has_class');
-					}	
-				}
-				
-				
-				
-				console.log('played');
-				
-				
-				if(!$(this).hasClass('played')){
-					$(this).addClass('played');
-					$('#holder_' + controlbarid + ' .task-helper p.step-2').empty();
-					$('#holder_' + controlbarid + ' .task-helper p.step-2').append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
-				}
-				
                 
+                //stop progressbar animation
+                if(ip.config.mediatype == 'audio'){
+                	hprogress.stop();
+                }
+                
+            });
+             
+            ip.controlbar.playbutton.click(function() {
                //turn border black etc
 				self.set_visual_mode('previewmode',controlbarid);
                 var preview = ip.controlbar.preview.get(0);
                 pmr.do_play_audio(ip,preview);
-
                 self.enable_button(ip.controlbar.stopbutton);
                 ip.controlbar.stopbutton.show();
-                
                 self.disable_button(ip.controlbar.startbutton);
                 ip.controlbar.startbutton.show();
-                
                 self.disable_button(ip.controlbar.resumebutton);
                 ip.controlbar.resumebutton.hide();
-                
                 self.disable_button(this);
                 $(this).hide();
-                
                 //set recording stage
                 stage="played";
-				
-				
-				 if(ip.config.mediatype != 'audio'){
+				if(ip.config.mediatype != 'audio'){
 					console.log('remove hide');
-					$('.poodll_status_onetwothree').removeClass('hide');
-				 }else{
-					 
-				 }
+					ip.controlbarid.status.removeClass('hide');
+				}
 				
+				//start animation
+				if(ip.config.mediatype == 'audio'){
+					hprogress.clear();
+					hprogress.fetchCurrent=function(){
+						var ct = ip.controlbar.preview.prop('currentTime');
+						var duration = ip.controlbar.preview.prop('duration');
+						if(!isFinite(duration)){duration=ip.timer.finalseconds;}
+						return ct/duration;
+					};
+					hprogress.start();
+                }
 				
-				
-                
             });
             
            ip.controlbar.savebutton.click(function() {
-                
-                  
               self.disable_button(this);
 				$('#holder_' + controlbarid + ' .task-helper p.step-3').empty();
 				$('#holder_' + controlbarid + ' .task-helper p.step-3').append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
@@ -409,7 +400,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             };
 
 	   /*GLEN*/
-		
+/*		
 		ip.controlbar.preview.on('timeupdate', function(){		
 			var finalSeconds = ip.timer.finalseconds;					
 			var currentTime = this.currentTime;
@@ -417,9 +408,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 			if(!isFinite(duration)){duration=finalSeconds};
 			var current_time = currentTime/duration;
 			if(current_time > 1){current_time=1};
-			$('.hp_range').stop(true,true).animate({'width':current_time * 100 +'%'},500,'linear');
+			$('#slide_'+controlbarid+' .hp_range').stop(true,true).animate({'width':current_time * 100 +'%'},500,'linear');
 		});
-				
+*/				
 				
 		/*end*/
 

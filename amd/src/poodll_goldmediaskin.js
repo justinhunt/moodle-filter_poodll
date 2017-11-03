@@ -231,6 +231,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
             log.debug('recanim=' + ip.config.recanim);
             recanim.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
             
+            //Start button click
             ip.controlbar.startbutton.click(function() {
                 pmr.do_start_audio(ip,  onMediaSuccess);
 
@@ -248,14 +249,14 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
                 //visuals
                 self.set_visual_mode('recordingmode',controlbarid);
             });
-
+            
+            //Restart link clicked
             ip.controlbar.restartbutton.click(function() {
-
                 //visuals
                 self.set_visual_mode('startmode',controlbarid);
-
             });
 
+			//Stop button click
             ip.controlbar.stopbutton.click(function() {
 
                 //stop recording
@@ -280,6 +281,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
 
             });
 			
+			//Play button click
             ip.controlbar.playbutton.click(function() {
 
                 //commence playback
@@ -301,6 +303,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprog
 
             });
             
+            //Save button click
            ip.controlbar.savebutton.click(function() {
 
 
