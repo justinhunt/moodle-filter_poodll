@@ -124,7 +124,7 @@ define(['jquery',
                 that.recordingLength += that.bufferSize;
             };
 
-            volume.connect(this.msr.audioanalyser.aanalyser);
+            volume.connect(this.msr.audioanalyser.core);
            // volume.connect(this.scriptprocessornode);
             this.msr.audioanalyser.core.connect(scriptprocessornode);
             scriptprocessornode.connect(context.destination);

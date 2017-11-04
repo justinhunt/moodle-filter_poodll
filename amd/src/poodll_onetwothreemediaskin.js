@@ -354,10 +354,12 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
             });
              
             ip.controlbar.playbutton.click(function() {
-               //turn border black etc
-				self.set_visual_mode('previewmode',controlbarid);
+
                 var preview = ip.controlbar.preview.get(0);
                 pmr.do_play_audio(ip,preview);
+
+               //turn border black etc
+				self.set_visual_mode('previewmode',controlbarid);
                 
                 $(this).hide();
                 //set recording stage
