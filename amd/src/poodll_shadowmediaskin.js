@@ -267,12 +267,15 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
                 //completioncheck /*On hold for now Justin 20171007 */
                // controls += ' <div class="poodll_mediarecorder_completion_shadow fa fa-circle fa-4x"></div>';
-
-                controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
+				
+                //controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
+				
+				controls += '<div class="marker hide"><i class="fa fa-check" aria-hidden="true"></i></div>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
 
                 var controlbar ={
+					marker:  $('#' + controlbarid + '  .marker'),
                     status: $('#' + controlbarid + '  .poodll_status_shadow'),
                     resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_shadow'),
                     checkplayer: $('#' + controlbarid + '  .poodll_checkplayer_shadow'),
@@ -338,6 +341,12 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
             ip.controlbar.playbackbutton.click(function() {				
                 self.disable_button(this);
+				
+				
+				if(ip.controlbar.marker.hasClass('hide')){
+					ip.controlbar.marker.removeClass('hide');
+					console.log('check mark shown');
+				}
                 
                 var resourceplayer = ip.controlbar.resourceplayer.get(0);
                 pmr.do_play_audio(ip,resourceplayer);
