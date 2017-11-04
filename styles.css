@@ -520,9 +520,19 @@ audio.poodll_preview_standard{
 
 /* MEDIA RECORDER Shadow SKIN */
 
+.marker i{
+    margin-left: -40px;
+    font-size: 50px;
+    color: #333;
+	width: 85%;
+	background: #f2f2f2;
+}
+
+
 .poodll_mediarecorderholder_shadow{
 	width: 370px!important;
-    height: 220px;
+    min-height: 220px;
+	height: auto;
     margin: 0 auto;
 }
 
