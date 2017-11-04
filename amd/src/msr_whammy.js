@@ -45,6 +45,8 @@ define(['jquery',
 
         stop:  function() {
             if (this.mediaRecorder) {
+                //this will trigger the final requestData() [msr_helper_whammy] and
+                // the final onMediaAvailable() [poodll_mediarecorder]
                 this.mediaRecorder.stop();
                 clearTimeout(this.timeout);
             }

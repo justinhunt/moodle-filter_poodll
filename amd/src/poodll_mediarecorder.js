@@ -295,7 +295,10 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     case 'audio/ogg':
                     case 'audio/webm':
                     default:
+                        //log.debug('blobs:' + ip.blobs.length);
                         var concatenatedBlob = utils.simpleConcatenateBlobs(ip.blobs, ip.blobs[0].type);
+                        //log.debug('concatenatedBlob:' +  utils.bytesToSize(concatenatedBlob.size) );
+
                         var mediaurl = URL.createObjectURL(concatenatedBlob);
                         preview.src = mediaurl;
                         preview.controls = true;

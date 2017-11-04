@@ -66,7 +66,7 @@ define(['jquery','core/log'], function($, log) {
                 fileReader.onload = function() {
                     //load blob into arraybuffer
                     var ab = this.result;
-                    
+
                     //remove header and add audiodata to the all data array
                     //the slice is from(inclusive) to end(exclusive)
                     var audiodata=ab.slice(44);
@@ -212,7 +212,7 @@ define(['jquery','core/log'], function($, log) {
                 ms_ie = true;
             }
             return ms_ie;
-        },
+        }
         
     };//end of return object
 });

@@ -1398,28 +1398,20 @@ class poodlltools
 
             }
 
-            //replacing the draft file is a bit risky, but we will miss the notificationotherwise from AWS
-            //so lets try check first for the non draft file. And failing that lets check for the draft file
-            //previously we only replaced draft if using cloud notifications .. but its kind of the same really
-            //            if($CFG->filter_poodll_cloudnotifications)
-
-            $no_draft_select="filename='" . $filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
-            $with_draft_select = "filename='" . $filename. "'  AND contenthash='" . $contenthash. "'";
+            //We replace both permanent and draft files because otherwise some race conditions can cause placeholder
+            //to overwrite converted files when user is editing an html area after intially submitting and before conv. compl.
+            $perm_draft_select = "filename='" . $filename. "'  AND contenthash='" . $contenthash. "'";
             $params = null;
             $sort = "id DESC";
-            $dbfiles = $DB->get_records_select('files',$no_draft_select,$params,$sort);
-            if(!$dbfiles){
-                $dbfiles = $DB->get_records_select('files',$with_draft_select,$params,$sort);
-            }
+            $placeholderfiles = $DB->get_records_select('files',$perm_draft_select,$params,$sort);
 
             //if we did not get anything then just return
-            if(!$dbfiles){
+            if(!$placeholderfiles){
                 return false;
             }
 
             //get the file we will replace
-            $thefilerecord = array_shift($dbfiles);	
-            return $thefilerecord;
+            return $placeholderfiles;
         }
         
         public static function replace_placeholderfile_in_moodle($draftfilerecord,$permfilerecord,$newfilepath){

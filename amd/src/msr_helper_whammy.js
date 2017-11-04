@@ -1,7 +1,7 @@
 /* jshint ignore:start */
 define(['jquery',
-    'core/log','filter_poodll/poodll_whammy'],
-    function($, log, whammyencoder) {
+    'core/log','filter_poodll/utils_amd','filter_poodll/poodll_whammy'],
+    function($, log,utils, whammyencoder) {
 
     "use strict"; // jshint ;_;
 
@@ -39,7 +39,7 @@ define(['jquery',
             this.mediaStream = mediaStream;
             this.msr=msr;
             this.audioctx = audioctx;
-            log.debug('initicin whammy helper');
+            log.debug('initing whammy helper');
         },
 
         record: function(timeSlice) {
@@ -125,8 +125,9 @@ define(['jquery',
 
             this.whammy.compile(function(whammyBlob) {
                 that.msr.ondataavailable(whammyBlob);
-                log.debug('video recorded blob size:' + bytesToSize(whammyBlob.size));
+                log.debug('video recorded blob size:' + utils.bytesToSize(whammyBlob.size));
             });
+
 
             this.whammy.frames = [];
 
@@ -175,7 +176,6 @@ define(['jquery',
                 self.isOnStartedDrawingNonBlankFramesInvoked = true;
                 self.msr.onStartedDrawingNonBlankFrames();
             }
-
             setTimeout(function(){self.drawFrames(self);}, 10);
         },
 
