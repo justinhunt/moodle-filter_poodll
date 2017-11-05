@@ -158,7 +158,7 @@ define(['jquery','core/log'], function($, log) {
         },
 
         is_edge: function(){
-            return navigator.userAgent.indexOf('Edge');
+            return navigator.userAgent.indexOf('Edge') > -1;
         },
 
         is_chrome: function(){

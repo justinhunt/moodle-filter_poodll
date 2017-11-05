@@ -333,7 +333,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                 //set recording stage
                 stage="recorded";
             });
-            
+
 
             ip.controlbar.stoprecbutton.click(function() {
 				pmr.do_stop_audio(ip);
