@@ -111,11 +111,13 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 					ip.controlbar.savebutton.show();          
 					self.enable_button(ip.controlbar.stoprecbutton);
 					ip.controlbar.stoprecbutton.show();
+                   ip.controlbar.startbutton.hide();
 					
 					
                     break;
 
                case 'previewmode':
+                   ip.controlbar.playbutton.hide();
 					self.enable_button(ip.controlbar.stopbutton);
 					ip.controlbar.stopbutton.show();
 					self.disable_button(ip.controlbar.startbutton);
@@ -127,7 +129,10 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                     ip.controlbar.status.removeClass('poodll_recording');
                     if(ip.config.mediatype=='audio'){
                         ip.controlbar.preview.removeClass('hide');
+                    }else{
+                        ip.controlbar.status.removeClass('hide');
                     }
+
                     ip.controlbar.status.addClass('hide');
 					if(ip.config.mediatype == 'audio'){
 						if ( ip.controlbar.progresscanvas.hasClass("hide") ) {
@@ -155,6 +160,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 					ip.controlbar.savebutton.show();
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
+                    ip.controlbar.stoprecbutton.hide();
 					
 					/*GLEN*/
 					if(ip.config.mediatype=='audio'){
@@ -318,7 +324,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 				pmr.do_start_audio(ip, onMediaSuccess);
 				//clear messages
 				$('#' + ip.config.widgetid  + '_messages').text('');
-                $(this).hide();
+
                 self.set_visual_mode('recordmode',controlbarid); 
                 //timer and status bar
                 ip.timer.reset();
@@ -328,11 +334,8 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                 stage="recorded";
             });
             
-			
-			
 
             ip.controlbar.stoprecbutton.click(function() {
-                $(this).hide();
 				pmr.do_stop_audio(ip);
 				self.set_visual_mode('pausedmode',controlbarid);
                 //timer and status bar
@@ -360,14 +363,9 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 
                //turn border black etc
 				self.set_visual_mode('previewmode',controlbarid);
-                
-                $(this).hide();
+
                 //set recording stage
                 stage="played";
-				if(ip.config.mediatype != 'audio'){
-					console.log('remove hide');
-					ip.controlbarid.status.removeClass('hide');
-				}
 				
 				//start animation
 				if(ip.config.mediatype == 'audio'){
