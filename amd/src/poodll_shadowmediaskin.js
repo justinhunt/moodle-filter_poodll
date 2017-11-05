@@ -118,8 +118,6 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                
                 break;
 
-                    break;
-
                case 'resourceplayingmode':
                //hide  buttons
               	self.disable_button(ip.controlbar.stopbutton);
