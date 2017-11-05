@@ -154,7 +154,7 @@ public static function fetch_general_items(){
         get_string('skinstyleaudio_details', 'filter_poodll'), '');
     $items[] = new \admin_setting_configtext('filter_poodll/skinstylevideo', get_string('skinstylevideo', 'filter_poodll'),
         get_string('skinstylevideo_details', 'filter_poodll'), '');
-
+    $items[] = new \admin_setting_configcheckbox('filter_poodll_html5ondsafari', get_string('html5ondsafari', 'filter_poodll'), get_string('html5ondsafaridetails', 'filter_poodll'), 0);
 
 
     /*

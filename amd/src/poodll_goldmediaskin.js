@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/radialprogress',
+define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_radial',
     'filter_poodll/anim_hwave','filter_poodll/anim_fbars','filter_poodll/anim_ripple',
     'filter_poodll/anim_words','filter_poodll/speech_poodll'], function($, log, utils,radialprogress, hwave,fbars,ripple,words, speechrecognition) {
 

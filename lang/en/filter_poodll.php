@@ -141,6 +141,7 @@ $string['recui_recordorchoose'] ='Record or Choose';
 $string['recui_pause'] ='Pause';
 $string['recui_play'] ='Play';
 $string['recui_stop'] ='Stop';
+$string['recui_restart'] ='Restart';
 $string['recui_save'] ='Upload';
 $string['recui_time'] ='Time:';
 $string['recui_audiogain'] ='Audio Gain';
@@ -258,7 +259,7 @@ $string['exportdiagnostics']="Export";
 $string['plain_recorder']="Plain";
 $string['burntrose_recorder']="Burnt Rose  (old)";
 $string['onetwothree_recorder']="One Two Three";
-$string['gold_recorder']="Gold";
+$string['gold_recorder']="Single Button (beta)";
 $string['bmr_recorder']="Burnt Rose";
 $string['html5recorder_skin_audio']="HTML5 Recorder Skin(Audio)";
 $string['html5recorder_skin_video']="HTML5 Recorder Skin(Video)";
@@ -266,7 +267,8 @@ $string['skinstyleaudio']="Skin style(audio)";
 $string['skinstyleaudio_details']="A CSS class name that will be added to the audio recorder to assist in customizing recorder appearance.";
 $string['skinstylevideo']="Skin style(video)";
 $string['skinstylevideo_details']="A CSS class name that will be added to the video recorder to assist in customizing recorder appearance.";
-
+$string['html5ondsafari']="Use on desktop Safari";
+$string['html5ondsafaridetails']="Desktop Safari may not select the correct audio device and there is no option to select a different one. In most cases its ok, but on Mac Mini it may not detect a working audio device at all.";
 $string['filter_poodll_html5recorder_heading']="HTML5 Recorder Settings";
 
 //events

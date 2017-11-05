@@ -126,6 +126,7 @@ define(['jquery','core/log'], function($, log) {
             var amdpresets = this;
             //handle the select box change event
             $("select[name='filter_poodll/presets']").change(function(){
+                debugger;
                 amdpresets.populateform(opts['templateindex'],$(this).val());
             });
 

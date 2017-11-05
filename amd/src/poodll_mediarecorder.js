@@ -42,7 +42,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         	 	    switch (config.mediatype) {
         	 	        case 'audio':
         	 	        	// sadly desktop safari has a bug which prevents us enabling it
-        	 	        	if (utils.is_safari() && !(utils.is_ios())) {
+        	 	        	if (utils.is_safari() && !(utils.is_ios()) && !config.html5ondsafari) {
         	 	        		ret = false;
         	 	        	} else {
         	 	        	    ret = true;
@@ -152,8 +152,27 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 		this.instanceprops[controlbarid].useraudiodeviceid = false;
 		this.instanceprops[controlbarid].uservideodeviceid = false;
 		this.instanceprops[controlbarid].devices = [];
-		var ac= new AudioContext();
-		this.instanceprops[controlbarid].audioctx = ac;
+
+        //we only want one context per recorder, but beyond 6 we hit Chromes limit, so we reuse the first we stashed in
+        //window
+        var AudioContext = window.AudioContext // Default
+            || window.webkitAudioContext // Safari and old versions of Chrome
+            || false;
+        if (typeof window.poodllmediarecorder_actx === 'undefined'){
+            var ac= new AudioContext();
+            window.poodllmediarecorder_actx=ac;
+            window.poodllmediarecorder_actx_cnt=1;
+        }else if(window.poodllmediarecorder_actx_cnt==6)
+        {
+            var ac= window.poodllmediarecorder_actx;
+            log.debug('More than 6 contexts, reusing first one. visualizations might go weird');
+        }else{
+            var ac= new AudioContext();
+            window.poodllmediarecorder_actx_cnt+=1;
+        }
+
+        this.instanceprops[controlbarid].audioctx = ac;
+
 		var aa = audioanalyser.clone();
 		aa.init(ac);
         this.instanceprops[controlbarid].audioanalyser = aa;

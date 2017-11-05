@@ -865,6 +865,7 @@ class poodlltools
 
 		//Get localised labels:
 		$params['ui_record'] = urlencode(get_string('recui_record', 'filter_poodll'));
+        $params['ui_restart'] = urlencode(get_string('recui_restart', 'filter_poodll'));
 		$params['ui_play'] = urlencode(get_string('recui_play', 'filter_poodll'));
 		$params['ui_continue'] = urlencode(get_string('recui_continue', 'filter_poodll'));
 		$params['ui_pause'] = urlencode(get_string('recui_pause', 'filter_poodll'));
@@ -985,63 +986,6 @@ class poodlltools
 
 	}
 
-
-//If we wish to show a styled upload button, here we return true
-//on Firefox on Android doesn't support it currently, so we hard code that to false
-//also for MS Surface
-//(2013/08/19)
-	public static function showFancyButton($browser)
-	{
-		global $CFG;
-
-		if ($browser->getPlatform() == Browser::PLATFORM_ANDROID &&
-			$browser->getBrowser() == Browser::BROWSER_FIREFOX
-		) {
-			return false;
-		} else if ($browser->getPlatform() == Browser::PLATFORM_MICROSOFT_SURFACE) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-//Here we try to detect if this supports uploading audio files spec
-//iOS doesn't but android can record from mic. Apple and Windows can just filter by audio when browsing
-//(2013/03/05)Firefox on android, doesn't use sound recorder currently.
-//(2013/03/05)Chrome on android gives wrong useragent(ipad/safari!)
-	public static function canSpecAudio($browser)
-	{
-
-		switch ($browser->getPlatform()) {
-
-			case Browser::PLATFORM_APPLE:
-			case Browser::PLATFORM_WINDOWS:
-				return true;
-				break;
-
-			case Browser::PLATFORM_IPAD:
-				return false;
-				break;
-
-			case Browser::PLATFORM_IPOD:
-			case Browser::PLATFORM_IPHONE:
-				return false;
-				break;
-
-			case Browser::PLATFORM_ANDROID:
-				if ($browser->getBrowser() == Browser::BROWSER_FIREFOX) {
-					return false;
-				} else if ($browser->isNexus7()) {
-					return false;
-				} else {
-					return true;
-				}
-				break;
-
-			default:
-				return false;
-		}//end of switch
-	}
 
 //We check if the OS version is too old here,
 //Android 4+ iOS6+
@@ -1910,6 +1854,9 @@ class poodlltools
 
 		//do we use flash on android
         $widgetopts->flashonandroid=$CFG->filter_poodll_flash_on_android;
+
+        //do we user html5 audio on desktop safari
+        $widgetopts->html5ondsafari=$CFG->filter_poodll_html5ondsafari;
                 
 		//for mobile amd params
 		$rawparams = self::fetchMobileRecorderAMDParams($mediatype);

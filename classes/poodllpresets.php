@@ -99,7 +99,7 @@ class poodllpresets extends \admin_setting {
         	}
         	
         	//if its a player or a widget or a template mark it as such
-            if($key== self::CLEARTEMPLATEKEY){
+            if($this->presetdata[$key]['key']== self::CLEARTEMPLATEKEY){
                 $usename = '(A) ' . get_string('cleartemplate','filter_poodll');
             }elseif(!empty($this->presetdata[$key]['showplayers'])){
         		$usename = '(P) ' . $usename;

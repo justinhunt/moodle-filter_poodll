@@ -1,5 +1,15 @@
 Change List
 =========
+Version 3.0.56(Build 2017110501)
+-Added animations for recorders
+-Fixed bugs where placeholder could overwrite converted file
+-Added support for more than 6 recorders on page (by def. Google Chrome doesn't like this)
+-Major code refactor of media stream recorder
+-Added completion check to Shadow player
+-New One Button Recorder (still in beta)
+-New Speech Recognition (still in beta)
+-New 'Clear Template' preset for blanking a tempalte
+
 Version 3.0.55(Build 2017100701)
 -fixed display and volume button bugs in multi/twice/thriceplayers
 -improved display of thrice players
