@@ -406,7 +406,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 		/* fetch the audio constraints for passing to mediastream */
 		fetch_video_constraints: function(ip) {
 			 var mediaConstraints = {
-                audio: !IsOpera && !IsEdge,
+                audio: !utils.is_opera() && !utils.is_edge(),
                 video: true
             };
 
