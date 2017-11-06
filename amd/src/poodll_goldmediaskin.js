@@ -99,7 +99,13 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                    self.enable_button(ip.controlbar.startbutton);
                    self.disable_button(ip.controlbar.playbutton);
                    self.disable_button(ip.controlbar.stopbutton);
-                   self.disable_button(ip.controlbar.savebutton);
+                   //hide the save buttons if necessary
+                   if(ip.controlbar.showupload){
+                       self.disable_button(ip.controlbar.savebutton);
+                   }else{
+                       ip.controlbar.savebutton.hide();
+                   }
+
                    self.disable_button(ip.controlbar.restartbutton);
                    break;
 
@@ -108,16 +114,25 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                    self.enable_button(ip.controlbar.stopbutton);
                    self.disable_button(ip.controlbar.startbutton);
                    self.disable_button(ip.controlbar.playbutton);
-                   self.disable_button(ip.controlbar.savebutton);
+                   if(ip.controlbar.showupload){
+                       self.disable_button(ip.controlbar.savebutton);
+                   }else{
+                       ip.controlbar.savebutton.hide();
+                   }
                    self.disable_button(ip.controlbar.restartbutton);
                     break;
 
                case 'previewmode':
 
-                   //show save button
-                   ip.controlbar.savebutton.removeClass('hide');
-                   ip.controlbar.savebutton.removeClass('pmr_disabled');
-                   ip.controlbar.savebutton.attr('disabled',false);
+                   if(ip.controlbar.showupload){
+                       //show save button
+                       ip.controlbar.savebutton.removeClass('hide');
+                       ip.controlbar.savebutton.removeClass('pmr_disabled');
+                       ip.controlbar.savebutton.attr('disabled',false);
+
+                   }else{
+                       ip.controlbar.savebutton.hide();
+                   }
 
                    if(!ip.uploaded){
                        self.enable_button(ip.controlbar.startbutton);
