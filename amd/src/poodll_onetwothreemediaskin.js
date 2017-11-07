@@ -258,7 +258,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 				var ss = this.pmr.fetch_strings();
                 var controls ='<div class="one-two-three-main-wrapper poodll_mediarecorderholder_onetwothree ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
   	
-					controls +='<div class="poodll_mediarecorderbox_onetwothree one-two-three-wrap" id="' + controlbarid + '">' ;
+					controls +='<div class="modal-box poodll_mediarecorderbox_onetwothree one-two-three-wrap" id="' + controlbarid + '">' ;
 						controls +='<div class="style-holder ' + skin_style + '">' ;
 							var status = this.fetch_status_bar('onetwothree');
 							controls += status,
