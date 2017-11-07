@@ -232,7 +232,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         captureUserMedia: function(mediaConstraints, successCallback, errorCallback) {
 		// log.debug(mediaConstraints);
-		// log.debug('printed nedia constraints');
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
 
         },
