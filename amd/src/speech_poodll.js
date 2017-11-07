@@ -17,7 +17,7 @@ define(['jquery','core/log','filter_poodll/speech_browser'], function($, log,bro
 
         init: function(lang){
             //in future we would like to have multiple recognizers presenting a single interface
-            if('webkitSpeechRecognition' in window){
+            if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
                 this.recognizer=browserrecognition.clone();
                 this.recognizer.init(lang);
             }else{
