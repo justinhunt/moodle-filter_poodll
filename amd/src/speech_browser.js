@@ -21,7 +21,8 @@ define(['jquery','core/log'], function($, log) {
         },
 
         init: function(lang){
-            this.recognition = new webkitSpeechRecognition();
+            var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
+            this.recognition = new SpeechRecognition();
             this.recognition.continuous = true;
             this.recognition.interimResults = true;
             this.lang= lang ? lang : 'en-US';
