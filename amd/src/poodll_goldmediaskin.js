@@ -11,6 +11,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
     
         instanceprops: null,
         pmr: null,
+        devsettings: null,
 
         //for making multiple instances
         clone: function(){
@@ -20,7 +21,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 		init: function(ip, pmr){
             this.instanceprops=ip;
             this.pmr=pmr;
-            settings.init(pmr,ip);
+            this.devsettings=settings.clone();
+            this.devsettings.init(pmr,ip);
         },
 
 
@@ -207,7 +209,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 	+ recorder_class + '" id="holder_' + controlbarid + '">' ;
                 	
                 controls +='<div class="poodll_mediarecorderbox_gold" id="' + controlbarid + '">' ;
-				controls += settings.fetch_dialogue_box();
+				controls += this.devsettings.fetch_dialogue_box();
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 var status = this.fetch_status_bar('gold');
                 controls += status,
@@ -234,7 +236,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     restartbutton: $('#' + controlbarid + ' .poodll_restart_gold'),
                     playcanvas: $('#' + controlbarid + '_playcanvas')    
                 };
-				 settings.set_dialogue_box(controlbar.dialogbox)
+				 this.devsettings.set_dialogue_box(controlbar.dialogbox)
 
                 return controlbar;
         }, //end of fetch_control_bar_gold
@@ -272,7 +274,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 			
 			
 			ip.controlbar.settingsicon.click(function(){
-				settings.open();
+				self.devsettings.open();
 			});
             
 			

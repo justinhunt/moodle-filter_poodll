@@ -11,6 +11,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         pmr: null,
         stage: 'none',
         uploaded: false,
+        devsettings: null,
 
         //for making multiple instances
         clone: function(){
@@ -20,8 +21,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         init: function(ip, pmr){
             this.instanceprops=ip;
             this.pmr=pmr;
-            settings.init(pmr,ip);
-			
+            this.devsettings=settings.clone();
+            this.devsettings.init(pmr,ip);
         },
 
 
@@ -276,7 +277,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 							controls += '</div>';
 						controls += '</div>';
 					controls += '</div>';
-					controls += settings.fetch_dialogue_box();
+					controls += this.devsettings.fetch_dialogue_box();
                 controls += '</div>';
 				
                 $(element).prepend(controls);
@@ -303,7 +304,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 };
                 
                 //settings
-                settings.set_dialogue_box(controlbar.dialogbox)
+                this.devsettings.set_dialogue_box(controlbar.dialogbox);
                 
                 return controlbar;
         }, //end of fetch_control_bar_onetwothree
@@ -326,7 +327,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         
 
 			ip.controlbar.settingsicon.click(function(){
-				settings.open();
+				self.devsettings.open();
 			});
 			
 			ip.controlbar.startbutton.click(function() {

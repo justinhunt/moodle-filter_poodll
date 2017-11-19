@@ -18,6 +18,10 @@ define(['jquery','core/log','filter_poodll/dlg_poodll'], function($, log,dialog)
 			this.instanceprops= instanceprops;
 			this.mediatype= instanceprops.config.mediatype;
         },
+        //for making multiple instances
+        clone: function(){
+            return $.extend(true,{},this);
+        },
 
 		fetch_dialogue_box: function(){
 			//this returns html that will be set to the DOM

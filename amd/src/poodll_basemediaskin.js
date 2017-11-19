@@ -10,6 +10,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         instanceprops: null,
         pmr: null,
         uploaded: false,
+        devsettings: null,
 
         //for making multiple instances
         clone: function(){
@@ -19,7 +20,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         init: function(ip, pmr){
             this.instanceprops=ip;
             this.pmr=pmr;
-            settings.init(pmr,ip);
+            this.devsettings=settings.clone();
+            this.devsettings.init(pmr,ip);
         },
 
 
@@ -159,7 +161,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 				var hideshowupload = ip.showupload ? '' : 'hide';
                 var controls ='<div class="poodll_mediarecorderholder_standard ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
 					controls +='<div class="poodll_mediarecorderbox_standard" id="' + controlbarid + '">' ;
-					controls += settings.fetch_dialogue_box();
+					controls += this.devsettings.fetch_dialogue_box();
 						controls +='<div class="style-holder ' + skin_style + '">' ;
 							var status = this.fetch_status_bar('standard');
 							controls += status,
@@ -189,7 +191,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     playbutton: $('#' + controlbarid + '  .poodll_play-recording_standard'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_standard')    
                 };
-				 settings.set_dialogue_box(controlbar.dialogbox)
+				 this.devsettings.set_dialogue_box(controlbar.dialogbox)
 				 
                 return controlbar;
         }, //end of fetch_control_bar_standard
@@ -206,7 +208,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 			
 			
 			ip.controlbar.settingsicon.click(function(){
-				settings.open();
+				self.devsettings.open();
 			});
 
             ip.controlbar.startbutton.click(function() {

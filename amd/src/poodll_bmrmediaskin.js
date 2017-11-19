@@ -12,6 +12,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         instanceprops: null,
         pmr: null,
         uploaded: false,
+        devsettings: null,
 
         //for making multiple instances
         clone: function(){
@@ -21,7 +22,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         init: function(ip, pmr){
 			this.instanceprops=ip;
             this.pmr=pmr;
-            settings.init(pmr,ip);
+            this.devsettings=settings.clone();
+            this.devsettings.init(pmr,ip);
         },
 
 
@@ -178,7 +180,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_play-recording_bmr bmr_disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></button>';
                 controls += '<button type="button" class="poodll_save-recording_bmr ' + hideshowupload + '" disabled>' + ss['recui_save'] +'</button>';
 						controls += '</div>';
-						controls += settings.fetch_dialogue_box();					
+						controls += this.devsettings.fetch_dialogue_box();
 					controls += '</div>';		
                 controls += '</div>';
                 $(element).prepend(controls);
@@ -197,7 +199,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 
                 
 				//register the dlgbox dom object with  the settings class
-				 settings.set_dialogue_box(controlbar.dialogbox)
+				 this.devsettings.set_dialogue_box(controlbar.dialogbox)
 				
 				
                 return controlbar;
@@ -219,7 +221,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 
 			//Open the settings dialog
 			ip.controlbar.settingsicon.click(function(){
-				settings.open();
+				self.devsettings.open();
 			});
 			
 			

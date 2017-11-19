@@ -63,7 +63,7 @@ define(['jquery','core/log'], function($, log) {
             xhr.onreadystatechange = function(e){
                 if(this.readyState===4){
                     if(xhr.status==200){
-                        log.debug('ok we got a mediarefresh response');
+
                         //get a yes or forgetit or tryagain
                         var payload = xhr.responseText;
                         var payloadobject = JSON.parse(payload);
