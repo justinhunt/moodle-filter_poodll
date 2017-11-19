@@ -76,7 +76,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 		var ip = this.fetch_instanceprops(controlbarid);
 		ip.config = config;
 		ip.controlbarid = controlbarid;
-		if (config.hideupload) { ip.showupload = false; }
+		if (config.hideupload) { ip.showupload = false; }else{ip.showupload=true;}
 		ip.timeinterval = config.media_timeinterval;
 		ip.audiomimetype = config.media_audiomimetype;
 		ip.videorecordertype = config.media_videorecordertype;

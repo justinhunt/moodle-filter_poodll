@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.0.57(Build 2017111701)
+-Added video to onebutton recorder (still beta)
+-Added new device settings to all recorders, enabling users to select audio/video device from within recorder
+-added QR code scanner player preset and library
+
 Version 3.0.56(Build 2017110501)
 -Added animations for recorders
 -Fixed bugs where placeholder could overwrite converted file

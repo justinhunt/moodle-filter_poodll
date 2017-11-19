@@ -101,7 +101,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                    self.disable_button(ip.controlbar.playbutton);
                    self.disable_button(ip.controlbar.stopbutton);
                    //hide the save buttons if necessary
-                   if(ip.controlbar.showupload){
+                   if(ip.showupload){
                        self.disable_button(ip.controlbar.savebutton);
                    }else{
                        ip.controlbar.savebutton.hide();
@@ -115,19 +115,24 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                    self.enable_button(ip.controlbar.stopbutton);
                    self.disable_button(ip.controlbar.startbutton);
                    self.disable_button(ip.controlbar.playbutton);
-                   if(ip.controlbar.showupload){
+                   if(ip.showupload){
                        self.disable_button(ip.controlbar.savebutton);
                    }else{
                        ip.controlbar.savebutton.hide();
                    }
                    self.disable_button(ip.controlbar.restartbutton);
-                    break;
+
+
+
+                   /*Added Feature for the one button recorder Video*/
+                   if(ip.config.mediatype=='video'){
+                       ip.controlbar.preview.removeClass('hide');
+                   }
+                   break;
 
                case 'previewmode':
 
-                   if(ip.controlbar.showupload){
-					   
-					   console.log('ip.controlbar.showupload');
+                   if(ip.showupload){
                        //show save button
                        ip.controlbar.savebutton.removeClass('hide');
                        ip.controlbar.savebutton.removeClass('pmr_disabled');
@@ -197,7 +202,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 }
 
 				var ss = this.pmr.fetch_strings();
-				var hideshowupload = ip.showupload ? '' : 'hide';
+
                 var controls ='<div class="poodll_mediarecorderholder_gold ' 
                 	+ recorder_class + '" id="holder_' + controlbarid + '">' ;
                 	
@@ -297,11 +302,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 			
             //Start button click
             ip.controlbar.startbutton.click(function() {
-				
-				/*Added Feature for the one button recorder Video*/ 
-				ip.controlbar.preview.removeClass('hide');	
-				
-				
+
                 pmr.do_start_audio(ip,  onMediaSuccess);
 
                 //clear messages
