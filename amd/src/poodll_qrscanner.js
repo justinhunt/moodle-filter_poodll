@@ -2022,86 +2022,52 @@ define(['jquery','core/log'],function($,log){
         // CALLED FROM PUBLIC INTERFACE
         // This starts the webcam and attaches stream to the video object of ID passed in
         // Does NOT automatically begin scanning
-        qrcode.startWebCam = function(videoId){
+        qrcode.startWebCam = function(videoId) {
             //store the video id so all the bits can use it
-            qrcode.videoId= videoId;
-
-            var options = true;
-            if(navigator.mediaDevices && navigator.mediaDevices.enumerateDevices)
-            {
-                try{
-                    navigator.mediaDevices.enumerateDevices()
-                        .then(function(devices) {
-                            devices.forEach(function(device) {
-                                log.debug("deb1");
-                                if (device.kind === 'videoinput') {
-                                    if(device.label.toLowerCase().search("back") >-1)
-                                        options=[{'sourceId': device.deviceId}] ;
-                                }
-                                log.debug(device.kind + ": " + device.label +
-                                    " id = " + device.deviceId);
-                            });
-                        })
-
-                }
-                catch(e)
-                {
-                    log.debug(e);
-                }
-            }
-            else{
-                log.debug("no navigator.mediaDevices.enumerateDevices" );
-            }
-
-            if(navigator.getUserMedia)
-                navigator.getUserMedia({video: options, audio: false}, qrcode.webCamSuccess, qrcode.webCamError);
-            else
-            if(navigator.webkitGetUserMedia)
-            {
-                qrcode.webkit=true;
-                navigator.webkitGetUserMedia({video:options, audio: false}, qrcode.webCamSuccess, qrcode.webCamError);
-            }
-            else
-            if(navigator.mozGetUserMedia)
-            {
-                qrcode.moz=true;
-                navigator.mozGetUserMedia({video: options, audio: false}, qrcode.webCamSuccess, qrcode.webCamError);
-            }
-
-        }
-
-        //stop the webcam
-        qrcode.stopWebCam = function(){
-            qrcode.video.pause();
-        }
-
-        qrcode.webCamSuccess = function (stream)
-        {
-            qrcode.localstream = stream;
-            qrcode.video=document.getElementById(qrcode.videoId);
-            qrcode.video.srcObject = stream;
-            qrcode.video.controls = false;
-            qrcode.video.volume = 0;
+            qrcode.videoId = videoId;
+            qrcode.video = document.getElementById(qrcode.videoId);
             var pPromise = qrcode.video.play();
             if (pPromise !== undefined) {
-                pPromise.then(function() {
+                pPromise.then(function () {
                     // playback started we do not need to do anything
-                }).catch(function(error) {
+                }).catch(function (error) {
                     // playback could not start or was interrupted.
                     // most likely that enter here. but we need to handle this
                     // to suppress an error
                 });
             }
+            var mediaConstraints = {
+                audio: false,
+                video: {facingMode: "environment"}
+            };
+
+            if (navigator.getUserMedia){
+                navigator.getUserMedia(mediaConstraints, qrcode.webCamSuccess, qrcode.webCamError);
+            }
+        };
+
+        //stop the webcam
+        qrcode.stopWebCam = function(){
+            qrcode.video.pause();
+        };
+
+        qrcode.webCamSuccess = function (stream)
+        {
+            qrcode.localstream = stream;
+            qrcode.video.srcObject = stream;
+            qrcode.video.controls = false;
+            qrcode.video.volume = 0;
+
             //we could start this here, but lets just keep the two things separate
             //the calling class can call the same code
             //qrcode.startScan(qrcode.videoId);
-        }
+        };
 
         qrcode.webCamError = function(error)
         {
             qrcode.stopScan();
             return;
-        }
+        };
 
         // CALLED FROM PUBLIC INTERFACE
         // This starts the scan loop on the video of id passed in
