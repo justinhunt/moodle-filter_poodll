@@ -1,3 +1,208 @@
+/*
+One Button Recorder
+*/
+
+.poodll_mediarecorderholder_gold .poodll_preview_gold{
+	height: 100px;
+    width: 100px;
+    border: none;
+    border-radius: 50%;
+    z-index: 2;
+    position: absolute;
+    left: 135px;
+    top: 22px;
+	cursor: pointer;
+}
+.poodll_mediarecorderholder_gold{
+	position:relative;
+}
+
+.poodll_mediarecorderholder_gold .settingsicon{
+	position: absolute;
+    bottom: 75px;
+    right: 250px;
+}
+.poodll_mediarecorderholder_gold .settingsicon button{
+	border: none !important;
+	background: transparent !important;
+}
+.poodll_mediarecorderholder_gold .settingsicon button i{
+	font-size: 18px !important;
+    color: #333 !important;
+}
+.poodll_mediarecorderholder_gold .settingsicon button:focus{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_gold .settingsicon button i:hover{
+	cursor: pointer;
+}
+
+
+/*end*/
+
+
+
+
+
+/*
+Base Media skin Setting Integration
+*/
+
+.poodll_mediarecorderholder_standard{
+	position: relative;
+}
+.poodll_mediarecorderholder_standard .settingsicon{
+	position: absolute;
+    right: -5px;
+    bottom: -5px;
+
+}
+.poodll_mediarecorderholder_standard .settingsicon button{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_standard .settingsicon button i{
+	font-size: 18px !important;
+    color: #333;
+}
+.poodll_mediarecorderholder_standard .settingsicon button:focus{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_standard .settingsicon button i:hover{
+	cursor: pointer;
+}
+
+
+
+
+/*end*/
+
+/*Settings BMR DRAFT*/
+
+.poodll_mediarecorderholder_bmr{
+	position: relative;
+}
+.poodll_mediarecorderholder_bmr .settingsicon{
+    position: absolute;
+    right: -15px;
+    bottom: -10px;
+}
+.poodll_mediarecorderholder_bmr .settingsicon button{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_bmr .settingsicon button i{
+	font-size: 18px !important;
+    color: #333;
+}
+.poodll_mediarecorderholder_bmr .settingsicon button:focus{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_bmr .settingsicon button i:hover{
+	cursor: pointer;
+}
+
+
+
+/** END **/
+
+
+
+/*
+	Settings Draft
+*/
+.poodll_dialogue_box .devicesettings_select{
+	text-align: left;
+}
+.poodll_dialogue_box .select_settings_video{
+	width: 100%;
+    padding: 10px;
+}
+.devicesettings_select span{
+	margin-left: 5px;
+}
+.devicesettings_select .select_settings_audio{
+	width: 100%;
+    padding: 10px;
+    text-overflow: ellipsis !important;
+    white-space: nowrap;
+    word-break: break-all;
+    word-wrap: break-word;
+	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: hidden;	
+}
+.select_settings_audio option{
+	overflow: hidden;
+	overflow-x: hidden;
+	overflow-y: hidden;
+    width: 100%!important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap;
+    word-break: break-all;
+    word-wrap: break-word;
+}
+.poodll_close_modal{
+	text-align: right;
+	cursor: pointer;
+    padding: 5px 10px;
+}
+.poodll_close_modal i{
+	font-size: 21px;
+	color: #333;
+}
+.poodll_dialogue_box{
+    border: 1px solid #333;
+    height: 20px;
+    position: absolute;
+    width: 100%;
+    left: 0px;
+    height: 100%;
+    top: 0px;
+	z-index: 999999;
+	background: #e6e8ed;
+}
+.poodll_dialogue_box .poodll_dialogue_content{
+	padding: 10px;
+    text-align: center;
+    background: #333;
+    color: #fff;
+	margin-bottom: 10px;
+}
+.poodll_dialogue_box .poodll_dialogue_content h6{
+	margin-bottom: 0px;
+}
+.one-two-three-main-wrapper{
+	position:relative;
+}
+.one-two-three-main-wrapper .settingsicon{
+	position: absolute;
+    right: -3px;
+    bottom: -13px;
+}
+.one-two-three-main-wrapper .settingsicon button{
+	border: none;
+	background: transparent;
+}
+.one-two-three-main-wrapper .settingsicon button i{
+	font-size: 18px !important;
+    color: brown;
+}
+.one-two-three-main-wrapper .settingsicon button:focus{
+	border: none;
+	background: transparent;
+}
+.one-two-three-main-wrapper .settingsicon button i:hover{
+	cursor: pointer;
+}
+
+/*
+	End
+*/
+
 
 /*
 	Boss Justin's One Button Recorders

@@ -19,6 +19,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
 		instanceprops: [],
         skins: [],
+        laststream: [],
 
 		fetch_instanceprops: function(controlbarid) {
 			return this.instanceprops[controlbarid];
@@ -96,13 +97,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element, config);
                     this.register_events_audio(controlbarid);
-                    // navigator.mediaDevices.getUserMedia({"audio": true});
                     // force permissions;
-                    /*
-                    navigator.mediaDevices.getUserMedia({"audio": true}).
-                    then(this.fetch_audio_constraints(ip)).
-                    catch(function(){log.debug('no permission')});
-                    */
+                    navigator.mediaDevices.getUserMedia({"audio": true});
+                   
 
                     break;
                 case 'video':
@@ -112,7 +109,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 					ip.uploader = uploader.clone();
                     ip.uploader.init(element, config);
                     this.register_events_video(controlbarid);
-                    navigator.mediaDevices.getUserMedia({"audio": true, "video": true});
+                    //force permissions and show in preview
+                    navigator.mediaDevices.getUserMedia({"audio": true, "video": true}).then(function(stream){			
+						//stop any playing tracks of the current stream	
+						that.restream_preview_video_player(controlbarid,stream)				
+			   
+					}).catch(function(err) {
+						log.debug('location 9999');
+						log.debug(err);
+					});
                     break;
 
             }
@@ -231,7 +236,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         },
 
         captureUserMedia: function(mediaConstraints, successCallback, errorCallback) {
-		// log.debug(mediaConstraints);
                 navigator.mediaDevices.getUserMedia(mediaConstraints).then(successCallback).catch(errorCallback);
 
         },
@@ -253,9 +257,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     pPromise.then(function() {
                         // playback started we do not need to do anything
                     }).catch(function(error) {
-                        // playback could not start or was interrupted.
-                        // most likely that enter here. but we need to handle this
-                        // to suppress an error
+                        log.debug(error);
                     });
                 }
 			  ip.previewstillcold = false;
@@ -263,6 +265,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         },
         do_start_audio: function(ip, onMediaSuccess) {
+       
 
 			// we warm up the context object
 			this.warmup_context(ip);
@@ -278,6 +281,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 				case 'video':
 					var mediaConstraints = this.fetch_video_constraints(ip);
 	    	}
+	    	
+	    	 //We always tidy up old streams before calling getUserMedia
+        	this.tidy_old_stream(ip.controlbarid);
             this.captureUserMedia(mediaConstraints, onMediaSuccess, this.onMediaError);
 
         },
@@ -411,12 +417,14 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             // check for a user video selected device
             if (ip.uservideodeviceid) {
-            	var constraints = {deviceId: ip.uservideodeviceid};
+				var videodeviceid = ip.uservideodeviceid.valueOf();
+            	var constraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined}; 
 				mediaConstraints.video = constraints;
             }
             // check for a user audio selected device
             if (ip.useraudiodeviceid) {
-            	var constraints = {deviceId: ip.useraudiodeviceid};
+            	var audiodeviceid = ip.useraudiodeviceid.valueOf();	
+            	var constraints = {deviceId: audiodeviceid  ? {exact: audiodeviceid} : undefined}; 
 				mediaConstraints.audio = constraints;
             }
             return mediaConstraints;
@@ -451,22 +459,20 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 				// fix mime type to wav
 				ip.audiomimetype = 'audio/wav';
 
+//this was code to select first safari audio device
+/*
 				// Select final audio device,
 				navigator.mediaDevices.enumerateDevices()
 				.then(function(devices) {
 				  devices.forEach(function(device) {
 					if (device.kind == 'audioinput') {
 						ip.useraudiodeviceid = device.deviceId;
-						// mediaConstraints.audio=constraints;
-						// log.debug('using audio device');
-						log.debug(device);
 					}
 				  });
-
-				})
-				.catch(function(err) {
-				  console.log(err.name + ": " + err.message);
+				  }).catch(function(err) {
+					log.debug(err);
 				});
+*/	
 			}// end of if Safari
 
             // check for a user selected device
@@ -486,7 +492,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 			var skin = this.skins[controlbarid];
 
             var onMediaSuccess = function(stream) {
-        		log.debug('onmediasuccess');
+            	
+            	
+            	//stop any playing tracks of the current stream	
+				//DONT call this. caused problems
+			 	//self.tidy_old_stream(controlbarid);
+			 	
+            	//save a reference to the stream
+				self.laststream[controlbarid]=stream;
+
                 // get blob after specific time interval
                 ip.mediaRecorder = poodll_msr;
                 ip.mediaRecorder.init( stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype); // new MediaStreamRecorder(stream);
@@ -515,27 +529,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             var skin = this.skins[controlbarid];
 
             var onMediaSuccess = function(stream) {
-
-                // create recorder
-               // ip.mediaRecorder = new MediaStreamRecorder(stream);
-
+				
+				//restream preview video_player
+				self.restream_preview_video_player(controlbarid,stream);
+				
+				//choose and turn on the recorder
                 ip.mediaRecorder = poodll_msr;
-                ip.mediaRecorder.init(stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype); // new MediaStreamRecorder(stream);
+                ip.mediaRecorder.init(stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype); 
 
-
-
-
-                // create preview
-                // self.controlbar.preview.attr('src',stream.url);
-               // debugger;
-
-                var preview = ip.controlbar.preview[0];
-                preview.srcObject = stream;
-                // preview.src=window.URL.createObjectURL(stream);
-                preview.controls = false;
-                preview.volume = 0;
-                preview.play();
-
+				
 
                 // set recorder type
                 if (ip.videorecordertype === 'mediarec') {
@@ -558,10 +560,62 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         		};
 
                 skin.onMediaSuccess_video(controlbarid);
+               
             };
 
              skin.register_controlbar_events_video(onMediaSuccess, controlbarid);
         }, // end of register video events
+        
+        //clear up the old stream
+        //this might have value when changing streams how knows. 
+        //but messes up our video preview when recording again with same video device 
+        //we tried to call it before init_video_preview.
+        //now we do not call it at all
+        tidy_old_stream: function(controlbarid){
+        
+        	//stop any playing tracks of the current stream	
+			 if (this.laststream[controlbarid]) {
+   				 this.laststream[controlbarid].getTracks().forEach(
+   				 function(track) {
+      					track.stop();
+    				});
+ 			 }
+        },
+        
+        restream_preview_video_player: function(controlbarid, stream){
+				//stop any playing tracks of the current stream	
+				//DONT call this. caused problems
+//EGG
+//				this.tidy_old_stream(controlbarid);
+				
+				//store new stream
+				this.laststream[controlbarid]=stream;
+				//play in preview
+				this.init_video_preview(controlbarid);
+//EGG				
+				 navigator.mediaDevices.enumerateDevices();
+			
+		},
+        
+        //play the stream in the preview
+        init_video_preview: function(controlbarid){
+        	var ip = this.fetch_instanceprops(controlbarid);
+        	var preview = ip.controlbar.preview[0];
+            
+            preview.srcObject = this.laststream[controlbarid];
+            preview.controls = false;
+            preview.volume = 0;
+            var ppromise = preview.play();
+        	if (ppromise !== undefined) {
+                ppromise.then(function() {
+                        // playback started we do not need to do anything
+                }).catch(function(error) {
+                		log.debug('location: init_video_preview');
+                        log.debug(error);
+                    });
+            }
+        },
+    
 
 	   update_status: function(controlbarid) {
 			var ip = this.fetch_instanceprops(controlbarid);
@@ -592,5 +646,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         	});
         	return ss;
         }
+        	
     };// end of returned object
 });// total end

@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) {
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings'], function($,jqui, log, utils,settings) {
 
     "use strict"; // jshint ;_;
 
@@ -19,8 +19,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
 
         init: function(ip, pmr){
-            this.instanceprops=ip;
+			this.instanceprops=ip;
             this.pmr=pmr;
+            settings.init(pmr,ip);
         },
 
 
@@ -169,15 +170,21 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 var status = this.fetch_status_bar('bmr');
                 controls += status,
                 controls += preview,
+				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_bmr poodll_start-recording_bmr"><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
                 controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_resume-recording_bmr bmr_disabled hide" disabled><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_stop-recording_bmr bmr_disabled" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_pause-recording_bmr bmr_disabled" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
                 controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_play-recording_bmr bmr_disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></button>';
                 controls += '<button type="button" class="poodll_save-recording_bmr ' + hideshowupload + '" disabled>' + ss['recui_save'] +'</button>';
-                controls += '</div></div></div>';
+						controls += '</div>';
+						controls += settings.fetch_dialogue_box();					
+					controls += '</div>';		
+                controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
+					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+					settingsicon: $('#' + controlbarid + ' .settingsicon'),
                     status: $('#' + controlbarid + ' .poodll_status_bmr'),
                     preview: $('#' + controlbarid + ' .poodll_preview_bmr'),
                     startbutton: $('#' + controlbarid + ' .poodll_start-recording_bmr'),
@@ -187,7 +194,17 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     playbutton: $('#' + controlbarid + ' .poodll_play-recording_bmr'),
                     savebutton: $('#' + controlbarid + ' .poodll_save-recording_bmr')    
                 };
+                
+                
+				//register the dlgbox dom object with  the settings class
+				 settings.set_dialogue_box(controlbar.dialogbox)
+				
+				
                 return controlbar;
+				
+				
+				 
+				
         }, //end of fetch_control_bar_bmr
 
 
@@ -200,6 +217,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var pmr=this.pmr;
             var ip = this.fetch_instanceprops(controlbarid);
 
+			//Open the settings dialog
+			ip.controlbar.settingsicon.click(function(){
+				settings.open();
+			});
+			
+			
+			
             ip.controlbar.startbutton.click(function() {
                 pmr.do_start_audio(ip, onMediaSuccess);
 

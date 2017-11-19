@@ -1,9 +1,9 @@
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_bar', 'filter_poodll/speech_poodll','filter_poodll/dlg_devicesettings'], function($, jqui, log, utils, anim_progress_bar,browserrecognition,settings) {
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_bar'], function($, log, utils, anim_progress_bar) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Base Skin: initialising');
+    log.debug('PoodLL One Two Three Skin: initialising');
 
     return {
     
@@ -16,10 +16,12 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
         clone: function(){
             return $.extend(true,{},this);
         },
-
+		
         init: function(ip, pmr){
             this.instanceprops=ip;
             this.pmr=pmr;
+            settings.init(pmr,ip);
+			
         },
 
 
@@ -182,10 +184,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                    
 				   break;
                 
-				
-				
-				
-				
+		
 				case 'stopplayingmode':
 					if(!self.uploaded){
 						self.enable_button(ip.controlbar.savebutton);
@@ -214,11 +213,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 				
 					self.disable_button(this);
 					ip.controlbar.stepthree.empty();
-					ip.controlbar.stepthree.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
-				
-				
-				
-				
+					ip.controlbar.stepthree.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);	
 				
 				break;
 				
@@ -265,6 +260,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 							controls += '<div class="hp_slide" id="slide_'+controlbarid+'">';
 							controls += '<div class="hp_timer"></div><canvas class="hp_range"></canvas></div>';
 							controls += preview,
+							controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
 							controls +=  '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_start-recording_onetwothree"><i class="fa fa-microphone" aria-hidden="true"></i></button> ';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_pause-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
@@ -280,11 +276,15 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 							controls += '</div>';
 						controls += '</div>';
 					controls += '</div>';
+					controls += settings.fetch_dialogue_box();
                 controls += '</div>';
 				
                 $(element).prepend(controls);
              
-                var controlbar ={   
+                var controlbar ={
+
+					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+					settingsicon: $('#' + controlbarid + ' .settingsicon'),
 					stepone: $('#' + controlbarid + ' .step-1'),
 					steptwo: $('#' + controlbarid + ' .step-2'),
 					stepthree: $('#' + controlbarid + ' .step-3'),
@@ -301,6 +301,10 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                     playbutton: $('#' + controlbarid + ' .poodll_play-recording_onetwothree'),
                     savebutton: $('#' + controlbarid + ' .poodll_save-recording_onetwothree')    
                 };
+                
+                //settings
+                settings.set_dialogue_box(controlbar.dialogbox)
+                
                 return controlbar;
         }, //end of fetch_control_bar_onetwothree
 
@@ -308,7 +312,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
         register_controlbar_events_video: function(onMediaSuccess,  controlbarid) {
             return this.register_controlbar_events_audio(onMediaSuccess, controlbarid);
         },
-
+		
         register_controlbar_events_audio: function(onMediaSuccess, controlbarid){
             var self = this;
             var pmr=this.pmr;
@@ -318,9 +322,14 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
             //init radial progress
             var hprogress = anim_progress_bar.clone();
             hprogress.init(ip.controlbar.progresscanvas);
+            
+        
 
-
-            ip.controlbar.startbutton.click(function() {
+			ip.controlbar.settingsicon.click(function(){
+				settings.open();
+			});
+			
+			ip.controlbar.startbutton.click(function() {
 				pmr.do_start_audio(ip, onMediaSuccess);
 				//clear messages
 				$('#' + ip.config.widgetid  + '_messages').text('');
@@ -329,19 +338,23 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                 //timer and status bar
                 ip.timer.reset();
                 ip.timer.start();
-                self.update_status(controlbarid);    
+                self.update_status(controlbarid);   
+                
+                 
                 //set recording stage
                 stage="recorded";
             });
 
 
             ip.controlbar.stoprecbutton.click(function() {
+				
 				pmr.do_stop_audio(ip);
 				self.set_visual_mode('pausedmode',controlbarid);
                 //timer and status bar
                 ip.timer.stop();
                 ip.timer.reset();
                 self.update_status(controlbarid);
+                
             });
                 
             
@@ -405,23 +418,11 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                 }
             };
 
-	   /*GLEN*/
-/*		
-		ip.controlbar.preview.on('timeupdate', function(){		
-			var finalSeconds = ip.timer.finalseconds;					
-			var currentTime = this.currentTime;
-			var duration = this.duration;
-			if(!isFinite(duration)){duration=finalSeconds};
-			var current_time = currentTime/duration;
-			if(current_time > 1){current_time=1};
-			$('#slide_'+controlbarid+' .hp_range').stop(true,true).animate({'width':current_time * 100 +'%'},500,'linear');
-		});
-*/				
-				
-		/*end*/
-
         }, //end of register_control_bar_events_onetwothree
         
+		
+		
+		
         enable_button: function(button){
             $(button).attr('disabled',false);
             $(button).removeClass('pmr_disabled');

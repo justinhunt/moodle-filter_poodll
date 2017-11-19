@@ -1,7 +1,7 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_radial',
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_radial',
     'filter_poodll/anim_hwave','filter_poodll/anim_fbars','filter_poodll/anim_ripple',
-    'filter_poodll/anim_words','filter_poodll/speech_poodll'], function($, log, utils,radialprogress, hwave,fbars,ripple,words, speechrecognition) {
+    'filter_poodll/anim_words','filter_poodll/speech_poodll','filter_poodll/dlg_devicesettings'], function($,jqui, log, utils,radialprogress, hwave,fbars,ripple,words, speechrecognition,settings) {
 
     "use strict"; // jshint ;_;
 
@@ -17,9 +17,10 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
             return $.extend(true,{},this);
         },
 
-        init: function(ip, pmr){
+		init: function(ip, pmr){
             this.instanceprops=ip;
             this.pmr=pmr;
+            settings.init(pmr,ip);
         },
 
 
@@ -44,7 +45,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
         },
         
         fetch_preview_audio: function(skin){
-            var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
+            var preview = '<audio class="poodll_preview_' + skin + ' hide"></audio>';
             return preview;
         },
         fetch_preview_video: function(skin){
@@ -125,13 +126,19 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                case 'previewmode':
 
                    if(ip.controlbar.showupload){
+					   
+					   console.log('ip.controlbar.showupload');
                        //show save button
                        ip.controlbar.savebutton.removeClass('hide');
                        ip.controlbar.savebutton.removeClass('pmr_disabled');
                        ip.controlbar.savebutton.attr('disabled',false);
-
+					   
+				
                    }else{
                        ip.controlbar.savebutton.hide();
+					   if(ip.config.mediatype=='video'){
+						   ip.controlbar.preview.addClass('hide');
+					   }
                    }
 
                    if(!ip.uploaded){
@@ -145,6 +152,11 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 
                case 'playingmode':
                    self.enable_button(ip.controlbar.stopbutton);
+				   if(ip.config.mediatype=='video'){
+					    self.enable_button(ip.controlbar.preview);
+						ip.controlbar.preview.removeClass('hide');
+				   }
+                  
                    self.disable_button(ip.controlbar.startbutton);
                    self.disable_button(ip.controlbar.playbutton);
                    self.disable_button(ip.controlbar.restartbutton);
@@ -190,10 +202,12 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                 	+ recorder_class + '" id="holder_' + controlbarid + '">' ;
                 	
                 controls +='<div class="poodll_mediarecorderbox_gold" id="' + controlbarid + '">' ;
+				controls += settings.fetch_dialogue_box();
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 var status = this.fetch_status_bar('gold');
                 controls += status,
                 controls += preview,
+				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
 				controls += '<canvas id="' + controlbarid + '_playcanvas"> width="250" height="250"></canvas>';
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_gold poodll_start-recording_gold"><i class="fa fa-microphone" aria-hidden="true"></i></button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_gold poodll_stop-recording_gold"><i class="fa fa-stop" aria-hidden="true"></i></button>';
@@ -203,6 +217,8 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
                 var controlbar ={
+					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+					settingsicon: $('#' + controlbarid + ' .settingsicon'),
                     status: $('#' + controlbarid + ' .poodll_status_gold'),
                     preview: $('#' + controlbarid + ' .poodll_preview_gold'),
                     startbutton: $('#' + controlbarid + ' .poodll_start-recording_gold'),
@@ -213,6 +229,7 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
                     restartbutton: $('#' + controlbarid + ' .poodll_restart_gold'),
                     playcanvas: $('#' + controlbarid + '_playcanvas')    
                 };
+				 settings.set_dialogue_box(controlbar.dialogbox)
 
                 return controlbar;
         }, //end of fetch_control_bar_gold
@@ -245,9 +262,46 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
             }
             log.debug('recanim=' + ip.config.recanim);
             recanim.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
+			
+			
+			
+			
+			ip.controlbar.settingsicon.click(function(){
+				settings.open();
+			});
             
+			
+			
+			
+			/*Added Feature for the one button recorder Video */ 
+				if(ip.config.mediatype=='video'){
+					ip.controlbar.preview.addClass('hide');	
+				}
+				ip.controlbar.preview.click(function(){
+					console.log('clicked preview');
+					
+					$(this).addClass('hide');
+					$(ip.controlbar.stopbutton).trigger( "click" );
+					
+					if($(this).hasClass('recorded')){
+						$(this).removeClass('recorded');	
+					}else{
+						$(this).addClass('recorded');
+					}
+					
+				});
+			/* */
+			
+			
+			
+			
             //Start button click
             ip.controlbar.startbutton.click(function() {
+				
+				/*Added Feature for the one button recorder Video*/ 
+				ip.controlbar.preview.removeClass('hide');	
+				
+				
                 pmr.do_start_audio(ip,  onMediaSuccess);
 
                 //clear messages
@@ -298,6 +352,15 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progr
 			
 			//Play button click
             ip.controlbar.playbutton.click(function() {
+				
+				if(ip.config.mediatype=='video'){
+					if($(ip.controlbar.preview).hasClass('recorder')){
+						$(ip.controlbar.preview).removeClass('recorder');
+						$(ip.controlbar.preview).removeClass('hide');
+						//ip.controlbar.preview.show();	
+					}
+				}
+				
 
                 //commence playback
                 var preview = ip.controlbar.preview.get(0);

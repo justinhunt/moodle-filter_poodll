@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) {
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings'], function($, jqui, log, utils,settings) {
 
     "use strict"; // jshint ;_;
 
@@ -19,6 +19,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         init: function(ip, pmr){
             this.instanceprops=ip;
             this.pmr=pmr;
+            settings.init(pmr,ip);
         },
 
 
@@ -156,24 +157,29 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
 				var ss = this.pmr.fetch_strings();
 				var hideshowupload = ip.showupload ? '' : 'hide';
-                var controls ='<div class="poodll_mediarecorderholder_standard ' 
-                	+ recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
-
-                controls +='<div class="poodll_mediarecorderbox_standard" id="' + controlbarid + '">' ;
-                controls +='<div class="style-holder ' + skin_style + '">' ;
-                var status = this.fetch_status_bar('standard');
-                controls += status,
-                controls += preview,
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_standard poodll_start-recording_standard">' + ss['recui_record'] + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_stop-recording_standard pmr_disabled" disabled>' + ss['recui_stop'] + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_pause-recording_standard pmr_disabled" disabled>' + ss['recui_pause'] + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard pmr_disabled hide" disabled>' + ss['recui_continue'] + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_play-recording_standard pmr_disabled" disabled>' + ss['recui_play'] + '</button>';
-                controls += '<button type="button" class="poodll_save-recording_standard pmr_disabled ' + hideshowupload + '" disabled>' + ss['recui_save'] + '</button>';
-                controls += '</div></div></div>';
+                var controls ='<div class="poodll_mediarecorderholder_standard ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
+					controls +='<div class="poodll_mediarecorderbox_standard" id="' + controlbarid + '">' ;
+					controls += settings.fetch_dialogue_box();
+						controls +='<div class="style-holder ' + skin_style + '">' ;
+							var status = this.fetch_status_bar('standard');
+							controls += status,
+							controls += preview,
+							controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+							controls +=  '<button type="button" class="poodll_mediarecorder_button_standard poodll_start-recording_standard">' + ss['recui_record'] + '</button>';
+							controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_stop-recording_standard pmr_disabled" disabled>' + ss['recui_stop'] + '</button>';
+							controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_pause-recording_standard pmr_disabled" disabled>' + ss['recui_pause'] + '</button>';
+							controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard pmr_disabled hide" disabled>' + ss['recui_continue'] + '</button>';
+							controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_play-recording_standard pmr_disabled" disabled>' + ss['recui_play'] + '</button>';
+							controls += '<button type="button" class="poodll_save-recording_standard pmr_disabled ' + hideshowupload + '" disabled>' + ss['recui_save'] + '</button>';
+							controls += '</div>';
+						controls += '</div>';
+					controls += '</div>';
+					
                 $(element).prepend(controls);
 
                 var controlbar ={
+					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+					settingsicon: $('#' + controlbarid + ' .settingsicon'),
                     status: $('#' + controlbarid + '  .poodll_status_standard'),
                     preview: $('#' + controlbarid + '  .poodll_preview_standard'),
                     startbutton: $('#' + controlbarid + '  .poodll_start-recording_standard'),
@@ -183,6 +189,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     playbutton: $('#' + controlbarid + '  .poodll_play-recording_standard'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_standard')    
                 };
+				 settings.set_dialogue_box(controlbar.dialogbox)
+				 
                 return controlbar;
         }, //end of fetch_control_bar_standard
 
@@ -195,6 +203,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var self = this;
             var pmr=this.pmr;
             var ip = this.fetch_instanceprops(controlbarid);
+			
+			
+			ip.controlbar.settingsicon.click(function(){
+				settings.open();
+			});
 
             ip.controlbar.startbutton.click(function() {
 
