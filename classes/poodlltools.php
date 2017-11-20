@@ -1448,7 +1448,7 @@ class poodlltools
 			$awstools->create_one_transcoding_job($mediatype,$infilename,$outfilename);
 			$ret = true;
         }else{
-            self::send_debug_data(SELF::LOG_NOTHING_TO_TRANSCODE,'Nothing to transcode:' . $infilename,$USER->id);
+            self::send_debug_data(SELF::LOG_NOTHING_TO_TRANSCODE,'Nothing to transcode:' . $infilename,$USER->id,\context_user::instance($USER->id)->id);
         }
         return $ret;
 	}
