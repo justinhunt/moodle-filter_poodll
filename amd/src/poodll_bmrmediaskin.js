@@ -181,11 +181,13 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 controls += '<button type="button" class="poodll_save-recording_bmr ' + hideshowupload + '" disabled>' + ss['recui_save'] +'</button>';
 						controls += '</div>';
 						controls += this.devsettings.fetch_dialogue_box();
+                        controls += ip.errordialog.fetch_dialogue_box();
 					controls += '</div>';		
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
-					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+                    settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
+                    errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
                     status: $('#' + controlbarid + ' .poodll_status_bmr'),
                     preview: $('#' + controlbarid + ' .poodll_preview_bmr'),
@@ -196,10 +198,13 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     playbutton: $('#' + controlbarid + ' .poodll_play-recording_bmr'),
                     savebutton: $('#' + controlbarid + ' .poodll_save-recording_bmr')    
                 };
-                
-                
-				//register the dlgbox dom object with  the settings class
-				 this.devsettings.set_dialogue_box(controlbar.dialogbox)
+
+
+            //settings and error dialogs
+            //They use the same dialog and just fill it with diofferent stuff
+            //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
+            ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
+            this.devsettings.set_dialogue_box(controlbar.settingsdialog);
 				
 				
                 return controlbar;

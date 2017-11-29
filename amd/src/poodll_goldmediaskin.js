@@ -209,7 +209,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 	+ recorder_class + '" id="holder_' + controlbarid + '">' ;
                 	
                 controls +='<div class="poodll_mediarecorderbox_gold" id="' + controlbarid + '">' ;
-				controls += this.devsettings.fetch_dialogue_box();
+                controls += this.devsettings.fetch_dialogue_box();
+                controls += ip.errordialog.fetch_dialogue_box();
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 var status = this.fetch_status_bar('gold');
                 controls += status,
@@ -224,7 +225,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
                 var controlbar ={
-					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+                    settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
+                    errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
                     status: $('#' + controlbarid + ' .poodll_status_gold'),
                     preview: $('#' + controlbarid + ' .poodll_preview_gold'),
@@ -236,7 +238,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     restartbutton: $('#' + controlbarid + ' .poodll_restart_gold'),
                     playcanvas: $('#' + controlbarid + '_playcanvas')    
                 };
-				 this.devsettings.set_dialogue_box(controlbar.dialogbox)
+            //settings and error dialogs
+            //They use the same dialog and just fill it with diofferent stuff
+            //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
+            ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
+            this.devsettings.set_dialogue_box(controlbar.settingsdialog);
 
                 return controlbar;
         }, //end of fetch_control_bar_gold

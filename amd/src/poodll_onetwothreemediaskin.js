@@ -278,13 +278,15 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 						controls += '</div>';
 					controls += '</div>';
 					controls += this.devsettings.fetch_dialogue_box();
+                    controls += ip.errordialog.fetch_dialogue_box();
                 controls += '</div>';
 				
                 $(element).prepend(controls);
              
                 var controlbar ={
 
-					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+                    settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
+                    errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
 					stepone: $('#' + controlbarid + ' .step-1'),
 					steptwo: $('#' + controlbarid + ' .step-2'),
@@ -306,8 +308,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 //settings and error dialogs
                 //They use the same dialog and just fill it with diofferent stuff
                 //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
-                ip.errordialog.set_dialogue_box(controlbar.dialogbox);
-                this.devsettings.set_dialogue_box(controlbar.dialogbox);
+                ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
+                this.devsettings.set_dialogue_box(controlbar.settingsdialog);
                 
                 return controlbar;
         }, //end of fetch_control_bar_onetwothree
