@@ -49,11 +49,7 @@ define(['jquery','core/log'], function($, log) {
                 ,2000);
 
         },
-        /*
-        clear: function(){
-        	this.context.clearRect(0, 0, this.playcanvas.width, this.playcanvas.height);
-        },
-        */
+
 		process_recent_data: function(that){
 
 			

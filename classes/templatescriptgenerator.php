@@ -127,8 +127,11 @@ class templatescriptgenerator
 					$shimkey = $currentkey . '-requiredjs'; 
 					
 					//build our dependencies and params
-					$requires = array("'" . $currentkey . "-jquery','" . $shimkey . "'");
-					$params=array('$',$shim_export);
+					$requires = array();
+					$requires[]="'" . $currentkey . "-jquery'";
+                    $requires[]="'" . $currentkey . "-jqueryui'";
+                    $requires[]="'" . $shimkey . "'";
+					$params=array('$','jqui',$shim_export);
 					
 					//build our shim script
 					$theshim = $this->build_shim_function($currentkey, $shimkey, $shimpath, $shimexport);
@@ -169,15 +172,24 @@ class templatescriptgenerator
 				//Add a path to  a separetely loaded jquery for shimmed libraries
 				$jquery_shimconfig = new \stdClass();
 				$jquery_shimconfig->exports = '$';
-				$jquery_shimkey = $currentkey . '-jquery'; 
+                $jquery_shimkey = $currentkey . '-jquery';
 				$shim->{$jquery_shimkey}=$jquery_shimconfig;
-				$paths->{$jquery_shimkey} = $CFG->wwwroot  . '/filter/poodll/3rdparty/jquery/jquery-1.12.4.min'; 
-		
-				//add a path for the required js ibrary
+				$paths->{$jquery_shimkey} = $CFG->wwwroot  . '/filter/poodll/3rdparty/jquery/jquery-1.12.4.min';
+
+                //Add a path to  a separetely loaded jqueryui for shimmed libraries
+                //could not get jqueryui to work here. But I left it in the hope, somebody, someday, somewhere can.
+                $jqueryui_shimconfig = new \stdClass();
+                $jqueryui_shimconfig->exports = 'jqui';
+                $jqueryui_shimconfig->deps = array($jquery_shimkey);
+                $jqueryui_shimkey = $currentkey . '-jqueryui';
+                $shim->{$jqueryui_shimkey}=$jqueryui_shimconfig;
+                $paths->{$jqueryui_shimkey} = $CFG->wwwroot  . '/filter/poodll/3rdparty/jqueryui/jquery-ui.min';
+
+                //add a path for the required js ibrary
 				$paths->{$shimkey} = $shimpath;
 				$oneshimconfig = new \stdClass();
 				$oneshimconfig->exports = $shimexport;
-				$oneshimconfig->deps = array($jquery_shimkey);
+				$oneshimconfig->deps = array($jquery_shimkey,$jqueryui_shimkey );
 				$shim->{$shimkey} = $oneshimconfig;
 				
 				

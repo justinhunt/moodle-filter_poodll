@@ -25,7 +25,7 @@ define(['jquery','core/log','filter_poodll/dlg_poodll'], function($, log,dialog)
 
 		fetch_dialogue_box: function(){
 			//this returns html that will be set to the DOM
-			return this.dlg.fetch_dialogue_box();
+			return this.dlg.fetch_dialogue_box('settings');
 		},
 		set_dialogue_box: function(dlgbox){
 			//this is the jquery object that is the dlgbox in the DOM

@@ -57,11 +57,16 @@ define(['jquery',
         start: function() {
             this.therecorder.start();
             //start audio analyser which generates events for wav/freq visualisations
-            this.audioanalyser.start(this.audioctx);
+            this.audioanalyser.start();
         },
 
         stop: function() {
             this.therecorder.stop();
+            this.audioanalyser.clear();
+        },
+
+        pause: function() {
+            this.therecorder.pause();
             this.audioanalyser.clear();
         },
 

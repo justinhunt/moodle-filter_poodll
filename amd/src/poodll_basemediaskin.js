@@ -162,6 +162,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 var controls ='<div class="poodll_mediarecorderholder_standard ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
 					controls +='<div class="poodll_mediarecorderbox_standard" id="' + controlbarid + '">' ;
 					controls += this.devsettings.fetch_dialogue_box();
+                    controls += ip.errordialog.fetch_dialogue_box();
 						controls +='<div class="style-holder ' + skin_style + '">' ;
 							var status = this.fetch_status_bar('standard');
 							controls += status,
@@ -180,7 +181,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 $(element).prepend(controls);
 
                 var controlbar ={
-					dialogbox: $('#' + controlbarid + ' .poodll_dialogue_box'),
+					settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
+                    errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
                     status: $('#' + controlbarid + '  .poodll_status_standard'),
                     preview: $('#' + controlbarid + '  .poodll_preview_standard'),
@@ -191,7 +193,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     playbutton: $('#' + controlbarid + '  .poodll_play-recording_standard'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_standard')    
                 };
-				 this.devsettings.set_dialogue_box(controlbar.dialogbox)
+            //settings and error dialogs
+            //They use the same dialog and just fill it with different stuff
+            //settings is on 'this' because it is shown from skin events, but errors are from pmr stuff
+            ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
+            this.devsettings.set_dialogue_box(controlbar.settingsdialog)
 				 
                 return controlbar;
         }, //end of fetch_control_bar_standard

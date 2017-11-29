@@ -41,8 +41,8 @@ define(['jquery','jqueryui','core/log'], function($,jqui, log) {
 		test: function(){
 		 	log.debug('hio');
 		},
-		fetch_dialogue_box: function(){
-			var ret= '<div class="poodll_dialogue_box hide"><div class="poodll_close_modal">';
+		fetch_dialogue_box: function(dialogtype){
+			var ret= '<div class="poodll_dialogue_box poodll_dialogue_box_' + dialogtype + ' hide"><div class="poodll_close_modal">';
 			ret += '<i class="fa fa-window-close" aria-hidden="true"></div></i>';
 			ret += '<div class="poodll_dialogue_content"><h6>'+ this.headertext +'</h6></div>';
 			ret += '<div class="will_be_cleared"></div></div>';

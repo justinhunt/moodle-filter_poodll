@@ -3,13 +3,14 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         'filter_poodll/adapter', 'filter_poodll/uploader', 'filter_poodll/timer',
     'filter_poodll/audioanalyser',
     'filter_poodll/msr_poodll',
+    'filter_poodll/dlg_errordisplay',
         'filter_poodll/poodll_basemediaskin',
         'filter_poodll/poodll_burntrosemediaskin',
         'filter_poodll/poodll_onetwothreemediaskin',
         'filter_poodll/poodll_goldmediaskin',
         'filter_poodll/poodll_bmrmediaskin',
         'filter_poodll/poodll_shadowmediaskin',
-    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,audioanalyser,poodll_msr, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
+    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,audioanalyser,poodll_msr,errordialog, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
 
     "use strict"; // jshint ;_;
 
@@ -81,6 +82,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 		ip.audiomimetype = config.media_audiomimetype;
 		ip.videorecordertype = config.media_videorecordertype;
 		ip.videocaptureheight = config.media_videocaptureheight;
+        ip.errordialog=errordialog.clone();
+        ip.errordialog.init(ip);
 
 	    // init our skin
             var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
@@ -98,7 +101,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     ip.uploader.init(element, config);
                     this.register_events_audio(controlbarid);
                     // force permissions;
-                    navigator.mediaDevices.getUserMedia({"audio": true});
+                    navigator.mediaDevices.getUserMedia({"audio": true}).then(function(stream){
+                        //do nothing
+                        log.debug('successfully forced permissions and got user media');
+
+                    }).catch(function(err) {
+                        log.debug('location 9998');
+                        log.debug(err);
+                        ip.errordialog.open(err);
+                    });
                    
 
                     break;
@@ -231,8 +242,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         },
 
 
-        onMediaError: function(e) {
-                console.error('media error', e);
+        onMediaError: function(e,ip) {
+                 ip.errordialog.open(e);
+                log.error('media error', e);
         },
 
         captureUserMedia: function(mediaConstraints, successCallback, errorCallback) {
@@ -266,7 +278,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         },
         do_start_audio: function(ip, onMediaSuccess) {
        
-
+            var that = this;
 			// we warm up the context object
 			this.warmup_context(ip);
 
@@ -284,7 +296,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 	    	
 	    	 //We always tidy up old streams before calling getUserMedia
         	this.tidy_old_stream(ip.controlbarid);
-            this.captureUserMedia(mediaConstraints, onMediaSuccess, this.onMediaError);
+            this.captureUserMedia(mediaConstraints, onMediaSuccess, function(e){that.onMediaError(e,ip);});
 
         },
         do_start_video: function(ip, onMediaSuccess) {
@@ -567,10 +579,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         }, // end of register video events
         
         //clear up the old stream
-        //this might have value when changing streams how knows. 
-        //but messes up our video preview when recording again with same video device 
-        //we tried to call it before init_video_preview.
-        //now we do not call it at all
         tidy_old_stream: function(controlbarid){
         
         	//stop any playing tracks of the current stream	
@@ -583,17 +591,13 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         },
         
         restream_preview_video_player: function(controlbarid, stream){
-				//stop any playing tracks of the current stream	
-				//DONT call this. caused problems
-//EGG
-//				this.tidy_old_stream(controlbarid);
-				
+
 				//store new stream
 				this.laststream[controlbarid]=stream;
 				//play in preview
 				this.init_video_preview(controlbarid);
-//EGG				
-				 navigator.mediaDevices.enumerateDevices();
+				//do we need to do this? ..
+                navigator.mediaDevices.enumerateDevices();
 			
 		},
         

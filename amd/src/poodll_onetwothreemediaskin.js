@@ -303,7 +303,10 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     savebutton: $('#' + controlbarid + ' .poodll_save-recording_onetwothree')    
                 };
                 
-                //settings
+                //settings and error dialogs
+                //They use the same dialog and just fill it with diofferent stuff
+                //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
+                ip.errordialog.set_dialogue_box(controlbar.dialogbox);
                 this.devsettings.set_dialogue_box(controlbar.dialogbox);
                 
                 return controlbar;
