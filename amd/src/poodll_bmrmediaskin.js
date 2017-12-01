@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings'], function($,jqui, log, utils,settings) {
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings','filter_poodll/anim_progress_bar'], function($,jqui, log, utils,settings,anim_progress_bar) {
 
     "use strict"; // jshint ;_;
 
@@ -119,7 +119,16 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     if(ip.config.mediatype=='audio'){
                         ip.controlbar.preview.removeClass('hide');
                     }
-                    ip.controlbar.status.addClass('hide');
+                   // ip.controlbar.status.addClass('hide');
+					//ip.controlbar.bmr_progresscanvas.removeClass('hide');
+					self.enable_button(ip.controlbar.playbutton);
+					ip.controlbar.status.empty();
+					
+					
+					ip.controlbar.preview.on('timeupdate', function(){	
+						var currentTime = this.currentTime;
+						ip.controlbar.status.html(ip.timer.fetch_display_time(currentTime));	
+					});
                     break;
 
                case 'pausedmode':
@@ -172,6 +181,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 var status = this.fetch_status_bar('bmr');
                 controls += status,
                 controls += preview,
+				controls += '<div class="bmr_slide" id="slide_'+controlbarid+'">';
+				controls += '<div class="bmr_timer"></div><canvas class="bmr_range"></canvas></div>';
 				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_bmr poodll_start-recording_bmr"><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
                 controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_resume-recording_bmr bmr_disabled hide" disabled><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
@@ -186,6 +197,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
+					bmr_progresscanvas: $('#' + controlbarid + ' .bmr_range'),
+                	bmr_progress: $('#' + controlbarid + ' .bmr_slide'),
+					bmr_timer: $('#' + controlbarid + ' .bmr_timer'),
                     settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
                     errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
@@ -229,7 +243,12 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 				self.devsettings.open();
 			});
 			
+			 //init radial progress
+            var hprogress = anim_progress_bar.clone();
+            hprogress.init(ip.controlbar.bmr_progresscanvas);
 			
+			
+			ip.controlbar.bmr_progresscanvas.addClass('hide');
 			
             ip.controlbar.startbutton.click(function() {
                 pmr.do_start_audio(ip, onMediaSuccess);
@@ -256,7 +275,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 pmr.do_stop_audio(ip);
 
                 self.disable_button(this);
-                 var preview = ip.controlbar.preview;
+				var preview = ip.controlbar.preview;
                 if(preview && preview.get(0)){
                     preview.get(0).pause();
                 }
@@ -278,7 +297,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
               if(!self.uploaded){
                 self.enable_button(ip.controlbar.startbutton);
                 self.enable_button(ip.controlbar.savebutton);
-              } 
+				
+              }
+			  
                ip.controlbar.resumebutton.hide();
                ip.controlbar.pausebutton.show();
             });
@@ -362,18 +383,3 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 	
 	
 });//total end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

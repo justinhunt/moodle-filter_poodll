@@ -1,3 +1,28 @@
+/* BMR FIXES */ 
+.bmr_slide{
+	width: 100%;
+    border: 3px solid #333;
+    position: relative;
+    height: 30px;
+	display: none;
+	margin-bottom: 10px;
+}
+.bmr_timer{
+	width: 100%;
+	position: absolute;
+	text-align: center;
+	color: #333;
+	font-size: 16px;
+    z-index: 99;
+}
+.bmr_range{
+    height:25px;
+    width: 100%;
+    position: absolute;
+    display: block;
+}
+
+
 /*
 One Button Recorder
 */
@@ -249,7 +274,8 @@ Base Media skin Setting Integration
     text-transform: capitalize;
 }
 .gold-restart-button-wrapper{
-	width: 100%;
+	width: 30%;
+	margin: 0 auto;
 }
 .gold-restart-button-wrapper .poodll_restart_gold{
 	background: transparent;
@@ -270,6 +296,7 @@ Base Media skin Setting Integration
     width: 100px;
     border-radius: 50%;
     border: none;
+	box-shadow: none !important;
 }
 
 .poodll_mediarecorderbox_gold .gold-save-button-wrapper a.pmr_disabled{
@@ -1792,7 +1819,7 @@ audio.poodll_preview_bmr{
 	display: none !important;
 }
 .poodll_status_bmr{
-	display: block !important;
+	display: block;
 	text-align: center !important;
 	width: 100%;
 	padding: 10px 0px;
