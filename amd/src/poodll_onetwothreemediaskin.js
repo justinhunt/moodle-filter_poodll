@@ -282,9 +282,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 controls += '</div>';
 				
                 $(element).prepend(controls);
-             
-                var controlbar ={
 
+                var controlbar ={
                     settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
                     errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
@@ -328,8 +327,6 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             //init radial progress
             var hprogress = anim_progress_bar.clone();
             hprogress.init(ip.controlbar.progresscanvas);
-            
-        
 
 			ip.controlbar.settingsicon.click(function(){
 				self.devsettings.open();

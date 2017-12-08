@@ -22,6 +22,42 @@
     display: block;
 }
 
+/*
+One Button Audio Player
+*/
+.poodll_onebuttonaudio_container {
+	position: relative;
+	width: 80px;
+	height: 80px;
+	text-align: center;
+	border-radius: 50%;
+	background-color: #333;
+}
+.poodll_onebuttonaudio_button {
+	height: 45px;
+	width: 45px;
+	border-radius: 50%;
+	border: none;
+	background-color: #333;
+	position: absolute;
+	top: 18px;
+	left: 18px;
+	padding: 0px !important;
+	text-align: center;
+	margin: 0px !important;
+}
+.poodll_onebuttonaudio_button button:focus {
+	border-style: none;
+}
+.poodll_onebuttonaudio_button .fa {
+	font-size: 20px;
+	margin-top: 2px;
+	color: #FFF;
+}
+.poodll_onebuttonaudio_button:focus {
+	outline: none;
+	border: none !important;
+}
 
 /*
 One Button Recorder

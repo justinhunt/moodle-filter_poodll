@@ -23,7 +23,7 @@ $string['filter_poodll_flashcards_heading'] ='Flashcards Settings';
 $string['filter_poodll_registration_explanation'] ="PoodLL 3 requires a registration key. If you do not have one visit Poodll.com to get one.";
 
 $string['registrationkey'] = 'Registration Key';
-$string['registrationkey_explanation'] ="Enter your PoodLL registration key here. You can obtain a key from <a href='https://poodll.com/poodll-3-2'>https://poodll.com/poodll-3-2</a>";
+$string['registrationkey_explanation'] ="Enter your PoodLL registration key here. You can obtain a key from <a href='https://poodll.com/pricing'>https://poodll.com/pricing</a>";
 $string['license_details'] ='<br> -------------- <br> License type: {$a->license_type} <br> Expires(JST): {$a->expire_date} <br> Registered URL: {$a->registered_url} ';
 
 $string['usecloudrecording'] = 'Cloud recording';

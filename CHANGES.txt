@@ -4,6 +4,7 @@ Version 3.0.58(Build 2017120201)
 -fixed broken pause on recording
 -added an error dialog
 -added one button audio player
+-changed URL of Poodll subscriptions page
 
 Version 3.0.57(Build 2017111701)
 -Added video to onebutton recorder (still beta)

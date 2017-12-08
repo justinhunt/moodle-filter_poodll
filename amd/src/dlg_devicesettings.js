@@ -74,7 +74,9 @@ define(['jquery','core/log','filter_poodll/dlg_poodll'], function($, log,dialog)
 				  
 				  //open the dialog
 				  self.dlg.open();
-				});	
+				}).catch(function(e){
+					log.debug(e);
+				});
 		},
 		
 		registerEvents: function(){
