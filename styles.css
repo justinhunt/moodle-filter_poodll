@@ -786,6 +786,125 @@ audio.poodll_preview_standard{
 }
 
 
+
+/* MEDIA RECORDER Split SKIN */
+
+.marker i{
+	margin-left: -40px;
+	font-size: 50px;
+	color: #333;
+	width: 85%;
+	background: #f2f2f2;
+}
+
+
+.poodll_mediarecorderholder_split{
+	width: 370px!important;
+	min-height: 220px;
+	height: auto;
+	margin: 0 auto;
+}
+
+.poodll_preview_split{
+	border: black;
+	border-style:solid;
+	border-width: 2px;
+	background-color: #DDD;
+	clear:both;
+	width:100%;
+}
+.poodll_mediarecorderbox_split button{
+	width: 27%;
+	height: 150px;
+	margin-bottom: 10px;
+	border-radius: 5%;
+	border: 0;
+	background-color: #0040ad;
+	color: #fff;
+	text-transform: uppercase;
+	font-weight: 600;
+	float: left;
+}
+
+.poodll_mediarecorderbox_split hr{
+	border: none;
+}
+
+button.poodll_mediarecorder_button_split.poodll_play-resource_split
+{
+	background-color: #009e0f;
+}
+button.poodll_mediarecorder_button_split.poodll_stop-resource_split
+{
+	background-color: #009e0f;
+}
+button.poodll_mediarecorder_button_split.poodll_start-recording_split{
+	background-color: #2b78e4;
+}
+button.poodll_mediarecorder_button_split.poodll_stop-recording_split{
+	background-color: #cc0000;
+}
+button.poodll_mediarecorder_button_split.poodll_playback-recording_split
+{
+	background-color: #ff00ff;
+}
+button.poodll_mediarecorder_button_split.poodll_stopplayback-recording_split
+{
+	background-color: #ff00ff;
+}
+
+
+/* ANIMATION */
+.split-active{
+	-webkit-animation: POODLL-BUTTON-ANIMATION 1s infinite;
+	-moz-animation: POODLL-BUTTON-ANIMATION 1s infinite;
+	-o-animation: POODLL-BUTTON-ANIMATION 1s infinite;
+	animation: POODLL-BUTTON-ANIMATION 1s infinite;
+}
+@-webkit-keyframes POODLL-BUTTON-ANIMATION{
+	0%, 49% {
+		background-color: rgba(0, 64, 173, 1);
+		border: 3px solid rgba(212, 116, 41, 1);
+	}
+	50%, 100% {
+		background-color: rgba(212, 116, 41, 1);
+		border: 3px solid rgba(0, 64, 173, 1);
+	}
+}
+
+
+
+audio.poodll_preview_split{
+	height:37px;
+}
+
+.poodll_preview_split.poodll_recording{
+	border: red;
+}
+
+.poodll_save-recording_split{
+	clear: both;
+	width:320px;
+}
+
+.poodll_mediarecorderbox_split {
+	width: 370px;
+	text-align: center;
+}
+
+.poodll_mediarecorder_button_split {
+	margin: 5px;
+}
+
+.poodll_status_split{
+	background-color: #DDD;
+	clear:both;
+	width:320px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 8px;
+}
+
 /* MEDIA RECORDER Shadow SKIN */
 
 .marker i{

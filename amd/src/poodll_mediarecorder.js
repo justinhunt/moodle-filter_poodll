@@ -10,7 +10,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         'filter_poodll/poodll_goldmediaskin',
         'filter_poodll/poodll_bmrmediaskin',
         'filter_poodll/poodll_shadowmediaskin',
-    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,audioanalyser,poodll_msr,errordialog, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin, fluencybuilderskin) {
+        'filter_poodll/poodll_splitmediaskin',
+    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,audioanalyser,poodll_msr,errordialog, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin) {
 
     "use strict"; // jshint ;_;
 
@@ -217,6 +218,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     break;
                 case 'shadow':
                     this.skins[controlbarid] = shadowskin.clone();
+                    break;
+                case 'split':
+                    this.skins[controlbarid] = splitskin.clone();
                     break;
                 case 'plain':
                 case 'standard':
