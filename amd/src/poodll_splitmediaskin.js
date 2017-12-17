@@ -99,94 +99,61 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
            switch(mode){
 
                case 'recordingmode':
-               //hide  buttons
-              	self.disable_button(ip.controlbar.startbutton);
-                //ip.controlbar.startbutton.hide();
-                 self.disable_button(ip.controlbar.stopplaybackbutton);
+				self.disable_button(ip.controlbar.stopplaybackbutton);
                 ip.controlbar.stopplaybackbutton.hide();
                 self.disable_button(ip.controlbar.resourcestopbutton);
                 ip.controlbar.resourcestopbutton.hide();
-                  
-                
-                //show  buttons  
                 self.enable_button(ip.controlbar.stopbutton);
-                //ip.controlbar.stopbutton.show();
                 self.disable_button(ip.controlbar.playbackbutton);
-                //ip.controlbar.playbackbutton.show();
                 self.disable_button(ip.controlbar.resourceplaybutton);
                 ip.controlbar.resourceplaybutton.show();
                
                 break;
 
                case 'resourceplayingmode':
-               //hide  buttons
               	self.disable_button(ip.controlbar.stopbutton);
                 ip.controlbar.stopbutton.hide();
-                 self.disable_button(ip.controlbar.playbackbutton);
+                self.disable_button(ip.controlbar.playbackbutton);
                 ip.controlbar.playbackbutton.hide();
                 self.disable_button(ip.controlbar.resourceplaybutton);
-                ip.controlbar.resourceplaybutton.hide(); 
-                
-                //show buttons  
-                self.disable_button(ip.controlbar.startbutton);
-                //ip.controlbar.startbutton.show();
                 self.disable_button(ip.controlbar.stopplaybackbutton);
-               // ip.controlbar.stopplaybackbutton.show();
                 self.enable_button(ip.controlbar.resourcestopbutton);
                 ip.controlbar.resourcestopbutton.show();
                 break;
 
                case 'playingbackmode':
-               	//hide  buttons
               	self.disable_button(ip.controlbar.stopbutton);
                 ip.controlbar.stopbutton.hide();
                  self.disable_button(ip.controlbar.playbackbutton);
                 ip.controlbar.playbackbutton.hide();
                 self.disable_button(ip.controlbar.resourcestopbutton);
                 ip.controlbar.resourcestopbutton.hide();
-                
-                //show buttons  
-                self.disable_button(ip.controlbar.startbutton);
-                //ip.controlbar.startbutton.show();
                 self.enable_button(ip.controlbar.stopplaybackbutton);
-                //ip.controlbar.stopplaybackbutton.show();
                 self.disable_button(ip.controlbar.resourceplaybutton);
                 ip.controlbar.resourceplaybutton.show(); 
                 break;
             
                case 'neverrecordedmode':
-               	//hide buttons
               	self.disable_button(ip.controlbar.stopbutton);
                 ip.controlbar.stopbutton.hide();
                 self.disable_button(ip.controlbar.stopplaybackbutton);
                 ip.controlbar.stopplaybackbutton.hide();
                 self.disable_button(ip.controlbar.resourcestopbutton);
                 ip.controlbar.resourcestopbutton.hide();
-              
-              //show  buttons  
                 self.enable_button(ip.controlbar.startbutton);
-                //ip.controlbar.startbutton.show();
                 self.disable_button(ip.controlbar.playbackbutton);
-                //ip.controlbar.playbackbutton.show();
-                self.enable_button(ip.controlbar.resourceplaybutton);
                 ip.controlbar.resourceplaybutton.show(); 
                     break;
                     
               case 'allstoppedmode':
-              //hide buttons
               	self.disable_button(ip.controlbar.stopbutton);
                 ip.controlbar.stopbutton.hide();
                 self.disable_button(ip.controlbar.stopplaybackbutton);
                 ip.controlbar.stopplaybackbutton.hide();
                 self.disable_button(ip.controlbar.resourcestopbutton);
                 ip.controlbar.resourcestopbutton.hide();
-              
-              //show  buttons  
                 self.enable_button(ip.controlbar.startbutton);
-                //ip.controlbar.startbutton.show();
                 self.enable_button(ip.controlbar.playbackbutton);
-                //ip.controlbar.playbackbutton.show();
-                self.enable_button(ip.controlbar.resourceplaybutton);
                 ip.controlbar.resourceplaybutton.show();    
                 break;
            }
@@ -239,14 +206,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 
 				
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_play-resource_split">'
-                + '<span class="fa fa-play-circle fa-4x"></span>' 
+				+ '<p>Start</p>'
 				+ '</button>';
-             
-			 /*
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_stop-resource_split  hide">'
-                + '<span class="fa fa-stop-circle fa-4x"></span>' 
-				+ '</button>';
-			*/
 				
 				
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_start-recording_split">'
@@ -266,7 +227,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 				+ '</button>';
 				
 				
-				controls+= ' <h1 id="countDown" class="poodll_recordTimer">Click on the record icon to start</h1>';
+				controls+= ' <h1 id="countDown" class="poodll_recordTimer">Click on the Start Button</h1>';
 
                 //completioncheck /*On hold for now Justin 20171007 */
                // controls += ' <div class="poodll_mediarecorder_completion_split fa fa-circle fa-4x"></div>';
@@ -305,61 +266,76 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 			
 			
 		/*Glen's Poodll Timer */
-		function Poodll_recordTimer() {   
-            var counter = 10;
-            var id;
-            id = setInterval(function() {
-                counter--;
-                if(counter < 0) {
-                    clearInterval(id); 
-                } else {
-                    $("#countDown").text("Recording will stop in  " + counter.toString() + " seconds.");
-					
-                }
-            }, 1000);   
-        }        
-			
-			
-			
-			
+			function Poodll_recordTimer(counter) {   
+				var id;
+				id = setInterval(function() {
+					counter--;
+					if(counter < 0) {
+						clearInterval(id); 
+					} else {
+						$("#countDown").text("Recording will stop in  " + counter.toString() + " seconds.");
+						
+					}
+				}, 1000);   
+			}        
+			function poodll_resource_play(count_down) {   
+				var cd;
+				cd = setInterval(function() {
+					count_down--;
+					if(count_down < 0) {
+						clearInterval(cd); 
+					} else {
+						$("#countDown").text("Recording will start in  " + count_down.toString() + " seconds.");
+						
+					}
+				}, 1000);   
+			}        
+		/* END */
+		
+		
             var self = this;
             var pmr=this.pmr;
             var ip = this.fetch_instanceprops(controlbarid);
 
+			
+			
+			ip.controlbar.resourceplayer.on('ended', function() {
+				ip.controlbar.startbutton.trigger( "click" );
+				ip.controlbar.resourceplaybutton.text("Recording");
+				self.disable_button(ip.controlbar.resourceplaybutton);
+				//alert("ended");
+			});
+			
+			
             ip.controlbar.startbutton.click(function() {
-				/* RECORD BUTTON */ 
-				
-				
+				/* RECORD BUTTON */
 				/*Glen's Poodll Timer*/
-				
+				var recorder_time = 10;
+				var recorder_time_animate = recorder_time * 1000;
 				$(this).hide();
-				Poodll_recordTimer();
-				
+				Poodll_recordTimer(recorder_time);
+				ip.controlbar.startbutton.empty();
+				ip.controlbar.startbutton.text("Recording");
 				$(function() {
 					setTimeout(function() {
 						 ip.controlbar.stopbutton.trigger('click', {}, 500)
-					}, 10000);
+						  ip.controlbar.resourceplaybutton.hide();
+						 ip.controlbar.playbackbutton.show();
+					}, recorder_time_animate);
 				});
 				self.disable_button(ip.controlbar.playbackbutton);
-				ip.controlbar.playbackbutton.show();
-				
-				 
-				
-				
-				
-				
+				/*end*/
 				
 				
 
                 pmr.do_start_audio(ip, onMediaSuccess);
                 self.recorded = true;
                 
-                //also start the model audio playback
-                self.do_play_resource(ip);
+
                  ip.controlbar.resourceplayer.bind('ended',function(){
                  	ip.controlbar.stopbutton.click();
                  });
-
+			
                 self.set_visual_mode('recordingmode',ip);
 				
 				
@@ -421,7 +397,22 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
 
             ip.controlbar.resourceplaybutton.click(function(){
-
+				
+				
+				/* Glen */
+				$(this).empty();
+				$(this).text("Playing");
+				
+				var duration = ip.controlbar.resourceplayer.prop('duration');
+				poodll_resource_play(Math.round(duration));
+				console.log(duration);
+				/*end*/
+				
+				
+				
+				
+				self.enable_button(ip.controlbar.startbutton);
+				
 				self.do_play_resource(ip);
 				
 				////reset buttons when finished
@@ -439,7 +430,6 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
             
              ip.controlbar.resourcestopbutton.click(function(){
-				 
 				self.do_stop_resource(ip); 
                 
                //do visuals

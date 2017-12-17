@@ -1,5 +1,14 @@
 /* NEW RECORDER*/
 /* FROM ""The old timed recorder"" */
+
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_play-resource_split{
+	width: 100%;
+    border: 3px solid #fff;
+    background: transparent;
+    height: 80px;
+    border-radius: 20px;
+}
+
 .poodll_mediarecorderholder_split{
 	margin: 10px !Important;
 	background-color: #333 !important;
@@ -22,23 +31,21 @@
 }
 
 .poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_start-recording_split{
+	display: none !important;
     width: 65%;
     border: 3px solid #fff;
     background: transparent;
     height: 80px;
     border-radius: 20px;
-    float: left;
-    margin-left: 5%;
 }
 .poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_start-recording_split .fa{
 	color: red;
 }
 .poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_playback-recording_split{
-    width: 100%;
-    border: none;
+	width: 100%;
+    border: 3px solid #fff;
     background: transparent;
     height: 80px;
-    border: 3px solid #fff;
     border-radius: 20px;
 }
 .poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_playback-recording_split .fs{
