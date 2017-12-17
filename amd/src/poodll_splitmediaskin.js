@@ -11,6 +11,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         pmr: null,
         uploaded: false,
         recorded: false,
+        played: false,
         mustResetResourcePlayer : false,
 
         //for making multiple instances
@@ -78,83 +79,64 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
 
         handle_timer_update: function(controlbarid){
+            if(!this.played && !this.recorded){return;}
             var ip = this.fetch_instanceprops(controlbarid);
-            this.update_status(controlbarid);
+            var recordingstring = M.util.get_string('recui_recording','filter_poodll');
+            this.update_status(controlbarid, recordingstring + ip.timer.fetch_display_time());
             if(ip.timer.seconds==0 && ip.timer.initseconds >0){
                  ip.controlbar.stopbutton.click();
             }
         },
 
-       update_status: function(controlbarid){
-            /*
+       update_status: function(controlbarid, text){
             var ip = this.fetch_instanceprops(controlbarid);
-            ip.controlbar.status.html(ip.timer.fetch_display_time());
-            */
+            ip.controlbar.status.html(text);
         },
 
         //set visuals for different states (ie recording or playing)
         set_visual_mode: function(mode, ip){
             var self = this;
 
-           switch(mode){
+           switch(mode) {
 
                case 'recordingmode':
-				self.disable_button(ip.controlbar.stopplaybackbutton);
-                ip.controlbar.stopplaybackbutton.hide();
-                self.disable_button(ip.controlbar.resourcestopbutton);
-                ip.controlbar.resourcestopbutton.hide();
-                self.enable_button(ip.controlbar.stopbutton);
-                self.disable_button(ip.controlbar.playbackbutton);
-                self.disable_button(ip.controlbar.resourceplaybutton);
-                ip.controlbar.resourceplaybutton.show();
-               
-                break;
+                   self.disable_button(ip.controlbar.resourceplaybutton);
+                   ip.controlbar.resourceplaybutton.empty();
+                   ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-4x"></span>');
+                   ip.controlbar.resourceplaybutton.addClass('poodll_mediarecorderholder_split_recordcolor');
+                   ip.controlbar.status.addClass('poodll_mediarecorderholder_split_recordcolor');
+                   self.handle_timer_update(ip.controlbarid);
+                   self.enable_button(ip.controlbar.stopbutton);
+                   break;
 
                case 'resourceplayingmode':
-              	self.disable_button(ip.controlbar.stopbutton);
-                ip.controlbar.stopbutton.hide();
-                self.disable_button(ip.controlbar.playbackbutton);
-                ip.controlbar.playbackbutton.hide();
-                self.disable_button(ip.controlbar.resourceplaybutton);
-                self.disable_button(ip.controlbar.stopplaybackbutton);
-                self.enable_button(ip.controlbar.resourcestopbutton);
-                ip.controlbar.resourcestopbutton.show();
-                break;
+                   self.disable_button(ip.controlbar.resourceplaybutton);
+                   self.disable_button(ip.controlbar.stopbutton);
+                   break;
 
-               case 'playingbackmode':
-              	self.disable_button(ip.controlbar.stopbutton);
-                ip.controlbar.stopbutton.hide();
-                 self.disable_button(ip.controlbar.playbackbutton);
-                ip.controlbar.playbackbutton.hide();
-                self.disable_button(ip.controlbar.resourcestopbutton);
-                ip.controlbar.resourcestopbutton.hide();
-                self.enable_button(ip.controlbar.stopplaybackbutton);
-                self.disable_button(ip.controlbar.resourceplaybutton);
-                ip.controlbar.resourceplaybutton.show(); 
-                break;
-            
+
                case 'neverrecordedmode':
-              	self.disable_button(ip.controlbar.stopbutton);
-                ip.controlbar.stopbutton.hide();
-                self.disable_button(ip.controlbar.stopplaybackbutton);
-                ip.controlbar.stopplaybackbutton.hide();
-                self.disable_button(ip.controlbar.resourcestopbutton);
-                ip.controlbar.resourcestopbutton.hide();
-                self.enable_button(ip.controlbar.startbutton);
-                self.disable_button(ip.controlbar.playbackbutton);
-                ip.controlbar.resourceplaybutton.show(); 
-                    break;
+                   ip.controlbar.resourceplaybutton.empty();
+                   if (ip.config.resource == '') {
+                        ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-4x"></span>');
+                    }else{
+                       ip.controlbar.resourceplaybutton.html('<span class="fa fa-play-circle fa-4x"></span>');
+                   }
+
+                   self.enable_button(ip.controlbar.resourceplaybutton);
+                   self.disable_button(ip.controlbar.stopbutton);
+
+                   this.update_status(ip.controlbarid,M.util.get_string('recui_ready','filter_poodll'));
+                       break;
                     
               case 'allstoppedmode':
-              	self.disable_button(ip.controlbar.stopbutton);
-                ip.controlbar.stopbutton.hide();
-                self.disable_button(ip.controlbar.stopplaybackbutton);
-                ip.controlbar.stopplaybackbutton.hide();
-                self.disable_button(ip.controlbar.resourcestopbutton);
-                ip.controlbar.resourcestopbutton.hide();
-                self.enable_button(ip.controlbar.startbutton);
-                self.enable_button(ip.controlbar.playbackbutton);
-                ip.controlbar.resourceplaybutton.show();    
+                  self.disable_button(ip.controlbar.resourceplaybutton);
+                  self.disable_button(ip.controlbar.stopbutton);
+                  ip.controlbar.resourceplaybutton.empty();
+                  ip.controlbar.resourceplaybutton.html('<span class="fa fa-check fa-4x"></span>');
+                  ip.controlbar.resourceplaybutton.removeClass('poodll_mediarecorderholder_split_recordcolor');
+                  ip.controlbar.status.removeClass('poodll_mediarecorderholder_split_recordcolor');
+                  this.update_status(ip.controlbarid,M.util.get_string('recui_finished','filter_poodll'));
                 break;
            }
 
@@ -199,47 +181,54 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 	
                 controls +='<div class="poodll_mediarecorderbox_split" id="' + controlbarid + '">' ;
                 controls +='<div class="style-holder ' + skin_style + '">' ;
-                var status = this.fetch_status_bar('split');
-                controls += status,
+
                 controls += checkplayer,
                 controls += resourceplayer,
                 
 				
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_play-resource_split">'
-				+ '<p>Start</p>'
-				+ '</button>';
-				
-				
+                    + '<span class="fa fa-play-circle fa-4x"></span>'
+                    + '</button>';
+
+                //this is never displayed
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_start-recording_split">'
  				+ '<span class="fa fa-microphone fa-4x"></span>' 
                 +  '</button>';
-                
-                controls += '<button type="button" class="poodll_mediarecorder_button_split poodll_stop-recording_split pmr_disabled hide" disabled>'
-                + '<span class="fa fa-stop-circle fa-4x"></span>' 
-				+ '</button>';
-				
+
+                //this is never displayed
                 controls += ' <button type="button" class="poodll_mediarecorder_button_split poodll_playback-recording_split hide">'
                 + '<span class="fa fa-play-circle fa-4x"></span>' 
 				+ '</button>';
-				
+
+                //this is never displayed
                 controls += ' <button type="button" class="poodll_mediarecorder_button_split poodll_stopplayback-recording_split hide">'
                 + '<span class="fa fa-stop-circle fa-4x"></span>' 
 				+ '</button>';
-				
-				
-				controls+= ' <h1 id="countDown" class="poodll_recordTimer">Click on the Start Button</h1>';
+
+                //Status
+                var status = this.fetch_status_bar('split');
+                controls += status;
+
+
 
                 //completioncheck /*On hold for now Justin 20171007 */
-               // controls += ' <div class="poodll_mediarecorder_completion_split fa fa-circle fa-4x"></div>';
-				
-                //controls += '<button type="button" class="poodll_save-recording_split pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
-				
+               // This is never displayed
 				controls += '<div class="marker hide"><i class="fa fa-check" aria-hidden="true"></i></div>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
 
+
+                //stop recording and save buttons, are after question text (save does not really need to be)
+                 var splitcontrols ="";
+                splitcontrols += '<div class="poodll_mediarecorderholder_split"><button type="button" class="poodll_mediarecorder_button_split poodll_stop-recording_split pmr_disabled" disabled>'
+                    + '<span class="fa fa-stop-circle fa-4x"></span>'
+                    + '</button></div>';
+                //this is never displayed
+                splitcontrols += '<button type="button" class="poodll_save-recording_split pmr_disabled hide">' + ss['recui_save'] +  '</button></div>';
+                $('.qtext').append(splitcontrols);
+
+
                 var controlbar ={
-					timer: $('#' + controlbarid + '  .poodll_recordTimer'),
 					marker:  $('#' + controlbarid + '  .marker'),
                     status: $('#' + controlbarid + '  .poodll_status_split'),
                     resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_split'),
@@ -247,12 +236,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     resourceplaybutton: $('#' + controlbarid + '  .poodll_play-resource_split'),
                     resourcestopbutton: $('#' + controlbarid + '  .poodll_stop-resource_split'),
                     startbutton: $('#' + controlbarid + '  .poodll_start-recording_split'),
-                    stopbutton: $('#' + controlbarid + '  .poodll_stop-recording_split'),
                     playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_split'),
                     stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_split'),
                     /*On hold for now Justin 20171007 */
                     //completioncheck: $('#' + controlbarid + '  .poodll_mediarecorder_completion_split'),
-                    savebutton: $('#' + controlbarid + '  .poodll_save-recording_split')
+
+                    //these are outside the control bar in the split recorder
+                    savebutton: $('.poodll_save-recording_split'),
+                    stopbutton: $('.poodll_mediarecorder_button_split.poodll_stop-recording_split')
                 };
                 return controlbar;
         }, //end of fetch_control_bar_split
@@ -262,80 +253,72 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return this.register_controlbar_events_audio(onMediaSuccess,  controlbarid);
         },
 
+        do_callback: function(args){
+            //log.debug(args);
+            //args will look like this
+            /*
+            0:"recorderbase5a367e03c2f9319"
+            1:"filesubmitted"
+            2:"poodllfile5a367e03c2f9318.mp3"
+            3:"q101:1_answer_id"
+            */
+            switch(args[1]){
+
+                case 'filesubmitted':
+                    //record the url on the html page,
+                    var filenamecontrol = document.getElementById(args[3]);
+                    if(filenamecontrol==null){ filenamecontrol = parent.document.getElementById(args[3]);}
+                    if(filenamecontrol){
+                        filenamecontrol.value = args[2];
+                    }
+
+                    //go next
+                    var f = document.getElementById("responseform");
+                    if (typeof f != 'undefined') {
+                        if (typeof f.next != 'undefined'){
+                            f.next.click();
+                        }
+                    }
+            }
+        },
+
         register_controlbar_events_audio: function(onMediaSuccess, controlbarid){
-			
-			
-		/*Glen's Poodll Timer */
-			function Poodll_recordTimer(counter) {   
-				var id;
-				id = setInterval(function() {
-					counter--;
-					if(counter < 0) {
-						clearInterval(id); 
-					} else {
-						$("#countDown").text("Recording will stop in  " + counter.toString() + " seconds.");
-						
-					}
-				}, 1000);   
-			}        
+
+            var self = this;
+            var pmr=this.pmr;
+            var ip = this.fetch_instanceprops(controlbarid);
+
+            this.set_visual_mode('neverrecordedmode',ip);
+            ip.config.callbackjs= self.do_callback;
+
 			function poodll_resource_play(count_down) {   
 				var cd;
+                var playingstring = M.util.get_string('recui_playing','filter_poodll');
+                self.update_status(controlbarid, playingstring + ip.timer.fetch_display_time(count_down));
 				cd = setInterval(function() {
 					count_down--;
 					if(count_down < 0) {
 						clearInterval(cd); 
 					} else {
-						$("#countDown").text("Recording will start in  " + count_down.toString() + " seconds.");
-						
+                        self.update_status(controlbarid, playingstring + ip.timer.fetch_display_time(count_down));
 					}
 				}, 1000);   
 			}        
-		/* END */
-		
-		
-            var self = this;
-            var pmr=this.pmr;
-            var ip = this.fetch_instanceprops(controlbarid);
 
-			
-			
 			ip.controlbar.resourceplayer.on('ended', function() {
 				ip.controlbar.startbutton.trigger( "click" );
-				ip.controlbar.resourceplaybutton.text("Recording");
-				self.disable_button(ip.controlbar.resourceplaybutton);
-				//alert("ended");
 			});
 			
 			
             ip.controlbar.startbutton.click(function() {
-				/* RECORD BUTTON */
-				/*Glen's Poodll Timer*/
-				var recorder_time = 10;
-				var recorder_time_animate = recorder_time * 1000;
-				$(this).hide();
-				Poodll_recordTimer(recorder_time);
-				ip.controlbar.startbutton.empty();
-				ip.controlbar.startbutton.text("Recording");
-				$(function() {
-					setTimeout(function() {
-						 ip.controlbar.stopbutton.trigger('click', {}, 500)
-						  ip.controlbar.resourceplaybutton.hide();
-						 ip.controlbar.playbackbutton.show();
-					}, recorder_time_animate);
-				});
-				self.disable_button(ip.controlbar.playbackbutton);
-				/*end*/
-				
-				
 
                 pmr.do_start_audio(ip, onMediaSuccess);
                 self.recorded = true;
-                
 
-                 ip.controlbar.resourceplayer.bind('ended',function(){
-                 	ip.controlbar.stopbutton.click();
-                 });
-			
+                //recording timer setup
+                ip.timer.reset();
+                ip.timer.start();
+
                 self.set_visual_mode('recordingmode',ip);
 				
 				
@@ -344,89 +327,41 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             ip.controlbar.stopbutton.click(function() {
 				pmr.do_stop_audio(ip);
                 self.disable_button(this);
-                var preview = ip.controlbar.resourceplayer;
-                if(preview && preview.get(0)){
-                    preview.get(0).pause();
-                }
-  
-              	self.set_visual_mode('allstoppedmode',ip);
-               
-               //stop model playback
-               self.do_stop_resource(ip);
+
+               //click the 'save' button
+                //this timeout is ugly but we just need a few ms for the blobs to arrive
+                setTimeout(function() {
+                    ip.controlbar.savebutton.click();
+                },100);
+
+
+                //recording timer
+                ip.timer.stop();
+                self.set_visual_mode('allstoppedmode',ip);
 
 
             });
 
-            ip.controlbar.playbackbutton.click(function() {	
-
-				ip.controlbar.timer.empty();
-				ip.controlbar.timer.text("Great Job! ");
-				
-			
-                self.disable_button(this);
-				
-				
-				if(ip.controlbar.marker.hasClass('hide')){
-					ip.controlbar.marker.removeClass('hide');
-					console.log('check mark shown');
-				}
-                
-                var resourceplayer = ip.controlbar.resourceplayer.get(0);
-                pmr.do_play_audio(ip,resourceplayer);
-                //flag resource player as needing reset
-                ip.mustResetResourcePlayer = true;
- 
-                ////reset buttons when finished
-                 ip.controlbar.resourceplayer.bind('ended',function(){
-					self.set_visual_mode('allstoppedmode',ip);
-            	 });
-            	 
-            	 //do visuals
-                 self.set_visual_mode('playingbackmode',ip);
-
-                 //complete the 'activity'
-                self.set_completion(true,ip);
-
-            });
-            
-             ip.controlbar.stopplaybackbutton.click(function(){
-				self.do_stop_resource(ip);                
-                //do visuals
-                 self.set_visual_mode('allstoppedmode',ip);
-    
-            });
 
             ip.controlbar.resourceplaybutton.click(function(){
-				
-				
-				/* Glen */
-				$(this).empty();
-				$(this).text("Playing");
-				
+
+                //if we do not have a media file, just start recording
+                if (ip.config.resource == '') {
+                    ip.controlbar.startbutton.trigger( "click" );
+                    return;
+                }
+
+                //flag played
+                self.played = true;
+
+                //otherwise, and usually, we will have a prompt to play
 				var duration = ip.controlbar.resourceplayer.prop('duration');
 				poodll_resource_play(Math.round(duration));
-				console.log(duration);
-				/*end*/
-				
-				
-				
-				
-				self.enable_button(ip.controlbar.startbutton);
-				
 				self.do_play_resource(ip);
-				
-				////reset buttons when finished
-                 ip.controlbar.resourceplayer.bind('ended',function(){
-					 if(self.recorded){
-                  		self.set_visual_mode('allstoppedmode',ip);
-                	}else{
-                  		self.set_visual_mode('neverrecordedmode',ip);
-                	}
-            	 });
-				
+
                 //do visuals
                  self.set_visual_mode('resourceplayingmode',ip);
-                
+
             });
             
              ip.controlbar.resourcestopbutton.click(function(){

@@ -129,8 +129,12 @@ define(['jquery','core/log'], function($, log) {
                 callbackargs[3]=uploader.config.updatecontrol;
 
                 this.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
-                this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
-
+                if(typeof(uploader.config.callbackjs) === 'function'){
+                    uploader.config.callbackjs(callbackargs);
+                }else{
+                    //this was the old rubbish way, where the callback was a function name
+                    this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
+                }
             }else {
                 uploader.pokeFilename(filename,uploader);
             }

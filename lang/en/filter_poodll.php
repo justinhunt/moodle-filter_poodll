@@ -167,6 +167,10 @@ $string['recui_uploadafile'] ='Upload File';
 $string['recui_uploadsuccess'] ='Uploaded successfully';
 $string['recui_takesnapshot'] ='Take Picture';
 $string['recui_cancelsnapshot'] ='Cancel';
+$string['recui_ready'] ='Ready';
+$string['recui_finished'] ='Finished';
+$string['recui_playing'] ='Playing: ';
+$string['recui_recording'] ='Recording: ';
 $string['insert'] ='Insert';
 $string['cancel'] ='Cancel';
 

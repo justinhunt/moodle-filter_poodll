@@ -1852,6 +1852,9 @@ class poodlltools
             $widgetopts->resource2= '';
         }
 
+        //hints we pass these as is
+        $widgetopts->hints=$hints;
+
 		//do we use flash on android
         $widgetopts->flashonandroid=$CFG->filter_poodll_flash_on_android;
 

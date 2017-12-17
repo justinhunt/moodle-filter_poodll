@@ -1,74 +1,3 @@
-/* NEW RECORDER*/
-/* FROM ""The old timed recorder"" */
-
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_play-resource_split{
-	width: 100%;
-    border: 3px solid #fff;
-    background: transparent;
-    height: 80px;
-    border-radius: 20px;
-}
-
-.poodll_mediarecorderholder_split{
-	margin: 10px !Important;
-	background-color: #333 !important;
-	padding: 0px 20px !important;
-    min-height: 160px !important;
-}
-.poodll_mediarecorderbox_split{
-	width: 328px !important;
-	
-}
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .marker{
-	margin-top: 20px !important;
-}
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .marker i{
-    margin-left: 0px !important;
-    font-size: 50px;
-    color: green;
-    width: auto !important; 
-    background: transparent;	
-}
-
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_start-recording_split{
-	display: none !important;
-    width: 65%;
-    border: 3px solid #fff;
-    background: transparent;
-    height: 80px;
-    border-radius: 20px;
-}
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_start-recording_split .fa{
-	color: red;
-}
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_playback-recording_split{
-	width: 100%;
-    border: 3px solid #fff;
-    background: transparent;
-    height: 80px;
-    border-radius: 20px;
-}
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_playback-recording_split .fs{
-	color: #333 !Important;
-}
-.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split h1#countDown{
-	font-size: 14px;
-    text-align: center;
-    margin-top: 20px;
-	color: #fff;
-    text-shadow: 1px 1px 1px #c2c2c2;
-}
-
-/*end*/
-
-
-
-
-
-
-
-
-
 
 
 /* BMR FIXES */ 
@@ -862,6 +791,75 @@ audio.poodll_preview_standard{
 
 /* MEDIA RECORDER Split SKIN */
 
+
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_play-resource_split{
+	width: 100%;
+	border: 3px solid #fff;
+	background: transparent;
+	height: 80px;
+	border-radius: 20px;
+}
+
+.poodll_mediarecorder_button_split.poodll_stop-recording_split{
+	width: 370px;
+	border: 3px solid #fff;
+	background: transparent;
+	height: 80px;
+	border-radius: 20px;
+	color: #fff;
+}
+
+.poodll_mediarecorderholder_split{
+	margin: 10px !Important;
+	background-color: #333 !important;
+	padding: 0px 20px !important;
+}
+
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .marker{
+	margin-top: 20px !important;
+}
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .marker i{
+	margin-left: 0px !important;
+	font-size: 50px;
+	color: green;
+	width: auto !important;
+	background: transparent;
+}
+
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_start-recording_split{
+	display: none !important;
+	width: 65%;
+	border: 3px solid #fff;
+	background: transparent;
+	height: 80px;
+	border-radius: 20px;
+}
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_start-recording_split .fa{
+	color: red;
+}
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_playback-recording_split{
+	width: 100%;
+	border: 3px solid #fff;
+	background: transparent;
+	height: 80px;
+	border-radius: 20px;
+}
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split .poodll_playback-recording_split .fs{
+	color: #333 !Important;
+}
+.poodll_mediarecorderholder_split .poodll_mediarecorderbox_split h1.poodll_recordTimer{
+	font-size: 14px;
+	text-align: center;
+	margin-top: 20px;
+	color: #fff;
+	text-shadow: 1px 1px 1px #c2c2c2;
+}
+
+.poodll_mediarecorderholder_split_recordcolor, .poodll_mediarecorderholder_split_recordcolor .fa-microphone{
+	color: #ff0000;
+}
+
+
 .marker i{
 	margin-left: -40px;
 	font-size: 50px;
@@ -871,9 +869,8 @@ audio.poodll_preview_standard{
 }
 
 
-.poodll_mediarecorderholder_split{
-	width: 370px!important;
-	min-height: 220px;
+div.poodll_mediarecorderholder_split{
+	width: 420px;
 	height: auto;
 	margin: 0 auto;
 }
@@ -906,24 +903,6 @@ audio.poodll_preview_standard{
 button.poodll_mediarecorder_button_split.poodll_play-resource_split
 {
 	background-color: #009e0f;
-}
-button.poodll_mediarecorder_button_split.poodll_stop-resource_split
-{
-	background-color: #009e0f;
-}
-button.poodll_mediarecorder_button_split.poodll_start-recording_split{
-	background-color: #2b78e4;
-}
-button.poodll_mediarecorder_button_split.poodll_stop-recording_split{
-	background-color: #cc0000;
-}
-button.poodll_mediarecorder_button_split.poodll_playback-recording_split
-{
-	background-color: #ff00ff;
-}
-button.poodll_mediarecorder_button_split.poodll_stopplayback-recording_split
-{
-	background-color: #ff00ff;
 }
 
 
@@ -1573,23 +1552,22 @@ Default skin for Poodll standard media recorder
     background-color: #333;
 }
 */
-.charcoal.poodll_mediarecorderholder_standard{
+.poodll_mediarecorderbox_standard .charcoal.poodll_mediarecorderholder_standard{
     padding: 20px;
     background-color: #333;
-    
 }
-.charcoal .poodll_status_standard{
+.poodll_mediarecorderbox_standard .charcoal .poodll_status_standard{
     padding: 5px;
     background-color: #fff;
 }
-.charcoal .poodll_mediarecorder_button_standard{
+.poodll_mediarecorderbox_standard .charcoal .poodll_mediarecorder_button_standard{
     background: #fff;
     border: none;
     padding: 5px 10px;
     margin-bottom: 20px;
-     color: red;
+	color: red;
 }
-.charcoal .poodll_save-recording_standard{
+.poodll_mediarecorderbox_standard .charcoal .poodll_save-recording_standard{
     padding: 5px;
     background-color: #fff;
     border: none;
@@ -1597,11 +1575,11 @@ Default skin for Poodll standard media recorder
 	width: 100%;
 }
 
-.charcoal button.pmr_disabled{
+.poodll_mediarecorderbox_standard .charcoal button.pmr_disabled{
     color: #BBB;
 }
 
-.messages_charcoal.p_messages{
+.poodll_mediarecorderbox_standard .messages_charcoal.p_messages{
     color: #333;
 }
 /*-----end-----*/

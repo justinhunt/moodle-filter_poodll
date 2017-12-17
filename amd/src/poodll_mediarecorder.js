@@ -313,8 +313,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         do_play_audio: function(ip, preview) {
 
-
-
             if (ip.blobs && ip.blobs.length > 0) {
                 log.debug('playing type:' + ip.blobs[0].type);
                 switch (ip.blobs[0].type) {

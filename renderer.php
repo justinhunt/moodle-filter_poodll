@@ -230,6 +230,10 @@ class filter_poodll_renderer extends plugin_renderer_base
 
         $PAGE->requires->strings_for_js(array('insert',
             'cancel',
+            'recui_finished',
+            'recui_ready',
+            'recui_playing',
+            'recui_recording',
             'recui_record',
             'recui_restart',
             'recui_recordorchoose',
