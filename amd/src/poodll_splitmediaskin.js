@@ -245,6 +245,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     savebutton: $('.poodll_save-recording_split'),
                     stopbutton: $('.poodll_mediarecorder_button_split.poodll_stop-recording_split')
                 };
+
+
+
                 return controlbar;
         }, //end of fetch_control_bar_split
 
@@ -272,15 +275,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                         filenamecontrol.value = args[2];
                     }
 
-                    //go next
-                    var f = document.getElementById("responseform");
-                    if (typeof f != 'undefined') {
-                        if (typeof f.next != 'undefined'){
-                            f.next.click();
-                        }
-                    }
+                    //go next: enable the next button and click it.
+                    $('#responseform input[name=next]').attr('disabled',false);
+                    $('#responseform input[name=next]').click();
             }
         },
+
+
 
         register_controlbar_events_audio: function(onMediaSuccess, controlbarid){
 
@@ -290,6 +291,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
             this.set_visual_mode('neverrecordedmode',ip);
             ip.config.callbackjs= self.do_callback;
+
+            //disable the forms next button.
+            //its not a recorder button so we do not use our disable_button method here
+            $('#responseform input[name=next]').attr('disabled',true);
 
 			function poodll_resource_play(count_down) {   
 				var cd;
@@ -344,23 +349,30 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
 
             ip.controlbar.resourceplaybutton.click(function(){
+                //we do not want to start the timer or get going if recording is off limits
+                //so we first call getUserMedia, and force a permissions check
+                navigator.mediaDevices.getUserMedia({"audio": true}).then(function(stream){
+                    //if we do not have a media file, just start recording
+                    if (ip.config.resource == '') {
+                        ip.controlbar.startbutton.trigger( "click" );
+                        return;
+                    }
 
-                //if we do not have a media file, just start recording
-                if (ip.config.resource == '') {
-                    ip.controlbar.startbutton.trigger( "click" );
-                    return;
-                }
+                    //flag played
+                    self.played = true;
 
-                //flag played
-                self.played = true;
+                    //otherwise, and usually, we will have a prompt to play
+                    var duration = ip.controlbar.resourceplayer.prop('duration');
+                    poodll_resource_play(Math.round(duration));
+                    self.do_play_resource(ip);
 
-                //otherwise, and usually, we will have a prompt to play
-				var duration = ip.controlbar.resourceplayer.prop('duration');
-				poodll_resource_play(Math.round(duration));
-				self.do_play_resource(ip);
+                    //do visuals
+                    self.set_visual_mode('resourceplayingmode',ip);
 
-                //do visuals
-                 self.set_visual_mode('resourceplayingmode',ip);
+                }).catch(function(err) {
+                    alert(err);
+                });
+
 
             });
             
