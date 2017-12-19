@@ -298,7 +298,7 @@ define(['jquery','core/log'], function($, log) {
 
             xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("Cache-Control", "no-cache");
+           // xhr.setRequestHeader("Cache-Control", "no-cache");
             xhr.send(params);
         },
 
