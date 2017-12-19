@@ -177,6 +177,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 	+ recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
                 	
                 controls +='<div class="poodll_mediarecorderbox_bmr" id="' + controlbarid + '">' ;
+                controls +='<audio style="display: none !important;" class="poodll-alert-recording" id="'+ controlbarid +'"><source src="https://poodll.com/wp-content/themes/Poodll-Theme/images/ding.mp3" type="audio/mpeg"></audio>' ;
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 var status = this.fetch_status_bar('bmr');
                 controls += status,
@@ -197,6 +198,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
+					poodll_recording_alert: $('#' + controlbarid + ' .poodll-alert-recording'),
 					bmr_progresscanvas: $('#' + controlbarid + ' .bmr_range'),
                 	bmr_progress: $('#' + controlbarid + ' .bmr_slide'),
 					bmr_timer: $('#' + controlbarid + ' .bmr_timer'),
@@ -251,6 +253,16 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 			ip.controlbar.bmr_progresscanvas.addClass('hide');
 			
             ip.controlbar.startbutton.click(function() {
+				
+				/*alert notification by Glen*/
+				
+				
+				ip.controlbar.poodll_recording_alert.get(0).play();
+				
+
+
+				/*end*/
+				
                 pmr.do_start_audio(ip, onMediaSuccess);
 
                 //clear messages
