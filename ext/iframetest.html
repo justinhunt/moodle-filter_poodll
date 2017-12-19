@@ -1,93 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <title>Sample iFrame Project: Poodll Loader</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" type="text/css" href="http://localhost/moodle/filter/poodll/styles.css">
-    <link rel="stylesheet" type="text/css" href="http://localhost/moodle/lib/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-    <!-- link href="http://localhost/moodle/filter/poodll/3rdparty/featherlight-1.5.0/assets/stylesheets/bootstrap.min.css" rel="stylesheet" -->
-    <title>Sample iFrame Project</title>
-    <!-- data-main attribute tells require.js to load
-         scripts/main.js after require.js loads. -->
-    <script type="text/javascript">
-        //<![CDATA[
-        M={};
-        M.str = {"moodle":{"lastmodified":"Last modified","name":"Name","error":"Error","info":"Information","yes":"Yes","no":"No","cancel":"Cancel","confirm":"Confirm","areyousure":"Are you sure?","closebuttontitle":"Close","unknownerror":"Unknown error"},"repository":{"type":"Type","size":"Size","invalidjson":"Invalid JSON string","nofilesattached":"No files attached","filepicker":"File picker","logout":"Logout","nofilesavailable":"No files available","norepositoriesavailable":"Sorry, none of your current repositories can return files in the required format.","fileexistsdialogheader":"File exists","fileexistsdialog_editor":"A file with that name has already been attached to the text you are editing.","fileexistsdialog_filemanager":"A file with that name has already been attached","renameto":"Rename to \"{$a}\"","referencesexist":"There are {$a} alias\/shortcut files that use this file as their source","select":"Select"},"admin":{"confirmdeletecomments":"You are about to delete comments, are you sure?","confirmation":"Confirmation"}};
-        M.util={};
-        M.util.get_string=function(){return '';}
-        //]]>
-    </script>
-
-
-    <script type="text/javascript">
-        //<![CDATA[
-        var require = {
-            baseUrl : 'http://localhost/moodle/lib/requirejs.php/-1/',
-            // We only support AMD modules with an explicit define() statement.
-            enforceDefine: true,
-            skipDataMain: true,
-            waitSeconds : 0,
-
-            paths: {
-                jquery: 'http://localhost/moodle/lib/javascript.php/-1/lib/jquery/jquery-3.1.0.min',
-                jqueryui: 'http://localhost/moodle/lib/javascript.php/-1/lib/jquery/ui-1.12.1/jquery-ui.min',
-                jqueryprivate: 'http://localhost/moodle/lib/javascript.php/-1/lib/requirejs/jquery-private'
-            },
-
-            // Custom jquery config map.
-            map: {
-                // '*' means all modules will get 'jqueryprivate'
-                // for their 'jquery' dependency.
-                '*': { jquery: 'jqueryprivate' },
-
-                // 'jquery-private' wants the real jQuery module
-                // though. If this line was not here, there would
-                // be an unresolvable cyclic dependency.
-                jqueryprivate: { jquery: 'jquery' }
-            }
-        };
-
-        //]]>
-    </script>
-
-    <script type="text/javascript" src="http://localhost/moodle/lib/javascript.php/-1/lib/requirejs/require.js"></script>
-
-    <script type="text/javascript">
-        require(['jquery','core/log','filter_poodll/poodll_mediarecorder'], function($,log, pmr) {
-            //just once trigger the permissions dialog, if needed
-            /*
-            if (!('filter_poodll_navigator_checked' in window)) {
-                window.filter_poodll_navigator_checked = true;
-                navigator.mediaDevices.getUserMedia({"audio": true});
-            }
-            */
-            log.setConfig({"level":"trace"});
-            log.debug('LOADED from iframetest.html')
-
-            var params = [];
-            params['widgetid'] = 'AUTOID';
-            params['media_timeinterval'] = 2000;
-            params['media_audiomimetype'] = 'audio/webm';//or audio/wav
-            params['media_videorecordertype'] = 'auto';//or mediarec or webp
-            params['media_videocapturewidth'] = 320;
-            params['media_videocaptureheight'] = 240;
-            params['mediatype'] = 'audio';
-            //params['media_skin'] = 'shadow';
-            //params['hideupload'] = true;
-            //params['resource'] = 'https://path.to.some.audio.com';
-            params['media_skin'] = 'onetwothree';
-            params['media_skin_style'] = 'none';
-            params['timelimit'] = 0;
-
-
-
-            pmr.embed('#' + 'AUTOID', params);
-        });
-
-    </script>
-
+    <link rel="stylesheet" type="text/css" href="../styles.css">
+    <link rel="stylesheet" type="text/css" href="../../../lib/fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="poodllconfig.js"></script>
+    <script type="text/javascript" src="../../../lib/javascript.php/-1/lib/requirejs/require.js"></script>
+    <script type="text/javascript" src="poodllloader.js"></script>
 </head>
 <body>
-<h1>My Sample Project</h1>
+<h1>My Sample Projects</h1>
 <div id="AUTOID"></div>
+<input type="text" id="theupdatecontrol"/>
 </body>
 </html>
