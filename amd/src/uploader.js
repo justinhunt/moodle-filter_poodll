@@ -120,6 +120,12 @@ define(['jquery','core/log'], function($, log) {
         },
 
         doCallback: function(uploader,filename){
+
+            //in the case of an iframeembed we need a full URL
+            if(uploader.config.iframeembed){
+                filename = uploader.config.cloudroot + uploader.config.s3filename;
+            }
+
             //invoke callbackjs if we have one, otherwise just update the control(default behav.)
             if(uploader.config.callbackjs && uploader.config.callbackjs !=''){
                 var callbackargs  = new Array();
@@ -184,7 +190,13 @@ define(['jquery','core/log'], function($, log) {
 
             //get the file extension from the filetype
             var ext = this.fetchFileExtension(filetype);
- 
+
+            //is this an iframe embed
+            if(typeof config.iframeembed == 'undefined'){
+                config.iframeembed=false;
+            }
+
+            //are we using s3
             var using_s3 = config.using_s3;
 
             // create progress bar if we have a container for it
@@ -194,9 +206,13 @@ define(['jquery','core/log'], function($, log) {
             this.Output(M.util.get_string('recui_uploading', 'filter_poodll'));
 
             xhr.onreadystatechange = function(e){
-                if(using_s3 && this.readyState===4){
-                     //ping Moodle and inform that we have a new file
-                    uploader.postprocess_s3_upload(uploader);
+                if(using_s3 && this.readyState===4) {
+                    if (config.iframeembed) {
+                        uploader.postprocess_uploadfromiframeembed(uploader);
+                    } else {
+                        //ping Moodle and inform that we have a new file
+                        uploader.postprocess_s3_upload(uploader);
+                    }
                 }
                 uploader.postProcessUpload(e,uploader);
                 
@@ -258,8 +274,34 @@ define(['jquery','core/log'], function($, log) {
                 }//end of if blob                 
          }//end of if using_s3
         },
-        
-      
+
+        postprocess_uploadfromiframeembed: function(uploader){
+            var config = uploader.config;
+            var xhr = new XMLHttpRequest();
+            var that = this;
+
+            //lets do a little error checking
+            //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
+            xhr.onreadystatechange = function(){
+                if(this.readyState===4){
+                    if(xhr.status!=200){
+                        that.Output('Post Process Upload from IframeEmbed Error:' + xhr.status);
+                        $('#' + that.config.widgetid + '_messages').show();
+                    }
+                }
+            };
+
+            //log.debug(params);
+            var params = "datatype=handleuploadfromiframeembed";
+            params += "&filename=" + config.filename;
+            params += "&mediatype=" + config.mediatype;
+
+            xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("Cache-Control", "no-cache");
+            xhr.send(params);
+        },
+
         postprocess_s3_upload: function(uploader){
             var config = uploader.config;
             var xhr = new XMLHttpRequest();

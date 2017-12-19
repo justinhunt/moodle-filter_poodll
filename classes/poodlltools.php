@@ -1464,7 +1464,18 @@ class poodlltools
                    return false;
         }
 	}
-        
+
+
+    public static function postprocess_upload_fromiframeembed($mediatype,$filename)
+    {
+        $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
+        $infilename = $s3filename;
+        $outfilename = $infilename;
+
+        $success = self::commence_s3_transcode($mediatype, $infilename, $outfilename);
+        return $success;
+    }
+
     public static function postprocess_s3_upload($mediatype,$draftfilerecord)
     {
         $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $draftfilerecord->filename);
@@ -1805,10 +1816,13 @@ class poodlltools
         $widgetopts->timelimit = $timelimit;
         $widgetopts->callbackjs = $callbackjs;
         $widgetopts->quicktimesignedurl =$quicktime_signed_url;
-		
+
+
 		//store the filename or "not yet decided flag"(ie false)
 		$widgetopts->filename = $filename;
 		$widgetopts->s3filename = $s3filename;
+        $widgetopts->filename = $filename;
+        $widgetopts->iframeembed = false;//this is only tree when embedding from iframe duh
 		$widgetopts->using_s3 = intval($using_s3);
 
         //recorder order of preference and media skin style

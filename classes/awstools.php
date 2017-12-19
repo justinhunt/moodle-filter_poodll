@@ -62,6 +62,7 @@ class awstools
 	protected $default_segment_size = 4;
 	protected $region = self::REGION_APN1;
     protected $convfolder = 'transcoded/';
+    protected $thirtydayfolder = '30day/';
     protected $accesskey ='';
     protected $secretkey='';
 
@@ -277,9 +278,13 @@ class awstools
 		$transcoder_client = $this->fetch_transcoder();
 	
 		//create the output prefix
-		$output_key_prefix = $this->convfolder;
-//		echo 'creating transcoding job:' . PHP_EOL;
-
+        //we use a special check here for transcode jobs where in and out key are the same
+        //this happens if this a recording from an iframeembed
+        if($input_key == $output_key){
+            $output_key_prefix = $this->thirtydayfolder;
+        }else {
+            $output_key_prefix = $this->convfolder;
+        }
 		
 		  # Setup the job input using the provided input key.
 		  $input = array('Key' => $input_key);
