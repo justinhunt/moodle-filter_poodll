@@ -120,7 +120,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                    if (ip.config.resource == '') {
                         ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-4x"></span>');
                     }else{
-                       ip.controlbar.resourceplaybutton.html('<span class="fa fa-play-circle fa-4x"></span>');
+                       ip.controlbar.resourceplaybutton.html('<p style="margin-bottom: 0px; font-size: 24px;">Start</p>');
                    }
 
                    self.enable_button(ip.controlbar.resourceplaybutton);
@@ -187,7 +187,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 
 				
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_play-resource_split">'
-                    + '<span class="fa fa-play-circle fa-4x"></span>'
+                    //+ '<span class="fa fa-play-circle fa-4x"></span>'
+                     '<p style="margin-bottom: 0px; font-size: 24px;">Start</p>'
                     + '</button>';
 
                 //this is never displayed
@@ -221,7 +222,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //stop recording and save buttons, are after question text (save does not really need to be)
                  var splitcontrols ="";
                 splitcontrols += '<div class="poodll_mediarecorderholder_split"><button type="button" class="poodll_mediarecorder_button_split poodll_stop-recording_split pmr_disabled" disabled>'
-                    + '<span class="fa fa-stop-circle fa-4x"></span>'
+                    //+ '<span class="fa fa-stop-circle fa-4x"></span>'
+                    + '<p style="margin-bottom: 0px;font-size: 24px;">Submit</p>'
                     + '</button></div>';
                 //this is never displayed
                 splitcontrols += '<button type="button" class="poodll_save-recording_split pmr_disabled hide">' + ss['recui_save'] +  '</button></div>';
@@ -275,9 +277,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                         filenamecontrol.value = args[2];
                     }
 
-                    //go next: enable the next button and click it.
+                    //enable the next button
                     $('#responseform input[name=next]').attr('disabled',false);
-                    $('#responseform input[name=next]').click();
+                   //we used to click it. But client doesn't want that
+                   // $('#responseform input[name=next]').click();
             }
         },
 
@@ -296,6 +299,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             //its not a recorder button so we do not use our disable_button method here
             $('#responseform input[name=next]').attr('disabled',true);
 
+
+			
+	
+			
 			function poodll_resource_play(count_down) {   
 				var cd;
                 var playingstring = M.util.get_string('recui_playing','filter_poodll');
@@ -309,10 +316,12 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 					}
 				}, 1000);   
 			}        
-
+			
+			/*
 			ip.controlbar.resourceplayer.on('ended', function() {
 				ip.controlbar.startbutton.trigger( "click" );
 			});
+			*/
 			
 			
             ip.controlbar.startbutton.click(function() {
@@ -349,25 +358,30 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
 
             ip.controlbar.resourceplaybutton.click(function(){
+				
                 //we do not want to start the timer or get going if recording is off limits
                 //so we first call getUserMedia, and force a permissions check
                 navigator.mediaDevices.getUserMedia({"audio": true}).then(function(stream){
-                    //if we do not have a media file, just start recording
+                   ip.controlbar.startbutton.trigger( "click" );
+				   /*
+				   //if we do not have a media file, just start recording
                     if (ip.config.resource == '') {
                         ip.controlbar.startbutton.trigger( "click" );
                         return;
                     }
-
+					*/
                     //flag played
                     self.played = true;
 
                     //otherwise, and usually, we will have a prompt to play
-                    var duration = ip.controlbar.resourceplayer.prop('duration');
-                    poodll_resource_play(Math.round(duration));
+                    //var duration = ip.controlbar.resourceplayer.prop('duration');
+                   // poodll_resource_play(Math.round(duration));
+				   
+				   
                     self.do_play_resource(ip);
 
                     //do visuals
-                    self.set_visual_mode('resourceplayingmode',ip);
+                    //self.set_visual_mode('resourceplayingmode',ip);
 
                 }).catch(function(err) {
                     alert(err);
