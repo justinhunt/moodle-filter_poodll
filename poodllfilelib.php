@@ -28,12 +28,17 @@ if(!isset($CFG)){
 require_once("../../config.php");
 }
 
-require_login();
+  //we would almost always require login, except in the special case where its an upload from
+  //the iframe embed ... then we don't. Because users won't be logged in, in that case.	
+  $datatype = optional_param('datatype', "", PARAM_TEXT);    // Type of action/data we are requesting
+  if($datatype!='handleuploadfromiframeembed'){	
+		require_login();
+	}
 
-//added for moodle 2
+//we do file operations here, so we need this
 require_once($CFG->libdir . '/filelib.php');
-
-	$datatype = optional_param('datatype', "", PARAM_TEXT);    // Type of action/data we are requesting
+	
+	
 	$contextid  = optional_param('contextid', 0, PARAM_INT);  // the id of the course 
 	$courseid  = optional_param('courseid', 0, PARAM_INT);  // the id of the course 
 	$moduleid  = optional_param('moduleid', 0, PARAM_INT);  // the id of the module 
