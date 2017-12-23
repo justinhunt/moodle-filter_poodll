@@ -102,7 +102,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                case 'recordingmode':
                    self.disable_button(ip.controlbar.resourceplaybutton);
                    ip.controlbar.resourceplaybutton.empty();
-                   ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-4x"></span>');
+                   ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-3x"></span>');
                    ip.controlbar.resourceplaybutton.addClass('poodll_mediarecorderholder_split_recordcolor');
                    ip.controlbar.status.addClass('poodll_mediarecorderholder_split_recordcolor');
                    self.handle_timer_update(ip.controlbarid);
@@ -118,7 +118,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                case 'neverrecordedmode':
                    ip.controlbar.resourceplaybutton.empty();
                    if (ip.config.resource == '') {
-                        ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-4x"></span>');
+                        ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-3x"></span>');
                     }else{
                        ip.controlbar.resourceplaybutton.html('<p style="margin-bottom: 0px; font-size: 24px;">Start</p>');
                    }
@@ -133,7 +133,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                   self.disable_button(ip.controlbar.resourceplaybutton);
                   self.disable_button(ip.controlbar.stopbutton);
                   ip.controlbar.resourceplaybutton.empty();
-                  ip.controlbar.resourceplaybutton.html('<span class="fa fa-check fa-4x"></span>');
+                  ip.controlbar.resourceplaybutton.html('<span class="fa fa-check fa-3x"></span>');
                   ip.controlbar.resourceplaybutton.removeClass('poodll_mediarecorderholder_split_recordcolor');
                   ip.controlbar.status.removeClass('poodll_mediarecorderholder_split_recordcolor');
                   this.update_status(ip.controlbarid,M.util.get_string('recui_finished','filter_poodll'));
@@ -163,93 +163,82 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //load resource player with the src of the resource audio (or video ...never)
                 resourceplayer = resourceplayer.replace('@@RESOURCEURL@@', ip.config.resource);
 
-                var size_class = 'poodll_mediarecorder_size_auto';
-                switch(ip.config.size){
-                	case 'small':
-	                	size_class = 'poodll_mediarecorder_size_small';
-                		break;
-                	case 'big':
-                		size_class = 'poodll_mediarecorder_size_big';
-                		break;
-                	case 'auto':
-	                	size_class = 'poodll_mediarecorder_size_auto';		
-                }
+
 
 				var ss = this.pmr.fetch_strings();
                 var controls ='<div class="poodll_mediarecorderholder_split '
-                	+ recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
+                	+ recorder_class + '" id="holder_' + controlbarid + '">' ;
                 	
                 controls +='<div class="poodll_mediarecorderbox_split" id="' + controlbarid + '">' ;
                 controls +='<div class="style-holder ' + skin_style + '">' ;
 
                 controls += checkplayer,
                 controls += resourceplayer,
-                
-				
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_play-resource_split">'
-                    //+ '<span class="fa fa-play-circle fa-4x"></span>'
-                     '<p style="margin-bottom: 0px; font-size: 24px;">Start</p>'
-                    + '</button>';
+
+
 
                 //this is never displayed
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_start-recording_split">'
- 				+ '<span class="fa fa-microphone fa-4x"></span>' 
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_split poodll_start-recording_split hide">'
+ 				+ '<span class="fa fa-microphone fa-3x"></span>'
                 +  '</button>';
 
                 //this is never displayed
                 controls += ' <button type="button" class="poodll_mediarecorder_button_split poodll_playback-recording_split hide">'
-                + '<span class="fa fa-play-circle fa-4x"></span>' 
+                + '<span class="fa fa-play-circle fa-3x"></span>'
 				+ '</button>';
 
                 //this is never displayed
                 controls += ' <button type="button" class="poodll_mediarecorder_button_split poodll_stopplayback-recording_split hide">'
-                + '<span class="fa fa-stop-circle fa-4x"></span>' 
+                + '<span class="fa fa-stop-circle fa-3x"></span>'
 				+ '</button>';
 
-                //Status
-                var status = this.fetch_status_bar('split');
-                controls += status;
+            //this is never displayed
+            controls += '<button type="button" class="poodll_save-recording_split pmr_disabled hide">' + ss['recui_save'] +  '</button></div>';
+
+            //this IS displayed
+            controls += '<div class="poodll_mediarecorderholder_split"><button type="button" class="poodll_mediarecorder_button_split poodll_stop-recording_split pmr_disabled" disabled>'
+                + '<p style="margin-bottom: 0px;font-size: 24px;">Submit</p>'
+                + '</button></div>';
+
+            //end if div
+            controls += '</div></div></div>';
+
+            // add to the page
+            $(element).append(controls);
 
 
+            //stop recording and save buttons, are after question text (save does not really need to be)
+            var playbuttonhtml =  '<button type="button" class="poodll_mediarecorder_button_split poodll_play-resource_split">'
+            '<p style="margin-bottom: 0px; font-size: 24px;">Start</p>'
+            + '</button>';
 
-                //completioncheck /*On hold for now Justin 20171007 */
-               // This is never displayed
-				controls += '<div class="marker hide"><i class="fa fa-check" aria-hidden="true"></i></div>';
-                controls += '</div></div></div>';
-                $(element).prepend(controls);
+            //divider
+            var divider = "<hr />";
+            //Status
+            var statushtml = this.fetch_status_bar('split');
+            $('.qtext').prepend(divider);
+            $('.qtext').prepend(statushtml);
+            $('.qtext').prepend(playbuttonhtml);
 
-
-                //stop recording and save buttons, are after question text (save does not really need to be)
-                 var splitcontrols ="";
-                splitcontrols += '<div class="poodll_mediarecorderholder_split"><button type="button" class="poodll_mediarecorder_button_split poodll_stop-recording_split pmr_disabled" disabled>'
-                    //+ '<span class="fa fa-stop-circle fa-4x"></span>'
-                    + '<p style="margin-bottom: 0px;font-size: 24px;">Submit</p>'
-                    + '</button></div>';
-                //this is never displayed
-                splitcontrols += '<button type="button" class="poodll_save-recording_split pmr_disabled hide">' + ss['recui_save'] +  '</button></div>';
-                $('.qtext').append(splitcontrols);
 
 
                 var controlbar ={
 					marker:  $('#' + controlbarid + '  .marker'),
-                    status: $('#' + controlbarid + '  .poodll_status_split'),
                     resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_split'),
                     checkplayer: $('#' + controlbarid + '  .poodll_checkplayer_split'),
-                    resourceplaybutton: $('#' + controlbarid + '  .poodll_play-resource_split'),
+                    stopbutton: $('#' + controlbarid + '  .poodll_stop-recording_split'),
                     resourcestopbutton: $('#' + controlbarid + '  .poodll_stop-resource_split'),
                     startbutton: $('#' + controlbarid + '  .poodll_start-recording_split'),
                     playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_split'),
                     stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_split'),
+                    savebutton: $('#' + controlbarid + '  .poodll_save-recording_split'),
                     /*On hold for now Justin 20171007 */
                     //completioncheck: $('#' + controlbarid + '  .poodll_mediarecorder_completion_split'),
 
                     //these are outside the control bar in the split recorder
-                    savebutton: $('.poodll_save-recording_split'),
-                    stopbutton: $('.poodll_mediarecorder_button_split.poodll_stop-recording_split')
+                    resourceplaybutton: $('.poodll_mediarecorder_button_split.poodll_play-resource_split'),
+                    status: $('.poodll_status_split'),
                 };
-
-
-
                 return controlbar;
         }, //end of fetch_control_bar_split
 
@@ -339,7 +328,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
             
             ip.controlbar.stopbutton.click(function() {
-				pmr.do_stop_audio(ip);
+                //stop playing
+                self.do_stop_resource(ip);
+				//stop recording
+                pmr.do_stop_audio(ip);
                 self.disable_button(this);
 
                //click the 'save' button

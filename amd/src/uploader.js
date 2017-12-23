@@ -287,6 +287,8 @@ define(['jquery','core/log'], function($, log) {
                     if(xhr.status!=200){
                         that.Output('Post Process Upload from IframeEmbed Error:' + xhr.status);
                         $('#' + that.config.widgetid + '_messages').show();
+                    }else{
+
                     }
                 }
             };
