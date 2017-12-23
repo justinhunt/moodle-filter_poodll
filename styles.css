@@ -793,11 +793,9 @@ audio.poodll_preview_standard{
 
 .poodll_mediarecorder_button_split{
 	width: 370px;
-	border: 3px solid #fff;
-	background: blue;
+	border: 3px solid #555;
 	height: 50px;
 	border-radius: 20px;
-	color: #fff;
 }
 
 .poodll_mediarecorderholder_split .poodll_mediarecorderbox_split h1.poodll_recordTimer{
