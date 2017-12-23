@@ -117,11 +117,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
                case 'neverrecordedmode':
                    ip.controlbar.resourceplaybutton.empty();
-                   if (ip.config.resource == '') {
-                        ip.controlbar.resourceplaybutton.html('<span class="fa fa-microphone fa-3x"></span>');
-                    }else{
-                       ip.controlbar.resourceplaybutton.html('<p style="margin-bottom: 0px; font-size: 24px;">Start</p>');
-                   }
+                   ip.controlbar.resourceplaybutton.html('<p style="margin-bottom: 0px; font-size: 24px;">Start</p>');
 
                    self.enable_button(ip.controlbar.resourceplaybutton);
                    self.disable_button(ip.controlbar.stopbutton);
@@ -232,10 +228,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_split'),
                     stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_split'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_split'),
-                    /*On hold for now Justin 20171007 */
-                    //completioncheck: $('#' + controlbarid + '  .poodll_mediarecorder_completion_split'),
 
-                    //these are outside the control bar in the split recorder
+                    //these are actually outside the control bar above the question text
                     resourceplaybutton: $('.poodll_mediarecorder_button_split.poodll_play-resource_split'),
                     status: $('.poodll_status_split'),
                 };
@@ -307,12 +301,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 			}        
 			
 			/*
+			//this code was for the case when the recording should start AFTER the playback ends
 			ip.controlbar.resourceplayer.on('ended', function() {
 				ip.controlbar.startbutton.trigger( "click" );
 			});
 			*/
-			
-			
+
+
             ip.controlbar.startbutton.click(function() {
 
                 pmr.do_start_audio(ip, onMediaSuccess);
@@ -406,14 +401,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //probably not necessary  ... but getting odd ajax errors occasionally
                 return false;
             });//end of save recording
-            
-            window.onbeforeunload = function() {
-                self.enable_button(ip.controlbar.startbutton);
-                var checkplayer = ip.controlbar.checkplayer;
-                if(checkplayer && checkplayer.get(0)){
-                    checkplayer.get(0).pause();
-                }
-            };           
+
             
         }, //end of register_control_bar_events_split
         
