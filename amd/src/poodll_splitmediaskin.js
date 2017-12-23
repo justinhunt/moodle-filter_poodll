@@ -350,25 +350,15 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //so we first call getUserMedia, and force a permissions check
                 navigator.mediaDevices.getUserMedia({"audio": true}).then(function(stream){
                    ip.controlbar.startbutton.trigger( "click" );
-				   /*
-				   //if we do not have a media file, just start recording
-                    if (ip.config.resource == '') {
-                        ip.controlbar.startbutton.trigger( "click" );
-                        return;
-                    }
-					*/
+				
                     //flag played
                     self.played = true;
 
-                    //otherwise, and usually, we will have a prompt to play
-                    //var duration = ip.controlbar.resourceplayer.prop('duration');
-                   // poodll_resource_play(Math.round(duration));
-				   
-				   
-                    self.do_play_resource(ip);
 
-                    //do visuals
-                    //self.set_visual_mode('resourceplayingmode',ip);
+                    if (ip.config.resource != '') {
+                        self.do_play_resource(ip);
+                    }
+
 
                 }).catch(function(err) {
                     alert(err);
