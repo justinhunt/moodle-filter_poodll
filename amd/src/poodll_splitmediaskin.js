@@ -350,7 +350,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 //so we first call getUserMedia, and force a permissions check
                 navigator.mediaDevices.getUserMedia({"audio": true}).then(function(stream){
                    ip.controlbar.startbutton.trigger( "click" );
-				
+
                     //flag played
                     self.played = true;
 

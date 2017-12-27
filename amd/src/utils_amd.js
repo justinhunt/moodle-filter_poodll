@@ -212,7 +212,18 @@ define(['jquery','core/log'], function($, log) {
                 ms_ie = true;
             }
             return ms_ie;
+        },
+
+        parseQueryString: function(url) {
+            var urlParams = {};
+            url.replace(
+                new RegExp("([^?=&]+)(=([^&]*))?", "g"),
+                function($0, $1, $2, $3) {
+                    urlParams[$1] = $3;
+                }
+            );
+
+            return urlParams;
         }
-        
     };//end of return object
 });

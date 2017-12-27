@@ -202,7 +202,11 @@ class awstools
             }
             $codedurl = implode('_',$bits);
             $codedurl = $codedurl . '_';
-            $s3filename =$USER->sesskey . '_' . $mediatype . '_' . $filename;
+            if(isset($USER->sesskey)) {
+                $s3filename = $USER->sesskey . '_' . $mediatype . '_' . $filename;
+            }else{
+                $s3filename = '99999_' . $mediatype . '_' . $filename;
+            }
             $s3filename = $codedurl . $s3filename;
             return $s3filename;
     }
