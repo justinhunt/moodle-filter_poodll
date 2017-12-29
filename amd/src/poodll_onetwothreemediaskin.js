@@ -1,4 +1,4 @@
-define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_bar', 'filter_poodll/speech_poodll','filter_poodll/dlg_devicesettings'], function($, jqui, log, utils, anim_progress_bar,browserrecognition,settings) {
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll/anim_progress_bar', 'filter_poodll/speech_poodll','filter_poodll/dlg_devicesettings','filter_poodll/upskin_bar'], function($, jqui, log, utils, anim_progress_bar,browserrecognition,settings, upskin_bar) {
 /* jshint ignore:start */
 
     "use strict"; // jshint ;_;
@@ -61,20 +61,50 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" ></video>';
             return resourceplayer;
         },
-        
+        fetch_uploader_skin: function(controlbarid, element){
+            var ip = this.fetch_instanceprops(controlbarid);
+            var upskin = upskin_bar.clone();
+            upskin.init(ip.config,element,ip.controlbar.progresscanvas,ip.controlbar.timer);
+            return upskin;
+        },
+
+
         onMediaError: function(e) {
                 console.error('media error', e);
         },
 
         onMediaSuccess_video: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
-            ip.controlbar.stoprecbutton.attr('disabled',false);
+
+            //clear messages
+            ip.uploader.Output('');
+
+            this.set_visual_mode('recordmode',controlbarid);
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
+
+            //set recording stage
+            this.stage="recorded";
         },
 
         onMediaSuccess_audio: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
+
+            //clear messages
+            ip.uploader.Output('');
+
+            this.set_visual_mode('recordmode',controlbarid);
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
             ip.controlbar.preview.attr('src',null);
-            ip.controlbar.stoprecbutton.attr('disabled',false);
+
+            //set recording stage
+            this.stage="recorded";
+
         },
 
         handle_timer_update: function(controlbarid){
@@ -137,14 +167,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     }
 
                     ip.controlbar.status.addClass('hide');
-					if(ip.config.mediatype == 'audio'){
-						if ( ip.controlbar.progresscanvas.hasClass("hide") ) {
-							ip.controlbar.progresscanvas.removeClass('hide');
-							 ip.controlbar.progresscanvas.show();
-						}	
-					}
-					
-					
+                    if ( ip.controlbar.progresscanvas.hasClass("hide") ) {
+                        ip.controlbar.progresscanvas.removeClass('hide');
+                         ip.controlbar.progresscanvas.show();
+                    }
+
 					if(!$(this).hasClass('played')){
 						$(this).addClass('played');
 						ip.controlbar.steptwo.empty();
@@ -155,6 +182,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     break;
 
                case 'pausedmode':
+
 					self.enable_button(ip.controlbar.startbutton);
 					ip.controlbar.startbutton.show();
 					self.enable_button(ip.controlbar.playbutton);
@@ -164,24 +192,17 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     ip.controlbar.stoprecbutton.hide();
-					
-					/*GLEN*/
-					if(ip.config.mediatype=='audio'){
-						console.log('ip_timer');
+
 						
-						ip.controlbar.timer.html('00:00:00');    
-						ip.controlbar.preview.on('timeupdate', function(){	
-							var currentTime = this.currentTime;
-							ip.controlbar.timer.html(ip.timer.fetch_display_time(currentTime));	
-						});
-						ip.controlbar.status.addClass('hide');
-						ip.controlbar.progress.show();
-					}
-				
+                    ip.controlbar.timer.html('00:00:00');
+
+                    ip.controlbar.status.addClass('hide');
+                    ip.controlbar.progress.show();
+
 					ip.controlbar.stepone.empty();
 					ip.controlbar.stepone.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
-					/*end*/
-					self.disable_button(this);
+
+					self.disable_button(ip.controlbar.stoprecbutton);
                    
 				   break;
                 
@@ -190,34 +211,34 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 					if(!self.uploaded){
 						self.enable_button(ip.controlbar.savebutton);
 						self.enable_button(ip.controlbar.startbutton);
-
 					} 
-					if(ip.config.mediatype == 'audio'){
-						console.log('stop');
-						if(ip.controlbar.progresscanvas.hasClass('hide')){
-							
-						}else{
-							ip.controlbar.timer.html('00:00:00');
-							ip.controlbar.progresscanvas.addClass('hide');
-							ip.controlbar.progresscanvas.hide();
-						}
-					}
+
+                    if(!ip.controlbar.progresscanvas.hasClass('hide')){
+                        ip.controlbar.timer.html('00:00:00');
+                        ip.controlbar.progresscanvas.addClass('hide');
+                        ip.controlbar.progresscanvas.hide();
+                    }
+                    ip.controlbar.stopbutton.hide();
 					ip.controlbar.playbutton.show();
 					ip.controlbar.startbutton.show();
 					self.enable_button(ip.controlbar.playbutton);
-					self.disable_button(this);
+					self.disable_button(ip.controlbar.stopbutton);
 				break;
 				
+               case 'uploadmode':
+
+                   self.disable_button(ip.controlbar.startbutton);
+                   ip.controlbar.progresscanvas.removeClass('hide');
+                   ip.controlbar.progresscanvas.show();
+
+                    break;
+
+               case 'savemode':
 				
-				
-				case 'savemode':
-				
-					self.disable_button(this);
+					self.disable_button(ip.controlbar.savebutton);
 					ip.controlbar.stepthree.empty();
-					ip.controlbar.stepthree.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);	
-				
+					ip.controlbar.stepthree.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
 				break;
-				
            }
 
        },
@@ -334,30 +355,15 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 			
 			ip.controlbar.startbutton.click(function() {
 				pmr.do_start_audio(ip, onMediaSuccess);
-				//clear messages
-				$('#' + ip.config.widgetid  + '_messages').text('');
-
-                self.set_visual_mode('recordmode',controlbarid); 
-                //timer and status bar
-                ip.timer.reset();
-                ip.timer.start();
-                self.update_status(controlbarid);   
-                
-                 
-                //set recording stage
-                stage="recorded";
             });
 
-
             ip.controlbar.stoprecbutton.click(function() {
-				
 				pmr.do_stop_audio(ip);
 				self.set_visual_mode('pausedmode',controlbarid);
                 //timer and status bar
                 ip.timer.stop();
                 ip.timer.reset();
                 self.update_status(controlbarid);
-                
             });
                 
             
@@ -366,35 +372,35 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 				//stop playing
 				var preview = ip.controlbar.preview.get(0);
 				pmr.do_stopplay_audio(ip,preview);
-                $(this).hide();
-                if(ip.config.mediatype == 'audio'){
-                	hprogress.stop();
-                }    
+                hprogress.stop();
             });
              
             ip.controlbar.playbutton.click(function() {
 
+                ip.controlbar.preview.on('timeupdate', function(){
+                    var currentTime = this.currentTime;
+                    ip.controlbar.timer.html(ip.timer.fetch_display_time(currentTime));
+                });
+
                 var preview = ip.controlbar.preview.get(0);
                 pmr.do_play_audio(ip,preview);
 
-               //turn border black etc
+               //do visuals
 				self.set_visual_mode('previewmode',controlbarid);
 
                 //set recording stage
                 stage="played";
 				
 				//start animation
-				if(ip.config.mediatype == 'audio'){
-					hprogress.clear();
-					hprogress.fetchCurrent=function(){
-						var ct = ip.controlbar.preview.prop('currentTime');
-						var duration = ip.controlbar.preview.prop('duration');
-						if(!isFinite(duration)){duration=ip.timer.finalseconds;}
-						return ct/duration;
-					};
-					hprogress.start();
-                }
-				
+                hprogress.clear();
+                hprogress.fetchCurrent=function(){
+                    var ct = ip.controlbar.preview.prop('currentTime');
+                    var duration = ip.controlbar.preview.prop('duration');
+                    if(!isFinite(duration)){duration=ip.timer.finalseconds;}
+                    return ct/duration;
+                };
+                hprogress.start();
+
             });
             
 			ip.controlbar.savebutton.click(function() {
@@ -403,12 +409,12 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 				if(ip.blobs && ip.blobs.length > 0){
 					  pmr.do_save_audio(ip);
 					  self.uploaded = true;
-					  self.disable_button(ip.controlbar.startbutton);
+					  self.set_visual_mode('uploadmode',controlbarid);
 					  //set recording stage
 					  stage="saved";
 				}else{
 						ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
-					}//end of if self.blobs		
+                }//end of if self.blobs
 					//probably not necessary  ... but getting odd ajax errors occasionally
 					return false;
             });//end of save recording

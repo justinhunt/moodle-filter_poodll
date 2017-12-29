@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upskin_plain) {
 
     "use strict"; // jshint ;_;
 
@@ -8,22 +8,21 @@ define(['jquery','core/log'], function($, log) {
     return {
     
         config: null,
+
         //for making multiple instances
         clone: function(){
             return $.extend(true,{},this);
         },
 
-        init: function(element,config){
+        init: function(element,config,upskin){
             this.config = config;
-            this.insert_controls(element);
-        },
-
-    insert_controls: function(element){
-         //progress
-            var skin_style = this.config.media_skin_style;
-            var controls='<div id="' + this.config.widgetid + '_progress" class="p_progress x progress_' + skin_style + '"><p></p></div>';
-            controls += '<div id="' + this.config.widgetid + '_messages" class="p_messages x messages_' + skin_style + '"></div>';
-            $(element).append(controls);
+            if(upskin){
+                this.upskin= upskin;
+            }else{
+                this.upskin=upskin_plain.clone();
+                this.upskin.init(config,element,false,false);
+            }
+            this.upskin.initControls();
         },
         
         uploadBlob: function(blob,filetype){
@@ -39,31 +38,7 @@ define(['jquery','core/log'], function($, log) {
             var filename= returntext.substring(start+(searchkey.length),end);
             return filename;
         },
-        //create a progress bar
-        createProgressBar: function(xhr,uploader){
-            var progress=false;
-            var o_query = $("#" + uploader.config.widgetid + "_progress");
-            //if we got one
-            if(o_query.length){
-                //get the dom object so we can use direct manip.
-                var o = o_query.get(0);
-                progress = o.firstChild;
-                if(progress===null){
-                    progress = o.appendChild(document.createElement("p"));
-                }
-                //reset/set background position to 0, and label to "uploading
-                progress.className="";
-                progress.style.display = "block";
-                progress.style.backgroundPosition = "100% 0";
 
-                // progress bar
-                xhr.upload.addEventListener("progress", function(e) {
-                    var pc = parseInt(100 - (e.loaded / e.total * 100));
-                    progress.style.backgroundPosition = pc + "% 0";
-                }, false);
-            }
-           return progress;
-        },
         //fetch file extension from the filetype
         fetchFileExtension: function(filetype){
             var ext="";
@@ -85,7 +60,7 @@ define(['jquery','core/log'], function($, log) {
         },
         
         pokeFilename: function(filename,uploader){
-            uploader.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll')); 
+            uploader.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
             var upc = '';
             if(typeof uploader.config.updatecontrol !== 'undefined' && uploader.config.updatecontrol !==''){
               upc=$('[id="' + uploader.config.updatecontrol + '"]');
@@ -100,7 +75,7 @@ define(['jquery','core/log'], function($, log) {
                             upc.value = filename;
                     }else{
                             log.debug('upload failed #2');
-                            uploader.Output(M.util.get_string('recui_uploaderror', 'filter_poodll'));
+                            uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'));
                             return false;
                     }
             }
@@ -119,9 +94,9 @@ define(['jquery','core/log'], function($, log) {
             }
         },
 
-        doCallback: function(uploader,filename){
+        doUploadCompleteCallback: function(uploader,filename){
 
-            //in the case of an iframeembed we need a full URL
+            //in the case of an iframeembed we need a full URL not just a filename
             if(uploader.config.iframeembed){
                 filename = uploader.config.cloudroot + uploader.config.s3filename;
             }
@@ -134,7 +109,7 @@ define(['jquery','core/log'], function($, log) {
                 callbackargs[2]=filename;
                 callbackargs[3]=uploader.config.updatecontrol;
 
-                this.Output(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
+                this.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
                 if(typeof(uploader.config.callbackjs) === 'function'){
                     uploader.config.callbackjs(callbackargs);
                 }else{
@@ -150,7 +125,10 @@ define(['jquery','core/log'], function($, log) {
         postProcessUpload: function(e,uploader){
               var xhr = e.currentTarget;
               if (xhr.readyState == 4 ) {
-                if(xhr.status==200){
+
+                  uploader.upskin.deactivateProgressSession();
+
+                  if(xhr.status==200){
                     var filename = uploader.config.filename;
                     if(!filename){
                         filename = uploader.extractFilename(xhr.responseText);
@@ -163,7 +141,7 @@ define(['jquery','core/log'], function($, log) {
 
                     //if we have a callback then call it
                     // this is for enabling buttons on tinymce etc, filename fields etc
-                    this.doCallback(uploader,filename);
+                    this.doUploadCompleteCallback(uploader,filename);
 
                     //alert the recorder that this was successful
                     this.alertRecorderSuccess(uploader.config.widgetid);
@@ -171,7 +149,7 @@ define(['jquery','core/log'], function($, log) {
                 }else{
                     log.debug('upload failed #3');
                     log.debug(xhr);
-                    uploader.Output(M.util.get_string('recui_uploaderror', 'filter_poodll'));
+                    uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'));
 
                     //alert the recorder that this failed
                     this.alertRecorderFailure(uploader.config.widgetid);
@@ -199,11 +177,11 @@ define(['jquery','core/log'], function($, log) {
             //are we using s3
             var using_s3 = config.using_s3;
 
-            // create progress bar if we have a container for it
-            this.createProgressBar(xhr,uploader);
- 
+            //Handle UI display of this upload
+            this.upskin.initProgressSession(xhr);
+
             //alert user that we are now uploading    
-            this.Output(M.util.get_string('recui_uploading', 'filter_poodll'));
+            this.upskin.showMessage(M.util.get_string('recui_uploading', 'filter_poodll'));
 
             xhr.onreadystatechange = function(e){
                 if(using_s3 && this.readyState===4) {
@@ -285,7 +263,7 @@ define(['jquery','core/log'], function($, log) {
             xhr.onreadystatechange = function(){
                 if(this.readyState===4){
                     if(xhr.status!=200){
-                        that.Output('Post Process Upload from IframeEmbed Error:' + xhr.status);
+                        that.upskin.showMessage('Post Process Upload from IframeEmbed Error:' + xhr.status);
                         $('#' + that.config.widgetid + '_messages').show();
                     }else{
 
@@ -314,7 +292,7 @@ define(['jquery','core/log'], function($, log) {
             xhr.onreadystatechange = function(){
                 if(this.readyState===4){
                     if(xhr.status!=200){
-                       that.Output('Post Process s3 Upload Error:' + xhr.status);
+                       that.upskin.showMessage('Post Process s3 Upload Error:' + xhr.status);
                        $('#' + that.config.widgetid + '_messages').show();
                      }
                 }
@@ -338,12 +316,6 @@ define(['jquery','core/log'], function($, log) {
             
         },
             
-        // output information
-        Output: function(msg) {
-            var m = $("#" + this.config.widgetid + "_messages");
-            m.text(msg);
-        },
-            
             //function to call the callback function with arguments
         executeFunctionByName: function(functionName, context , args ) {
 
@@ -364,6 +336,11 @@ define(['jquery','core/log'], function($, log) {
                 ia[i] = byteString.charCodeAt(i);
             }
             return new Blob([ab], { type: mimetype });
-        }//end of dataURItoBlob
+        },//end of dataURItoBlob
+
+        //some recorder skins call this directly, so we just pass it through to the upskin
+        Output: function(msg){
+            this.upskin.showMessage(msg);
+        }
     };//end of returned object
 });//total end

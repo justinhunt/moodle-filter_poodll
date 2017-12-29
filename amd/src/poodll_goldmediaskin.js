@@ -5,13 +5,14 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Base Skin: initialising');
+    log.debug('PoodLL Gold Skin: initialising');
 
     return {
     
         instanceprops: null,
         pmr: null,
         devsettings: null,
+        therecanim: null,
 
         //for making multiple instances
         clone: function(){
@@ -75,6 +76,19 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         onMediaSuccess_audio: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.preview.attr('src',null);
+
+            //clear messages
+            ip.uploader.Output('');
+
+            //wave animation
+            this.therecanim.start();
+
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
+
+            //visuals
             this.set_visual_mode('recordingmode',controlbarid);
         },
 
@@ -276,16 +290,12 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             log.debug('recanim=' + ip.config.recanim);
             recanim.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
 			
-			
-			
-			
+
 			ip.controlbar.settingsicon.click(function(){
 				self.devsettings.open();
 			});
-            
-			
-			
-			
+
+
 			/*Added Feature for the one button recorder Video */ 
 				if(ip.config.mediatype=='video'){
 					ip.controlbar.preview.addClass('hide');	
@@ -310,22 +320,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 			
             //Start button click
             ip.controlbar.startbutton.click(function() {
-
+                //moved the true logic into onMediaSuccess
+                //so we need to stash recanim to make it available
+                self.therecanim = recanim;
                 pmr.do_start_audio(ip,  onMediaSuccess);
 
-                //clear messages
-                $('#' + ip.config.widgetid  + '_messages').text('');
-
-                //wave animation
-                recanim.start();
-
-                //timer and status bar
-                ip.timer.reset();
-                ip.timer.start();
-                self.update_status(controlbarid);
-
-                //visuals
-                self.set_visual_mode('recordingmode',controlbarid);
             });
             
             //Restart link clicked

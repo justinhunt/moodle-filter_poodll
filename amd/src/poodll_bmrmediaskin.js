@@ -3,7 +3,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Base Skin: initialising');
+    log.debug('PoodLL BMR Skin: initialising');
 
 
 	
@@ -70,18 +70,30 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         },
 
         onMediaSuccess_video: function(controlbarid){
+
             var ip = this.fetch_instanceprops(controlbarid);
-            ip.controlbar.stopbutton.attr('disabled',false);
-            ip.controlbar.pausebutton.attr('disabled',false);
-            ip.controlbar.savebutton.attr('disabled',false);
+            //clear messages
+            ip.uploader.Output('');
+            this.set_visual_mode('recordmode',controlbarid);
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
         },
 
         onMediaSuccess_audio: function(controlbarid){
+
+
             var ip = this.fetch_instanceprops(controlbarid);
+            //clear messages
+            ip.uploader.Output('');
             ip.controlbar.preview.attr('src',null);
-            ip.controlbar.stopbutton.attr('disabled',false);
-            ip.controlbar.pausebutton.attr('disabled',false);
-            ip.controlbar.savebutton.attr('disabled',false);
+            this.set_visual_mode('recordmode',controlbarid);
+
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
         },
 
         handle_timer_update: function(controlbarid){
@@ -105,6 +117,20 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
            switch(mode){
 
                case 'recordmode':
+
+                   self.disable_button(ip.controlbar.startbutton);
+                   ip.controlbar.startbutton.show();
+
+                   self.enable_button(ip.controlbar.pausebutton);
+                   ip.controlbar.pausebutton.show();
+
+                   self.disable_button(ip.controlbar.playbutton);
+                   ip.controlbar.resumebutton.hide();
+                   self.enable_button(ip.controlbar.stopbutton);
+
+                   //TO DO : disable save button here???
+                    ip.controlbar.savebutton.attr('disabled',false);
+
                     ip.controlbar.preview.addClass('poodll_recording');
                     ip.controlbar.status.addClass('poodll_recording');
                     if(ip.config.mediatype=='audio'){
@@ -114,6 +140,26 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     break;
 
                case 'previewmode':
+
+                   self.disable_button(ip.controlbar.stopbutton);
+                   self.enable_button(ip.controlbar.playbutton);
+                   self.disable_button(ip.controlbar.pausebutton);
+
+                   //If stop has been pressed there is no "resuming"
+                   ip.controlbar.startbutton.show();
+                   self.disable_button(ip.controlbar.resumebutton);
+                   ip.controlbar.resumebutton.hide();
+
+                   if(!self.uploaded){
+                       self.enable_button(ip.controlbar.startbutton);
+                       self.enable_button(ip.controlbar.savebutton);
+
+                   }
+
+                   ip.controlbar.resumebutton.hide();
+                   ip.controlbar.pausebutton.show();
+
+
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     if(ip.config.mediatype=='audio'){
@@ -122,16 +168,39 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    // ip.controlbar.status.addClass('hide');
 					//ip.controlbar.bmr_progresscanvas.removeClass('hide');
 					self.enable_button(ip.controlbar.playbutton);
-					ip.controlbar.status.empty();
-					
-					
+
+                    //because STOP can be after recording, or after playing its problematic what we show in
+                   //status area. And the preview timeupdate function seems to come late too.
+                   //ip.controlbar.status.html(ip.timer.fetch_display_time(ip.timer.finalSeconds));
+
 					ip.controlbar.preview.on('timeupdate', function(){	
 						var currentTime = this.currentTime;
 						ip.controlbar.status.html(ip.timer.fetch_display_time(currentTime));	
 					});
                     break;
 
+               case 'playmode':
+
+                   self.disable_button(ip.controlbar.playbutton);
+                   self.enable_button(ip.controlbar.stopbutton);
+                   self.disable_button(ip.controlbar.startbutton);
+                   self.disable_button(ip.controlbar.resumebutton);
+
+                   //If play has been pressed there is no "resuming"
+                   ip.controlbar.startbutton.show();
+                   ip.controlbar.resumebutton.hide();
+
+                   break;
+
+
                case 'pausedmode':
+
+                   self.disable_button(ip.controlbar.pausebutton);
+                   ip.controlbar.startbutton.hide();
+                   ip.controlbar.resumebutton.show();
+                   self.enable_button(ip.controlbar.resumebutton);
+                   self.enable_button(ip.controlbar.savebutton);
+
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     break;
@@ -221,13 +290,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
             ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
             this.devsettings.set_dialogue_box(controlbar.settingsdialog);
-				
-				
-                return controlbar;
-				
-				
-				 
-				
+			return controlbar;
+
         }, //end of fetch_control_bar_bmr
 
 
@@ -254,106 +318,60 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 			
             ip.controlbar.startbutton.click(function() {
 				
-				/*alert notification by Glen*/
-				
-				
+				//Play alert sound
 				ip.controlbar.poodll_recording_alert.get(0).play();
-				
-
-
-				/*end*/
-				
+                //start recording
                 pmr.do_start_audio(ip, onMediaSuccess);
 
-                //clear messages
-                $('#' + ip.config.widgetid  + '_messages').text('');
-                self.disable_button(this);
-                self.disable_button(ip.controlbar.playbutton);
-                ip.controlbar.resumebutton.hide();
-                self.enable_button(ip.controlbar.stopbutton);
-                //self.disable_button(ip.controlbar.savebutton);
-                ip.controlbar.pausebutton.show();
-                self.enable_button(ip.controlbar.pausebutton);
-                self.set_visual_mode('recordmode',controlbarid);
-                
-                //timer and status bar
-                ip.timer.reset();
-                ip.timer.start();
-                self.update_status(controlbarid);
             });
             
             ip.controlbar.stopbutton.click(function() {
-
+                //stop the audio
                 pmr.do_stop_audio(ip);
 
-                self.disable_button(this);
 				var preview = ip.controlbar.preview;
                 if(preview && preview.get(0)){
                     preview.get(0).pause();
                 }
-                
-               //turn border black etc
-               self.set_visual_mode('previewmode',controlbarid);
-               //timer and status bar
-               ip.timer.stop()
-               self.update_status(controlbarid);
-                
-               self.enable_button(ip.controlbar.playbutton);
-               self.disable_button(ip.controlbar.pausebutton);
-               
-               //If stop has been pressed there is no "resuming"
-               ip.controlbar.startbutton.show();
-               self.disable_button(ip.controlbar.resumebutton);
-               ip.controlbar.resumebutton.hide();
 
-              if(!self.uploaded){
-                self.enable_button(ip.controlbar.startbutton);
-                self.enable_button(ip.controlbar.savebutton);
-				
-              }
-			  
-               ip.controlbar.resumebutton.hide();
-               ip.controlbar.pausebutton.show();
+                //timer and status bar
+                ip.timer.stop()
+                self.update_status(controlbarid);
+
+               //do visuals
+               self.set_visual_mode('previewmode',controlbarid);
+
             });
           
             ip.controlbar.pausebutton.click(function() {
-                self.disable_button(this);
-                ip.controlbar.startbutton.hide();
-                ip.controlbar.resumebutton.show();
+
                 pmr.do_pause_audio(ip);
-                self.enable_button(ip.controlbar.resumebutton);
-                 self.enable_button(ip.controlbar.savebutton);
-                self.set_visual_mode('pausedmode',controlbarid);
                 
                 //timer and status bar
                 ip.timer.pause();
                 self.update_status(controlbarid);
+                //do visuals
+                self.set_visual_mode('pausedmode',controlbarid);
             });
             
             ip.controlbar.resumebutton.click(function() {
-                self.disable_button(this);
-                 //self.disable_button(ip.controlbar.savebutton);
+
                 pmr.do_resume_audio(ip);
-                self.enable_button(ip.controlbar.pausebutton);
-                self.set_visual_mode('recordmode',controlbarid);
                 
                 //timer and status bar
                 ip.timer.resume();
                 self.update_status(controlbarid);
+                //do visuals
+                self.set_visual_mode('recordmode',controlbarid);
             });
             
             ip.controlbar.playbutton.click(function() {
-                self.disable_button(this);
+
                 var preview = ip.controlbar.preview.get(0);
                 pmr.do_play_audio(ip,preview);
 
-                self.enable_button(ip.controlbar.stopbutton);
-                self.disable_button(ip.controlbar.startbutton);
-                self.disable_button(ip.controlbar.resumebutton);
-                
-                //If play has been pressed there is no "resuming"
-               ip.controlbar.startbutton.show();
-               ip.controlbar.resumebutton.hide();
+                //do visuals
+                self.set_visual_mode('playmode',controlbarid);
             });
             
            ip.controlbar.savebutton.click(function() {

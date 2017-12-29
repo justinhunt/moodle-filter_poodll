@@ -22,7 +22,7 @@ define(['jquery','core/log'], function($, log) {
         },
 
         //pass in config, the jquery video/audio object, and a function to be called when conversion has finshed
-        init: function (playcanvas) {
+        init: function (playcanvas, barcolor) {
             //stash the key actors for calling from draw
             this.playcanvas = playcanvas.get(0);
             this.startx = 0;
@@ -30,6 +30,7 @@ define(['jquery','core/log'], function($, log) {
             this.barwidth = this.playcanvas.width;
             this.barheight = this.playcanvas.height;
             this.context = this.playcanvas.getContext('2d');
+            this.barcolor = barcolor ? barcolor : "#C2C2C2";
 
         },
  
@@ -42,9 +43,14 @@ define(['jquery','core/log'], function($, log) {
             return 0;
         },
 
+        //stop and clear
         stop: function () {
         	this.enabled= false;
         	this.clear();
+        },
+        //stop without clearing
+        stopthere: function () {
+            this.enabled= false;
         },
 
         start: function () {
@@ -52,18 +58,30 @@ define(['jquery','core/log'], function($, log) {
         	this.enabled=true;
         	var that = this;
             //set draw params, later could make this configurable
-            this.context.fillStyle = '#C2C2C2';
+            this.context.textAlign = "center";
+            this.context.font="12px Arial";
+            var textcolor = "black";
+
+
            
 
 			var draw= function () {
    
                 if(!that.enabled){
                    return;
-                }			
+                }
+                that.clear();
+                that.context.fillStyle = that.barcolor;
+                that.context.fillRect(that.startx,that.starty,that.fetchCurrent() * that.barwidth,that.barheight);
 
-				that.context.fillRect(that.startx,that.starty,that.fetchCurrent() * that.barwidth,that.barheight);
-
-				var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                //draw text
+                //this distorts unless we set the height and width of the canvas as canvas attributes, and NOT with CSS
+                //that didn't really fit with this, so we use text in the page (ie not canvas)
+                /*
+                that.context.fillStyle = textcolor;
+                that.context.fillText(parseInt(that.fetchCurrent() * 100) +'%',that.barwidth/2, that.barheight/2);
+                */
+                var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
 								  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 requestAnimationFrame(draw);
 

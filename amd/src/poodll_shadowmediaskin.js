@@ -66,15 +66,40 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
         onMediaSuccess_video: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
+
+            this.recorded = true;
+
+            //also start the model audio playback
+            this.do_play_resource(ip);
+            ip.controlbar.resourceplayer.bind('ended',function(){
+                ip.controlbar.stopbutton.click();
+            });
+
+            self.set_visual_mode('recordingmode',ip);
+            /*
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.savebutton.attr('disabled',false);
+            */
         },
 
         onMediaSuccess_audio: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.checkplayer.attr('src',null);
+
+
+            this.recorded = true;
+
+            //also start the model audio playback
+            this.do_play_resource(ip);
+            ip.controlbar.resourceplayer.bind('ended',function(){
+                ip.controlbar.stopbutton.click();
+            });
+
+            self.set_visual_mode('recordingmode',ip);
+            /*
             ip.controlbar.stopbutton.attr('disabled',false);;
             ip.controlbar.savebutton.attr('disabled',false);
+            */
         },
 
         handle_timer_update: function(controlbarid){
@@ -301,24 +326,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var ip = this.fetch_instanceprops(controlbarid);
 
             ip.controlbar.startbutton.click(function() {
-				/* RECORD BUTTON */ 
-				
-				/* glen */
-				/*
-				$('.poodll_mediarecorderbox_shadow button').removeClass('shadow-active');
-				$('poodll_stop-recording_shadow').addClass('shadow-active');
-					*/		
 
                 pmr.do_start_audio(ip, onMediaSuccess);
-                self.recorded = true;
-                
-                //also start the model audio playback
-                self.do_play_resource(ip);
-                 ip.controlbar.resourceplayer.bind('ended',function(){
-                 	ip.controlbar.stopbutton.click();
-                 });
 
-                self.set_visual_mode('recordingmode',ip);
             });
             
             ip.controlbar.stopbutton.click(function() {

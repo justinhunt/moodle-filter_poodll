@@ -94,12 +94,20 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             ip.config.onuploadfailure = function(widgetid) { that.onUploadFailure(widgetid, theskin); };
 
 	    switch (config.mediatype) {
-                case 'audio':
+            case 'audio':
                     var preview = theskin.fetch_preview_audio(config.media_skin);
                     var resource = theskin.fetch_resource_audio(config.media_skin);
+
+
                     ip.controlbar = this.fetch_controlbar_audio(element, controlbarid, preview, resource);
 					ip.uploader = uploader.clone();
-                    ip.uploader.init(element, config);
+
+					//init uploader skin and uploader
+                    //uploader skin(upskin) if set to false here will default to naff green bar
+                    //should be called after controlbar is created, because thats when canvas is created
+                    var upskin = theskin.fetch_uploader_skin(ip.controlbarid,element);
+                    ip.uploader.init(element, config,upskin);
+
                     this.register_events_audio(controlbarid);
                     // force permissions;
                     navigator.mediaDevices.getUserMedia({"audio": true}).then(function(stream){
@@ -119,7 +127,12 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     var resource = theskin.fetch_resource_video(config.media_skin);
                     ip.controlbar = this.fetch_controlbar_video(element, controlbarid, preview, resource);
 					ip.uploader = uploader.clone();
-                    ip.uploader.init(element, config);
+                    //init uploader skin and uploader
+                    //uploader skin(upskin) if set to false here will default to naff green bar
+                    //should be called after controlbar is created, because thats when canvas is created
+                    var upskin = theskin.fetch_uploader_skin(ip.controlbarid,element);
+                    ip.uploader.init(element, config,upskin);
+
                     this.register_events_video(controlbarid);
                     //force permissions and show in preview
                     navigator.mediaDevices.getUserMedia({"audio": true, "video": true}).then(function(stream){			
@@ -403,13 +416,17 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         },
         do_stop_audio: function(ip) {
+		    //if its paused we need to resume it before stopping.
+            ip.mediaRecorder.resume();
             ip.mediaRecorder.stop();
         },
         do_stop_video: function(ip) {
 
         },
         do_pause_audio: function(ip) {
-            ip.mediaRecorder.resume();
+            //if its paused we need to resume it before pausing again.
+            //should never happen ...right?
+		    ip.mediaRecorder.resume();
             ip.mediaRecorder.pause();
         },
         do_pause_video: function(ip) {

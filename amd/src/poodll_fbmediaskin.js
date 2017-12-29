@@ -74,14 +74,37 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
         onMediaSuccess_video: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
+
+            this.highlight_button('bwrapper_start-recording', controlbarid);
+
+            //clear messages
+            ip.uploader.Output('');
+
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
+
             ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.savebutton.attr('disabled',false);
+
         },
 
         onMediaSuccess_audio: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.checkplayer.attr('src',null);
-            ip.controlbar.stopbutton.attr('disabled',false);;
+
+            this.highlight_button('bwrapper_start-recording', controlbarid);
+
+            //clear messages
+            ip.uploader.Output('');
+
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
+
+            ip.controlbar.stopbutton.attr('disabled',false);
             ip.controlbar.savebutton.attr('disabled',false);
         },
 
@@ -290,16 +313,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             ip.controlbar.startbutton.click(function() {
 
                 pmr.do_start_audio(ip, onMediaSuccess);
-                self.highlight_button('bwrapper_start-recording', controlbarid);
 
-
-                //clear messages
-                $('#' + ip.config.widgetid  + '_messages').text('');
-
-                //timer and status bar
-                ip.timer.reset();
-                ip.timer.start();
-                self.update_status(controlbarid);
             });
 
 
