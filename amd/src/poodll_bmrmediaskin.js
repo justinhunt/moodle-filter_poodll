@@ -156,7 +156,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    self.enable_button(ip.controlbar.savebutton);
 
                    //reset timer button
-                   ip.controlbar.timer.html('00:00:00');
+                   ip.controlbar.bmr_timer.html('00:00:00');
 
 
                    //If stop has been pressed there is no "resuming"
