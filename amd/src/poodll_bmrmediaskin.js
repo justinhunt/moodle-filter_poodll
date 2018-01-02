@@ -175,6 +175,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
+                   ip.controlbar.status.removeClass('hide');
+                   ip.controlbar.status.show();
+
                     if(ip.config.mediatype=='audio'){
                         ip.controlbar.preview.removeClass('hide');
                     }
@@ -201,6 +204,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    self.disable_button(ip.controlbar.playbutton);
 
                    ip.controlbar.status.addClass('hide');
+                   ip.controlbar.status.hide();
+
                    ip.controlbar.bmr_progress.show();
 
                    if ( ip.controlbar.bmr_progresscanvas.hasClass("hide") ) {
