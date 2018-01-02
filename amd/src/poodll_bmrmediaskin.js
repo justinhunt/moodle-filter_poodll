@@ -146,6 +146,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                         ip.controlbar.preview.addClass('hide');
                     }
                     ip.controlbar.status.removeClass('hide');
+                   ip.controlbar.status.show();
                     break;
 
                case 'previewmode':
@@ -173,10 +174,12 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    ip.controlbar.pausebutton.show();
 
 
-                    ip.controlbar.preview.removeClass('poodll_recording');
+                   ip.controlbar.bmr_progress.show();
+
+                   ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
-                   ip.controlbar.status.removeClass('hide');
-                   ip.controlbar.status.show();
+                   ip.controlbar.status.addClass('hide');
+                  ip.controlbar.status.hide();
 
                     if(ip.config.mediatype=='audio'){
                         ip.controlbar.preview.removeClass('hide');
