@@ -1,32 +1,5 @@
 
 
-/* BMR FIXES */ 
-.bmr_slide{
-	width: 100%;
-    border: 3px solid #333;
-    position: relative;
-    height: 30px;
-	display: none;
-	margin-bottom: 10px;
-	background-color: white;
-}
-.bmr_timer{
-	width: 100%;
-	position: absolute;
-	text-align: center;
-	color: #333;
-    z-index: 99;
-	margin:5px;
-}
-.bmr_range{
-    height: 30px;
-    width: 100%;
-    position: absolute;
-    display: block;
-}
-
-
-
 /*
 One Button Audio Player
 */
@@ -1846,16 +1819,28 @@ audio.poodll_preview_bmr{
     margin: 5px;
 }
 
+.bmr_range{
+	height: 40px;
+	width: 100%;
+	position: absolute;
+	display: block;
+}
+
+.poodll_statusholder_bmr{
+	position: relative;
+	background-color: #EEE;
+}
+
 .poodll_status_bmr{
     border: black;
     border-style:solid;
     border-width: 2px;
-    background-color: #DDD;
     clear:both;
     width:320px;
     margin-left: auto;
     margin-right: auto;
     margin-bottom: 8px;
+	position: relative;
 }
 
 .poodll_status_bmr.poodll_recording{
