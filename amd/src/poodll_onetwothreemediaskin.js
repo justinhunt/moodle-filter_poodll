@@ -157,7 +157,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 					ip.controlbar.startbutton.show();
 					self.disable_button(ip.controlbar.resumebutton);
 					ip.controlbar.resumebutton.hide();
-					self.disable_button(this);
+					self.disable_button(ip.controlbar.playbutton);
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     if(ip.config.mediatype=='audio'){

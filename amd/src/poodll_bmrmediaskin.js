@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings','filter_poodll/anim_progress_bar'], function($,jqui, log, utils,settings,anim_progress_bar) {
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings','filter_poodll/anim_progress_bar', 'filter_poodll/upskin_bar'], function($,jqui, log, utils,settings,anim_progress_bar, upskin_bar) {
 
     "use strict"; // jshint ;_;
 
@@ -64,6 +64,13 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             var resourceplayer = '';
             return resourceplayer;
         },
+
+        fetch_uploader_skin: function(controlbarid, element){
+            var ip = this.fetch_instanceprops(controlbarid);
+            var upskin = upskin_bar.clone();
+            upskin.init(ip.config,element,ip.controlbar.bmr_progresscanvas,ip.controlbar.bmr_timer);
+            return upskin;
+        },
         
         onMediaError: function(e) {
                 console.error('media error', e);
@@ -121,6 +128,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    self.disable_button(ip.controlbar.startbutton);
                    ip.controlbar.startbutton.show();
 
+                   ip.controlbar.bmr_progress.hide();
+
                    self.enable_button(ip.controlbar.pausebutton);
                    ip.controlbar.pausebutton.show();
 
@@ -128,8 +137,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    ip.controlbar.resumebutton.hide();
                    self.enable_button(ip.controlbar.stopbutton);
 
-                   //TO DO : disable save button here???
-                    ip.controlbar.savebutton.attr('disabled',false);
+                   //disable save button
+                   self.disable_button(ip.controlbar.savebutton);
 
                     ip.controlbar.preview.addClass('poodll_recording');
                     ip.controlbar.status.addClass('poodll_recording');
@@ -144,6 +153,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    self.disable_button(ip.controlbar.stopbutton);
                    self.enable_button(ip.controlbar.playbutton);
                    self.disable_button(ip.controlbar.pausebutton);
+                   self.enable_button(ip.controlbar.savebutton);
+
+                   //reset timer button
+                   ip.controlbar.timer.html('00:00:00');
+
 
                    //If stop has been pressed there is no "resuming"
                    ip.controlbar.startbutton.show();
@@ -153,7 +167,6 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    if(!self.uploaded){
                        self.enable_button(ip.controlbar.startbutton);
                        self.enable_button(ip.controlbar.savebutton);
-
                    }
 
                    ip.controlbar.resumebutton.hide();
@@ -185,6 +198,15 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    self.enable_button(ip.controlbar.stopbutton);
                    self.disable_button(ip.controlbar.startbutton);
                    self.disable_button(ip.controlbar.resumebutton);
+                   self.disable_button(ip.controlbar.playbutton);
+
+                   ip.controlbar.status.addClass('hide');
+                   ip.controlbar.bmr_progress.show();
+
+                   if ( ip.controlbar.bmr_progresscanvas.hasClass("hide") ) {
+                       ip.controlbar.bmr_progresscanvas.removeClass('hide');
+                       ip.controlbar.bmr_progresscanvas.show();
+                   }
 
                    //If play has been pressed there is no "resuming"
                    ip.controlbar.startbutton.show();
@@ -204,6 +226,20 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     break;
+
+               case 'uploadmode':
+                   self.disable_button(ip.controlbar.savebutton);
+                   self.disable_button(ip.controlbar.startbutton);
+
+                   ip.controlbar.status.addClass('hide');
+                   ip.controlbar.bmr_progress.show();
+
+                   if ( ip.controlbar.bmr_progresscanvas.hasClass("hide") ) {
+                       ip.controlbar.bmr_progresscanvas.removeClass('hide');
+                       ip.controlbar.bmr_progresscanvas.show();
+                   }
+
+                   break;
            }
 
        },
@@ -250,9 +286,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 var status = this.fetch_status_bar('bmr');
                 controls += status,
-                controls += preview,
 				controls += '<div class="bmr_slide" id="slide_'+controlbarid+'">';
 				controls += '<div class="bmr_timer"></div><canvas class="bmr_range"></canvas></div>';
+                controls += preview,
 				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_bmr poodll_start-recording_bmr"><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
                 controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_resume-recording_bmr bmr_disabled hide" disabled><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
@@ -309,12 +345,10 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 				self.devsettings.open();
 			});
 			
-			 //init radial progress
+			 //init progress bar
             var hprogress = anim_progress_bar.clone();
             hprogress.init(ip.controlbar.bmr_progresscanvas);
-			
-			
-			ip.controlbar.bmr_progresscanvas.addClass('hide');
+
 			
             ip.controlbar.startbutton.click(function() {
 				
@@ -367,19 +401,35 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             
             ip.controlbar.playbutton.click(function() {
 
+                ip.controlbar.preview.on('timeupdate', function(){
+                    var currentTime = this.currentTime;
+                    ip.controlbar.bmr_timer.html(ip.timer.fetch_display_time(currentTime));
+                });
+
                 var preview = ip.controlbar.preview.get(0);
                 pmr.do_play_audio(ip,preview);
 
                 //do visuals
                 self.set_visual_mode('playmode',controlbarid);
+
+                //start animation
+                hprogress.clear();
+                hprogress.fetchCurrent=function(){
+                    var ct = ip.controlbar.preview.prop('currentTime');
+                    var duration = ip.controlbar.preview.prop('duration');
+                    if(!isFinite(duration)){duration=ip.timer.finalseconds;}
+                    return ct/duration;
+                };
+                hprogress.start();
+
             });
             
            ip.controlbar.savebutton.click(function() {
-              self.disable_button(this);
+
               if(ip.blobs && ip.blobs.length > 0){
+                  self.set_visual_mode('uploadmode',controlbarid);
                   pmr.do_save_audio(ip);
                   self.uploaded = true;
-                  self.disable_button(ip.controlbar.startbutton);
                 }else{
                     ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
                 }//end of if self.blobs		

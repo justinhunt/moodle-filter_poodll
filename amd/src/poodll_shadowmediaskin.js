@@ -60,6 +60,9 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" ></video>';
             return resourceplayer;
         },
+        fetch_uploader_skin: function(controlbarid, element){
+            return false;
+        },
         onMediaError: function(e) {
                 console.error('media error', e);
         },
