@@ -1946,7 +1946,7 @@ audio.poodll_preview_bmr{
 }
 .poodll_mediarecorderbox_bmr .bmr_disabled{
 	display: inline-block;
-	color: transparent;
+	/*color: transparent;*/
 	background-color: rgba(126,126,126,0.7);
 }
 .poodll_mediarecorderbox_bmr .bmr_disabled i{
