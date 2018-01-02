@@ -67,18 +67,17 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                //the code below used to work until odd chars in question id annoyed jquery 3 
               //upc = $('#' + uploader.config.updatecontrol);
             }
-            if (upc.length > 0) {
-                    upc.get(0).value = filename;
-            }else{
-                    upc = window.parent.document.getElementById(uploader.config.updatecontrol);
-                    if(upc){
-                            upc.value = filename;
-                    }else{
-                            log.debug('upload failed #2');
-                            uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'));
-                            return false;
-                    }
+            if(upc.length<1){
+                upc = $('[id="' + uploader.config.updatecontrol + '"]', window.parent.document);
             }
+            if (upc.length > 0) {
+                upc.get(0).value = filename;
+            }else{
+                log.debug('upload failed #2');
+                uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'));
+                return false;
+            }
+            upc.trigger('change');
             return true;
         },
         
