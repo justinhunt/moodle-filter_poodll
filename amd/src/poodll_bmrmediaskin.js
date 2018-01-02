@@ -237,6 +237,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                    self.disable_button(ip.controlbar.startbutton);
 
                    ip.controlbar.status.addClass('hide');
+                   ip.controlbar.status.hide();
                    ip.controlbar.bmr_progress.show();
 
                    if ( ip.controlbar.bmr_progresscanvas.hasClass("hide") ) {
