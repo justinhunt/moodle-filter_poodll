@@ -1818,11 +1818,10 @@ class poodlltools
         $widgetopts->quicktimesignedurl =$quicktime_signed_url;
 
 
-		//store the filename or "not yet decided flag"(ie false)
+		//store the filename
 		$widgetopts->filename = $filename;
 		$widgetopts->s3filename = $s3filename;
-        $widgetopts->filename = $filename;
-        $widgetopts->iframeembed = false;//this is only tree when embedding from iframe duh
+        $widgetopts->iframeembed = false;//this is only when embedding from iframe
 		$widgetopts->using_s3 = intval($using_s3);
 
         //recorder order of preference and media skin style

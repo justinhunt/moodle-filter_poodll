@@ -58,9 +58,13 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             }
             return ext;
         },
+
+        postMessage: function(messageObject){
+            window.parent.postMessage(messageObject,'*');
+        },
         
         pokeFilename: function(filename,uploader){
-            uploader.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
+
             var upc = '';
             if(typeof uploader.config.updatecontrol !== 'undefined' && uploader.config.updatecontrol !==''){
               upc=$('[id="' + uploader.config.updatecontrol + '"]');
@@ -97,26 +101,44 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
 
             //in the case of an iframeembed we need a full URL not just a filename
             if(uploader.config.iframeembed){
-                filename = uploader.config.cloudroot + uploader.config.s3filename;
+                filename = uploader.config.cloudroot + uploader.config.cloudfilename;
             }
 
-            //invoke callbackjs if we have one, otherwise just update the control(default behav.)
-            if(uploader.config.callbackjs && uploader.config.callbackjs !=''){
-                var callbackargs  = new Array();
-                callbackargs[0]=uploader.config.widgetid;
-                callbackargs[1]="filesubmitted";
-                callbackargs[2]=filename;
-                callbackargs[3]=uploader.config.updatecontrol;
+            //For callbackjs and for postmessage we need an array of stuff
+            var callbackObject = new Array();
+            callbackObject[0] = uploader.config.widgetid;
+            callbackObject[1] = "filesubmitted";
+            callbackObject[2] = filename;
+            callbackObject[3] = uploader.config.updatecontrol;
+            callbackObject[4] = uploader.config.s3filename;
 
-                this.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
-                if(typeof(uploader.config.callbackjs) === 'function'){
-                    uploader.config.callbackjs(callbackargs);
-                }else{
+            //alert the skin that we were successful
+            this.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
+
+            //invoke callbackjs if we have one, otherwise just update the control(default behav.)
+            if(uploader.config.callbackjs && uploader.config.callbackjs !='') {
+                if (typeof(uploader.config.callbackjs) === 'function') {
+                    uploader.config.callbackjs(callbackObject);
+                } else {
                     //this was the old rubbish way, where the callback was a function name
-                    this.executeFunctionByName(uploader.config.callbackjs,window,callbackargs);
+                    this.executeFunctionByName(uploader.config.callbackjs, window, callbackObject);
                 }
             }else {
+                //by default we just poke the filename
                 uploader.pokeFilename(filename,uploader);
+            }
+
+            //in the case of an iframeembed we will also post a message to the host, they can choose to handle it our not
+            if(uploader.config.iframeembed){
+                //The callback object above scan prob. be phased out. But not all integrations will use iframes either.
+                var messageObject ={};
+                messageObject.type = "filesubmitted";
+                messageObject.filename = filename;
+                messageObject.cloudfilename = uploader.config.cloudfilename;
+                messageObject.cloudroot = uploader.config.cloudroot;
+                messageObject.s3filename = uploader.config.s3filename;
+                messageObject.s3root = uploader.config.s3root;
+                uploader.postMessage(messageObject);
             }
         },
         
@@ -138,8 +160,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                         return;
                     }
 
-                    //if we have a callback then call it
-                    // this is for enabling buttons on tinymce etc, filename fields etc
+                    //Alert any listeners about the upload complete
                     this.doUploadCompleteCallback(uploader,filename);
 
                     //alert the recorder that this was successful
