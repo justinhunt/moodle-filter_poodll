@@ -107,6 +107,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 error: function()
                 {
                     //We get here if its a 404 or 403. So settimout here and wait for file to arrive
+                    //we increment the timeout period each time to prevent bottlenecks
                     setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms+500);},waitms);
                 },
                 success: function(data, textStatus, xhr)
@@ -114,10 +115,10 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                     log.debug('uploader xhr status:' + xhr.status);
                     switch(xhr.status){
                         case 200:
-                            that.doUploadCompleteCallback(uploader.filename);
+                            that.doUploadCompleteCallback(uploader,filename);
                             break;
                         default:
-                            setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms);},waitms+500);
+                            setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms+500);},waitms);
                     }
 
                 }
