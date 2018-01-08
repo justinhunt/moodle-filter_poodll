@@ -98,15 +98,16 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         },
 
         //We can detect conversion by pinging the s3 out filename
-        completeAfterConversion: function(uploader,filename){
+        completeAfterConversion: function(uploader,filename, waitms){
             var that = this;
             $.ajax({
                 url: uploader.config.s3root + uploader.config.s3filename,
-                type:'HEAD',
+                method:'HEAD',
+                cache: false,
                 error: function()
                 {
                     //We get here if its a 404 or 403. So settimout here and wait for file to arrive
-                    setTimeout(function(){that.completeAfterConversion(uploader,filename);},500);
+                    setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms+500);},waitms);
                 },
                 success: function(data, textStatus, xhr)
                 {
@@ -116,7 +117,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                             that.doUploadCompleteCallback(uploader.filename);
                             break;
                         default:
-                            setTimeout(function(){that.completeAfterConversion(uploader,filename);},500);
+                            setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms);},waitms+500);
                     }
 
                 }
@@ -190,7 +191,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                       //if we are in an iframeembed we only want to do this after conversion is complete.
                       //in standard Moodle we have a placeholder file to deal with any slow conversions
                       if (uploader.config.iframeembed) {
-                          this.completeAfterConversion(uploader, filename);
+                          this.completeAfterConversion(uploader, filename,500);
                       }else{
                           this.doUploadCompleteCallback(uploader, filename);
                       }
