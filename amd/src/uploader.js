@@ -101,7 +101,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         completeAfterConversion: function(uploader,filename){
             var that = this;
             $.ajax({
-                url: uploader.config.s3filename + uploader.config.s3root,
+                url: uploader.config.s3root + uploader.config.s3filename,
                 type:'HEAD',
                 error: function()
                 {
