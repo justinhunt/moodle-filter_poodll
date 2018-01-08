@@ -98,7 +98,20 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         },
 
         //We can detect conversion by pinging the s3 out filename
+        //this is only done in the iFrame
         completeAfterConversion: function(uploader,filename, waitms){
+
+            //We alert the iframe host that a file is now awaiting conversion
+            var messageObject ={};
+            messageObject.type = "awaitingconversion";
+            messageObject.filename = filename;
+            messageObject.cloudfilename = uploader.config.cloudfilename;
+            messageObject.cloudroot = uploader.config.cloudroot;
+            messageObject.s3filename = uploader.config.s3filename;
+            messageObject.s3root = uploader.config.s3root;
+            uploader.postMessage(messageObject);
+
+            //we commence a series of ping and retries until the recorded file is available
             var that = this;
             $.ajax({
                 url: uploader.config.s3root + uploader.config.s3filename,
@@ -108,11 +121,11 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 {
                     //We get here if its a 404 or 403. So settimout here and wait for file to arrive
                     //we increment the timeout period each time to prevent bottlenecks
+                    log.debug('403 errors are normal here, till the file arrives back from conversion');
                     setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms+500);},waitms);
                 },
                 success: function(data, textStatus, xhr)
                 {
-                    log.debug('uploader xhr status:' + xhr.status);
                     switch(xhr.status){
                         case 200:
                             that.doUploadCompleteCallback(uploader,filename);
@@ -156,7 +169,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 uploader.pokeFilename(filename,uploader);
             }
 
-            //in the case of an iframeembed we will also post a message to the host, they can choose to handle it our not
+            //in the case of an iframeembed we will also post a message to the host, they can choose to handle it or not
             if(uploader.config.iframeembed){
                 //The callback object above scan prob. be phased out. But not all integrations will use iframes either.
                 var messageObject ={};
@@ -189,10 +202,10 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                       }
 
                       //Alert any listeners about the upload complete
-                      //if we are in an iframeembed we only want to do this after conversion is complete.
-                      //in standard Moodle we have a placeholder file to deal with any slow conversions
+                      //in an iframeembed we only  do this after conversion is complete. so we run a poll to check compl.
+                      //in standard Moodle we have a placeholder file to deal with any slow conversions. so we don't poll
                       if (uploader.config.iframeembed) {
-                          this.completeAfterConversion(uploader, filename,500);
+                          this.completeAfterConversion(uploader, filename,1000);
                       }else{
                           this.doUploadCompleteCallback(uploader, filename);
                       }
