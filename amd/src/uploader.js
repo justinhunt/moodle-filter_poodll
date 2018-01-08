@@ -97,6 +97,32 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             }
         },
 
+        //We can detect conversion by pinging the s3 out filename
+        completeAfterConversion: function(uploader,filename){
+            var that = this;
+            $.ajax({
+                url: uploader.config.s3filename + uploader.config.s3root,
+                type:'HEAD',
+                error: function()
+                {
+                    //We get here if its a 404 or 403. So settimout here and wait for file to arrive
+                    setTimeout(function(){that.completeAfterConversion(uploader,filename);},500);
+                },
+                success: function(data, textStatus, xhr)
+                {
+                    log.debug('uploader xhr status:' + xhr.status);
+                    switch(xhr.status){
+                        case 200:
+                            that.doUploadCompleteCallback(uploader.filename);
+                            break;
+                        default:
+                            setTimeout(function(){that.completeAfterConversion(uploader,filename);},500);
+                    }
+
+                }
+            });
+        },
+
         doUploadCompleteCallback: function(uploader,filename){
 
             //in the case of an iframeembed we need a full URL not just a filename
@@ -149,19 +175,25 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
 
                   uploader.upskin.deactivateProgressSession();
 
-                  if(xhr.status==200){
-                    var filename = uploader.config.filename;
-                    if(!filename){
-                        filename = uploader.extractFilename(xhr.responseText);
-                    }
-                    if(!filename){
-                        log.debug('upload failed #1');
-                        log.debug(xhr);
-                        return;
-                    }
+                  if(xhr.status==200) {
+                      var filename = uploader.config.filename;
+                      if (!filename) {
+                          filename = uploader.extractFilename(xhr.responseText);
+                      }
+                      if (!filename) {
+                          log.debug('upload failed #1');
+                          log.debug(xhr);
+                          return;
+                      }
 
-                    //Alert any listeners about the upload complete
-                    this.doUploadCompleteCallback(uploader,filename);
+                      //Alert any listeners about the upload complete
+                      //if we are in an iframeembed we only want to do this after conversion is complete.
+                      //in standard Moodle we have a placeholder file to deal with any slow conversions
+                      if (uploader.config.iframeembed) {
+                          this.completeAfterConversion(uploader, filename);
+                      }else{
+                          this.doUploadCompleteCallback(uploader, filename);
+                      }
 
                     //alert the recorder that this was successful
                     this.alertRecorderSuccess(uploader.config.widgetid);
