@@ -101,6 +101,9 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         //this is only done in the iFrame
         completeAfterConversion: function(uploader,filename, waitms){
 
+            //alert the skin that we are awaiting conversion
+            this.upskin.showMessage(M.util.get_string('recui_awaitingconversion', 'filter_poodll'));
+
             //We alert the iframe host that a file is now awaiting conversion
             var messageObject ={};
             messageObject.type = "awaitingconversion";

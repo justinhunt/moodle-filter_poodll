@@ -213,12 +213,7 @@ class filter_poodll_renderer extends plugin_renderer_base
     public function fetchAMDRecorderEmbedCode($widgetopts, $widgetid)
     {
         global $CFG, $PAGE;
-
-        //this init the M.mod_readaloud thingy, after the page has loaded.
-        //we replaced this with a shim to the same js file to avoid load order badness
-        //Justin 20160805
-        //$PAGE->requires->js(new \moodle_url($CFG->httpswwwroot . '/filter/poodll/flash/embed-compressed.js'));
-
+        
         $widgetopts->widgetid = $widgetid;
 
         //The CSS selector string
@@ -247,6 +242,7 @@ class filter_poodll_renderer extends plugin_renderer_base
             'recui_uploading',
             'recui_uploadafile',
             'recui_uploadsuccess',
+            'recui_awaitingconversion',
             'recui_openrecorderapp',
             'recui_awaitingconfirmation',
             'recui_uploaderror',
