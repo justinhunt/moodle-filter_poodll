@@ -2,7 +2,10 @@
 
 /*
 One Button Audio Player
+Removing CSS from distro
+
 */
+/*
 .poodll_onebuttonaudio_container {
 	position: relative;
 	width: 80px;
@@ -36,7 +39,7 @@ One Button Audio Player
 	outline: none;
 	border: none !important;
 }
-
+*/
 /*
 One Button Recorder
 */
@@ -1744,8 +1747,10 @@ margin-bottom: 10px;
 
 
 /*
-Fixes
+Fixes By Glen
+Why are these here? They need to be labelled properly, and with the rest of the template CSS
 */
+/*
 .poodll_multiplayer{
     height: 120px !important;
     width: 250px !important;
@@ -1757,6 +1762,7 @@ Fixes
     border-radius: 3px !important;
     border: none !important;
 }
+*/
 
 
 /*

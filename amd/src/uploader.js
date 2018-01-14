@@ -59,8 +59,8 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             return ext;
         },
 
-        postMessage: function(messageObject){
-            window.parent.postMessage(messageObject,'*');
+        postMessage: function(messageObject, allowedURL){
+            window.parent.postMessage(messageObject,allowedURL);
         },
         
         pokeFilename: function(filename,uploader){
@@ -112,7 +112,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             messageObject.cloudroot = uploader.config.cloudroot;
             messageObject.s3filename = uploader.config.s3filename;
             messageObject.s3root = uploader.config.s3root;
-            uploader.postMessage(messageObject);
+            uploader.postMessage(messageObject, uploader.config.allowedURL);
 
             //we commence a series of ping and retries until the recorded file is available
             var that = this;

@@ -213,7 +213,7 @@ class filter_poodll_renderer extends plugin_renderer_base
     public function fetchAMDRecorderEmbedCode($widgetopts, $widgetid)
     {
         global $CFG, $PAGE;
-        
+
         $widgetopts->widgetid = $widgetid;
 
         //The CSS selector string

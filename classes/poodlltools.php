@@ -1823,6 +1823,7 @@ class poodlltools
 		$widgetopts->s3filename = $s3filename;
         $widgetopts->iframeembed = false;//this is only when embedding from iframe
 		$widgetopts->using_s3 = intval($using_s3);
+		$widgetopts->allowedURL=$CFG->wwwroot;
 
         //recorder order of preference and media skin style
         $skinstyle = '';
