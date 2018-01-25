@@ -190,7 +190,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 messageObject.id = uploader.config.id;
                 messageObject.updatecontrol = uploader.config.updatecontrol;
 
-                uploader.postMessage(messageObject, uplo);
+                uploader.postMessage(messageObject, uploader.config.allowedURL);
             }
         },
         
