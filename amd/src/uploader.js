@@ -112,6 +112,10 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             messageObject.cloudroot = uploader.config.cloudroot;
             messageObject.s3filename = uploader.config.s3filename;
             messageObject.s3root = uploader.config.s3root;
+
+            messageObject.id = uploader.config.id;
+            messageObject.updatecontrol = uploader.config.updatecontrol;
+
             uploader.postMessage(messageObject, uploader.config.allowedURL);
 
             //we commence a series of ping and retries until the recorded file is available
@@ -182,7 +186,11 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 messageObject.cloudroot = uploader.config.cloudroot;
                 messageObject.s3filename = uploader.config.s3filename;
                 messageObject.s3root = uploader.config.s3root;
-                uploader.postMessage(messageObject, uploader.config.allowedURL);
+
+                messageObject.id = uploader.config.id;
+                messageObject.updatecontrol = uploader.config.updatecontrol;
+
+                uploader.postMessage(messageObject, uplo);
             }
         },
         
