@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) {
+define(['jquery','core/log','filter_poodll/utils_amd','filter_poodll/upskin_bar'], function($, log, utils, upskin_bar) {
 
     "use strict"; // jshint ;_;
 
@@ -62,7 +62,10 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return resourceplayer;
         },
         fetch_uploader_skin: function(controlbarid, element){
-            return false;
+            var ip = this.fetch_instanceprops(controlbarid);
+            var upskin = upskin_bar.clone();
+            upskin.init(ip.config,element,ip.controlbar.split_progresscanvas,ip.controlbar.status);
+            return upskin;
         },
         onMediaError: function(e) {
                 console.error('media error', e);
@@ -199,6 +202,13 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 + '<p style="margin-bottom: 0px;font-size: 24px;">Submit</p>'
                 + '</button></div>';
 
+            controls +='<div class="poodll_statusholder_split" >' ;
+            controls += '<canvas class="split_range"></canvas>';
+            var statushtml = this.fetch_status_bar('split');
+            controls += statushtml;
+            controls += '</div>';
+
+
             //end if div
             controls += '</div></div></div>';
 
@@ -206,22 +216,21 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             $(element).append(controls);
 
 
-            //stop recording and save buttons, are after question text (save does not really need to be)
+            //play button
             var playbuttonhtml =  '<button type="button" class="poodll_mediarecorder_button_split poodll_play-resource_split">'
-            '<p style="margin-bottom: 0px; font-size: 24px;">Start</p>'
-            + '</button>';
+            + '<p style="margin-bottom: 0px; font-size: 24px;">Start</p></button>';
+            var topsplit='<div class="poodll_mediarecorder_split_topsplit">' + playbuttonhtml + '</div>';
 
             //divider
             var divider = "<hr />";
-            //Status
-            var statushtml = this.fetch_status_bar('split');
-            $('.qtext').prepend(divider);
-            $('.qtext').prepend(statushtml);
-            $('.qtext').prepend(playbuttonhtml);
 
+            //prepend the top split
+            $('.qtext').prepend(divider);
+            $('.qtext').prepend(topsplit);
 
 
                 var controlbar ={
+                    split_progresscanvas: $('#' + controlbarid + ' .split_range'),
 					marker:  $('#' + controlbarid + '  .marker'),
                     resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_split'),
                     checkplayer: $('#' + controlbarid + '  .poodll_checkplayer_split'),
@@ -231,6 +240,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                     playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_split'),
                     stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_split'),
                     savebutton: $('#' + controlbarid + '  .poodll_save-recording_split'),
+
 
                     //these are actually outside the control bar above the question text
                     resourceplaybutton: $('.poodll_mediarecorder_button_split.poodll_play-resource_split'),

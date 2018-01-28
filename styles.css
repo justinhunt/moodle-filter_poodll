@@ -787,8 +787,15 @@ audio.poodll_preview_standard{
 }
 
 div.poodll_mediarecorderholder_split{
-	width: 420px;
+	width: 370px;
 	height: auto;
+	margin: auto;
+}
+
+div.poodll_mediarecorder_split_topsplit {
+	display: block;
+	margin: auto;
+	width: 370px;
 }
 
 .poodll_mediarecorderbox_split hr{
@@ -800,10 +807,28 @@ div.poodll_mediarecorderholder_split{
 	text-align: left;
 }
 .poodll_status_split {
-	background-color: #ddd;
+	margin-top: 5px;
 	width: 370px;
+	height: 30px;
 	margin-bottom: 8px;
 	text-align: center;
+	position: relative;
+	/*
+	border: black;
+	border-style:solid;
+	border-width: 2px;
+	*/
+}
+.split_range {
+	height: 30px;
+	width: 370px;
+	position: absolute;
+	display: block;
+}
+
+.poodll_statusholder_split{
+	position: relative;
+	background-color: #EEE;
 }
 
 /* MEDIA RECORDER Shadow SKIN */
