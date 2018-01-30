@@ -130,7 +130,8 @@ $string['mobile_os_version_warning'] ='<p>Your OS Version is too low</p>
 
 $string['defaultwhiteboard'] = 'Default whiteboard';
 $string['whiteboardsave'] = 'Save Picture';
-$string['poodll:candownloadmedia'] = 'Can download media'; 
+$string['poodll:candownloadmedia'] = 'Can download media';
+$string['poodll:use'] = 'Can use the PoodLL filter'; 
 
 $string['bgtranscode_video'] = 'Perform Conversions to MP4 Background'; 
 $string['bgtranscodedetails_video'] = 'This is more reliable than performing them while user waits. But the user will not get their video till cron has run after saving. Only works if you are using FFMPEG and Moodle 2.7 or higher.'; 
