@@ -20,6 +20,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\S3\S3Client;
+use Aws\Polly\PollyClient;
 
 /**
  *
@@ -59,6 +60,7 @@ class awstools
     protected $awsversion="2.x";//3.x
 	protected $transcoder = false; //the single transcoder object
 	protected $s3client = false; //the single S3 object
+    protected $pollyclient = false; //the single Polly object
 	protected $default_segment_size = 4;
 	protected $region = self::REGION_APN1;
     protected $convfolder = 'transcoded/';
@@ -587,8 +589,44 @@ class awstools
 		));
 		//echo 'folder removed:' . $itemname . PHP_EOL ;		
 	}
-	
-	
+
+    //fetch or create the Polly object
+    function fetch_pollyclient(){
+        global $CFG;
+
+        if(!$this->pollyclient){
+            $config = array();
+            $config['region']=$this->region;
+            $config['version']='2016-06-10';
+            $config['credentials']=array('key' => $this->accesskey, 'secret' => $this->secretkey);
+            //add proxy settings if necessary
+            if(!empty($CFG->proxyhost)){
+                $proxy=$CFG->proxytype . '://' . $CFG->proxyhost;
+                if($CFG->proxyport > 0) {$proxy = $proxy . ':' . $CFG->proxyport;}
+                if(!empty($CFG->proxyuser)){
+                    $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
+                }
+                $config['request.options']=array('proxy'=>$proxy);
+            }
+            $this->pollyclient = PollyClient::factory($config);
+        }
+        return $this->pollyclient;
+    }
+    function make_pollyparams($text, $texttype="text",$voice="Justin"){
+        $params = [
+            'OutputFormat' => 'mp3',
+            'Text'         => $text,
+            'TextType'     => $texttype,
+            'VoiceId'      => $voice,
+        ];
+        return $params;
+    }
+
+    function fetch_pollyspeech($text, $texttype="text",$voice="Justin"){
+        $params = $this->make_pollyparams($text,$texttype,$voice);
+        $pollyclient= $this->fetch_pollyclient();
+        return $pollyclient->synthesizeSpeech($params);
+    }
 
 	
 	

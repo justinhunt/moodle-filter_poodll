@@ -41,7 +41,7 @@ $string['camerafront'] = 'front';
 $string['cameraback'] = 'back';
 
 $string['awssdkversion'] = 'AWS SDK';
-$string['awssdkversion_desc'] = 'PoodLL cloud recording uses Amazon Web Services (AWS). Version 3.x is supported but not shipped with PoodLL. Version 2.x of the AWS SDK will work on PHP 5.3 or greater. You should not need to change this, but contact PoodLL support if the need arises. ';
+$string['awssdkversion_desc'] = 'PoodLL cloud recording uses Amazon Web Services (AWS). Version 3.x is supported but not shipped with PoodLL. Version 2.x of the AWS SDK will work on PHP 5.3 or greater. If you need to use AWS SDK 3.x then place it in a folder called aws-v3 in filter/poodll/3rdparty.';
 
 $string['uploadkey'] = 'Upload key';
 $string['uploadkey_desc'] = 'PoodLL cloud recording requires an upload key for recording. You should receive this when you sign up for PoodLL. Enter the upload key here.';

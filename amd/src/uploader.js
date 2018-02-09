@@ -164,20 +164,20 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             this.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'));
 
             //invoke callbackjs if we have one, otherwise just update the control(default behav.)
-            if(uploader.config.callbackjs && uploader.config.callbackjs !='') {
-                if (typeof(uploader.config.callbackjs) === 'function') {
-                    uploader.config.callbackjs(callbackObject);
+            if(!uploader.config.iframeembed) {
+                if (uploader.config.callbackjs && uploader.config.callbackjs != '') {
+                    if (typeof(uploader.config.callbackjs) === 'function') {
+                        uploader.config.callbackjs(callbackObject);
+                    } else {
+                        //this was the old rubbish way, where the callback was a function name
+                        this.executeFunctionByName(uploader.config.callbackjs, window, callbackObject);
+                    }
                 } else {
-                    //this was the old rubbish way, where the callback was a function name
-                    this.executeFunctionByName(uploader.config.callbackjs, window, callbackObject);
+                    //by default we just poke the filename
+                    uploader.pokeFilename(filename, uploader);
                 }
-            }else {
-                //by default we just poke the filename
-                uploader.pokeFilename(filename,uploader);
-            }
-
-            //in the case of an iframeembed we will also post a message to the host, they can choose to handle it or not
-            if(uploader.config.iframeembed){
+            }else{
+                //in the case of an iframeembed we will also post a message to the host, they can choose to handle it or not
                 //The callback object above scan prob. be phased out. But not all integrations will use iframes either.
                 var messageObject ={};
                 messageObject.type = "filesubmitted";

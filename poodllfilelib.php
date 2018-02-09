@@ -80,8 +80,6 @@ require_once($CFG->libdir . '/filelib.php');
     CONST LOG_PFL_FILE_CREATED=8;
 
 
-
-
 //map general recorder upload data to what we expect otherwise
 	if($p1!=''){
 		$contextid = $p2;
@@ -149,6 +147,19 @@ require_once($CFG->libdir . '/filelib.php');
 
 			break;
 
+        case "speaktext":
+            $audiodata = filter_poodll_speaktext($paramone);
+            $audiobytes     = $audiodata->get('AudioStream')->getContents();
+
+            header('Content-Transfer-Encoding: binary');
+            header('Content-Type: audio/mpeg, audio/x-mpeg, audio/x-mpeg-3, audio/mpeg3');
+            header('Content-length: ' . strlen($audiobytes));
+           // header('Content-Disposition: attachment; filename="poodlltts.mp3"');
+            header('X-Pad: avoid browser bug');
+            header('Cache-Control: no-cache');
+
+            echo $audiobytes;
+            return;
 		default:
 			return;
 
@@ -516,6 +527,20 @@ function filter_poodll_handle_upload_fromiframeembed($mediatype, $filename){
 
 //set up return object
 
+}
+
+function filter_poodll_speaktext($text){
+    $awstools = new \filter_poodll\awstools();
+    $textarray= explode('|',$text);
+    if(count($textarray)>2) {
+        $textarray[2]= str_replace('PPPP','<',$textarray[2]);
+        $textarray[2]= str_replace('dddd','>',$textarray[2]);
+        $spokentext = $awstools->fetch_pollyspeech($textarray[2],$textarray[0],$textarray[1]);
+    }else{
+        $spokentext = $awstools->fetch_pollyspeech($text);
+    }
+
+    return $spokentext;
 }
 
 /* download file from remote server and stash it in our file area */

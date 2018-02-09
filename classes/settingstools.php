@@ -62,7 +62,7 @@ public static function fetch_general_items(){
 	//removed aws 3.x version from distributable because it was too large and not required
 	//if its needed added aws sdk for php in a folder called aws-v3 in /filter/poodll/3rdparty
 	//$options = array('2.x' => 'Version 2.x', '3.x'=>"Version 3.x");
-	$options = array('2.x' => 'Version 2.x');
+	$options = array('2.x' => 'Version 2.x','3.x' => 'Version 3.x');
 	$items[] = new \admin_setting_configselect('filter_poodll_aws_sdk', get_string('awssdkversion', 'filter_poodll'), 
 		get_string('awssdkversion_desc', 'filter_poodll'), '2.x', $options);
 

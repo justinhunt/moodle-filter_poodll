@@ -379,7 +379,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             // We do want to allow multiple submissions off one page load BUT
             // this will require a new filename. The filename is the basis of the
             // s3filename, s3uploadurl and filename for moodle. The problem with
-            // allowing mulitple uploads is that once the placeholder is overwritten
+            // allowing multiple uploads is that once the placeholder is overwritten
             // the subsequent submissions ad_hoc move task can no longer find the file to
             // replace. So we need a whole new filename or to cancel the previous ad hoc move.
             // This should probably be
