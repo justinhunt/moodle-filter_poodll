@@ -570,7 +570,6 @@ $mapping = array(
     'Aws\OpsWorks\Exception\ValidationException' => __DIR__ . '/Aws/OpsWorks/Exception/ValidationException.php',
     'Aws\OpsWorks\OpsWorksClient' => __DIR__ . '/Aws/OpsWorks/OpsWorksClient.php',
     'Aws\OpsWorks\Resources\opsworks-2013-02-18' => __DIR__ . '/Aws/OpsWorks/Resources/opsworks-2013-02-18.php',
-    'Aws\Polly\PollyClient' => __DIR__ . '/Aws/Polly/PollyClient.php',
     'Aws\Rds\Enum\ApplyMethod' => __DIR__ . '/Aws/Rds/Enum/ApplyMethod.php',
     'Aws\Rds\Enum\SourceType' => __DIR__ . '/Aws/Rds/Enum/SourceType.php',
     'Aws\Rds\Exception\AuthorizationAlreadyExistsException' => __DIR__ . '/Aws/Rds/Exception/AuthorizationAlreadyExistsException.php',
