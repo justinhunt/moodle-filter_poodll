@@ -328,7 +328,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             if (ip.blobs && ip.blobs.length > 0) {
                 log.debug('playing type:' + ip.blobs[0].type);
+            
                 switch (ip.blobs[0].type) {
+         		
                     case 'audio/wav':
  		    		case 'audio/pcm':
                         // log.debug('concat wavs');

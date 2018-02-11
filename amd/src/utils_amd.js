@@ -57,37 +57,42 @@ define(['jquery','core/log'], function($, log) {
            //fetch our header
            var allbytes = []; //this will be an array of arraybuffers
             var loadedblobs=0;
-            var totalbytes=0;
-           
+            var totalbytes=0;    
             // fetch the blob data
             var lng = blobs.length;
             for (var i = 0; i < lng; i++){
-                var fileReader = new FileReader();
-                fileReader.onload = function() {
-                    //load blob into arraybuffer
-                    var ab = this.result;
+                //we run the filereader inside an an immediately executing function
+                //so that we can keep track of the index of the blob being read.
+                //in edge and IE they all get read simulatenously and the order of concatenation
+                //could not be relied on with : allbytes.push(audiodata); so we did: allbytes[index]=audiodata;
+            	(function(index){
+					var fileReader = new FileReader();
+					fileReader.onload = function() {
+						//load blob into arraybuffer
+						var ab = this.result;
 
-                    //remove header and add audiodata to the all data array
-                    //the slice is from(inclusive) to end(exclusive)
-                    var audiodata=ab.slice(44);
-                    totalbytes+=audiodata.byteLength;
-                    allbytes.push(audiodata);
-                    loadedblobs++;
-                    
-                    //finally add the header and do callback if at end
-                    if(loadedblobs==lng){
-                        //get header from last blob, and just adjust the data length
-                        var header = ab.slice(0,44);
-                        var headerview = new DataView(header);
-                        headerview.setUint32(40,totalbytes, true);
-                        allbytes.unshift(header);
-                         
-                        //make our final binary blob and pass it to callback
-                        var wavblob = new Blob (allbytes, { type : 'audio/wav' } );
-                        callback(wavblob);
-                    }
-                };
-                fileReader.readAsArrayBuffer(blobs[i]);
+						//remove header and add audiodata to the all data array
+						//the slice is from(inclusive) to end(exclusive)
+						var audiodata=ab.slice(44);
+						totalbytes+=audiodata.byteLength;
+						allbytes[index]=audiodata;
+						loadedblobs++;
+					
+						//finally add the header and do callback if at end
+						if(loadedblobs==lng){
+							//get header from last blob, and just adjust the data length
+							var header = ab.slice(0,44);
+							var headerview = new DataView(header);
+							headerview.setUint32(40,totalbytes, true);
+							allbytes.unshift(header);
+						 
+							//make our final binary blob and pass it to callback
+							var wavblob = new Blob (allbytes, { type : 'audio/wav' } );
+							callback(wavblob);
+						}
+					};
+					fileReader.readAsArrayBuffer(blobs[i]);
+                })(i);
                 
             }//end of i loop
             
