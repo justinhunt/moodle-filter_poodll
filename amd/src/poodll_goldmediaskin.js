@@ -283,14 +283,16 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             rprogress.init(ip.controlbar.playcanvas);
 
             //init recording anim
-            var recanim=ripple;
+            var recanim = null;
             switch(ip.config.recanim) {
                 case 'hwave': recanim=hwave.clone();break;
                 case 'fbars': recanim=fbars.clone();break;
                 case 'ripple': recanim=ripple.clone();break;
                 case 'words': recanim=words.clone();break;
+                default: ip.config.recanim = 'ripple'; var recanim=ripple.clone();
+
             }
-            log.debug('recanim=' + ip.config.recanim);
+           // log.debug('recanim=' + ip.config.recanim);
             recanim.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
 			
 

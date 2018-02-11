@@ -47,8 +47,10 @@ define(['jquery','core/log'], function($, log) {
 
                 analyser.core.getByteFrequencyData(dataArray);
 
-                canvasCtx.fillStyle = 'rgb(0, 0, 0)';
-                canvasCtx.fillRect(0, 0, cwidth, cheight);
+                //filling is rubbish, we just clear it
+                //canvasCtx.fillStyle = 'rgb(0, 0, 0)';
+                //canvasCtx.fillRect(0, 0, cwidth, cheight);
+                canvasCtx.clearRect(0, 0, cwidth,cheight);
 
                 var barWidth = (cwidth / bufferLength) * 2.5;
                 var barHeight;

@@ -44,43 +44,6 @@ Removing CSS from distro
 One Button Recorder
 */
 
-.poodll_mediarecorderholder_gold .poodll_preview_gold{
-	height: 100px;
-    width: 100px;
-    border: none;
-    border-radius: 50%;
-    z-index: 2;
-    position: absolute;
-    left: 135px;
-    top: 22px;
-	cursor: pointer;
-}
-.poodll_mediarecorderholder_gold{
-	position:relative;
-}
-
-.poodll_mediarecorderholder_gold .settingsicon{
-	position: absolute;
-    bottom: 75px;
-    right: 250px;
-}
-.poodll_mediarecorderholder_gold .settingsicon button{
-	border: none !important;
-	background: transparent !important;
-}
-.poodll_mediarecorderholder_gold .settingsicon button i{
-	font-size: 18px !important;
-    color: #333 !important;
-}
-.poodll_mediarecorderholder_gold .settingsicon button:focus{
-	border: none;
-	background: transparent;
-}
-.poodll_mediarecorderholder_gold .settingsicon button i:hover{
-	cursor: pointer;
-}
-
-
 /*end*/
 
 
@@ -254,6 +217,43 @@ Base Media skin Setting Integration
     src: url('https://fonts.googleapis.com/css?family=Indie+Flower');
 }
 
+
+.poodll_mediarecorderholder_gold .poodll_preview_gold{
+	height: 100px;
+	width: 100px;
+	border: none;
+	border-radius: 50%;
+	z-index: 2;
+	position: absolute;
+	left: 135px;
+	top: 22px;
+	cursor: pointer;
+}
+.poodll_mediarecorderholder_gold{
+	position:relative;
+}
+
+.poodll_mediarecorderholder_gold .settingsicon{
+	position: absolute;
+	bottom: 75px;
+	right: 250px;
+}
+.poodll_mediarecorderholder_gold .settingsicon button{
+	border: none !important;
+	background: transparent !important;
+}
+.poodll_mediarecorderholder_gold .settingsicon button i{
+	font-size: 18px !important;
+	color: #333 !important;
+}
+.poodll_mediarecorderholder_gold .settingsicon button:focus{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_gold .settingsicon button i:hover{
+	cursor: pointer;
+}
+
 .poodll_mediarecorder_audio .poodll_mediarecorderbox_gold{
 	text-align: center;
 }
@@ -329,17 +329,6 @@ Base Media skin Setting Integration
 	pointer-events: none;
 }
 
-
-/*********************************************END****************************************/
-
-
-
-
-
-/*
-	One button
-*/
-
 .poodll_status_gold{
 	display: none;
 }
@@ -353,6 +342,7 @@ Base Media skin Setting Integration
 .poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button:focus {
     outline-style: none;
 }
+/*********************************************END****************************************/
 
 /*
 
