@@ -1,5 +1,12 @@
 Change List
 =========
+Version 3.0.60(Build 2018020701)
+-added presets for Amazon Polly (requires Amazon SWD SDK v3 not shipped with poodll)
+-changes to uploader to support poodll cloud
+-fixed drawing board js bug where toolbar events did not set canvas 'dirty' flag
+-fixed blob concatenation issues in IE and Edge
+-added event
+
 Version 3.0.58(Build 2017120201)
 -fixed broken pause on recording
 -added an error dialog
