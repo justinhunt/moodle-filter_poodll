@@ -35,9 +35,11 @@ class poodlltools
 {
     const LOG_SAVE_PLACEHOLDER_FAIL = 1;
     const LOG_NOTHING_TO_TRANSCODE = 2;
-    
-    const AUDIO_PLACEHOLDER_HASH ='e118549e4fc88836f418b6da6028f1fec571cd43';
-    const VIDEO_PLACEHOLDER_HASH ='c2a342a0a664f2f1c4ea5387554a67caf3dd158e';
+
+    const AUDIO_PLACEHOLDER_HASH ='805daf96c0b5e197a728f230d9550e9ba49e5ea7';
+    const VIDEO_PLACEHOLDER_HASH ='4eab92af4205d642e774718c85d5ea3a19881ba6';
+    const AUDIO_PLACEHOLDER_HASH_OLD ='e118549e4fc88836f418b6da6028f1fec571cd43';
+    const VIDEO_PLACEHOLDER_HASH_OLD ='c2a342a0a664f2f1c4ea5387554a67caf3dd158e';
 
 	//this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
     public static function fetchSimpleAudioPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 

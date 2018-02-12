@@ -27,8 +27,11 @@ define(['jquery','core/log'], function($, log) {
 
         should_be_checked: function(filename){
             //check this is an unconverted recording that we need to track
+
             //log.debug('mediaduration: ' + this.mediaduration);
             //log.debug('placeholderduration: ' + this.placeholderduration);
+            //log.debug('fixed to one mediaduration: ' + parseFloat(this.mediaduration).toFixed(1));
+            //log.debug('fixed to one placeholderduration: ' + parseFloat(this.placeholderduration).toFixed(1));
 
             //if any of these numbers is not numeric we kill it
             if(!$.isNumeric(this.placeholderduration)){return false;}
@@ -49,7 +52,7 @@ define(['jquery','core/log'], function($, log) {
         check_updates: function(filename,checktype){
             //checktype:firstpass - if have a task then we keep checking till there is no task
             //then we know its finished. Those checks are the 'secondpass'
-
+            this.should_be_checked(filename);
             //check this is a recording that we need to track
             if(checktype=='firstpass' && !this.should_be_checked(filename)){
                 return;
