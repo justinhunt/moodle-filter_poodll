@@ -70,7 +70,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         },
 
         onMediaSuccess_video: function(controlbarid){
-
+            var ip = this.fetch_instanceprops(controlbarid);
             //clear messages
             ip.uploader.Output('');
 
