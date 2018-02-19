@@ -17,8 +17,9 @@
 global $CFG;
 
 
-define('POODLL_VIDEO_PLACEHOLDER_HASH','c2a342a0a664f2f1c4ea5387554a67caf3dd158e');
-define('POODLL_AUDIO_PLACEHOLDER_HASH','e118549e4fc88836f418b6da6028f1fec571cd43');
+define('POODLL_VIDEO_PLACEHOLDER_HASH','4eab92af4205d642e774718c85d5ea3a19881ba6');
+define('POODLL_AUDIO_PLACEHOLDER_HASH','805daf96c0b5e197a728f230d9550e9ba49e5ea7');
+
 
 //we need to do this, because when called from a widet, cfg is not set
 //but the relative path fails from a quiz but it has alreadconvert_with_ffmpeg_bgy been set in that case
