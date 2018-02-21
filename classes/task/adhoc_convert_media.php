@@ -50,8 +50,8 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	//find the file in the files database
     	$fs = get_file_storage();
     	switch($cd->convext){
-    		case '.mp3': $contenthash = POODLL_AUDIO_PLACEHOLDER_HASH;break;
-    		case '.mp4': $contenthash = POODLL_VIDEO_PLACEHOLDER_HASH;break;
+    		case '.mp3': $contenthash = \filter_poodll\poodlltools::AUDIO_PLACEHOLDER_HASH;break;
+    		case '.mp4': $contenthash = \filter_poodll\poodlltools::VIDEO_PLACEHOLDER_HASH;break;
     		default:$contenthash = '';
     	
     	}

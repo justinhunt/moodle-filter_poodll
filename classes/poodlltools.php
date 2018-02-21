@@ -1582,7 +1582,7 @@ class poodlltools
 			//this can be done from ffmpeg, but probably not on all installs, so we do in php
 			if(is_readable(realpath($tempsplashfilepath))){	
 				//provided this is not a place holder. We don't really want to confuse even more
-				if($videofile->get_contenthash()!=POODLL_VIDEO_PLACEHOLDER_HASH){
+				if($videofile->get_contenthash()!=self::VIDEO_PLACEHOLDER_HASH){
 					$bg = imagecreatefrompng($tempsplashfilepath);
 					$btn = imagecreatefrompng($CFG->dirroot . '/filter/poodll/pix/playbutton.png');
 					imagealphablending($bg, 1);

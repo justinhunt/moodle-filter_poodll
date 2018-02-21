@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.0.62(Build 2018022101)
+-removed doubled up (and old) definition of the placeholder content hash. This was breaking ffmpeg conversions
+
 Version 3.0.61(Build 2018021901)
 -Added more presets for speech and text (beta)
 -fixed bug with video recording in plain recorder skin
