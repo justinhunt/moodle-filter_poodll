@@ -216,36 +216,27 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 
 
         /*
-        * Plays a ding before calling the next action
+        * Plays a ding and calls the next action
         *
         *
          */
         play_ding: function(action, controlbarid){
 
             var ip = this.fetch_instanceprops(controlbarid);
-
+            ip.controlbar.dingplayer[0].play();
             switch (action){
                 case 'click_start':
-                    ip.controlbar.dingplayer[0].onended=function(){
-                        ip.controlbar.startbutton.click();
-                    };
+                     ip.controlbar.startbutton.click();
                     break;
                 case 'click_play':
-                    ip.controlbar.dingplayer[0].onended=function(){
-                        ip.controlbar.playmodelbutton.click();
-                    };
+                    ip.controlbar.playmodelbutton.click();
                     break;
-
                 case 'show_dialog':
-                    ip.controlbar.dingplayer[0].onended=function(){
-                        alert('dialog');
-                        ip.controlbar.dingplayer[0].onended=null;
-                    };
+                    alert('dialog');
                     break;
                 default:
                     ip.controlbar.dingplayer[0].onended=null;
             }
-            ip.controlbar.dingplayer[0].play();
         },
 
         /*
