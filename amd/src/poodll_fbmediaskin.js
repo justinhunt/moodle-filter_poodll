@@ -269,10 +269,14 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 		var resource = ip.controlbar.resourceplayer.get(0);
 		
 		//play from players
-		resource.play();
-		ding.play();
-		model.play();
-		model.pause();
+        try {
+            resource.play();
+            ding.play();
+            model.play();
+            model.pause();
+        }catch(e){
+            //do nothing
+        }
 		
 		
 		

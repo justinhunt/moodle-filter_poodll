@@ -156,6 +156,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     }
                 );
              theskin.handle_timer_update(controlbarid);
+
+             //in the case of an API embed, the caller might want a handle on the skin
+             return theskin;
         },
 
 
