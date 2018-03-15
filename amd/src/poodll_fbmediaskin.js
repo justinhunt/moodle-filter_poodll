@@ -48,7 +48,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return checkplayer;
         },
         fetch_model_audio: function(){
-            var modelplayer = '<audio class="poodll_modelplayer_fluencybuilder hide" src="@@MODELURL@@"></audio>';
+            var modelplayer = '<audio class="poodll_modelplayer_fluencybuilder hide" src="' + M.cfg.wwwroot + '/filter/poodll/ding.mp3"></audio>';
             return modelplayer;
         },
         fetch_preview_video: function(skin){
@@ -56,7 +56,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return checkplayer;
         },
         fetch_resource_audio: function(skin){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURLx@@" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="' + M.cfg.wwwroot + '/filter/poodll/ding.mp3" ></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skin){
@@ -68,7 +68,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
         fetch_ding_player: function() {
             var skin = 'fluencybuilder';
-            var dingplayer = '<audio class="poodll_dingplayer_' + skin + ' hide"  src="@@DINGURLx@@"></audio>';
+            var dingplayer = '<audio class="poodll_dingplayer_' + skin + ' hide"  src="' + M.cfg.wwwroot + '/filter/poodll/ding.mp3" ></audio>';
             return dingplayer;
         },
         onMediaError: function(e) {
@@ -96,19 +96,8 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         onMediaSuccess_audio: function(controlbarid){
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.checkplayer.attr('src',null);
+            this.pmr.do_pause_audio(ip);
 
-            this.highlight_button('bwrapper_start-recording', controlbarid);
-
-            //clear messages
-            ip.uploader.Output('');
-
-            //timer and status bar
-            ip.timer.reset();
-            ip.timer.start();
-            this.update_status(controlbarid);
-
-            ip.controlbar.stopbutton.attr('disabled',false);
-            ip.controlbar.savebutton.attr('disabled',false);
         },
 
         handle_timer_update: function(controlbarid){
@@ -257,11 +246,17 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             });
         },
 
-	warmup_recorder: function(controlbarid){
+	warmup_recorder: function(controlbarid, onMediaSuccess){
      	var ip = this.fetch_instanceprops(controlbarid);
 		//warm up preview player and audiocontext
 		this.pmr.warmup_context(ip);
 		this.pmr.warmup_preview(ip);
+
+		//We start recording here for mobile sfari click proximity
+        //but immediately pause it in onMediaSuccess
+        //when we really start (start-rec button click event), we "resume" recording
+        this.pmr.do_start_audio(ip, onMediaSuccess);
+
 		
 		//fetch players and info	
 		var model = ip.controlbar.modelplayer.get(0);
@@ -310,7 +305,23 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             //when start recording button clicked
             ip.controlbar.startbutton.click(function() {
 
-                pmr.do_start_audio(ip, onMediaSuccess);
+                //pmr.do_start_audio(ip, onMediaSuccess);
+                pmr.do_resume_audio(ip);
+
+
+
+                self.highlight_button('bwrapper_start-recording', controlbarid);
+
+                //clear messages
+                ip.uploader.Output('');
+
+                //timer and status bar
+                ip.timer.reset();
+                ip.timer.start();
+                self.update_status(controlbarid);
+
+                ip.controlbar.stopbutton.attr('disabled',false);
+                ip.controlbar.savebutton.attr('disabled',false);
 
             });
 
@@ -356,7 +367,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             //when the play prompt button is pressed
             ip.controlbar.resourcebutton.click(function(){
 
-		self.warmup_recorder(controlbarid);
+		        self.warmup_recorder(controlbarid,onMediaSuccess);
 
                 self.disable_button(this);
                 var resourceplayer = ip.controlbar.resourceplayer.get(0);
