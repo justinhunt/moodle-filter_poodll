@@ -364,11 +364,11 @@ Integration
 	position: absolute;
 	text-align: center;
 	color: #333;
-	font-size: 16px;
+	font-size: 14px;
     z-index: 99;
 }
 .hp_range{
-    height:24px;
+    height:18px;
     width: 100%;
     position: absolute;
     display: block;

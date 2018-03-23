@@ -99,11 +99,6 @@ class templatescriptgenerator
             //Do we need to shim here?
             $shim_export = trim($conf->{'templaterequire_js_shim_' . $tindex});
 
-            //remove .js from end of js filepath if its there
-            if (strrpos($requiredjs, '.js') == (strlen($requiredjs) - 3)) {
-                $requiredjs = substr($requiredjs, 0, -3);
-            }
-
             /*if its AMD and requires no Shim, then life is easy, we just set up the "requires" and "params"
             /which we use in the definition of our AMD template module ..eg
             / define('filter_poodll_d3',[$,jqui,url_of_required_js_config_value],function($,jqui,requiredjs_templatekey){
@@ -130,6 +125,13 @@ class templatescriptgenerator
                     break;
 
                 case false:
+
+
+                    //remove .js from end of js filepath if its there
+                    //shim doesnt want it
+                    if (strrpos($requiredjs, '.js') == (strlen($requiredjs) - 3)) {
+                        $requiredjs = substr($requiredjs, 0, -3);
+                    }
 
 
                     $shimkey = $currentkey . '-requiredjs';

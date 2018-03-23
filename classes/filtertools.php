@@ -229,8 +229,8 @@ class filtertools
 			$proparray['TITLE'] = $title;
 			$proparray['FILEEXT'] = $ext;
 			//hardcoding for now, later we will do something better
-            $proparray['AUDIOPLACEHOLDERDURATION'] = 4.362449;// as reported by firefox: 4.388496
-            $proparray['VIDEOPLACEHOLDERDURATION'] = 4.202812;//as reported by firefox: 4.202811
+            $proparray['AUDIOPLACEHOLDERDURATION'] = poodlltools::AUDIO_PLACEHOLDER_LENGTH;
+            $proparray['VIDEOPLACEHOLDERDURATION'] = poodlltools::VIDEO_PLACEHOLDER_LENGTH;
 			return $proparray;
 	}//end of function
 

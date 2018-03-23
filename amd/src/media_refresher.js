@@ -28,10 +28,10 @@ define(['jquery','core/log'], function($, log) {
         should_be_checked: function(filename){
             //check this is an unconverted recording that we need to track
 
-            //log.debug('mediaduration: ' + this.mediaduration);
-            //log.debug('placeholderduration: ' + this.placeholderduration);
-            //log.debug('fixed to one mediaduration: ' + parseFloat(this.mediaduration).toFixed(1));
-            //log.debug('fixed to one placeholderduration: ' + parseFloat(this.placeholderduration).toFixed(1));
+            log.debug('mediaduration: ' + this.mediaduration);
+            log.debug('placeholderduration: ' + this.placeholderduration);
+            log.debug('fixed to one mediaduration: ' + parseFloat(this.mediaduration).toFixed(1));
+            log.debug('fixed to one placeholderduration: ' + parseFloat(this.placeholderduration).toFixed(1));
 
             //if any of these numbers is not numeric we kill it
             if(!$.isNumeric(this.placeholderduration)){return false;}

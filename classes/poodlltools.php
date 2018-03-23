@@ -38,6 +38,9 @@ class poodlltools
 
     const AUDIO_PLACEHOLDER_HASH ='805daf96c0b5e197a728f230d9550e9ba49e5ea7';
     const VIDEO_PLACEHOLDER_HASH ='4eab92af4205d642e774718c85d5ea3a19881ba6';
+    const AUDIO_PLACEHOLDER_LENGTH = 4.362449;// as reported by firefox: 4.388496
+    const VIDEO_PLACEHOLDER_LENGTH = 4.133333;//as reported by firefox: 4.202811
+
     const AUDIO_PLACEHOLDER_HASH_OLD ='e118549e4fc88836f418b6da6028f1fec571cd43';
     const VIDEO_PLACEHOLDER_HASH_OLD ='c2a342a0a664f2f1c4ea5387554a67caf3dd158e';
 
