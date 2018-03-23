@@ -263,18 +263,23 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 		var ding = ip.controlbar.dingplayer.get(0);
 		var resource = ip.controlbar.resourceplayer.get(0);
 		
-		//play from players
-        try {
-            resource.play();
-            ding.play();
-            model.play();
-            model.pause();
-        }catch(e){
-            //do nothing
+		
+		if(!ip.warmedup){
+			//play from players
+			try {
+				resource.play();
+				ding.play();
+				model.play();
+				resource.pause();		            
+				ding.pause();       
+				model.pause();
+	   
+			}catch(e){
+				//do nothing
+			}
         }
 		
-		
-		
+
 		//set src on urls
 		var dingurl = M.cfg.wwwroot + '/filter/poodll/ding.mp3';
 		$(model).attr('src',ip.config.resource2);
