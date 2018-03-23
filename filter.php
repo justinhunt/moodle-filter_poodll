@@ -694,10 +694,13 @@ class filter_poodll extends moodle_text_filter {
 			$poodlltemplate = $props_html . $poodlltemplate;
 		
 			//load define for this template. Later it will be called from loadtemplate
-			$PAGE->requires->js_amd_inline($template_amd_script);
+            if(!empty($template_amd_script)) {
+                $PAGE->requires->js_amd_inline($template_amd_script);
+            }
 			//for AMD template script
 			$PAGE->requires->js_call_amd('filter_poodll/template_amd','loadtemplate', array(array('AUTOID'=>$filterprops['AUTOID'])));
 			//echo $filterprops['AUTOID'] . PHP_EOL;
+
 
 
 		}else{

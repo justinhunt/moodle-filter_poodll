@@ -537,33 +537,6 @@ left: -50%;
   }
 
 
-  .filter_poodll_flashcards_owl {
-     /* min-height: 300px; */
-  }
-.filter_poodll_flashcards_owl_card{
-  /*  margin: 30px; */
-  /*  height: 100%; */
-    text-align: center;
-}
-
-.filter_poodll_flashcards_owl_onecard {
-   /* min-height: 250px; */
-    margin: 60px;
-}
-
-.filter_poodll_flashcards_owl .front {
-    padding: 10px;
-    background-color: #cccccc;
-    border: solid thick red;
-    border-radius: 1em;
-}
-.filter_poodll_flashcards_owl .back {
-    padding: 10px;
-    background-color: #ffcccc;
-    border: solid thick blue;
-    border-radius: 1em;
-}
-
 .filter_poodll_dragdropsquare {
     width:130px;
     height:25px;
