@@ -26,9 +26,9 @@
 defined('MOODLE_INTERNAL') || die();
 
 
-$plugin->version   =  2018022101;
+$plugin->version   =  2018032301;
 $plugin->requires  = 2016052300;//moodle 3.1.0
 $plugin->component = 'filter_poodll'; 
 $plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.0.62(Build 2018022101)';
+$plugin->release   = '3.0.63(Build 2018032301)';
 

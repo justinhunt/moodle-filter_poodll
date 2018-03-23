@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.0.63(Build 2018032301)
+-fixed ajax media refresher which did not detect placeholder video size correctly
+-fixed wrong sized progress bar on 123 recorder
+-fixed shim code which restricted shimmed players and widgets to only one per page
+-removed old code from module.js
+
 Version 3.0.62(Build 2018022101)
 -removed doubled up (and old) definition of the placeholder content hash. This was breaking ffmpeg conversions
 
