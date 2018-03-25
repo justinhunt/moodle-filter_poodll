@@ -18,7 +18,7 @@ namespace filter_poodll\task;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
+//require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
 
 
 /**
@@ -59,7 +59,7 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 			$this->handle_error(self::LOG_MISSING_FILENAME,'missing filename in custom data:' , $cd);
 			return;
 		}
-    	$select = "filename='" . $cd->filename. "' AND filearea <> 'draft' AND contenthash='" . $contenthash. "'";
+    	$select = "filename='" . $cd->filename. "' AND contenthash='" . $contenthash. "'";
     	$params = null;
     	$sort = "id DESC";
     	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);
@@ -105,17 +105,6 @@ class adhoc_convert_media extends \core\task\adhoc_task {
 		//replace the placeholder(original) file with the converted one
 		if($convertedfile){
 			$origfile->replace_file_with($convertedfile);
-
-			//now we make a splash if it needs one
-            if($cd->convext=='.mp3') {
-                $imagefilename = substr($cd->filename, 0, strlen($cd->filename) - 3) . 'png';
-                try {
-                    $imagefile = \filter_poodll\poodlltools::get_splash_ffmpeg($origfile, $imagefilename);
-                } catch (Exception $e) {
-                    $this->handle_error(self::LOG_SPLASHFILE_MAKE_FAIL, 'could not get create splash file from:' . $cd->filename . ':' . $e->getMessage(), $cd);
-                    //we don't "return" here, because the lack of a splash is not critical, the file is converted
-                }
-            }
 		}else{
 		    $this->handle_error(self::LOG_UNABLE_TO_CONVERT,'unable to convert ' . $cd->originalfilename,$cd);
 		    return;

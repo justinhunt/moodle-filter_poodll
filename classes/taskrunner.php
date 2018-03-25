@@ -82,7 +82,9 @@ class taskrunner
                 return false;
             }
 
+            //fetch and instantiate task from record
             $task = \core\task\manager::adhoc_task_from_record($record);
+
             // Safety check in case the task in the DB does not match a real class (maybe something was uninstalled).
             if (!$task) {
                 $lock->release();

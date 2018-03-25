@@ -1132,132 +1132,6 @@ class poodlltools
 	   return $stored_file;
 	}
 
-	/*
-	* Fetch a splash image for video
-	**/
-	public static function fetchVideoSplash($src)
-	{
-		global $CFG;
-
-		$src = urldecode($src);
-
-		//if this is not a local file , quit.
-		$possy = strpos($src, "pluginfile.php");
-		if (!$possy) {
-			return false;
-		}
-		//get relative path
-		//e.g http://m23.poodll.com/pluginfile.php/59/mod_page/content/20/360332574229687.flv
-		//should become /59/mod_page/content/20/360332574229687.flv
-		$relpath = substr($src, $possy + 14);
-
-		//remove any pesky forcedownload params
-		$relpath = str_replace("?forcedownload=1", "", $relpath);
-
-		//if something went wrong, and we can't confirm get a handle on the file,
-		//muddle with the itemid. Some mods don't bother to use it if it is a certain filearea
-		//eg assignment intro, others use it strangely,eg mod_page, and we need to set it to 0
-		//quiz questions have extra stuff between filearea and itemid
-		$fs = get_file_storage();
-		$file = $fs->get_file_by_hash(sha1($relpath));
-		if (!$file) {
-			$relarray = explode('/', $relpath);
-			//index 1 = contextid, 2 =component,3=filearea
-			//itemid can change, filename is last
-
-			switch ($relarray[2]) {
-				case 'question':
-					$qitemid = $relarray[count($relarray) - 2];
-					$qfilename = $relarray[count($relarray) - 1];
-					$relpath = '/' . $relarray[1] . '/' . $relarray[2] . '/' . $relarray[3];
-					$relpath .= '/' . $qitemid . '/' . $qfilename;
-					break;
-
-				case 'mod_page':
-					//1st we set itemid to 0
-					$originalitemid = $relarray[4];
-					$relarray[4] = '0';
-					$relpath = implode('/', $relarray);
-					break;
-
-				case 'mod_assign':
-					array_splice($relarray, 4, 0, '0');
-					$relpath = implode('/', $relarray);
-					break;
-
-				default:
-					//if we have no itemid, zero is assumed
-					if (count($relarray) == 5) {
-						$relpath = '/' . $relarray[1] . '/' . $relarray[2] . '/' . $relarray[3];
-						$relpath .= '/0/' . $relarray[4];
-					}
-			}
-
-
-			//Then hash the path and try to get the file
-			$file = $fs->get_file_by_hash(sha1($relpath));
-
-			//if we still don't have a file, give up
-			if (!$file) {
-				return false;
-			}
-		}
-
-
-		//check if we really can have/make a splash for this file
-		//if name is too short, we didn't make it, it wont be on our red5 server
-		$filename = $file->get_filename();
-		if (strlen($filename) < 5) {
-			return false;
-		}
-
-		//if we are NOT using FFMPEG, we can only take snaps from Red5, so ...
-		//if name is not numeric, it is not a video file we recorded on red5.it wont be there
-		if (!$CFG->filter_poodll_ffmpeg && !is_numeric(substr($filename, 0, strlen($filename) - 4))) {
-			return false;
-		}
-
-		//check if we have an image file here already, if so return that URL
-		$relimagepath = substr($relpath, 0, strlen($relpath) - 3) . 'png';
-		$trimsrc = str_replace("?forcedownload=1", "", $src);
-		$fullimagepath = substr($trimsrc, 0, strlen($trimsrc) - 3) . 'png';
-		$imagefilename = substr($filename, 0, strlen($filename) - 3) . 'png';
-		if ($imagefile = $fs->get_file_by_hash(sha1($relimagepath))) {
-			return $fullimagepath;
-		}
-
-		//from this point on we will need our file handling functions
-		require_once($CFG->dirroot . '/filter/poodll/poodllfilelib.php');
-
-		//if we are using FFMPEG, try to get the splash image
-		if ($CFG->filter_poodll_ffmpeg) {
-
-			$imagefile = self::get_splash_ffmpeg($file, $imagefilename);
-			if ($imagefile) {
-				return $fullimagepath;
-			} else {
-				return false;
-			}
-
-			//if not FFMPEG pick it up from Red5 server
-		} else {
-
-			$result = filter_poodll_instance_remotedownload($file->get_contextid(),
-				$imagefilename,
-				$file->get_component(),
-				$file->get_filearea(),
-				$file->get_itemid(),
-				"99999",
-				$file->get_filepath()
-			);
-
-			if (strpos($result, "success")) {
-				return $fullimagepath;
-			} else {
-				return false;
-			}
-		}//end of if ffmpeg
-	}//end of fetchVideoSplash
 
 	public static function fetchAutoWidgetCode($widget, $paramsArray, $width, $height, $bgcolor = "#FFFFFF")
 	{
@@ -1540,7 +1414,7 @@ class poodlltools
 	* Extract an image from the video for use as splash
 	* image stored in same location with same name (diff ext)
 	* as original video file
-	*
+	* THIS IS NOW UNUSED : left as reference J 20180326
 	*/
 	public static function get_splash_ffmpeg($videofile, $newfilename){
 
