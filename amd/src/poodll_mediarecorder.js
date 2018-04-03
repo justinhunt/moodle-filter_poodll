@@ -451,10 +451,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 video: true
             };
 
+            //set aspect ratio and I think the "exact" below should be "ideal"
+          //  mediaConstraints.video = {aspectRatio: 1920/1080};
+            //alert('set');
+
             // check for a user video selected device
             if (ip.uservideodeviceid) {
 				var videodeviceid = ip.uservideodeviceid.valueOf();
-            	var constraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined}; 
+            	var constraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined};
+
 				mediaConstraints.video = constraints;
             }
             // check for a user audio selected device
