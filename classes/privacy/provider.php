@@ -15,20 +15,32 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * PoodLL filter
+ * Privacy Subsystem implementation for filter Poodll.
  *
- * @package    filter
- * @subpackage poodll
- * @copyright  2015 Justin Hunt poodllsupport@gmail.com
+ * @package    filter_poodll
+ * @copyright  2018 Justin Hunt https://poodll.com
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace filter_poodll\privacy;
+
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Privacy Subsystem for filter_poodll implementing null_provider.
+ *
+ * @copyright  2018 Justin Hunt https://poodll.com
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+class provider implements \core_privacy\local\metadata\null_provider {
 
-$plugin->version   =  2018041000;
-$plugin->requires  = 2016052300;//moodle 3.1.0
-$plugin->component = 'filter_poodll'; 
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.1.0(Build 2018041000)';
-
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason() {
+        return 'privacy:metadata';
+    }
+}

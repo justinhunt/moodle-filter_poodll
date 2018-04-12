@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.0(Build 2018041000)
+-Added a number of presets
+-Implemented new Moodle Privacy API
+
 Version 3.0.63(Build 2018032301)
 -fixed ajax media refresher which did not detect placeholder video size correctly
 -fixed wrong sized progress bar on 123 recorder
