@@ -3,6 +3,8 @@
 $string['filtername'] = 'PoodLL Filter';
 //officially its not needed, but "new version available" email doesn't know to look for filtername
 $string['pluginname'] = 'PoodLL Filter';
+//privacy details
+$string['privacy:metadata'] = 'The Poodll filter plugin does not store any personal data.';
 
 $string['settings'] = 'PoodLL Filter Settings';
 $string['activate'] = 'Activate PoodLL?';
