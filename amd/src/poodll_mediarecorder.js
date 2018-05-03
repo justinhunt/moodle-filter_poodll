@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 define(['jquery', 'core/log', 'filter_poodll/utils_amd',
-        'filter_poodll/adapter', 'filter_poodll/uploader', 'filter_poodll/timer',
+        'filter_poodll/adapter', 'filter_poodll/uploader','filter_poodll/hermes',  'filter_poodll/timer',
     'filter_poodll/audioanalyser',
     'filter_poodll/msr_poodll',
     'filter_poodll/dlg_errordisplay',
@@ -11,7 +11,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         'filter_poodll/poodll_bmrmediaskin',
         'filter_poodll/poodll_shadowmediaskin',
         'filter_poodll/poodll_splitmediaskin',
-    'filter_poodll/poodll_fbmediaskin'], function($, log, utils, adapter, uploader, timer,audioanalyser,poodll_msr,errordialog, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin) {
+    'filter_poodll/poodll_fbmediaskin',
+    'filter_poodll/poodll_readaloudmediaskin'], function($, log, utils, adapter, uploader, hermes, timer,audioanalyser,poodll_msr,errordialog, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin, readaloudskin) {
 
     "use strict"; // jshint ;_;
 
@@ -86,12 +87,17 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         ip.errordialog=errordialog.clone();
         ip.errordialog.init(ip);
 
-	    // init our skin
-            var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
+        //init the hermes
+        //putting it in config allows us to post messages from uploader and skin as required
+        ip.config.hermes  = hermes.clone();
+        ip.config.hermes.init(config.id, config.allowedURL,config.iframeembed);
 
-            // add callbacks for uploadsuccess and upload failure
-            ip.config.onuploadsuccess = function(widgetid) { that.onUploadSuccess(widgetid, theskin); };
-            ip.config.onuploadfailure = function(widgetid) { that.onUploadFailure(widgetid, theskin); };
+	    // init our skin
+        var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
+
+        // add callbacks for uploadsuccess and upload failure
+        ip.config.onuploadsuccess = function(widgetid) { that.onUploadSuccess(widgetid, theskin); };
+        ip.config.onuploadfailure = function(widgetid) { that.onUploadFailure(widgetid, theskin); };
 
 	    switch (config.mediatype) {
             case 'audio':
@@ -231,6 +237,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     break;
                 case 'fluencybuilder':
                     this.skins[controlbarid] = fluencybuilderskin.clone();
+                    break;
+                case 'readaloud':
+                    this.skins[controlbarid] = readaloudskin.clone();
                     break;
                 case 'shadow':
                     this.skins[controlbarid] = shadowskin.clone();

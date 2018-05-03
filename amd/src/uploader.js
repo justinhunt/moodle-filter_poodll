@@ -58,10 +58,6 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             }
             return ext;
         },
-
-        postMessage: function(messageObject, allowedURL){
-            window.parent.postMessage(messageObject,allowedURL);
-        },
         
         pokeFilename: function(filename,uploader){
 
@@ -104,19 +100,22 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             //alert the skin that we are awaiting conversion
             this.upskin.showMessage(M.util.get_string('recui_awaitingconversion', 'filter_poodll'));
 
+            //this will always be true ...
+            if(uploader.config.iframeembed){
+                filename = uploader.config.cloudroot + uploader.config.cloudfilename;
+            }
+
             //We alert the iframe host that a file is now awaiting conversion
             var messageObject ={};
             messageObject.type = "awaitingconversion";
-            messageObject.filename = filename;
-            messageObject.cloudfilename = uploader.config.cloudfilename;
-            messageObject.cloudroot = uploader.config.cloudroot;
+            messageObject.shorturl = filename;
+            messageObject.shortfilename = uploader.config.cloudfilename;
             messageObject.s3filename = uploader.config.s3filename;
             messageObject.s3root = uploader.config.s3root;
-
             messageObject.id = uploader.config.id;
             messageObject.updatecontrol = uploader.config.updatecontrol;
 
-            uploader.postMessage(messageObject, uploader.config.allowedURL);
+            uploader.config.hermes.postMessage(messageObject);
 
             //we commence a series of ping and retries until the recorded file is available
             var that = this;
@@ -181,16 +180,14 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 //The callback object above scan prob. be phased out. But not all integrations will use iframes either.
                 var messageObject ={};
                 messageObject.type = "filesubmitted";
-                messageObject.filename = filename;
-                messageObject.cloudfilename = uploader.config.cloudfilename;
-                messageObject.cloudroot = uploader.config.cloudroot;
+                messageObject.shorturl = filename;
+                messageObject.shortfilename = uploader.config.cloudfilename;
                 messageObject.s3filename = uploader.config.s3filename;
                 messageObject.s3root = uploader.config.s3root;
-
                 messageObject.id = uploader.config.id;
                 messageObject.updatecontrol = uploader.config.updatecontrol;
 
-                uploader.postMessage(messageObject, uploader.config.allowedURL);
+                uploader.config.hermes.postMessage(messageObject);
             }
         },
         
