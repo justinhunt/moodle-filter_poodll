@@ -172,9 +172,76 @@ class awstools
         }
     }
 
+    /**
+     * Make S3 root
+     * $mediatype
+     * $region
+     * $parent is likely to be a folder for the site
+     * $owner is any old prefix the uploading site wishes to use to tag users
+     * $expirydays is any old prefix the uploading site wishes to use to tag users
+     */
+    public static function fetch_s3_root($region, $mediatype, $expirydays, $parent, $owner){
+        $s3root="";
+
+        //REGION
+        switch($region){
+            case 'useast1':
+                $s3root = 'https://s3-' . REGION_USE1  .  '.amazonaws.com';
+                break;
+            case 'dublin':
+                $s3root = 'https://s3-' . REGION_EUW1  .  '.amazonaws.com';
+                break;
+            case 'sydney':
+                $s3root = 'https://s3-' . REGION_APSE1  .  '.amazonaws.com';
+                break;
+            case 'tokyo':
+            default:
+                $s3root = 'https://s3-' . REGION_APN1  .  '.amazonaws.com';
+                break;
+        }
+
+        //EXPIRY DAYS
+        switch($expirydays){
+            case 1: $s3root.= '/1';break;
+            case 3: $s3root.= '/3';break;
+            case 7: $s3root.= '/7';break;
+            case 30: $s3root.= '/30';break;
+            case 90: $s3root.= '/90';break;
+            case 180: $s3root.= '/180';break;
+            case 730: $s3root.= '/730';break;
+            case 9999: $s3root.= '/9999';break;
+
+            case 365:
+            default:    $s3root.= '/365';
+        }
+
+        //MEDIATYPE
+        switch($mediatype){
+            case 'video':
+                $s3root.= '/' . BUCKET_NAME_VIDEOOUT;
+                break;
+            case 'audio':
+            default:
+                $s3root.= '/' . BUCKET_NAME_AUDIOOUT;
+        }
+
+        //SITE
+        $host = parse_url($parent, PHP_URL_HOST);
+        if(!$host){
+            $host="unknown";
+        }
+        $s3root.= '/' . $host;
+
+        //OWNER TAG
+        $s3root.= '/' . clean_text($owner,PARAM_FILE);
+
+        return $s3root;
+    }
 
     /**
      * Make S3 filename (ala object key)
+     * $path is likely to be a folder for the site
+     * $identifier is any old prefix the uploading site wishes to use to tag users
      */
 	public static function fetch_s3_filename($mediatype, $filename){
             global $CFG,$USER;
