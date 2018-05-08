@@ -351,6 +351,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             params += "&filename=" + config.filename;
             params += "&mediatype=" + config.mediatype;
 
+
             xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
            // xhr.setRequestHeader("Cache-Control", "no-cache");
