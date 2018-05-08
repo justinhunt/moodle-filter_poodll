@@ -209,7 +209,10 @@ class filter_poodll extends moodle_text_filter {
 		 
 		 //we use this to see if its a web service calling this, 
 		//in which case we return the alternate content
-		$is_webservice = strpos($PAGE->url,$CFG->wwwroot .'/webservice/') === 0;
+		$is_webservice = false;
+		if(property_exists($PAGE, 'url')){
+		  $is_webservice = strpos($PAGE->url,$CFG->wwwroot .'/webservice/') === 0;
+		}
 	
 		//get our filter props
 		if($ext){
@@ -597,7 +600,7 @@ class filter_poodll extends moodle_text_filter {
 		$require_amd = $conf['template_amd_' . $tempindex];
 	
 		//figure out if this is https or http. We don't want to scare the browser
-		if(strpos($PAGE->url->out(),'https:')===0){
+		if(property_exists($PAGE, 'url') && strpos($PAGE->url->out(),'https:')===0){
 			$scheme='https:';
 		}else{
 			$scheme='http:';
