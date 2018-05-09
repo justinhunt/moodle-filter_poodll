@@ -3,7 +3,7 @@ define(['jquery','core/log'], function($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('Messenger initialising');
+    log.debug('Hermes (the messenger) initialising');
 
     //posts messages back to the parent frame.
     //if it is allowed then we are good. Right?
