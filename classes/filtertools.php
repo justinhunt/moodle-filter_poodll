@@ -156,8 +156,9 @@ class filtertools
 				//get the bits of the url
 				$bits = parse_url($rawurl);
 				if(!array_key_exists('scheme',$bits)){
-					//add scheme to url if there was none				
-					if(property_exists($PAGE, 'url') && strpos($PAGE->url->out(),'https:')===0){
+					//add scheme to url if there was none
+                    $climode = defined('CLI_SCRIPT') && CLI_SCRIPT;
+					if(!$climode && strpos($PAGE->url->out(),'https:')===0){
 						$scheme='https:';			
 					}else{
 						$scheme='http:';
