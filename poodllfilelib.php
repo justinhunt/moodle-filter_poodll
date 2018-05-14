@@ -120,13 +120,6 @@ require_once($CFG->libdir . '/filelib.php');
 			   echo "<?xml version=\"1.0\"?>";
 			   break;
 
-        case 'handleuploadfromiframeembed':
-            $returnxml = filter_poodll_handle_upload_fromiframeembed($mediatype,$filename);
-            //probably not necessary to return anything, but just in case
-            if(!$returnxml){return;}
-            header("Content-type: text/xml");
-            echo "<?xml version=\"1.0\"?>";
-            break;
 
 		case "instancedownload":
 			//paramone=mimetype paramtwo=path paramthree=hash
@@ -501,29 +494,6 @@ function filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea,$i
 
 }
 
-/* The alerts us to the fact that the file has been uploaded to S3. We commence handling */
-function filter_poodll_handle_upload_fromiframeembed($mediatype, $filename){
-
-    $return=filter_poodll_fetchReturnArray(true);
-
-    global $CFG,$USER;
-
-    $ret =  \filter_poodll\poodlltools::postprocess_upload_fromiframeembed($mediatype, $filename);
-
-    if(!$ret){
-        $return['success']=false;
-        array_push($return['messages'],"Unable to postprocess upload from iframe embed." );
-    }
-
-    //we process the result for return to browser
-    $xml_output=filter_poodll_prepareXMLReturn($return, '99999');
-
-    //we return to browser the result of our file operation
-    return $xml_output;
-
-//set up return object
-
-}
 
 function filter_poodll_speaktext($text){
     $awstools = new \filter_poodll\awstools();

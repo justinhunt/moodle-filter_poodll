@@ -1346,17 +1346,6 @@ class poodlltools
         }
 	}
 
-
-    public static function postprocess_upload_fromiframeembed($mediatype,$filename)
-    {
-        $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
-        $infilename = $s3filename;
-        $outfilename = $infilename;
-
-        $success = self::commence_s3_transcode($mediatype, $infilename, $outfilename);
-        return $success;
-    }
-
     public static function postprocess_s3_upload($mediatype,$draftfilerecord)
     {
         $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $draftfilerecord->filename);

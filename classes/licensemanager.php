@@ -193,6 +193,7 @@ class licensemanager
         }
     }
 
+
     protected function parse_decrypted_data($decrypted_data){
        // print_r($decrypted_data);
        // die;

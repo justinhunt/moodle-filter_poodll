@@ -47,6 +47,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 case "image/jpeg": ext = "jpg";break;
                 case "image/png": ext = "png";break;
                 case "audio/wav": ext = "wav";break;
+                case "audio/ogg": ext = "ogg";break;
                 case "video/quicktime": ext = "mov";break;
                 case "audio/mpeg3": ext = "mp3";break;
                 case "audio/webm": ext = "webm";break;
@@ -95,21 +96,20 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
 
         //We can detect conversion by pinging the s3 out filename
         //this is only done in the iFrame
-        completeAfterConversion: function(uploader,filename, waitms){
+        completeAfterProcessing: function(uploader,filename, waitms){
 
-            //alert the skin that we are awaiting conversion
+            //alert the skin that we are awaiting processing
             this.upskin.showMessage(M.util.get_string('recui_awaitingconversion', 'filter_poodll'));
 
             //this will always be true ...
             if(uploader.config.iframeembed){
-                filename = uploader.config.cloudroot + uploader.config.cloudfilename;
+                filename =  uploader.config.s3root + uploader.config.s3filename;
             }
 
             //We alert the iframe host that a file is now awaiting conversion
             var messageObject ={};
-            messageObject.type = "awaitingconversion";
-            messageObject.shorturl = filename;
-            messageObject.shortfilename = uploader.config.cloudfilename;
+            messageObject.type = "awaitingprocessing";
+            messageObject.finalurl = filename;
             messageObject.s3filename = uploader.config.s3filename;
             messageObject.s3root = uploader.config.s3root;
             messageObject.id = uploader.config.id;
@@ -128,7 +128,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                     //We get here if its a 404 or 403. So settimout here and wait for file to arrive
                     //we increment the timeout period each time to prevent bottlenecks
                     log.debug('403 errors are normal here, till the file arrives back from conversion');
-                    setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms+500);},waitms);
+                    setTimeout(function(){that.completeAfterProcessing(uploader,filename,waitms+500);},waitms);
                 },
                 success: function(data, textStatus, xhr)
                 {
@@ -137,7 +137,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                             that.doUploadCompleteCallback(uploader,filename);
                             break;
                         default:
-                            setTimeout(function(){that.completeAfterConversion(uploader,filename,waitms+500);},waitms);
+                            setTimeout(function(){that.completeAfterProcessing(uploader,filename,waitms+500);},waitms);
                     }
 
                 }
@@ -148,7 +148,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
 
             //in the case of an iframeembed we need a full URL not just a filename
             if(uploader.config.iframeembed){
-                filename = uploader.config.cloudroot + uploader.config.cloudfilename;
+                filename =  uploader.config.s3root + uploader.config.s3filename;
             }
 
             //For callbackjs and for postmessage we need an array of stuff
@@ -180,8 +180,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 //The callback object above scan prob. be phased out. But not all integrations will use iframes either.
                 var messageObject ={};
                 messageObject.type = "filesubmitted";
-                messageObject.shorturl = filename;
-                messageObject.shortfilename = uploader.config.cloudfilename;
+                messageObject.finalurl = uploader.config.s3root + uploader.config.s3filename;
                 messageObject.s3filename = uploader.config.s3filename;
                 messageObject.s3root = uploader.config.s3root;
                 messageObject.id = uploader.config.id;
@@ -213,7 +212,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                       //in an iframeembed we only  do this after conversion is complete. so we run a poll to check compl.
                       //in standard Moodle we have a placeholder file to deal with any slow conversions. so we don't poll
                       if (uploader.config.iframeembed) {
-                          this.completeAfterConversion(uploader, filename,1000);
+                          this.completeAfterProcessing(uploader, filename,1000);
                       }else{
                           this.doUploadCompleteCallback(uploader, filename);
                       }
@@ -261,7 +260,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             xhr.onreadystatechange = function(e){
                 if(using_s3 && this.readyState===4) {
                     if (config.iframeembed) {
-                        uploader.postprocess_uploadfromiframeembed(uploader);
+                        uploader.postprocess_uploadfromiframeembed(uploader,ext);
                     } else {
                         //ping Moodle and inform that we have a new file
                         uploader.postprocess_s3_upload(uploader);
@@ -328,10 +327,27 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
          }//end of if using_s3
         },
 
-        postprocess_uploadfromiframeembed: function(uploader){
+        postprocess_uploadfromiframeembed: function(uploader,ext){
             var config = uploader.config;
             var xhr = new XMLHttpRequest();
             var that = this;
+
+            //now its a bit hacky, but if the user is NOT transcoding,
+            // only now do we know the true final file extension (ext)
+            //we just alerted the cloud poodll api service, and now we need to change it here(default is mp3).
+            //the actual 'filename' we have is part of the uploaded URL, so changing that is risky. ..
+            //  .... we might not find the uploaded file to postprocess
+            if(!config.transcode){
+                switch(config.mediatype){
+                    case 'audio':
+                        uploader.config.s3filename = config.s3filename.replace('.mp3', '.' + ext);
+                        uploader.config.cloudfilename = uploader.config.s3filename;
+                        break;
+                    case 'video':
+                        uploader.config.s3filename = config.s3filename.replace('.mp4', '.' + ext);
+                        break;
+                }
+            }
 
             //lets do a little error checking
             //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
@@ -341,21 +357,42 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                         that.upskin.showMessage('Post Process Upload from IframeEmbed Error:' + xhr.status);
                         $('#' + that.config.widgetid + '_messages').show();
                     }else{
-
+                        var payload = xhr.responseText;
+                        var payloadobject = JSON.parse(payload);
+                        if(payloadobject && payloadobject.returnCode > 0){
+                            //We alert the iframe host that somehting did not go right
+                            var messageObject ={};
+                            messageObject.type = "error";
+                            messageObject.code = payloadobject.returnCode;
+                            messageObject.message=payloadobject.returnMessage;
+                            uploader.config.hermes.postMessage(messageObject);
+                        }
                     }
                 }
             };
 
+
             //log.debug(params);
-            var params = "datatype=handleuploadfromiframeembed";
-            params += "&filename=" + config.filename;
-            params += "&mediatype=" + config.mediatype;
+            var xhrparams =  "wstoken=" + config.wstoken
+                + "&wsfunction=local_cpapi_postprocess_upload"
+                + "&moodlewsrestformat=json"
+                + "&mediatype=" + config.mediatype
+                + "&filename=" + config.filename
+                + "&ext=" + ext
+                + '&parent=' + config.parent
+                + '&owner=' + config.owner
+                + '&region=' + config.region
+                + '&expiredays=' + config.expiredays
+                + '&transcode=' + config.transcode
+                + '&transcribe=' + config.transcribe
+                + '&transcribelanguage=' + config.transcribelanguage;
 
-
-            xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
+            var serverurl= M.cfg.wwwroot + "/webservice/rest/server.php";
+            xhr.open("POST",serverurl, true);
+            xhr.setRequestHeader("Cache-Control", "no-cache");
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-           // xhr.setRequestHeader("Cache-Control", "no-cache");
-            xhr.send(params);
+            xhr.send(xhrparams);
+
         },
 
         postprocess_s3_upload: function(uploader){
