@@ -1566,15 +1566,6 @@ class poodlltools
 				shell_exec($command . " >/dev/null 2>/dev/null ");
 			}
 		
-			/* About FFMPEG conv
-			it would be better to do the conversion in the background not here.
-			in that case you would place an ampersand at the end .. like this ...
-			" >/dev/null 2>/dev/null &");
-			But you have to get the information back to Moodle, and copy the file over, so the plumbing gets tough.
-			That is why we call the background task convert_with_ffmpeg_bg
-			Right now there is no "converting message" displayed to user, but we need to do this.
-			*/
-		
 			//Check if conversion worked
 			if(is_readable(realpath($tempdir . $convfilename))){
 				if($throwawayname){

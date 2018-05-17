@@ -50,70 +50,84 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	//find the file in the files database
     	$fs = get_file_storage();
     	switch($cd->convext){
-    		case '.mp3': $contenthash = \filter_poodll\poodlltools::AUDIO_PLACEHOLDER_HASH;break;
-    		case '.mp4': $contenthash = \filter_poodll\poodlltools::VIDEO_PLACEHOLDER_HASH;break;
-    		default:$contenthash = '';
+    		case '.mp3':
+    		        $contenthash = \filter_poodll\poodlltools::AUDIO_PLACEHOLDER_HASH;
+    		        $mediatype='audio';
+    		        break;
+    		case '.mp4':
+    		        $contenthash = \filter_poodll\poodlltools::VIDEO_PLACEHOLDER_HASH;
+                    $mediatype='video';
+    		        break;
+    		default:
+    		    $contenthash = '';
+                $mediatype='audio';
     	
     	}
 		if(!property_exists($cd,'filename')){
 			$this->handle_error(self::LOG_MISSING_FILENAME,'missing filename in custom data:' , $cd);
 			return;
 		}
-    	$select = "filename='" . $cd->filename. "' AND contenthash='" . $contenthash. "'";
-    	$params = null;
-    	$sort = "id DESC";
-    	$dbfiles = $DB->get_records_select('files',$select,$params,$sort);
-    	if(!$dbfiles){
-			$nofilefoundmessage='could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet';
-    		$this->handle_error(self::LOG_NO_FILE_FOUND_IN_DB,$nofilefoundmessage,$cd);
-			throw new \file_exception('storedfileproblem', $nofilefoundmessage);
-			return;
-    	}
-    	
-    	//get the file we will replace
-    	$origfilerecord = array_shift($dbfiles);	
-    	$origfile = $fs->get_file_by_id($origfilerecord->id);
-    	if(!$origfile){
-			$this->handle_error(self::LOG_STORED_FILE_PROBLEM, 'something wrong with sf:' . $cd->filename,$cd);
-			return;
-		}
 
-		//get the original draft record that we will delete and reuse
-		$draftfilerecord = $cd->filerecord;
-		$draftfile =  $fs->get_file_by_id($draftfilerecord->id);
 
-		//we used to delete the draft file and reuse it. It is just our placeholder.
-		//but it didn't seem to always delete, so we use another temporary filename (throwawayfilename) 
-		//we still delete it, because some draft areas have file limits right?
-		if($draftfile){
-			$draftfile->delete();
-		}
+        //fetch any file records, that currently hold the placeholder file
+        //usually just one, but occasionally there will be two (1 in draft, and 1 in perm)
+        $placeholder_file_recs = \filter_poodll\poodlltools::fetch_placeholder_file_record($mediatype, $cd->filename);
+        //do the replace, if it succeeds yay. If it fails ... try again. The user may just not have saved yet
+        if(!$placeholder_file_recs){
+            $nofilefoundmessage='could not find ' . $cd->filename . ' in the DB. Possibly user has not saved yet';
+            $this->handle_error(self::LOG_NO_FILE_FOUND_IN_DB,$nofilefoundmessage,$cd);
+            throw new \file_exception('storedfileproblem', $nofilefoundmessage);
+            return;
+        }
 
-		//do the conversion
-		$throwawayfilename = 'temp_' . $cd->filename;
-		try{
-			$convertedfile = \filter_poodll\poodlltools::convert_with_ffmpeg($draftfilerecord, 
-				 $cd->originalfilename, 
-				 $cd->convfilenamebase, 
-				$cd->convext,
-				$throwawayfilename);
-		} catch (Exception $e) {
-			$this->handle_error(self::LOG_DID_NOT_CONVERT,'could not get convert:' . $cd->filename . ':' . $e->getMessage(),$cd);
-			return;
-		}
-		
-		//replace the placeholder(original) file with the converted one
-		if($convertedfile){
-			$origfile->replace_file_with($convertedfile);
-		}else{
-		    $this->handle_error(self::LOG_UNABLE_TO_CONVERT,'unable to convert ' . $cd->originalfilename,$cd);
-		    return;
-		}
-		//if we got here then the task was completed successfully
-        $cd->outfilename=$cd->filename;
-		$cd->infilename=$cd->originalfilename;
-		$cd->filerecord=$origfilerecord;
-        \filter_poodll\event\adhoc_convert_completed::create_from_task($cd)->trigger();
+        //do the conversion
+        $throwawayfilename = 'temp_' . $cd->filename;
+        try{
+            $convertedfile = \filter_poodll\poodlltools::convert_with_ffmpeg($cd->filerecord,
+                $cd->originalfilename,
+                $cd->convfilenamebase,
+                $cd->convext,
+                $throwawayfilename);
+        } catch (Exception $e) {
+            $this->handle_error(self::LOG_DID_NOT_CONVERT,'could not get convert:' . $cd->filename . ':' . $e->getMessage(),$cd);
+            return;
+        }
+
+
+        try{
+            //loop through all the placeholder files and replace them
+            foreach($placeholder_file_recs as $file_rec) {
+
+                //fetch the placeholder file store file
+                $placefile = $fs->get_file_by_id($file_rec->id);
+                if(!$placefile){
+                    $this->handle_error(self::LOG_STORED_FILE_PROBLEM, 'something wrong with sf:' . $cd->filename,$cd);
+                    return;
+                }
+
+                //replace the placeholder(original) file with the converted one
+                if($convertedfile){
+                    $placefile->replace_file_with($convertedfile);
+                }else{
+                    $this->handle_error(self::LOG_UNABLE_TO_CONVERT,'unable to convert ' . $cd->originalfilename,$cd);
+                    return;
+                }
+
+                ///log what we just did
+                //if we got here then the task was completed successfully
+                $cd->outfilename=$cd->filename;
+                $cd->infilename=$cd->originalfilename;
+                $cd->filerecord=$file_rec;
+                \filter_poodll\event\adhoc_convert_completed::create_from_task($cd)->trigger();
+            }
+
+
+        }catch (Exception $e) {
+            $this->handle_error(self::LOG_UNABLE_TO_CONVERT,'unable to convert ' . $cd->originalfilename,$cd);
+            return;
+            return;
+        }
+
 		
     }
 
