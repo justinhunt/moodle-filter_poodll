@@ -61,15 +61,6 @@ if (is_siteadmin()) {
 	}
 	$ADMIN->add($poodll_category_name, $widget_settings);
 
-	//Templates Launch Page
-    /*
-    $templatetable_settings = new admin_settingpage('filter_poodll_templatetable',get_string('templates', 'filter_poodll'));
-    $templatetable_items =  \filter_poodll\settingstools::fetch_template_table();
-    foreach ($templatetable_items as $templatetable_item) {
-        $templatetable_settings->add($templatetable_item);
-    }
-    $ADMIN->add($poodll_category_name, $templatetable_settings);
-*/
 
     $poodlltemplatesadmin_settings = new admin_externalpage('poodlltemplatesadmin', get_string('templates', 'filter_poodll'),
         $CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php' );

@@ -83,5 +83,11 @@ function xmldb_filter_poodll_upgrade($oldversion) {
             set_config('filter_poodll_recorderorder_video', str_replace('mobile,media,','media,mobile,',$currentvideo));
     	}
     }
+
+    if($oldversion < 2018041002 && version_compare(phpversion(), '5.5.0', '>=')) {
+        if (property_exists($CFG, 'filter_poodll_aws_sdk')) {
+            set_config('filter_poodll_aws_sdk', '3.x');
+        }
+    }
     return true;
 }

@@ -63,8 +63,13 @@ public static function fetch_general_items(){
 	//if its needed added aws sdk for php in a folder called aws-v3 in /filter/poodll/3rdparty
 	//$options = array('2.x' => 'Version 2.x', '3.x'=>"Version 3.x");
 	$options = array('2.x' => 'Version 2.x','3.x' => 'Version 3.x');
+    if($CFG->version >= 2018041002 && version_compare(phpversion(), '5.5.0', '>=')) {
+        $def = '3.x';
+    }else{
+        $def = '2.x';
+    }
 	$items[] = new \admin_setting_configselect('filter_poodll_aws_sdk', get_string('awssdkversion', 'filter_poodll'), 
-		get_string('awssdkversion_desc', 'filter_poodll'), '2.x', $options);
+		get_string('awssdkversion_desc', 'filter_poodll'), $def, $options);
 
     //Adding Amazon AWS regions
     //for now we REMOVED the EUC1 and CAC1 regions, but they cost more and be slow
