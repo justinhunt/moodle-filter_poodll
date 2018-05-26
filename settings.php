@@ -3,6 +3,7 @@
 $settings = null;
 defined('MOODLE_INTERNAL') || die;
 if (is_siteadmin()) {
+    require_once($CFG->dirroot . '/filter/poodll/lib.php');
 
 	//add folder in property tree for settings pages
 	 $conf = get_config('filter_poodll');
@@ -26,7 +27,24 @@ if (is_siteadmin()) {
     	$general_settings->add($gen_item);
 	}
 	$ADMIN->add($poodll_category_name, $general_settings);
-	
+
+
+    //Advanced Settings:
+    $advanced_settings = new admin_settingpage('filter_poodll_advanced',get_string('advancedsettings', 'filter_poodll'));
+    $advanced_items = \filter_poodll\settingstools::fetch_advanced_items();
+    foreach ($advanced_items as $advanced_item) {
+        $advanced_settings->add($advanced_item);
+    }
+    $ADMIN->add($poodll_category_name, $advanced_settings);
+
+    //Legacy Settings:
+    $legacy_settings = new admin_settingpage('filter_poodll_legacy',get_string('legacysettings', 'filter_poodll'));
+    $legacy_items = \filter_poodll\settingstools::fetch_legacy_items();
+    foreach ($legacy_items as $legacy_item) {
+        $legacy_settings->add($legacy_item);
+    }
+    $ADMIN->add($poodll_category_name, $legacy_settings);
+
 	///File Extension Settings:matching players/widgets with parsed file extensions
 	$extension_settings = new admin_settingpage('filter_poodll_extensions',get_string('extensionsettings', 'filter_poodll'));
 	$extension_items =  \filter_poodll\settingstools::fetch_extension_items($conf);

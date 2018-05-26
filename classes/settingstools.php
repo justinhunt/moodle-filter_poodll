@@ -81,16 +81,6 @@ public static function fetch_general_items(){
        get_string('awsregion_desc', 'filter_poodll'), awstools::REGION_APN1, $options);
 
 
-
-    //PoodLL Network Settings.
-	$items[] = new \admin_setting_heading('filter_poodll_network_settings', get_string('filter_poodll_network_heading', 'filter_poodll'), '');
-	$items[] = new \admin_setting_configtext('filter_poodll_servername', get_string('servername', 'filter_poodll'), '', 'tokyo.poodll.com');
-	$items[] = new \admin_setting_configtext('filter_poodll_serverid', get_string('serverid', 'filter_poodll'), '', 'poodll');
-	$items[] = new \admin_setting_configtext('filter_poodll_serverport', get_string('serverport', 'filter_poodll'), '', '1935', PARAM_INT);
-	$items[] = new \admin_setting_configtext('filter_poodll_serverhttpport', get_string('serverhttpport', 'filter_poodll'), '', '443', PARAM_INT);
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_autotryports', get_string('autotryports', 'filter_poodll'), '', 1);
-
-
     $items[] = new \admin_setting_heading('filter_poodll_recorderorder_heading', get_string('recorderorder', 'filter_poodll'), get_string('recorderorder_desc', 'filter_poodll'));
 
     //PoodLL player type settings.
@@ -115,40 +105,6 @@ public static function fetch_general_items(){
 
     $items[] = new \admin_setting_configcheckbox('filter_poodll_download_media_ok', get_string('showdownloadicon', 'filter_poodll'), get_string('showdownloadicon_desc', 'filter_poodll'), 0);
 
-	// PoodLL Flashcards
-	$items[] = new \admin_setting_heading('filter_poodll_flashcards_settings', get_string('filter_poodll_flashcards_heading', 'filter_poodll'), '');
-	$options = array('poodll' => 'PoodLL');//removed owl  2017/05/16, 'owl'=>"Owl"
-	$items[] = new \admin_setting_configselect('filter_poodll_flashcards_type', get_string('flashcardstype', 'filter_poodll'), '', 'poodll', $options);
-
-
-
-	//audio capture settings
-	$items[] = new \admin_setting_heading('filter_poodll_mic_settings', get_string('filter_poodll_mic_heading', 'filter_poodll'), '');
-	$items[] = new \admin_setting_configtext('filter_poodll_studentmic', get_string('studentmic', 'filter_poodll'), '', '');
-	$items[] = new \admin_setting_configtext('filter_poodll_micrate', get_string('micrate', 'filter_poodll'), '','22', PARAM_INT);
-	$items[] = new \admin_setting_configtext('filter_poodll_micsilencelevel', get_string('micsilencelevel', 'filter_poodll'), '', '1', PARAM_INT);
-	$items[] = new \admin_setting_configtext('filter_poodll_micgain', get_string('micgain', 'filter_poodll'), '', '50', PARAM_INT); 
-	$items[] = new \admin_setting_configtext('filter_poodll_micecho', get_string('micecho', 'filter_poodll'), '', 'yes');
-	$items[] = new \admin_setting_configtext('filter_poodll_micloopback', get_string('micloopback', 'filter_poodll'), '', 'no');
-	
-
-
-	//video capture settings.
-	$items[] = new \admin_setting_heading('filter_poodll_camera_settings', get_string('filter_poodll_camera_heading', 'filter_poodll'), '');
-	$items[] = new \admin_setting_configtext('filter_poodll_studentcam', get_string('studentcam', 'filter_poodll'), '', '');
-	$options = array('160' => '160x120', '320' => '320x240','480' => '480x360','640' => '640x480','800'=>'800x600','1024'=>'1024x768','1280'=>'1280x1024','1600' => '1600x1200',);
-	$items[] = new \admin_setting_configselect('filter_poodll_capturewidth', get_string('capturewidth', 'filter_poodll'), '', '480', $options);
-	//$items[] = new \admin_setting_configtext('filter_poodll_captureheight', get_string('captureheight', 'filter_poodll'), '', '240', PARAM_INT);
-	$items[] = new \admin_setting_configtext('filter_poodll_capturefps', get_string('capturefps', 'filter_poodll'), '', '17', PARAM_INT);
-	$items[] = new \admin_setting_configtext('filter_poodll_bandwidth', get_string('bandwidth', 'filter_poodll'), '', '0', PARAM_INT);
-	$items[] = new \admin_setting_configtext('filter_poodll_picqual', get_string('picqual', 'filter_poodll'), '', '7', PARAM_INT);
-
-	//mp3 recorder settings.
-	$items[] = new \admin_setting_heading('filter_poodll_mp3recorder_settings', get_string('filter_poodll_mp3recorder_heading', 'filter_poodll'), '');
-	$options = array('normal' => get_string('normal', 'filter_poodll'), 'tiny' => get_string('tiny', 'filter_poodll'));
-	$items[] = new \admin_setting_configselect('filter_poodll_mp3recorder_size', get_string('size', 'filter_poodll'), '', 'normal', $options);
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_miccanpause', get_string('miccanpause', 'filter_poodll'), '', 0);
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_mp3recorder_nocloud', get_string('mp3_nocloud', 'filter_poodll'), get_string('mp3_nocloud_details', 'filter_poodll'), 0);
 
    //html5 recorder settings.
 	$items[] = new \admin_setting_heading('filter_poodll_html5recorder_settings', get_string('filter_poodll_html5recorder_heading', 'filter_poodll'), '');
@@ -162,17 +118,6 @@ public static function fetch_general_items(){
     $items[] = new \admin_setting_configcheckbox('filter_poodll_html5ondsafari', get_string('html5ondsafari', 'filter_poodll'), get_string('html5ondsafaridetails', 'filter_poodll'), 0);
 
 
-    /*
-    //File Conversions
-    */
-	$items[] = new \admin_setting_heading('filter_poodll_transcode_settings', get_string('transcode_heading', 'filter_poodll'), get_string('transcode_heading_desc', 'filter_poodll'));
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_videotranscode', get_string('videotranscode', 'filter_poodll'), get_string('videotranscodedetails', 'filter_poodll'), 1);
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_audiotranscode', get_string('audiotranscode', 'filter_poodll'), get_string('audiotranscodedetails', 'filter_poodll'), 1);
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_ffmpeg', get_string('ffmpeg', 'filter_poodll'), get_string('ffmpeg_details', 'filter_poodll'), 0);
-	$items[] = new \admin_setting_configtext('filter_poodll_ffmpeg_mp3opts', get_string('mp3opts', 'filter_poodll'), get_string('mp3opts_details', 'filter_poodll'), '');
-	$items[] = new \admin_setting_configtext('filter_poodll_ffmpeg_mp4opts', get_string('mp4opts', 'filter_poodll'), get_string('mp4opts_details', 'filter_poodll'), '');
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_bgtranscode_video', get_string('bgtranscode_video', 'filter_poodll'), get_string('bgtranscodedetails_video', 'filter_poodll'), 1);
-	$items[] = new \admin_setting_configcheckbox('filter_poodll_bgtranscode_audio', get_string('bgtranscode_audio', 'filter_poodll'), get_string('bgtranscodedetails_audio', 'filter_poodll'), 1);
 
 	//PoodLL Whiteboard
 	$items[] = new \admin_setting_heading('filter_poodll_whiteboard_setting', get_string('filter_poodll_whiteboard_heading', 'filter_poodll'), '');
@@ -184,16 +129,120 @@ public static function fetch_general_items(){
     $items[] = new \admin_setting_configcheckbox('filter_poodll_whiteboardnozoom', get_string('wboardnozoom', 'filter_poodll'), get_string('wboardnozoom_details', 'filter_poodll'), 0);
 
 
-    /*
-    //Logging
-    */
-    $items[] = new \admin_setting_heading('filter_poodll_debug_settings', get_string('debug_heading', 'filter_poodll'), '');
-    $items[] = new \admin_setting_configcheckbox('filter_poodll_debug', get_string('debug_enable', 'filter_poodll'), get_string('debug_enable_details', 'filter_poodll'), 0);
 
 
     return $items;
 
 }// end of fetch general items
+
+    public static function fetch_advanced_items()
+    {
+        global $CFG;
+        $items = array();
+
+        /*
+       //File Conversions
+       */
+        $items[] = new \admin_setting_heading('filter_poodll_transcode_settings', get_string('transcode_heading', 'filter_poodll'), get_string('transcode_heading_desc', 'filter_poodll'));
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_videotranscode', get_string('videotranscode', 'filter_poodll'), get_string('videotranscodedetails', 'filter_poodll'), 1);
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_audiotranscode', get_string('audiotranscode', 'filter_poodll'), get_string('audiotranscodedetails', 'filter_poodll'), 1);
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_ffmpeg', get_string('ffmpeg', 'filter_poodll'), get_string('ffmpeg_details', 'filter_poodll'), 0);
+        $items[] = new \admin_setting_configtext('filter_poodll_ffmpeg_mp3opts', get_string('mp3opts', 'filter_poodll'), get_string('mp3opts_details', 'filter_poodll'), '');
+        $items[] = new \admin_setting_configtext('filter_poodll_ffmpeg_mp4opts', get_string('mp4opts', 'filter_poodll'), get_string('mp4opts_details', 'filter_poodll'), '');
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_bgtranscode_video', get_string('bgtranscode_video', 'filter_poodll'), get_string('bgtranscodedetails_video', 'filter_poodll'), 1);
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_bgtranscode_audio', get_string('bgtranscode_audio', 'filter_poodll'), get_string('bgtranscodedetails_audio', 'filter_poodll'), 1);
+
+
+       /*
+        * Placeholder file and related settings
+        */
+        $items[] = new \admin_setting_heading('filter_poodll/placeholder_settings', get_string('placeholder_heading', 'filter_poodll'), get_string('placeholder_heading_desc', 'filter_poodll'));
+        //audio file
+        $name = 'filter_poodll/placeholderaudiofile';
+        $title =get_string('placeholderaudiofile', 'filter_poodll');
+        $description = get_string('placeholderaudiofile_desc', 'filter_poodll');
+        $itemid=0;
+        $setting = new \admin_setting_configstoredfile($name, $title, $description, poodlltools::CUSTOM_PLACEHOLDERAUDIO_FILEAREA,
+                    $itemid,array('accepted_types'=>'audio'));
+        $setting->set_updatedcallback('filter_poodll_update_placeholderaudiohash');
+        $items[] = $setting;
+        //the length in seconds to one decimal place of the audio file
+        $items[] = new \admin_setting_configtext('filter_poodll/placeholderaudiosecs', get_string('placeholderaudiosecs', 'filter_poodll'),
+            get_string('placeholderaudiosecs_details', 'filter_poodll'), 0,PARAM_FLOAT);
+
+        //video file
+        $name = 'filter_poodll/placeholdervideofile';
+        $title =get_string('placeholdervideofile', 'filter_poodll');
+        $description = get_string('placeholdervideofile_desc', 'filter_poodll');
+        $itemid=0;
+        $setting = new \admin_setting_configstoredfile($name, $title, $description, poodlltools::CUSTOM_PLACEHOLDERVIDEO_FILEAREA,
+                    $itemid,array('accepted_types'=>'video'));
+        $setting->set_updatedcallback('filter_poodll_update_placeholdervideohash');
+        $items[] = $setting;
+        //the length in seconds to one decimal place of the video file
+        $items[] = new \admin_setting_configtext('filter_poodll/placeholdervideosecs', get_string('placeholdervideosecs', 'filter_poodll'),
+            get_string('placeholdervideosecs_details', 'filter_poodll'), 0,PARAM_FLOAT);
+
+
+        /*
+       //Logging
+       */
+        $items[] = new \admin_setting_heading('filter_poodll_debug_settings', get_string('debug_heading', 'filter_poodll'), '');
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_debug', get_string('debug_enable', 'filter_poodll'), get_string('debug_enable_details', 'filter_poodll'), 0);
+
+        return $items;
+    }
+
+    public static function fetch_legacy_items()
+    {
+        global $CFG;
+        $items = array();
+
+        //PoodLL Network Settings.
+        $items[] = new \admin_setting_heading('filter_poodll_network_settings', get_string('filter_poodll_network_heading', 'filter_poodll'), '');
+        $items[] = new \admin_setting_configtext('filter_poodll_servername', get_string('servername', 'filter_poodll'), '', 'tokyo.poodll.com');
+        $items[] = new \admin_setting_configtext('filter_poodll_serverid', get_string('serverid', 'filter_poodll'), '', 'poodll');
+        $items[] = new \admin_setting_configtext('filter_poodll_serverport', get_string('serverport', 'filter_poodll'), '', '1935', PARAM_INT);
+        $items[] = new \admin_setting_configtext('filter_poodll_serverhttpport', get_string('serverhttpport', 'filter_poodll'), '', '443', PARAM_INT);
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_autotryports', get_string('autotryports', 'filter_poodll'), '', 1);
+
+
+        //mp3 recorder settings.
+        $items[] = new \admin_setting_heading('filter_poodll_mp3recorder_settings', get_string('filter_poodll_mp3recorder_heading', 'filter_poodll'), '');
+        $options = array('normal' => get_string('normal', 'filter_poodll'), 'tiny' => get_string('tiny', 'filter_poodll'));
+        $items[] = new \admin_setting_configselect('filter_poodll_mp3recorder_size', get_string('size', 'filter_poodll'), '', 'normal', $options);
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_miccanpause', get_string('miccanpause', 'filter_poodll'), '', 0);
+        $items[] = new \admin_setting_configcheckbox('filter_poodll_mp3recorder_nocloud', get_string('mp3_nocloud', 'filter_poodll'), get_string('mp3_nocloud_details', 'filter_poodll'), 0);
+
+
+        //video capture settings.
+        $items[] = new \admin_setting_heading('filter_poodll_camera_settings', get_string('filter_poodll_camera_heading', 'filter_poodll'), '');
+        $items[] = new \admin_setting_configtext('filter_poodll_studentcam', get_string('studentcam', 'filter_poodll'), '', '');
+        $options = array('160' => '160x120', '320' => '320x240','480' => '480x360','640' => '640x480','800'=>'800x600','1024'=>'1024x768','1280'=>'1280x1024','1600' => '1600x1200',);
+        $items[] = new \admin_setting_configselect('filter_poodll_capturewidth', get_string('capturewidth', 'filter_poodll'), '', '480', $options);
+        //$items[] = new \admin_setting_configtext('filter_poodll_captureheight', get_string('captureheight', 'filter_poodll'), '', '240', PARAM_INT);
+        $items[] = new \admin_setting_configtext('filter_poodll_capturefps', get_string('capturefps', 'filter_poodll'), '', '17', PARAM_INT);
+        $items[] = new \admin_setting_configtext('filter_poodll_bandwidth', get_string('bandwidth', 'filter_poodll'), '', '0', PARAM_INT);
+        $items[] = new \admin_setting_configtext('filter_poodll_picqual', get_string('picqual', 'filter_poodll'), '', '7', PARAM_INT);
+
+
+        //audio capture settings
+        $items[] = new \admin_setting_heading('filter_poodll_mic_settings', get_string('filter_poodll_mic_heading', 'filter_poodll'), '');
+        $items[] = new \admin_setting_configtext('filter_poodll_studentmic', get_string('studentmic', 'filter_poodll'), '', '');
+        $items[] = new \admin_setting_configtext('filter_poodll_micrate', get_string('micrate', 'filter_poodll'), '','22', PARAM_INT);
+        $items[] = new \admin_setting_configtext('filter_poodll_micsilencelevel', get_string('micsilencelevel', 'filter_poodll'), '', '1', PARAM_INT);
+        $items[] = new \admin_setting_configtext('filter_poodll_micgain', get_string('micgain', 'filter_poodll'), '', '50', PARAM_INT);
+        $items[] = new \admin_setting_configtext('filter_poodll_micecho', get_string('micecho', 'filter_poodll'), '', 'yes');
+        $items[] = new \admin_setting_configtext('filter_poodll_micloopback', get_string('micloopback', 'filter_poodll'), '', 'no');
+
+        // PoodLL Flashcards
+        $items[] = new \admin_setting_heading('filter_poodll_flashcards_settings', get_string('filter_poodll_flashcards_heading', 'filter_poodll'), '');
+        $options = array('poodll' => 'PoodLL');//removed owl  2017/05/16, 'owl'=>"Owl"
+        $items[] = new \admin_setting_configselect('filter_poodll_flashcards_type', get_string('flashcardstype', 'filter_poodll'), '', 'poodll', $options);
+
+        return $items;
+
+    }
 
 public static function fetch_mobile_items($conf){
 	global $CFG;

@@ -51,15 +51,12 @@ class adhoc_convert_media extends \core\task\adhoc_task {
     	$fs = get_file_storage();
     	switch($cd->convext){
     		case '.mp3':
-    		        $contenthash = \filter_poodll\poodlltools::AUDIO_PLACEHOLDER_HASH;
     		        $mediatype='audio';
     		        break;
     		case '.mp4':
-    		        $contenthash = \filter_poodll\poodlltools::VIDEO_PLACEHOLDER_HASH;
                     $mediatype='video';
     		        break;
     		default:
-    		    $contenthash = '';
                 $mediatype='audio';
     	
     	}

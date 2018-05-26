@@ -1,38 +1,40 @@
 <?PHP // $Id: filter_poodll.php ,v 1.3 2012/05/16 12:47:13 Justin Hunt Exp $ 
       // PoodLl Filter
-$string['filtername'] = 'PoodLL Filter';
+$string['filtername'] = 'Poodll Filter';
 //officially its not needed, but "new version available" email doesn't know to look for filtername
-$string['pluginname'] = 'PoodLL Filter';
+$string['pluginname'] = 'Poodll Filter';
 //privacy details
 $string['privacy:metadata'] = 'The Poodll filter plugin does not store any personal data.';
 
-$string['settings'] = 'PoodLL Filter Settings';
-$string['activate'] = 'Activate PoodLL?';
+$string['settings'] = 'Poodll Filter Settings';
+$string['activate'] = 'Activate Poodll?';
 
 $string['generalsettings'] = 'General Settings';
+$string['legacysettings'] = 'Legacy Settings';
+$string['advancedsettings'] = 'Advanced Settings';
 
 //headings
-$string['filter_poodll_network_heading'] = 'PoodLL Network Settings';
+$string['filter_poodll_network_heading'] = 'Poodll Red5 Server Settings';
 $string['filter_poodll_audioplayer_heading'] = 'Audio Player Settings';
-$string['filter_poodll_mic_heading'] = 'Microphone Settings';
+$string['filter_poodll_mic_heading'] = 'Microphone Settings (Flash only)';
 $string['filter_poodll_videoplayer_heading'] = 'Video Player Settings';
-$string['filter_poodll_camera_heading'] = 'Web Camera Settings';
+$string['filter_poodll_camera_heading'] = 'Web Camera Settings (Flash only)';
 $string['filter_poodll_videogallery_heading'] = 'Video Gallery Settings';
 $string['filter_poodll_whiteboard_heading'] = 'Whiteboard Settings';
-$string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings';
-$string['filter_poodll_registration_heading'] ='Register your PoodLL';
+$string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings (Flash only)';
+$string['filter_poodll_registration_heading'] ='Register your Poodll';
 $string['filter_poodll_flashcards_heading'] ='Flashcards Settings';
-$string['filter_poodll_registration_explanation'] ="PoodLL 3 requires a registration key. If you do not have one visit Poodll.com to get one.";
+$string['filter_poodll_registration_explanation'] ="Poodll 3 requires a registration key. If you do not have one visit Poodll.com to get one.";
 
 $string['registrationkey'] = 'Registration Key';
-$string['registrationkey_explanation'] ="Enter your PoodLL registration key here. You can obtain a key from <a href='https://poodll.com/pricing'>https://poodll.com/pricing</a>";
+$string['registrationkey_explanation'] ="Enter your Poodll registration key here. You can obtain a key from <a href='https://poodll.com/pricing'>https://poodll.com/pricing</a>";
 $string['license_details'] ='<br> -------------- <br> License type: {$a->license_type} <br> Expires(JST): {$a->expire_date} <br> Registered URL: {$a->registered_url} ';
 
 $string['usecloudrecording'] = 'Cloud recording';
-$string['usecloudrecording_desc'] = 'PoodLL cloud recording. This enables transcoding and other services in the cloud. The PoodLL iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud.';
+$string['usecloudrecording_desc'] = 'Poodll cloud recording. This enables transcoding and other services in the cloud. The Poodll iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud.';
 
 $string['mobile_show'] = 'Show mobile';
-$string['mobile_show_desc'] = 'When the user is on an iOS device, instead of a recorder they are shown an "upload/record" button and a "use PoodLL app" button. Uncheck this to hide the PoodLL app button.'; 
+$string['mobile_show_desc'] = 'When the user is on an iOS device, instead of a recorder they are shown an "upload/record" button and a "use Poodll app" button. Uncheck this to hide the Poodll app button.';
 $string['mobile_audio_quality'] = 'Audio quality';
 $string['mobile_video_quality'] = 'Video quality';
 $string['lowquality'] = 'low';
@@ -43,22 +45,22 @@ $string['camerafront'] = 'front';
 $string['cameraback'] = 'back';
 
 $string['awssdkversion'] = 'AWS SDK';
-$string['awssdkversion_desc'] = 'PoodLL cloud recording uses Amazon Web Services (AWS). Version 3.x is supported but not shipped with PoodLL. Version 2.x of the AWS SDK will work on PHP 5.3 or greater. If you need to use AWS SDK 3.x then place it in a folder called aws-v3 in filter/poodll/3rdparty.';
+$string['awssdkversion_desc'] = 'Poodll cloud recording uses Amazon Web Services (AWS). Version 3.x is supported but not shipped with Poodll. Version 2.x of the AWS SDK will work on PHP 5.3 or greater. If you need to use AWS SDK 3.x then place it in a folder called aws-v3 in filter/poodll/3rdparty.';
 
 $string['uploadkey'] = 'Upload key';
-$string['uploadkey_desc'] = 'PoodLL cloud recording requires an upload key for recording. You should receive this when you sign up for PoodLL. Enter the upload key here.';
+$string['uploadkey_desc'] = 'Poodll cloud recording requires an upload key for recording. You should receive this when you sign up for Poodll. Enter the upload key here.';
 $string['uploadsecret'] = 'Upload secret';
-$string['uploadsecret_desc'] = 'PoodLL cloud recording requires an upload secret for recording.  You should receive this when you sign up for PoodLL. Enter the upload secret here.';
+$string['uploadsecret_desc'] = 'Poodll cloud recording requires an upload secret for recording.  You should receive this when you sign up for Poodll. Enter the upload secret here.';
 
 
-$string['unregistered'] = 'PoodLL not displayed because it has not been registered. Ask your teacher/administrator to register PoodLL at PoodLL.com.';
-$string['expired'] = 'PoodLL not displayed because registration has expired. Ask your teacher/administrator to renew the registration at PoodLL.com.';
+$string['unregistered'] = 'Poodll not displayed because it has not been registered. Ask your teacher/administrator to register Poodll at Poodll.com.';
+$string['expired'] = 'Poodll not displayed because registration has expired. Ask your teacher/administrator to renew the registration at Poodll.com.';
 
 
 $string['flashcardstype'] ='Flashcards Type';
 
 $string['recorderorder'] = 'Preferred Recorder Order';
-$string['recorderorder_desc'] = 'PoodLL will choose the best recorder it can if the user browser and platform support it. You set the order here.';
+$string['recorderorder_desc'] = 'Poodll will choose the best recorder it can if the user browser and platform support it. You set the order here.';
 $string['recorderorder_audio'] = 'Audio Recorder Order';
 $string['recorderorder_audio_desc'] = '';
 $string['recorderorder_video'] = 'Video Recorder Order';
@@ -72,10 +74,10 @@ $string['showdownloadicon'] = 'Show download button under players';
 $string['showdownloadicon_desc'] = 'This is implemented in some players. native players, mediaelement players, audiojs_shim, flowplayer first frame and Video JS';
 
 
-$string['servername'] = 'PoodLL Host Address';
-$string['serverid'] = 'PoodLL Server Id';
-$string['serverport'] = 'PoodLL Server Port (RTMP)';
-$string['serverhttpport'] = 'PoodLL Server Port (HTTP)';
+$string['servername'] = 'Poodll Red5 Server Address';
+$string['serverid'] = 'Poodll Red5 Server Id';
+$string['serverport'] = 'Poodll Red5 Server Port (RTMP)';
+$string['serverhttpport'] = 'Poodll Red5 Server Port (HTTP)';
 $string['autotryports'] = 'Try diff. ports if cannot connect';
 
 
@@ -113,7 +115,7 @@ $string['mp3_nocloud'] ='No Cloud';
 $string['mp3_nocloud_details'] ='Do not submit Flash mp3 recordings to cloud for transcode and copyback.';
 
 //transcode settings
-$string['transcode_heading'] ='Audio/Video File Conversion Settings';
+$string['transcode_heading'] ='Audio/Video File Conversion Settings (FFMPEG)';
 $string['transcode_heading_desc'] ='The settings in this section are for FFMPEG and Red5, and do not apply when using cloud recording.';
 $string['videotranscode'] = 'Auto Conv. to MP4';
 $string['videotranscodedetails'] = 'Convert recorded/uploaded video files to MP4 format before storing in Moodle. This works for recordings made on tokyo.poodll.com, or uploaded recordings if using FFMPEG';
@@ -133,7 +135,7 @@ $string['mobile_os_version_warning'] ='<p>Your OS Version is too low</p>
 $string['defaultwhiteboard'] = 'Default whiteboard';
 $string['whiteboardsave'] = 'Save Picture';
 $string['poodll:candownloadmedia'] = 'Can download media';
-$string['poodll:use'] = 'Can use the PoodLL filter'; 
+$string['poodll:use'] = 'Can use the Poodll filter';
 
 $string['bgtranscode_video'] = 'Perform Conversions to MP4 Background'; 
 $string['bgtranscodedetails_video'] = 'This is more reliable than performing them while user waits. But the user will not get their video till cron has run after saving. Only works if you are using FFMPEG and Moodle 2.7 or higher.'; 
@@ -165,7 +167,7 @@ $string['recui_timeouterror'] ='The request timed out. Sorry.';
 $string['recui_uploaderror'] ='An error occurred and your file has NOT been uploaded.';
 $string['recui_btnupload'] ='Record or Choose a File';
 $string['recui_awaitingconfirmation'] ='Awaiting confirmation';
-$string['recui_openrecorderapp'] ='PoodLL App';
+$string['recui_openrecorderapp'] ='Poodll App';
 $string['recui_uploadafile'] ='Upload File';
 $string['recui_uploadsuccess'] ='Uploaded successfully';
 $string['recui_awaitingconversion'] ='Awaiting conversion';
@@ -202,9 +204,9 @@ $string['templatekey_desc'] = 'The key should be one word and only contain numbe
 $string['templateversion'] = 'The version of this template {$a}';
 $string['templateversion_desc'] = 'Use semantic versioning e.g 1.0.0. Poodll will show an update button when the preset version is greater than the template version.';
 $string['templateinstructions'] = 'Instructions (template {$a})';
-$string['templateinstructions_desc'] = 'Any instructions entered here will be displayed on the PoodLL atto form if this template is available to be shown there. Keep them short or it will look bad.';
+$string['templateinstructions_desc'] = 'Any instructions entered here will be displayed on the Poodll atto form if this template is available to be shown there. Keep them short or it will look bad.';
 $string['template_showatto'] = 'Show in Atto (template {$a})';
-$string['template_showatto_desc'] = 'Display a button and form for this widget in the PoodLL Widgets dialog for Atto.';
+$string['template_showatto_desc'] = 'Display a button and form for this widget in the Poodll Widgets dialog for Atto.';
 $string['template_showplayers'] = 'Show in players list (template {$a})';
 $string['template_showplayers_desc'] = 'Display in the dropdown list of players available to be associated with a file extension.';
 $string['templateend'] = 'End tags(template {$a})';
@@ -232,11 +234,11 @@ $string['templaterequire_amd_desc'] = 'AMD is a javascript loading mechanism. If
 $string['templatealternate'] = 'Alternate content (template {$a})'; 
 $string['templatealternate_desc'] = 'Content that can be used when the custom CSS and javascript content is not available. Currently this is used when the template is processed by a webservice, probably for content on the mobile app';
 $string['templatealternate_end'] = 'Alternate content end (template {$a})';
-$string['templatealternate_end_desc'] = 'Closing alternate content tags for templates that enclose user content with start and end PoodLL tags';
+$string['templatealternate_end_desc'] = 'Closing alternate content tags for templates that enclose user content with start and end Poodll tags';
 $string['extensions'] = 'File Extensions';
 $string['extensions_desc'] = 'A CSV (comma separated value) list of file extensions this filter can parse.';
 $string['presets'] = 'Autofill template with a Preset';
-$string['presets_desc'] = 'PoodLL comes with some default presets you can use out of the box, or to help you get started with your own template. Choose one of those here, or just create your own template from scratch. You can export a template as a bundle by clicking on the green box above. You can import a bundle by dragging it onto the green box.';
+$string['presets_desc'] = 'Poodll comes with some default presets you can use out of the box, or to help you get started with your own template. Choose one of those here, or just create your own template from scratch. You can export a template as a bundle by clicking on the green box above. You can import a bundle by dragging it onto the green box.';
 $string['bundle'] = 'Bundle';
 $string['useplayer'] = '{$a} Player';
 $string['useplayerdesc'] = "The player selected will use the information from the appropriate template.";
@@ -260,7 +262,7 @@ $string['jumpcat_heading']='Poodll filter settings';
 $string['jumpcat_explanation']='The full set of Poodll filter settings can be found <a href="{$a}">here</a>.';
 
 
-$string['poodllsupportinfo']='PoodLL Support Information';
+$string['poodllsupportinfo']='Poodll Support Information';
 $string['exportdiagnostics']="Export";
 
 //html5 recorder
@@ -304,7 +306,7 @@ $string['no_event_or_task'] = 'Found neither a waiting move task, nor move-compl
 
 //cloud notifications
 $string['usecloudnotifications'] = 'Cloud notifications';
-$string['usecloudnotifications_desc'] = 'PoodLL cloud notifications. This enables instant notification that cloud transcoding is complete.';
+$string['usecloudnotifications_desc'] = 'Poodll cloud notifications. This enables instant notification that cloud transcoding is complete.';
 
 //flash on android
 $string['flashonandroid'] = 'Use Flash on Android';
@@ -337,3 +339,15 @@ $string['updatetoversion'] = 'Update to {$a}';
 $string['updateall'] = 'Update all.';
 $string['poodlltemplatesadmin'] = 'Poodll Filter Templates Admin';
 $string['cleartemplate'] = 'Clear template';
+
+//Placeholder settings
+$string['placeholder_heading'] = "Custom Audio and Video Placeholder File Settings";
+$string['placeholder_heading_desc'] = "Audio and video placeholder files are used in Poodll while files are converted to MP3 or MP4. If the default ones don't appeal you can upload custom ones here. ";
+$string['placeholderaudiofile'] = "Audio placeholder file (.mp3)";
+$string['placeholderaudiofile_desc'] = "Upload an MP3 file here and Poodll will use it as a placeholder.";
+$string['placeholdervideofile'] = "Video placeholder file (.mp4)";
+$string['placeholdervideofile_desc'] = "Upload an MP4 file here and Poodll will use it as a placeholder.";
+$string['placeholderaudiosecs'] = "Audio Duration(secs)";
+$string['placeholderaudiosecs_details'] = "Duration in seconds to one decimal place of placeholder audio";
+$string['placeholdervideosecs'] = "Video Duration(secs)";
+$string['placeholdervideosecs_details'] = "Duration in seconds to one decimal place of placeholder video";

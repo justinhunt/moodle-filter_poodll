@@ -23,6 +23,77 @@
 
 defined('MOODLE_INTERNAL') || die;
 
+use \filter_poodll\poodlltools;
+
+
+/**
+ * Serves files for this plugin
+ *
+ *
+ */
+function filter_poodll_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
+    $conf = get_config('filter_poodll');
+
+    if($context->contextlevel == CONTEXT_SYSTEM){
+        if($filearea === poodlltools::CUSTOM_PLACEHOLDERAUDIO_FILEAREA ||
+            $filearea === poodlltools::CUSTOM_PLACEHOLDERVIDEO_FILEAREA ) {
+            return poodlltools::internal_file_serve($filearea,$args,$forcedownload, $options);
+        }
+    }
+    send_file_not_found();
+}
+
+/**
+ * after an update of the placeholder file. We need to store the new file hash
+ *
+ */
+function filter_poodll_update_placeholderaudiohash() {
+    //set the default content hash
+    $contenthash = poodlltools::AUDIO_PLACEHOLDER_HASH;
+    $config = get_config('filter_poodll');
+
+    //get file details
+    $syscontext = \context_system::instance();
+    $component = 'filter_poodll';
+    $itemid = 0;
+    $filepath = '/';
+    $filename = $config->placeholderaudiofile;
+
+    if ($filename) {
+        $fs = get_file_storage();
+        $thefile = $fs->get_file($syscontext->id, $component, poodlltools::CUSTOM_PLACEHOLDERAUDIO_FILEAREA, $itemid, $filepath, $filename);
+        if ($thefile) {
+            $contenthash = $thefile->get_contenthash();
+        }
+    }
+    set_config('placeholderaudiohash', $contenthash, 'filter_poodll');
+}
+/**
+ * after an update of the placeholder file. We need to store the new file hash
+ *
+ */
+function filter_poodll_update_placeholdervideohash()
+{
+    //set the default content hash
+    $contenthash = poodlltools::VIDEO_PLACEHOLDER_HASH;
+    $config = get_config('filter_poodll');
+
+    //get file details
+    $syscontext = \context_system::instance();
+    $component = 'filter_poodll';
+    $itemid = 0;
+    $filepath = '/';
+    $filename = $config->placeholdervideofile;
+
+    if ($filename) {
+        $fs = get_file_storage();
+        $thefile = $fs->get_file($syscontext->id, $component, poodlltools::CUSTOM_PLACEHOLDERVIDEO_FILEAREA, $itemid, $filepath, $filename);
+        if ($thefile) {
+            $contenthash = $thefile->get_contenthash();
+        }
+    }
+    set_config('placeholdervideohash', $contenthash, 'filter_poodll');
+}
 
 /**
  * called back on customcss or custom js update, to bump the rev flag

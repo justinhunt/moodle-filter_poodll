@@ -36,6 +36,9 @@ class poodlltools
     const LOG_SAVE_PLACEHOLDER_FAIL = 1;
     const LOG_NOTHING_TO_TRANSCODE = 2;
 
+    const CUSTOM_PLACEHOLDERAUDIO_FILEAREA = 'placeholderaudiofile';
+    const CUSTOM_PLACEHOLDERVIDEO_FILEAREA = 'placeholdervideofile';
+
     const AUDIO_PLACEHOLDER_HASH ='805daf96c0b5e197a728f230d9550e9ba49e5ea7';
     const VIDEO_PLACEHOLDER_HASH ='4eab92af4205d642e774718c85d5ea3a19881ba6';
     const AUDIO_PLACEHOLDER_LENGTH = 4.362449;// as reported by firefox: 4.388496
@@ -43,6 +46,114 @@ class poodlltools
 
     const AUDIO_PLACEHOLDER_HASH_OLD ='e118549e4fc88836f418b6da6028f1fec571cd43';
     const VIDEO_PLACEHOLDER_HASH_OLD ='c2a342a0a664f2f1c4ea5387554a67caf3dd158e';
+
+    /**
+     * Returns URL to file from the poodll filter admin settings
+     * (probably a custom placeholder file)
+     *
+     *
+     * @param string $filepath
+     * @param string $filearea
+     * @return string protocol relative URL or null if not present
+     */
+    public static function internal_file_url($filepath, $filearea) {
+        global $CFG;
+
+        $component = 'filter_poodll';
+        $itemid = 0;
+        $syscontext = \context_system::instance();
+
+        $url = \moodle_url::make_file_url("$CFG->wwwroot/pluginfile.php", "/$syscontext->id/$component/$filearea/$itemid".$filepath);
+        return $url;
+    }
+
+    /**
+     * Serves a file from the Poodll filter admin settings (placeholder probably)
+     *
+     * theme revision is used instead of the itemid.
+     *
+     * @param string $filearea
+     * @param array $args the bits that come after the itemid in the url
+     * @param boolean $forcedownload passed straight in from above
+     * @param array $options passed straight in from above
+     * @return string protocol relative URL or null if not present
+     */
+    public static function internal_file_serve($filearea, $args, $forcedownload, $options) {
+        global $CFG;
+        require_once("$CFG->libdir/filelib.php");
+
+        $syscontext = \context_system::instance();
+        $component = 'filter_poodll';
+
+        $revision = array_shift($args);
+        if ($revision < 0) {
+            $lifetime = 0;
+        } else {
+            $lifetime = 60*60*24*60;
+        }
+
+        $fs = get_file_storage();
+        $relativepath = implode('/', $args);
+
+        $fullpath = "/{$syscontext->id}/{$component}/{$filearea}/0/{$relativepath}";
+        $fullpath = rtrim($fullpath, '/');
+        if ($file = $fs->get_file_by_hash(sha1($fullpath))) {
+            send_stored_file($file, $lifetime, 0, $forcedownload, $options);
+            return true;
+        } else {
+            send_file_not_found();
+        }
+    }
+
+    /*
+     * Fetch the hash the placeholder swap out code should be looking for
+     *
+     */
+    public static function fetch_placeholder_hash($mediatype){
+
+        $conf= get_config('filter_poodll');
+
+        switch ($mediatype){
+            case 'audio':
+                if($conf->placeholderaudiofile && property_exists($conf,'placeholderaudiohash')){
+                    return $conf->placeholderaudiohash;
+                }else{
+                    return self::AUDIO_PLACEHOLDER_HASH;
+                }
+                break;
+            case 'video':
+                if($conf->placeholdervideofile && property_exists($conf,'placeholdervideohash')){
+                    return $conf->placeholdervideohash;
+                }else{
+                    return self::VIDEO_PLACEHOLDER_HASH;
+                }
+                break;
+        }
+    }
+
+    /*
+     * Fetch the placeholder file duration to 1 decimal place
+     *
+     */
+    public static function fetch_placeholder_duration($mediatype){
+        $conf= get_config('filter_poodll');
+        switch ($mediatype){
+            case 'audio':
+                if($conf->placeholderaudiofile && property_exists($conf,'placeholderaudiohash')){
+                    return $conf->placeholderaudiosecs;
+                }else{
+                    return self::AUDIO_PLACEHOLDER_LENGTH;;
+                }
+                break;
+            case 'video':
+                if($conf->placeholdervideofile && property_exists($conf,'placeholdervideohash')){
+                    return $conf->placeholdervideosecs;
+                }else{
+                    return self::VIDEO_PLACEHOLDER_LENGTH;
+                }
+                break;
+        }
+    }
 
 	//this is just a temporary function, until the PoodLL filter client plugins are upgraded to not use simpleaudioplayer
     public static function fetchSimpleAudioPlayer($param1='auto',$url,$param3='http',$param4='width', $param5='height'){ 
@@ -1215,8 +1326,8 @@ class poodlltools
             global $DB, $CFG;
             
             switch($mediatype){
-                    case 'audio': $contenthash = self::AUDIO_PLACEHOLDER_HASH;break;
-                    case 'video': $contenthash = self::VIDEO_PLACEHOLDER_HASH;break;
+                    case 'audio': $contenthash = self::fetch_placeholder_hash('audio');break;
+                    case 'video': $contenthash = self::fetch_placeholder_hash('video');break;
                     default:$contenthash = '';
 
             }
@@ -1253,24 +1364,58 @@ class poodlltools
         
         public static function save_placeholderfile_in_moodle($mediatype,$draftfilerecord){
            global $CFG;
-            
+            $config=get_config('filter_poodll');
             $fs=get_file_storage();
-            $dfr=$draftfilerecord;
-            switch($mediatype){
-                case 'audio':$placeholderfilename = 'convertingmessage.mp3';break;
-                case 'video':$placeholderfilename = 'convertingmessage.mp4';break;
+
+            $have_custom_placeholder = ($config->placeholderaudiofile && $mediatype=='audio')||
+                ($config->placeholdervideofile && $mediatype=='video');
+
+            //if we DO have a custom placeholder file we use that.
+            if($have_custom_placeholder) {
+
+                //get file details
+                $syscontext = \context_system::instance();
+                $component = 'filter_poodll';
+                $itemid = 0;
+                $filepath = '/';
+                switch ($mediatype) {
+                    case 'audio':
+                        $filearea = self::CUSTOM_PLACEHOLDERAUDIO_FILEAREA;
+                        $filename = $config->placeholderaudiofile;
+                        break;
+                    case 'video':
+                        $filearea = self::CUSTOM_PLACEHOLDERVIDEO_FILEAREA;
+                        $filename = $config->placeholdervideofile;
+                        break;
+                }
+                $custom_placeholder_file = $fs->get_file($syscontext->id, $component, $filearea, $itemid, $filepath, $filename);
+                $stored_file = $fs->create_file_from_storedfile($draftfilerecord,$custom_placeholder_file);
+            }//end of if custom placeholder file
+
+            //if we DONT have a custom placeholder file we use the default.
+            if(!$have_custom_placeholder) {
+                switch ($mediatype) {
+                    case 'audio':
+                        $placeholderfilename = 'convertingmessage.mp3';
+                        break;
+                    case 'video':
+                        $placeholderfilename = 'convertingmessage.mp4';
+                        break;
+                }
+                //if we already have a stored file (second submit) just return that
+                $dfr=$draftfilerecord;
+                $stored_file = $fs->get_file($dfr->contextid, $dfr->component, $dfr->filearea, $dfr->itemid, $dfr->filepath, $dfr->filename);
+                if (!$stored_file) {
+                    $stored_file = $fs->create_file_from_pathname($draftfilerecord,
+                        $CFG->dirroot . '/filter/poodll/' . $placeholderfilename);
+                }
             }
-            //if we already have a stored file (second submit) just return that
-            $stored_file = $fs->get_file($dfr->contextid, $dfr->component, $dfr->filearea, $dfr->itemid, $dfr->filepath, $dfr->filename);
-            if(!$stored_file){
-            	$stored_file = $fs->create_file_from_pathname($draftfilerecord, 
-				$CFG->dirroot . '/filter/poodll/' .  $placeholderfilename);
-			}
+
+            //we should all be done here, but of not, we debug it.
 			if(!$stored_file) {
                 self::send_debug_data(SELF::LOG_SAVE_PLACEHOLDER_FAIL,'Unable to save placeholder:' . $dfr->filename,$dfr->userid,$dfr->contextid);
             }
             return $stored_file ;
-            
         }
 	
 	public static function register_s3_download_task($mediatype,$infilename,$outfilename, $draftfilerecord){

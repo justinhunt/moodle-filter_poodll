@@ -230,8 +230,8 @@ class filtertools
 			$proparray['TITLE'] = $title;
 			$proparray['FILEEXT'] = $ext;
 			//hardcoding for now, later we will do something better
-            $proparray['AUDIOPLACEHOLDERDURATION'] = poodlltools::AUDIO_PLACEHOLDER_LENGTH;
-            $proparray['VIDEOPLACEHOLDERDURATION'] = poodlltools::VIDEO_PLACEHOLDER_LENGTH;
+            $proparray['AUDIOPLACEHOLDERDURATION'] = poodlltools::fetch_placeholder_duration('audio');
+            $proparray['VIDEOPLACEHOLDERDURATION'] = poodlltools::fetch_placeholder_duration('video');
 			return $proparray;
 	}//end of function
 
