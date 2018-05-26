@@ -342,12 +342,12 @@ $string['cleartemplate'] = 'Clear template';
 
 //Placeholder settings
 $string['placeholder_heading'] = "Custom Audio and Video Placeholder File Settings";
-$string['placeholder_heading_desc'] = "Audio and video placeholder files are used in Poodll while files are converted to MP3 or MP4. If the default ones don't appeal you can upload custom ones here. ";
+$string['placeholder_heading_desc'] = "Audio and video placeholder files are used in Poodll while files are converted to MP3 or MP4. If the default ones don't appeal you can upload custom ones here. See <a href='https://support.poodll.com/support/solutions/articles/19000083252-custom-audio-and-video-placeholders'>here</a> for more details on how to do this.";
 $string['placeholderaudiofile'] = "Audio placeholder file (.mp3)";
 $string['placeholderaudiofile_desc'] = "Upload an MP3 file here and Poodll will use it as a placeholder.";
 $string['placeholdervideofile'] = "Video placeholder file (.mp4)";
 $string['placeholdervideofile_desc'] = "Upload an MP4 file here and Poodll will use it as a placeholder.";
 $string['placeholderaudiosecs'] = "Audio Duration(secs)";
-$string['placeholderaudiosecs_details'] = "Duration in seconds to one decimal place of placeholder audio";
+$string['placeholderaudiosecs_details'] = "Duration in seconds to at least one decimal place of placeholder audio";
 $string['placeholdervideosecs'] = "Video Duration(secs)";
-$string['placeholdervideosecs_details'] = "Duration in seconds to one decimal place of placeholder video";
+$string['placeholdervideosecs_details'] = "Duration in seconds to at least one decimal place of placeholder video";
