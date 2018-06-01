@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.02 (Build xxxxx)
+-Removed legacy code that was not needed
+
 Version 3.1.01(Build 2018041001)
 -Fixed issue in FFMPEG conversions that was preventing feedback submissions from converting
 

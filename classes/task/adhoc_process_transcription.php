@@ -22,22 +22,37 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  *
- * This is an adhoc task for copying back a file from Amazon S3
+ * This is an adhoc task for fetching and processing a transcription
  *
  * @package   filter_poodll
  * @since      Moodle 3.1
  * @copyright  2016 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class adhoc_s3_move extends \core\task\adhoc_task {
+class adhoc_process_transcription extends \core\task\adhoc_task {
 
-        const LOG_PLACEHOLDER_REPLACE_FAIL = 1;
-        const LOG_FETCH_FILE_FAIL = 2;
-        const LOG_NOT_ON_S3 = 3;
-        const LOG_NOT_CONVERTED = 4;
-        const LOG_PLACEHOLDER_NOT_FOUND = 5;
+        const LOG_TRANSCRIBE_ERROR = 1;
+        const LOG_TRANSCRIBE_WAITING = 2;
 
 //cd needs filename, filerecord and mediatype and savedatetime and convext
+/*
+public function start_trancribe($mediatype){
+    $awstools = new \filter_poodll\awstools();
+    //JUST for Now
+    switch($cd->mediatype){
+        case 'video':
+            $mediaextension = 'mp4';
+            break;
+        case 'audio':
+        default:
+            $mediaextension = 'mp3';
+            break;
+    }
+    $uri = $awstools->s3getObjectUri($cd->mediatype,$cd->outfilename,'out');
+    $result = $awstools->start_transcription_job($cd->filename,$mediaextension,$uri,'en-US');
+    $this->handle_transcribe_error(self::LOG_TRANSCRIBE_ERROR,$result,$cd,true);
+}
+*/
               
     public function execute() {   
     	//NB: seems any exceptions not thrown HERE, kill subsequent tasks
@@ -48,64 +63,52 @@ class adhoc_s3_move extends \core\task\adhoc_task {
     	//get passed in data we need to perform conversion
     	$cd =  $this->get_custom_data();
     	$awstools = new \filter_poodll\awstools();
+    	$fileurl = false;
         
         try{
-            $ret= $awstools->fetch_s3_converted_file($cd->mediatype,$cd->infilename, $cd->outfilename, $cd->filename,$cd->filerecord);
+            $result = $awstools->fetch_transcription_result($cd->filename);
+            switch($result->TranscriptionJobStatus){
+                case 'FAILED':
+                    $giveup =true;
+                    $message='could not fetch transcription:' . $cd->filename . ':' . $result->FailureReason;
+                    $this->handle_transcribe_error(self::LOG_TRANSCRIBE_ERROR,$message,$cd,$giveup);
+                    return;
+                    break;
+                case 'IN_PROGRESS':
+                    $giveup =false;
+                    $message='transcription not ready:' . $cd->filename;
+                    $this->handle_transcribe_error(self::LOG_TRANSCRIBE_WAITING,$message,$cd,$giveup);
+                    return;
+                    break;
+
+                case 'COMPLETED':
+                    $fileurl = $result->Transcript->TranscriptFileUri;
+                    break;
+            }
 
          }catch (Exception $e) {
             $giveup =false;
             $message='could not fetch:' . $cd->filename . ':' . $e->getMessage();
-            $this->handle_s3_error(self::LOG_FETCH_FILE_FAIL,$message,$cd,$giveup);
+            $this->handle_transcribe_error(self::LOG_TRANSCRIBE_ERROR,$message,$cd,$giveup);
             return;
 	    }
         
-        
-        if($ret===false){
-            //this indicates no "in" or "out" file, so we should just snuff this task and not repeat it
-            //so we silently return
-            $giveup=true;
-            $message='the files: ' . $cd->infilename . ' | ' . $cd->outfilename . ' were not found anywhere on S3. giving up';
-            $this->handle_s3_error(self::LOG_NOT_ON_S3,$message,$cd,$giveup);
-            return;
-        }else if($ret===true){
-            //this indicates we had an "in" file, but no "out" file yet. try again
-           $giveup=false;
-           $message='the file ' . $cd->infilename . ' has not yet been converted.';
-            $this->handle_s3_error(self::LOG_NOT_CONVERTED,$message,$cd,$giveup);
-            return;
+        //Do something with the retrieved recording
+        //curl the result and deal with it
+        $jsonresult = curlthefile($fileurl);
+        $objresult = json_decode($jsonresult);
+        //$thetext = $objresult->??;
+        if($cd->action =="save_s3"){
+
         }else{
-            //this indicates the file was found and saved and the path returned
-            $tempfilepath = $ret;
+           //$cd->action =="save_db"
+            //
         }
-        
-        //fetch any file records, that currently hold the placeholder file
-        //usually just one, but occasionally there will be two (1 in draft, and 1 in perm)
-        $placeholder_file_recs = \filter_poodll\poodlltools::fetch_placeholder_file_record($cd->mediatype, $cd->filename);
-        //do the replace, if it succeeds yay. If it fails ... try again. The user may just not have saved yet
-        if(!$placeholder_file_recs){
-			$giveup =false;
-			$message='could not find placeholder file:' . $cd->filename;
-            $this->handle_s3_error(self::LOG_PLACEHOLDER_NOT_FOUND, $message ,$cd,$giveup);
-            return;
-		}
-		
-        try{
-            foreach($placeholder_file_recs as $file_rec) {
-                \filter_poodll\poodlltools::replace_placeholderfile_in_moodle($cd->filerecord, $file_rec, $tempfilepath);
-                //log what we just did
-                $cd->filerecord=$file_rec;
-                \filter_poodll\event\adhoc_move_completed::create_from_task($cd)->trigger();
-            }
-        }catch (Exception $e) {
-            $giveup =true;
-            $message = 'could not get replace placeholder with converted::' . $cd->filename . ':' . $e->getMessage();
-            $this->handle_s3_error(self::LOG_PLACEHOLDER_REPLACE_FAIL,$message,$cd,$giveup);
-            return;
-		}
+
 
     }
 
-	private function handle_s3_error($errorcode, $errorstring,$cd,$giveup){
+	private function handle_transcribe_error($errorcode, $errorstring,$cd,$giveup){
             //data for logging
             $contextid=$cd->filerecord->contextid;
             $userid=$cd->filerecord->userid;
@@ -125,7 +128,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
     		}else{
                 $errorstring .= ' :will retry';
                 mtrace(print_r($cd,true));
-                mtrace('s3file:' . $errorstring);
+                mtrace('transcribe_file:' . $errorstring);
                 //send to debug log
                 $this->send_debug_data($errorcode,
                     $errorstring,$userid,$contextid);
@@ -133,7 +136,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
                 //throw error so task will be retried
                 throw new \file_exception('s3file', $errorstring);
              }//end of if/else
-	}//end of function handle_S3_error
+	}//end of function handle_transcribe_error
 
     private function send_debug_data($type,$message, $userid=false,$contextid=false){
         global $CFG;
@@ -144,7 +147,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
 	    $debugdata->userid=$userid;
 	    $debugdata->contextid=$contextid;
 	    $debugdata->type=$type;
-	    $debugdata->source='adhoc_s3_move.php';
+	    $debugdata->source='adhoc_process_transcription.php';
         $debugdata->message=$message;
         \filter_poodll\event\debug_log::create_from_data($debugdata)->trigger();
     }

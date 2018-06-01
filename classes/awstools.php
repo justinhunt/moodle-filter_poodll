@@ -21,6 +21,7 @@ defined('MOODLE_INTERNAL') || die();
 use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\S3\S3Client;
 use Aws\Polly\PollyClient;
+use Aws\TranscribeService\TranscribeServiceClient;
 
 /**
  *
@@ -60,6 +61,7 @@ class awstools
     protected $awsversion="2.x";//3.x
 	protected $transcoder = false; //the single transcoder object
 	protected $s3client = false; //the single S3 object
+    protected $transcribeclient = false; //the single transcribe object
     protected $pollyclient = false; //the single Polly object
 	protected $default_segment_size = 4;
 	protected $region = self::REGION_APN1;
@@ -206,18 +208,36 @@ class awstools
      * $path is likely to be a folder for the site
      * $identifier is any old prefix the uploading site wishes to use to tag users
      */
-	public static function fetch_s3_filename($mediatype, $filename){
+	public static function fetch_s3_filename($mediatype, $filename, $transcribelanguage='none'){
             global $CFG,$USER;
 
            //here we encode the URL so that the lambda notifier can process it.
+            //we need a notification bit (Y|N) and  Transcribe bit (T|N) And a Transcribe language bit (ENUS|ESUS)
             $thewwwroot =  strtolower($CFG->wwwroot);
             $wwwroot_bits = parse_url($thewwwroot);
             $bits=array();
+            $lambdabit ='';
             if($CFG->filter_poodll_cloudnotifications) {
-                $bits[] = 'Y';
+                $lambdabit .= 'Y';
             }else{
-                $bits[] = 'N';
+                $lambdabit .= 'N';
             }
+            switch($transcribelanguage){
+                case 'ENUS':
+                    //yes transcribe english-us
+                    $lambdabit .= 'TENUS';
+                    break;
+                case 'ESUS':
+                    //yes transcribe spanish-us
+                    $lambdabit .= 'TESUS';
+                    break;
+                default:
+                    //no we do not transcribe
+                    $lambdabit .= 'N';
+            }
+            $bits[] = $lambdabit;
+
+
             $bits[]=$wwwroot_bits['scheme'];
             $bits[]=$wwwroot_bits['host'];
             if(array_key_exists('port',$wwwroot_bits)) {
@@ -309,6 +329,37 @@ class awstools
 		}	
 	}
 
+    //post file data directly to S3
+    function s3_put_transcriptdata($mediatype,$key,$filedata){
+        $s3client = $this->fetch_s3client();
+
+        //Get bucket
+        $bucket='';
+        switch($mediatype){
+            case 'audio':
+                $bucket=$this->bucket_audio_in;
+                break;
+            case 'video':
+                $bucket=$this->bucket_video_in;
+                break;
+        }
+        //options
+        $options = array();
+        $options['Bucket']=$bucket;
+        $options['Key']=$key;
+        $options['Body']=$filedata;
+        //$options['Sourcefile']=$filepath;
+        //$options['ContentMD5']=false;
+        $options['ContentType']='text/plain';
+
+        $result = $s3client->putObject($options);
+        if($result){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 	
 	//create a single job
 	function create_one_transcoding_job($mediatype, $input_key,$output_key, $output_key_prefix=false) {
@@ -382,7 +433,7 @@ class awstools
 				}
 				break;
 			}		
-                return $s3client->doesObjectExist($bucket,$filename);		
+                return $s3client->doesObjectExist($bucket,$filename);
         }
         
         //called if we get a file submitted twice
@@ -534,7 +585,35 @@ class awstools
 			//echo 'file:' . $filename . PHP_EOL;
     	}			
 	}
-	
+
+	function s3getObjectUri($mediatype,$filename, $in_out='out'){
+
+        $bucket = '';
+        switch($mediatype){
+            case 'audio':
+                if($in_out=='out') {
+                    $bucket = $this->bucket_audio_out;
+                }else{
+                    $bucket = $this->bucket_audio_in;
+                }
+                break;
+            case 'video':
+                if($in_out=='out') {
+                    $bucket = $this->bucket_video_out;
+                }else{
+                    $bucket = $this->bucket_video_in;
+                }
+                break;
+        }
+        $this->convfolder . $filename;
+
+        //this is the format it should be in. getObjectUrl does not return it correctly. So we build it
+        //  https://s3-us-east-1.amazonaws.com/examplebucket/mediadocs/example.mp4
+        //$s3client = $this->fetch_s3client();
+        // $uri = $s3client->getObjectUrl($bucket, $this->convfolder . $filename);
+        $uri = 'https://s3-' . $this->region . 'amazonaws.com/' . $bucket . '/' . $this->convfolder . $filename;
+        return $uri;
+    }
 		
 	function s3copy($sourcebucket, $sourceitemname, $targetbucket,$targetitemname, $ispublic=false){
 		$s3client = $this->fetch_s3client();
@@ -618,6 +697,57 @@ class awstools
 		));
 		//echo 'folder removed:' . $itemname . PHP_EOL ;		
 	}
+
+    //fetch or create the Transcribe object
+    function fetch_transcribeclient(){
+        global $CFG;
+
+        if(!$this->transcribeclient){
+            $config = array();
+            $config['region']=$this->region;
+            $config['version']='2017-10-26';
+            $config['credentials']=array('key' => $this->accesskey, 'secret' => $this->secretkey);
+            //add proxy settings if necessary
+            if(!empty($CFG->proxyhost)){
+                $proxy=$CFG->proxytype . '://' . $CFG->proxyhost;
+                if($CFG->proxyport > 0) {$proxy = $proxy . ':' . $CFG->proxyport;}
+                if(!empty($CFG->proxyuser)){
+                    $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
+                }
+                $config['request.options']=array('proxy'=>$proxy);
+            }
+
+            $this->transcribeclient = TranscribeServiceClient::factory($config);
+        }
+        return $this->transcribeclient;
+    }
+
+    function start_transcription_job($jobname,$mediatype, $mediauri, $medialanguage){
+        $transcribeclient= $this->fetch_transcribeclient();
+        $result = $transcribeclient->startTranscriptionJob([
+            'LanguageCode' => $medialanguage, // REQUIRED
+            'Media' => [ // REQUIRED
+                'MediaFileUri' => $mediauri,
+            ],
+            'MediaFormat' => $mediatype,
+            'Settings' => [],
+            'TranscriptionJobName' => $jobname // REQUIRED
+        ]);
+        if($result->TranscriptionJobStatus=='FAILED'){
+            echo($result->FailureReason);
+            return $result->FailureReason;
+        }else{
+            return $result->Transcript->TranscriptFileUri;
+        }
+    }
+
+    //fetch the transcription and return without processing
+    //the caller kind of needs the info
+    function fetch_transcription_result($jobname){
+        $transcribeclient= $this->fetch_transcribeclient();
+        $result = $transcribeclient->getTranscriptionJob([$jobname]);
+        return $result;
+    }
 
     //fetch or create the Polly object
     function fetch_pollyclient(){
