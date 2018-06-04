@@ -383,9 +383,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 + '&owner=' + config.owner
                 + '&region=' + config.region
                 + '&expiredays=' + config.expiredays
-                + '&transcode=' + config.transcode
-                + '&transcribe=' + config.transcribe
-                + '&transcribelanguage=' + config.transcribelanguage;
+                + '&transcode=' + config.transcode;
 
             var serverurl= M.cfg.wwwroot + "/webservice/rest/server.php";
             xhr.open("POST",serverurl, true);

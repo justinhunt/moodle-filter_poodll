@@ -18,8 +18,11 @@ namespace filter_poodll;
 
 defined('MOODLE_INTERNAL') || die();
 
+use Aws\Common\Facade\SimpleDb;
 use Aws\ElasticTranscoder\ElasticTranscoderClient;
 use Aws\S3\S3Client;
+use Aws\DynamoDb\DynamoDbClient;
+use Aws\DynamoDb\Marshaler;
 use Aws\Polly\PollyClient;
 use Aws\TranscribeService\TranscribeServiceClient;
 
@@ -61,6 +64,7 @@ class awstools
     protected $awsversion="2.x";//3.x
 	protected $transcoder = false; //the single transcoder object
 	protected $s3client = false; //the single S3 object
+    protected $dynamodbclient = false; //the single transcribe object
     protected $transcribeclient = false; //the single transcribe object
     protected $pollyclient = false; //the single Polly object
 	protected $default_segment_size = 4;
@@ -208,11 +212,11 @@ class awstools
      * $path is likely to be a folder for the site
      * $identifier is any old prefix the uploading site wishes to use to tag users
      */
-	public static function fetch_s3_filename($mediatype, $filename, $transcribelanguage='none'){
+	public static function fetch_s3_filename($mediatype, $filename){
             global $CFG,$USER;
 
            //here we encode the URL so that the lambda notifier can process it.
-            //we need a notification bit (Y|N) and  Transcribe bit (T|N) And a Transcribe language bit (ENUS|ESUS)
+            //we need a notification bit (Y|N)
             $thewwwroot =  strtolower($CFG->wwwroot);
             $wwwroot_bits = parse_url($thewwwroot);
             $bits=array();
@@ -222,21 +226,7 @@ class awstools
             }else{
                 $lambdabit .= 'N';
             }
-            switch($transcribelanguage){
-                case 'ENUS':
-                    //yes transcribe english-us
-                    $lambdabit .= 'TENUS';
-                    break;
-                case 'ESUS':
-                    //yes transcribe spanish-us
-                    $lambdabit .= 'TESUS';
-                    break;
-                default:
-                    //no we do not transcribe
-                    $lambdabit .= 'N';
-            }
             $bits[] = $lambdabit;
-
 
             $bits[]=$wwwroot_bits['scheme'];
             $bits[]=$wwwroot_bits['host'];
@@ -265,16 +255,12 @@ class awstools
             return $s3filename;
     }
 
-
-	
-/**
-*
-*
-*  TRANSCODING CODE STARTS HERE
-*
-*/
-		
-		
+    /**
+    *
+    *
+    *  TRANSCODING CODE STARTS HERE
+    *
+    */
 	 //fetch or create the transcoder object 
 	function fetch_transcoder(){
         global $CFG;
@@ -403,7 +389,52 @@ class awstools
 		  );
 		  $create_job_result = $transcoder_client->createJob($create_job_request)->toArray();
 		  return $job = $create_job_result['Job'];
-	}   
+	}
+
+
+
+    function stage_remote_transcription_job($host, $mediatype, $s3path, $s3outfilename, $language, $vocab, $notificationurl){
+        $dbclient = $this->fetch_dynamoDBClient();
+        $marshaler = new Marshaler();
+        $tablename='poodll_jobs';
+        $itemarray = Array();
+        $itemarray['host'] = $host;
+        $itemarray['filename'] = $s3outfilename;
+        $itemarray['transcribe'] = 'yes';
+        $itemarray['language'] = $language;
+        $itemarray['vocab'] = $vocab;
+        $itemarray['s3path'] = $s3path;
+        $itemarray['mediatype'] = $mediatype;
+        $itemarray['timecreated'] = date("Y-m-d H:i:s");
+        $itemarray['expiretime'] = strtotime('+24 hours');
+        $itemarray['notificationurl'] = $notificationurl;
+
+        try {
+            $dbclient->putItem([
+                'TableName' => $tablename,
+                'Item' => $marshaler->marshalItem($itemarray)
+            ]);
+            return true;
+        }catch(DynamoDbException $e){
+            echo "Unable to put item:\n";
+            echo $e->getMessage() . "\n";
+            return $e->getMessage() ;
+        }
+    }
+
+    //fetch the transcription and return without processing
+    //the caller kind of needs the info
+    function fetch_transcription_result($jobname){
+        $transcribeclient= $this->fetch_transcribeclient();
+        $result = $transcribeclient->getTranscriptionJob([$jobname]);
+        return $result;
+    }
+
+    function fetch_pollyspeech($text, $texttype="text",$voice="Justin"){
+        $params = $this->make_pollyparams($text,$texttype,$voice);
+        $pollyclient= $this->fetch_pollyclient();
+        return $pollyclient->synthesizeSpeech($params);
+    }
     
 	
         /**
@@ -509,30 +540,6 @@ class awstools
     		'SaveAs' => $filepath
 		));
                  return true;
-	}
-	
-	function get_presigned_download_url($mediatype,$minutes=30,$key){
-		$s3client = $this->fetch_s3client();
-		//Get bucket
-		$bucket='';
-		$key= 'convertedmedia/' . $key;
-		switch($mediatype){
-			case 'audio':
-				$bucket=$this->bucket_audio_out;
-				break;
-			case 'video':
-				$bucket=$this->bucket_video_out;
-				break;
-		}
-		//options
-		$options = array();
-		$options['Bucket']=$bucket;
-		$options['Key']=$key;
-		
-		$cmd = $s3client->getCommand('GetObject', $options);
-		$request = $s3client->createPresignedRequest($cmd, '+' . $minutes .' minutes');
-		$theurl = (string) $request->getUri();
-		return $theurl;
 	}
 
 	function get_presigned_upload_url($mediatype,$minutes=30,$key, $iosvideo=false){
@@ -698,6 +705,30 @@ class awstools
 		//echo 'folder removed:' . $itemname . PHP_EOL ;		
 	}
 
+	function fetch_dynamoDBClient(){
+        global $CFG;
+
+        if(!$this->dynamodbclient){
+            $config = array();
+            $config['region']=$this->region;
+            $config['version']='latest';
+            $config['credentials']=array('key' => $this->accesskey, 'secret' => $this->secretkey);
+            //add proxy settings if necessary
+            if(!empty($CFG->proxyhost)){
+                $proxy=$CFG->proxytype . '://' . $CFG->proxyhost;
+                if($CFG->proxyport > 0) {$proxy = $proxy . ':' . $CFG->proxyport;}
+                if(!empty($CFG->proxyuser)){
+                    $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
+                }
+                $config['request.options']=array('proxy'=>$proxy);
+            }
+
+            $this->dynamodbclient =  DynamoDbClient::factory($config);
+        }
+        return $this->dynamodbclient;
+
+    }
+
     //fetch or create the Transcribe object
     function fetch_transcribeclient(){
         global $CFG;
@@ -720,33 +751,6 @@ class awstools
             $this->transcribeclient = TranscribeServiceClient::factory($config);
         }
         return $this->transcribeclient;
-    }
-
-    function start_transcription_job($jobname,$mediatype, $mediauri, $medialanguage){
-        $transcribeclient= $this->fetch_transcribeclient();
-        $result = $transcribeclient->startTranscriptionJob([
-            'LanguageCode' => $medialanguage, // REQUIRED
-            'Media' => [ // REQUIRED
-                'MediaFileUri' => $mediauri,
-            ],
-            'MediaFormat' => $mediatype,
-            'Settings' => [],
-            'TranscriptionJobName' => $jobname // REQUIRED
-        ]);
-        if($result->TranscriptionJobStatus=='FAILED'){
-            echo($result->FailureReason);
-            return $result->FailureReason;
-        }else{
-            return $result->Transcript->TranscriptFileUri;
-        }
-    }
-
-    //fetch the transcription and return without processing
-    //the caller kind of needs the info
-    function fetch_transcription_result($jobname){
-        $transcribeclient= $this->fetch_transcribeclient();
-        $result = $transcribeclient->getTranscriptionJob([$jobname]);
-        return $result;
     }
 
     //fetch or create the Polly object
@@ -780,14 +784,5 @@ class awstools
         ];
         return $params;
     }
-
-    function fetch_pollyspeech($text, $texttype="text",$voice="Justin"){
-        $params = $this->make_pollyparams($text,$texttype,$voice);
-        $pollyclient= $this->fetch_pollyclient();
-        return $pollyclient->synthesizeSpeech($params);
-    }
-
-	
-	
 	
 }//end of class

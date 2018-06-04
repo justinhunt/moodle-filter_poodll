@@ -441,9 +441,9 @@ function filter_poodll_confirmarrival($mediatype, $filename){
       $ret =  \filter_poodll\poodlltools::confirm_s3_arrival($mediatype, $filename);
         
       if($ret){
-          array_push($return['messages'],'file arrived:' . $filename );
+            array_push($return['messages'],'file arrived:' . $filename );
       }else{
-	  array_push($return['messages'],"no file arrival" );
+	        array_push($return['messages'],"no file arrival" );
       }
       
         //we process the result for return to browser

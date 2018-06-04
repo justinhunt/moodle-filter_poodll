@@ -4,6 +4,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
     'filter_poodll/audioanalyser',
     'filter_poodll/msr_poodll',
     'filter_poodll/dlg_errordisplay',
+    'filter_poodll/speech_poodll',
         'filter_poodll/poodll_basemediaskin',
         'filter_poodll/poodll_burntrosemediaskin',
         'filter_poodll/poodll_onetwothreemediaskin',
@@ -12,7 +13,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         'filter_poodll/poodll_shadowmediaskin',
         'filter_poodll/poodll_splitmediaskin',
     'filter_poodll/poodll_fbmediaskin',
-    'filter_poodll/poodll_readaloudmediaskin'], function($, log, utils, adapter, uploader, hermes, timer,audioanalyser,poodll_msr,errordialog, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin, readaloudskin) {
+    'filter_poodll/poodll_readaloudmediaskin'], function($, log, utils, adapter, uploader, hermes, timer,audioanalyser,poodll_msr,errordialog,speechrecognition, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin, readaloudskin) {
 
     "use strict"; // jshint ;_;
 
@@ -91,6 +92,18 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         //putting it in config allows us to post messages from uploader and skin as required
         ip.config.hermes  = hermes.clone();
         ip.config.hermes.init(config.id, config.allowedURL,config.iframeembed);
+
+        //Speech recognition
+        if(config.speechevents){
+            if(!config.language){config.language='en-US';}
+                ip.speechrec.init(ip.config.language);
+                ip.speechrec.onfinalspeechcapture = function(speechtext){
+                    var messageObject ={};
+                    messageObject.type="speech";
+                    messageObject.capturedspeech = speechtext;
+                    ip.config.hermes.postMessage(messageObject);
+                };
+        }
 
 	    // init our skin
         var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
@@ -217,6 +230,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         this.instanceprops[controlbarid].audioanalyser = aa;
 		this.instanceprops[controlbarid].previewstillcold = true;
 
+		//speech recognition
+        this.instanceprops[controlbarid].speechrec = speechrecognition.clone();
 
 	},
 
@@ -433,6 +448,12 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 		    //if its paused we need to resume it before stopping.
             ip.mediaRecorder.resume();
             ip.mediaRecorder.stop();
+
+            //publish recording stopped event
+            var messageObject ={};
+            messageObject.type="recording";
+            messageObject.action = 'stopped';
+            ip.config.hermes.postMessage(messageObject);
         },
         do_stop_video: function(ip) {
 
@@ -564,7 +585,20 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         			ip.blobs.push(blob);
         			};
 
+                //publish recording start event
+                var messageObject ={};
+                messageObject.type="recording";
+                messageObject.action = 'started';
+                ip.config.hermes.postMessage(messageObject);
+
+                //start Google speech to text
+                if(ip.config.speechevents){
+                    ip.speechrec.start();
+                }
+
+                //defer to the skins code
                 skin.onMediaSuccess_audio(controlbarid);
+
             };
 
             skin.register_controlbar_events_audio(onMediaSuccess, controlbarid);
@@ -609,6 +643,18 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             		// log.debug(URL.createObjectURL(blob));
         		};
 
+                //publish recording start event
+                var messageObject ={};
+                messageObject.type="recording";
+                messageObject.action = 'started';
+                ip.config.hermes.postMessage(messageObject);
+
+                //start Google speech to text
+                if(ip.config.speechevents){
+                    ip.speechrec.start();
+                }
+
+                //defer to the skins code
                 skin.onMediaSuccess_video(controlbarid);
                
             };
@@ -634,8 +680,12 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 				this.laststream[controlbarid]=stream;
 				//play in preview
 				this.init_video_preview(controlbarid);
+
 				//do we need to do this? ..
-                navigator.mediaDevices.enumerateDevices();
+                //lets just do it for android and see how it works out it causes a flicker and few second delays
+                if(utils.is_android()) {
+                    navigator.mediaDevices.enumerateDevices();
+                }
 			
 		},
         

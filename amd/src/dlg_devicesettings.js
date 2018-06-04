@@ -69,7 +69,7 @@ define(['jquery','core/log','filter_poodll/dlg_poodll'], function($, log,dialog)
 				  self.registerEvents();
 				  
 				  if(self.instanceprops.config.mediatype=='video'){
-				  	self.dlg.onclose=function(){self.resetUserInterface();};
+				  	self.dlg.onclose=function(){self.resetVideoUserInterface();};
 				  }
 				  
 				  //open the dialog
@@ -106,12 +106,12 @@ define(['jquery','core/log','filter_poodll/dlg_poodll'], function($, log,dialog)
 			});
 		},
 		
-		resetUserInterface: function(){
+		resetVideoUserInterface: function(){
 
 			//set up refs to use in inline functions and keep it brief
 			var ip = this.instanceprops;
 			var preview = ip.controlbar.preview[0];
-			var pmr = this.pmr
+			var pmr = this.pmr;
 			//fetch video constraints
 			var constraints = pmr.fetch_video_constraints(ip);
 			

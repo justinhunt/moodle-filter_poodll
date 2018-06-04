@@ -168,20 +168,17 @@ class poodlltools
     }
 
 	public static function fetch_mediaserver_url()
-	{
-		global $CFG;
-		// Setting up the PoodLL Media Server String
-		if ($CFG->filter_poodll_serverport == '443' || $CFG->filter_poodll_serverport == '80') {
-			$protocol = 'rtmpt';
-		} else {
-			$protocol = 'rtmp';
-		}
+    {
+        global $CFG;
+        // Setting up the PoodLL Media Server String
+        if ($CFG->filter_poodll_serverport == '443' || $CFG->filter_poodll_serverport == '80') {
+            $protocol = 'rtmpt';
+        } else {
+            $protocol = 'rtmp';
+        }
 
-		return $protocol . '://' . $CFG->filter_poodll_servername . ':' . $CFG->filter_poodll_serverport . '/' . $CFG->filter_poodll_serverid;
-
-
-	}
-
+        return $protocol . '://' . $CFG->filter_poodll_servername . ':' . $CFG->filter_poodll_serverport . '/' . $CFG->filter_poodll_serverid;
+    }
 
 
 	/*
@@ -196,9 +193,9 @@ class poodlltools
 	}
 
 	/*
-* The literally canvas whiteboard
-*
-*/
+    * The literally canvas whiteboard
+    *
+    */
 	public static function fetchLiterallyCanvas($forsubmission = true, $width = 0, $height = 0, $backimage = "",
 												$updatecontrol = "", $contextid = 0, $component = "", $filearea = "", $itemid = 0,
 												$callbackjs = false, $vectorcontrol = "", $vectordata = "")
@@ -976,20 +973,27 @@ class poodlltools
 
     public static function postprocess_s3_upload($mediatype,$draftfilerecord)
     {
+        global $CFG;
+
         $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $draftfilerecord->filename);
         $infilename = $s3filename;
         $outfilename = $infilename;
-        switch ($mediatype) {
-            case 'audio':
-                $newsuffix = '_' . rand(100000, 999999) . '.mp3';
-                $outfilename = str_replace('.mp3', $newsuffix, $infilename);
-                //$draftfilerecord->filename = str_replace('.mp3',$newsuffix ,$draftfilerecord->filename );
-                break;
-            case 'video':
-                $newsuffix = '_' . rand(100000, 999999) . '.mp4';
-                $outfilename = str_replace('.mp4', $newsuffix, $infilename);
-            //$draftfilerecord->filename = str_replace('.mp4',$newsuffix ,$draftfilerecord->filename );
+        //we added the suffix to make it harder for idiots to try to guess the transcoded url
+        //but since cloud poodll, and the poodll_job logged at fetch_upload_url, it was painfule
+        //so we removed it  JUSTIN 20180604
+        $outfilename = $infilename;
+        if(false){
+            switch ($mediatype) {
+                case 'audio':
+                    $newsuffix = '_' . rand(100000, 999999) . '.mp3';
+                    $outfilename = str_replace('.mp3', $newsuffix, $infilename);
+                    break;
+                case 'video':
+                    $newsuffix = '_' . rand(100000, 999999) . '.mp4';
+                    $outfilename = str_replace('.mp4', $newsuffix, $infilename);
+            }
         }
+
         $success = self::commence_s3_transcode($mediatype, $infilename, $outfilename);
         if ($success) {
             $success=false;
@@ -998,6 +1002,28 @@ class poodlltools
                 $draftfilerecord->id = $storedfile->get_id();
                 self::register_s3_download_task($mediatype, $infilename, $outfilename, $draftfilerecord);
                 $success = true;
+            }
+        }
+
+        //for now transcription is not ready in Classic Poodll but this would work... JUSTIN 20180602
+        if(false){
+            //lets register our transcribe task
+            $transcribe = true;
+
+            //get the host
+            $thewwwroot =  strtolower($CFG->wwwroot);
+            $wwwroot_bits = parse_url($thewwwroot);
+            $host=$wwwroot_bits['host'];
+
+            if($transcribe) {
+                $language = 'en-US';
+                $vocab = $host . "-vocab1";
+                $awstools = new \filter_poodll\awstools();
+                $ret =  $awstools::stage_remote_transcription_job($host, $mediatype,
+                    'transcoded/', $outfilename, $language, $vocab);
+                if($ret['success']) {
+                    //register the pick up job here
+                }
             }
         }
         return $success;
@@ -1251,7 +1277,9 @@ class poodlltools
 	}
 	
 	//This is use for assembling the html elements + javascript that will be swapped out and replaced with the recorders
-	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid, $timelimit = "0", $callbackjs = false, $hints=[])
+	public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid,
+                                                $timelimit = "0", $callbackjs = false, $hints=[],
+                                                $transcribe=0, $transcribelanguage='en-US')
 	{
 		global $CFG, $PAGE;
 
@@ -1277,7 +1305,21 @@ class poodlltools
 			$awstools = new \filter_poodll\awstools();
 			$posturl  = $awstools->get_presigned_upload_url($mediatype,60,$s3filename);
 			$quicktime_signed_url = $awstools->get_presigned_upload_url($mediatype,60,$s3filename,true);
-		}else{
+
+			if($transcribe) {
+                //if using S3 and transcribing ... lets em transcribe
+                $host = parse_url($CFG->wwwroot, PHP_URL_HOST);
+                if (!$host) {
+                    $host = "unknown";
+                }
+                $vocab = 'none';
+                $notificationurl = 'none';
+                $s3path = 'transcoded/';
+                $awstools->stage_remote_transcription_job($host, $mediatype, $s3path, $s3filename, $transcribelanguage,
+                    $vocab, $notificationurl);
+            }
+
+        }else{
 			$filename = false;
             $s3filename = false;
 			$posturl = $CFG->wwwroot . '/filter/poodll/poodllfilelib.php';
