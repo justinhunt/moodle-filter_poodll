@@ -15,6 +15,10 @@ define(['jquery','core/log','filter_poodll/speech_browser'], function($, log,bro
             return $.extend(true,{},this);
         },
 
+        supports_browser: function(){
+            return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+        },
+
         init: function(lang){
             //in future we would like to have multiple recognizers presenting a single interface
             if('webkitSpeechRecognition' in window || 'SpeechRecognition' in window){
@@ -25,6 +29,7 @@ define(['jquery','core/log','filter_poodll/speech_browser'], function($, log,bro
             }
         },
         start: function(){
+            if(!this.recognizer){return;}
             this.recognizer.onfinalspeechcapture = this.onfinalspeechcapture;
             this.recognizer.oninterimspeechcapture = this.oninterimspeechcapture;
             if (this.recognizer) {
@@ -32,15 +37,18 @@ define(['jquery','core/log','filter_poodll/speech_browser'], function($, log,bro
             }
         },
         stop: function(){
+            if(!this.recognizer){return;}
             if (this.recognizer) {
                 this.recognizer.stop();
             }
         },
 
         onfinalspeechcapture: function(speechtext){
+            if(!this.recognizer){return;}
             log.debug('final:' + speechtext);
         },
         oninterimspeechcapture: function(speechtext){
+            if(!this.recognizer){return;}
             log.debug('interim:' + speechtext);
         }
     };//end of returned object

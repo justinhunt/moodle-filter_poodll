@@ -94,7 +94,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         ip.config.hermes.init(config.id, config.allowedURL,config.iframeembed);
 
         //Speech recognition
-        if(config.speechevents){
+        if(config.speechevents && ip.speechrec.supports_browser() ){
             if(!config.language){config.language='en-US';}
                 ip.speechrec.init(ip.config.language);
                 ip.speechrec.onfinalspeechcapture = function(speechtext){
@@ -450,7 +450,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             ip.mediaRecorder.stop();
 
             //stop Google speech to text if doing that
-            if(ip.config.speechevents){
+            if(ip.config.speechevents && ip.speechrec.supports_browser()){
                 ip.speechrec.stop();
             }
 
@@ -597,7 +597,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 ip.config.hermes.postMessage(messageObject);
 
                 //start Google speech to text
-                if(ip.config.speechevents){
+                if(ip.config.speechevents && ip.speechrec.supports_browser()){
                     ip.speechrec.start();
                 }
 
@@ -655,7 +655,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 ip.config.hermes.postMessage(messageObject);
 
                 //start Google speech to text
-                if(ip.config.speechevents){
+                if(ip.config.speechevents && ip.speechrec.supports_browser()){
                     ip.speechrec.start();
                 }
 
