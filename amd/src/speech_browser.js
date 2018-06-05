@@ -33,6 +33,7 @@ define(['jquery','core/log'], function($, log) {
             if (this.recognizing) {
                 return;
             }
+            this.recognizing = true;
             this.final_transcript = '';
             this.recognition.lang = this.lang;//select_dialect.value;
             this.recognition.start();
@@ -41,11 +42,11 @@ define(['jquery','core/log'], function($, log) {
 
         },
         stop: function(){
-            if (this.recognizing) {
+           // if (this.recognizing) {
                 this.recognizing = false;
                 this.recognition.stop();
                 return;
-            }
+            //}
         },
 
         register_events: function(){
@@ -111,7 +112,7 @@ define(['jquery','core/log'], function($, log) {
             log.debug(speechtext);
         },
         oninterimspeechcapture: function(speechtext){
-            log.debug(speechtext);
+           // log.debug(speechtext);
         }
 
     };//end of returned object
