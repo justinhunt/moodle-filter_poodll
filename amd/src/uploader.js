@@ -109,12 +109,15 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             //We alert the iframe host that a file is now awaiting conversion
             var messageObject ={};
             messageObject.type = "awaitingprocessing";
-            messageObject.finalurl = filename;
-            messageObject.s3filename = uploader.config.s3filename;
+            messageObject.mediaurl = filename;
+            messageObject.mediafilename = uploader.config.s3filename;
             messageObject.s3root = uploader.config.s3root;
             messageObject.id = uploader.config.id;
             messageObject.updatecontrol = uploader.config.updatecontrol;
-
+            if(uploader.config.transcribe){
+                messageObject.transcripturl = filename + '.txt';
+                messageObject.transcriptfilename = uploader.config.s3filename  + '.txt';
+            }
             uploader.config.hermes.postMessage(messageObject);
 
             //we commence a series of ping and retries until the recorded file is available
@@ -180,11 +183,15 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 //The callback object above scan prob. be phased out. But not all integrations will use iframes either.
                 var messageObject ={};
                 messageObject.type = "filesubmitted";
-                messageObject.finalurl = uploader.config.s3root + uploader.config.s3filename;
-                messageObject.s3filename = uploader.config.s3filename;
+                messageObject.mediaurl = uploader.config.s3root + uploader.config.s3filename;
+                messageObject.mediafilename = uploader.config.s3filename;
                 messageObject.s3root = uploader.config.s3root;
                 messageObject.id = uploader.config.id;
                 messageObject.updatecontrol = uploader.config.updatecontrol;
+                if(uploader.config.transcribe){
+                    messageObject.transcripturl = uploader.config.s3root + uploader.config.s3filename + '.txt';
+                    messageObject.transcriptfilename = uploader.config.s3filename  + '.txt';
+                }
 
                 uploader.config.hermes.postMessage(messageObject);
             }

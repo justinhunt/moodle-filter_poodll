@@ -75,7 +75,15 @@ define(['jquery','core/log'], function($, log) {
                 }
             };
             recognition.onend = function() {
-                that.recognizing = false;
+                //that.recognizing = false;
+
+                // we restart by default
+                // we might need to be more clever here
+                if(that.ignore_onend) {
+                    that.recognizing = false;
+                }else{
+                    recognition.start();
+                }
 
             };
             recognition.onresult = function(event) {
