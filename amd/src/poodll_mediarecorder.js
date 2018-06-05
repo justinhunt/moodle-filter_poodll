@@ -449,6 +449,11 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             ip.mediaRecorder.resume();
             ip.mediaRecorder.stop();
 
+            //stop Google speech to text if doing that
+            if(ip.config.speechevents){
+                ip.speechrec.stop();
+            }
+
             //publish recording stopped event
             var messageObject ={};
             messageObject.type="recording";
