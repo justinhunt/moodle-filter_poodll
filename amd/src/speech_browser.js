@@ -42,6 +42,7 @@ define(['jquery','core/log'], function($, log) {
         },
         stop: function(){
             if (this.recognizing) {
+                this.recognizing = false;
                 this.recognition.stop();
                 return;
             }
@@ -79,6 +80,9 @@ define(['jquery','core/log'], function($, log) {
 
                 // we restart by default
                 // we might need to be more clever here
+                if(that.recognizing == false){
+                    return;
+                }
                 if(that.ignore_onend) {
                     that.recognizing = false;
                 }else{
