@@ -48,8 +48,6 @@ One Button Recorder
 
 
 
-
-
 /*
 Base Media skin Setting Integration
 */
@@ -347,23 +345,7 @@ Base Media skin Setting Integration
 /*
 	The Read Aloud Audio Recorders
 */
-@font-face {
-	font-family: 'Indie Flower';
-	src: url('https://fonts.googleapis.com/css?family=Indie+Flower');
-}
 
-
-.poodll_mediarecorderholder_readaloud .poodll_preview_readaloud{
-	height: 100px;
-	width: 100px;
-	border: none;
-	border-radius: 50%;
-	z-index: 2;
-	position: absolute;
-	left: 135px;
-	top: 22px;
-	cursor: pointer;
-}
 .poodll_mediarecorderholder_readaloud{
 	position:relative;
 }
@@ -392,11 +374,7 @@ Base Media skin Setting Integration
 .poodll_mediarecorder_audio .poodll_mediarecorderbox_readaloud{
 	text-align: center;
 }
-.poodll_mediarecorderbox_readaloud button{
-	font-size: 32px;
-	transition: filter 0.5s ease;
 
-}
 .poodll_mediarecorderbox_readaloud button:hover{
 	cursor: pointer;
 	filter: brightness(120%);
@@ -407,66 +385,39 @@ Base Media skin Setting Integration
 .poodll_mediarecorderbox_readaloud .poodll_stop-recording_readaloud{
 	background-color: #ea9999;
 }
-.poodll_mediarecorderbox_readaloud .poodll_play-recording_readaloud{
+.poodll_mediarecorderbox_readaloud .poodll_test-recording_readaloud{
 	background-color: #9fc5f8;
 }
-.readaloud-save-button-wrapper{
-	width: 100%;
-	margin-bottom: 10px;
-}
-.readaloud-save-button-wrapper .poodll_save-recording_readaloud{
-	width: 20%;
-	color: #333;
-	background-color: #93c47d;
-	border: #333;
-	font-weight: 600;
-	-webkit-box-shadow: 1px 2px 3px #333;
-	box-shadow: 1px 2px 3px #333;
-	text-shadow: 1px 2px 2px #ccc;
-	text-transform: capitalize;
-}
-.readaloud-restart-button-wrapper{
-	width: 30%;
-	margin: 0 auto;
-}
-.readaloud-restart-button-wrapper .poodll_restart_readaloud{
-	background: transparent;
-	border: none;
-	text-transform: capitalize;
-	font-size: 20px;
-	color: #0c5394;
-	font-weight: 400;
-}
+
 .poodll_mediarecorderbox_readaloud canvas{
-	margin-bottom: 10px;
+	margin-bottom: 5px;
 }
-.poodll_mediarecorderholder_readaloud .poodll_mediarecorderbox_readaloud button{
-	position: absolute;
-	left: 130px;
-	top: 8%;
-	height: 100px;
-	width: 100px;
-	border-radius: 50%;
-	border: none;
-	box-shadow: none !important;
+button.poodll_mediarecorder_button_readaloud {
+
+	transition: filter 0.5s ease;
+	margin: auto;
+	width: 200px;
+	color: #fff;
+	background-color: #00acdf;
+	border-color: #00acdf;
+
+	display: inline-block;
+	font-weight: 400;
+	line-height: 1.25;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	border: 1px solid transparent;
+	padding: .5rem 1rem;
+	font-size: 1rem;
+	border-radius: .25rem;
 }
 
-.poodll_mediarecorderbox_readaloud .readaloud-save-button-wrapper a.pmr_disabled{
-	display: block !important;
-	margin: 0 auto;
-	background-color: #c2c2c2;
-	pointer-events: none;
-}
-.poodll_mediarecorderbox_readaloud .readaloud-restart-button-wrapper a.pmr_disabled{
-	display: block !important;
-	margin: 0 auto;
-	color: #c2c2c2;
-	pointer-events: none;
-}
-
-.poodll_status_readaloud{
-	display: none;
-}
 .poodll_mediarecorderholder_readaloud .poodll_mediarecorderbox_readaloud{
 	position: relative;
 }

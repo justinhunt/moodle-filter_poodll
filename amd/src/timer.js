@@ -12,6 +12,7 @@ define(['jquery','core/log'], function($, log) {
         finalseconds: 0,
         intervalhandle: null,
         callback: null,
+        enabled: false,
 
         //for making multiple instances
         clone: function(){
@@ -22,9 +23,12 @@ define(['jquery','core/log'], function($, log) {
             this.initseconds = parseInt(initseconds);
             this.seconds = parseInt(initseconds);
             this.callback = callback;
+            this.enabled = true;
         },
 
         start: function(){
+            if(!this.enabled){return;}
+
             var self = this;
             this.finalseconds=0;
             if(this.initseconds > 0){this.increment=-1;}else{this.increment = 1;}
@@ -33,6 +37,14 @@ define(['jquery','core/log'], function($, log) {
                     self.finalseconds=self.finalseconds+1;
                     self.callback();
             },1000);
+        },
+
+        disable: function(){
+            this.enabled = false;
+        },
+
+        enable: function(){
+            this.enabled = true;
         },
 
         fetch_display_time: function(someseconds){

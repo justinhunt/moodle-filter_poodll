@@ -13,6 +13,7 @@ define(['jquery','core/log'], function($, log) {
         allowedURL: '',
         id:  '',
         iframeembed: false,
+        enabled: false,
 
         //for making multiple instances
         clone: function () {
@@ -26,9 +27,20 @@ define(['jquery','core/log'], function($, log) {
             this.allowedURL = allowedURL;
             this.id = id;
             this.iframeembed=iframeembed;
+            this.enabled = true;
+        },
+
+        disable: function(){
+            this.enabled = false;
+        },
+
+        enable: function(){
+            this.enabled = true;
         },
 
       postMessage: function(messageObject) {
+            if(!this.enabled){return;}
+
           if(!messageObject.hasOwnProperty('type')){
               log.debug('All message objects must have at least the "type" property');
               return;

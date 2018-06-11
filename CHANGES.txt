@@ -1,7 +1,8 @@
 Change List
 =========
-Version 3.1.02 (Build xxxxx)
+Version 3.1.03 (Build 2018060900)
 -Removed legacy code that was not needed
+-Added scaffolding for ReadAloud and CloudPoodll
 
 Version 3.1.01(Build 2018041001)
 -Fixed issue in FFMPEG conversions that was preventing feedback submissions from converting

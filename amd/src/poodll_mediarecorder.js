@@ -519,6 +519,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 			// init return object
 			var mediaConstraints = {
                 audio: true
+                //audio: {volume: 0.0}
             };
 
             // this is as good a place as any to force safari to audio/wav
@@ -588,7 +589,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 ip.mediaRecorder.start(ip.timeinterval, ip.audioctx);
                 ip.mediaRecorder.ondataavailable = function(blob) {
         			ip.blobs.push(blob);
-        			};
+                };
 
                 //publish recording start event
                 var messageObject ={};

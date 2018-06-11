@@ -3,13 +3,14 @@ define(['jquery','core/log'], function($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('anim_horizontal_wave: initialising');
+    log.debug('anim_horizontal_wave_ra: initialising');
 
     return {
 
         analyser: null,
         cvs: null,
         cvsctx: null,
+        sounddetected: false,
 
         //for making multiple instances
         clone: function () {
@@ -21,11 +22,18 @@ define(['jquery','core/log'], function($, log) {
         init: function (analyser, cvs) {
             this.cvs = cvs;
             this.cvsctx=cvs.getContext("2d");
+            this.cvsctx.font='48px FontAwesome';
+            this.cvsctx.textAlign="center";
             this.analyser = analyser;
         },
 
         clear: function(){
             this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+            this.cvsctx.lineWidth = 2;
+            this.cvsctx.strokeStyle = 'rgb(0, 0, 0)';
+            this.cvsctx.beginPath();
+            this.cvsctx.fillText('\uF130',this.cvs.width/2, this.cvs.height/1.5);
+            this.cvsctx.stroke();
         },
 
         start: function(){
@@ -36,6 +44,7 @@ define(['jquery','core/log'], function($, log) {
             var cheight = this.cvs.height;
             var canvasCtx = this.cvsctx;
             var analyser = this.analyser;
+            var that = this;
             this.clear();
 
             var draw = function () {
@@ -60,6 +69,14 @@ define(['jquery','core/log'], function($, log) {
                 var sliceWidth = cwidth * 1.0 / bufferLength;
                 var x = 0;
 
+                //we check if we could capture sound here
+                if(bufferLength > 0) {
+                    var level = dataArray[bufferLength - 1];
+                    if(level !=128){
+                        that.sounddetected =true;
+                    }
+                }
+
                 for (var i = 0; i < bufferLength; i++) {
 
                     var v = dataArray[i] / 128.0;
@@ -75,7 +92,10 @@ define(['jquery','core/log'], function($, log) {
                 }
 
                 canvasCtx.lineTo(cwidth, cheight / 2);
+                //draw a microphone
+                canvasCtx.fillText('\uF130',cwidth/2,cheight/1.5);
                 canvasCtx.stroke();
+
             };
 
             draw();
