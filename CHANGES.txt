@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.04 (Build 2018062300)
+-refactored AMD code so skins were better organised
+-added a more flexible cloud job register method
+
 Version 3.1.03 (Build 2018060900)
 -Removed legacy code that was not needed
 -Added scaffolding for ReadAloud and CloudPoodll
