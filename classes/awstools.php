@@ -212,12 +212,17 @@ class awstools
      * $path is likely to be a folder for the site
      * $identifier is any old prefix the uploading site wishes to use to tag users
      */
-	public static function fetch_s3_filename($mediatype, $filename){
+	public static function fetch_s3_filename($mediatype, $filename, $parent=false){
             global $CFG,$USER;
 
            //here we encode the URL so that the lambda notifier can process it.
             //we need a notification bit (Y|N)
-            $thewwwroot =  strtolower($CFG->wwwroot);
+            //self hosted = wwwroot, otherwise parent will be passed in
+            if($parent==false) {
+                $thewwwroot = strtolower($CFG->wwwroot);
+            }else{
+                $thewwwroot = strtolower($parent);
+            }
             $wwwroot_bits = parse_url($thewwwroot);
             $bits=array();
             $lambdabit ='';
