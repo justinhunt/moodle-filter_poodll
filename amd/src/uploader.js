@@ -355,6 +355,10 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                         break;
                 }
             }
+            //we now do cloud post processing from lambda, so we just return here.
+            return;
+
+/*
 
             //lets do a little error checking
             //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
@@ -397,6 +401,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             xhr.setRequestHeader("Cache-Control", "no-cache");
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.send(xhrparams);
+ */
 
         },
 
