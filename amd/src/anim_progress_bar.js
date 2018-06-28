@@ -77,7 +77,7 @@ define(['jquery','core/log'], function($, log) {
                     return;
                 }
                 that.clear();
-                that.context.fillStyle = that.barcolor;
+                that.context.fillStyle = that.drawparams.barColor;
                 that.context.fillRect(that.startx,that.starty,that.fetchCurrent() * that.barwidth,that.barheight);
 
                 //draw text
