@@ -14,7 +14,15 @@ define(['jquery','core/log'], function($, log) {
         currenttime: 0,
 		enabled: false,
         showpercent: false,
-        barcolor: '#ad2323',
+        drawparams: {lineWidth: 10,
+                    barColor: '#ad2323',
+                    shadowOffsetX: 0,
+                    shadowOffsetY: 0,
+                    shadowBlur: 10,
+                    shadowColor: '#fff',
+                    font: '18px Arial',
+                    textAlign: "center",
+                    textBaseline: 'middle'},
 
 
         //for making multiple instances
@@ -33,10 +41,12 @@ define(['jquery','core/log'], function($, log) {
                 this.showpercent = showpercent;
             }
             if(showpercent) {
-                this.barcolor = barcolor;
+                this.setDrawParam('barColor',barcolor);
             }
+        },
 
-
+        setDrawParam: function(paramkey,paramvalue){
+          this.drawparams[paramkey]=paramvalue;
         },
 
         clear: function () {
@@ -56,18 +66,17 @@ define(['jquery','core/log'], function($, log) {
         	this.enabled=true;
         	var that = this;
 
-            //set draw params, later could make this configurable
-            this.context.lineWidth = 10;
-            this.context.strokeStyle = that.barcolor;
+            //set draw params, l
+            this.context.lineWidth = this.drawparams.lineWidth;
+            this.context.strokeStyle = this.drawparams.barColor;
             this.context.setLineDash([]);
-            this.context.shadowOffsetX = 0;
-            this.context.shadowOffsetY = 0;
-            this.context.shadowBlur = 10;
-            this.context.shadowColor = '#fff';
-
-            this.context.font='18px Arial';
-            this.context.textAlign="center";
-            this.context.textBaseline='middle';
+            this.context.shadowOffsetX = this.drawparams.shadowOffsetX;
+            this.context.shadowOffsetY = this.drawparams.shadowOffsetY;
+            this.context.shadowBlur = this.drawparams.shadowBlur ;
+            this.context.shadowColor = this.drawparams.shadowColor;
+            this.context.font=this.drawparams.font;
+            this.context.textAlign=this.drawparams.textAlign;
+            this.context.textBaseline=this.drawparams.textBaseline;
 
 
 			var draw= function () {

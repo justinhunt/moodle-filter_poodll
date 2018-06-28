@@ -13,7 +13,11 @@ define(['jquery','core/log'], function($, log) {
         starty: null,
         barwidth: null,
         barheight: null,
-		enabled: false,
+        enabled: false,
+        drawparams: {barColor: "#C2C2C2",
+            textColor: '#0',
+            font: '12px Arial',
+            textAlign: "center"},
 
 
         //for making multiple instances
@@ -22,7 +26,7 @@ define(['jquery','core/log'], function($, log) {
         },
 
         //pass in config, the jquery video/audio object, and a function to be called when conversion has finshed
-        init: function (playcanvas, barcolor) {
+        init: function (playcanvas) {
             //stash the key actors for calling from draw
             this.playcanvas = playcanvas.get(0);
             this.startx = 0;
@@ -30,10 +34,12 @@ define(['jquery','core/log'], function($, log) {
             this.barwidth = this.playcanvas.width;
             this.barheight = this.playcanvas.height;
             this.context = this.playcanvas.getContext('2d');
-            this.barcolor = barcolor ? barcolor : "#C2C2C2";
-
         },
- 
+
+        setDrawParam: function(paramkey,paramvalue){
+            this.drawparams[paramkey]=paramvalue;
+        },
+
         clear: function () {
             this.context.clearRect(this.startx, this.starty, this.barwidth, this.barheight);
         },
@@ -45,8 +51,8 @@ define(['jquery','core/log'], function($, log) {
 
         //stop and clear
         stop: function () {
-        	this.enabled= false;
-        	this.clear();
+            this.enabled= false;
+            this.clear();
         },
         //stop without clearing
         stopthere: function () {
@@ -55,20 +61,20 @@ define(['jquery','core/log'], function($, log) {
 
         start: function () {
             this.clear();
-        	this.enabled=true;
-        	var that = this;
+            this.enabled=true;
+            var that = this;
             //set draw params, later could make this configurable
-            this.context.textAlign = "center";
-            this.context.font="12px Arial";
-            var textcolor = "black";
+            this.context.textAlign = this.drawparams.textAlign;
+            this.context.font= this.drawparams.font;
+            var textcolor = this.drawparams.textColor;
 
 
-           
 
-			var draw= function () {
-   
+
+            var draw= function () {
+
                 if(!that.enabled){
-                   return;
+                    return;
                 }
                 that.clear();
                 that.context.fillStyle = that.barcolor;
@@ -82,11 +88,11 @@ define(['jquery','core/log'], function($, log) {
                 that.context.fillText(parseInt(that.fetchCurrent() * 100) +'%',that.barwidth/2, that.barheight/2);
                 */
                 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-								  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 requestAnimationFrame(draw);
 
-			}//end of draw
-			draw();
-    	}//end of enable
+            }//end of draw
+            draw();
+        }//end of enable
     };//end of returned object
 });//total end

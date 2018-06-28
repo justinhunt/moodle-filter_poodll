@@ -53,7 +53,7 @@ define(['jquery','core/log', 'filter_poodll/anim_progress_bar'], function($, log
             log.debug('deactivating session');
         },
 
-        showMessage: function(msg){
+        showMessage: function(msg,msgid){
             this.messagearea.html(msg);
         }//End of send message
     };//end of returned object

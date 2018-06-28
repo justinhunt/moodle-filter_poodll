@@ -27,6 +27,10 @@ define(['jquery','core/log', 'filter_poodll/anim_progress_radial'], function($, 
             this.messagearea = messagearea;
         },
 
+        setDrawParam: function(paramkey,paramvalue){
+            this.progressradial.setDrawParam(paramkey,paramvalue);
+        },
+
         initControls: function(){
             var self= this;
             var showpercent = true;
@@ -54,8 +58,14 @@ define(['jquery','core/log', 'filter_poodll/anim_progress_radial'], function($, 
             log.debug('deactivating session');
         },
 
-        showMessage: function(msg){
-            this.messagearea.html(msg);
-        }//End of send message
+        showMessage: function(msg,msgid){
+            switch(msgid) {
+                //once and readaloud skins do not offer playback so we just skin this
+                case 'recui_awaitingconversion':
+                    break;
+                default:
+                    this.messagearea.html(msg);
+            }
+        }//End of show message
     };//end of returned object
 });//total end

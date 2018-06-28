@@ -8,7 +8,8 @@ define(['jquery', 'core/log',
     'filter_poodll/poodll_shadowmediaskin',
     'filter_poodll/poodll_splitmediaskin',
     'filter_poodll/poodll_fbmediaskin',
-    'filter_poodll/poodll_readaloudmediaskin'], function($, log, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin, readaloudskin) {
+    'filter_poodll/poodll_readaloudmediaskin',
+    'filter_poodll/poodll_oncemediaskin'], function($, log, baseskin, burntroseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin, readaloudskin,onceskin) {
 
     "use strict"; // jshint ;_;
 

@@ -10,18 +10,23 @@ define(['jquery','core/log'], function($, log) {
         analyser: null,
         cvs: null,
         cvsctx: null,
+        drawparams: {rippleColor: '#0',
+            lineWidth: 2},
 
         //for making multiple instances
         clone: function () {
             return $.extend(true, {}, this);
         },
 
-
         //init
         init: function (analyser, cvs) {
             this.cvs = cvs;
             this.cvsctx=cvs.getContext("2d");
             this.analyser = analyser;
+        },
+
+        setDrawParam: function(paramkey,paramvalue){
+            this.drawparams[paramkey]=paramvalue;
         },
 
         clear: function(){
@@ -37,6 +42,7 @@ define(['jquery','core/log'], function($, log) {
             var canvasCtx = this.cvsctx;
             var analyser = this.analyser;
             this.clear();
+            var that = this;
 
             var draw = function () {
 
@@ -51,9 +57,9 @@ define(['jquery','core/log'], function($, log) {
                 //canvasCtx.fillStyle = 'rgb(200, 200, 200)';
                 canvasCtx.clearRect(0, 0, cwidth,cheight);
 
-                canvasCtx.lineWidth = 2;
+                canvasCtx.lineWidth = that.drawparams.lineWidth;
                 canvasCtx.setLineDash([15, 5]);
-                canvasCtx.strokeStyle = 'rgb(0, 0, 0)';
+                canvasCtx.strokeStyle = that.drawparams.rippleColor;
 
                 canvasCtx.beginPath();
 

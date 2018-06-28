@@ -12,6 +12,11 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
         cvsctx: null,
         speechrec: null,
         enabled: false,
+        drawparams: {
+            textColor: '#0',
+            wavColor: '#0',
+            font: '14px Comic Sans MS',
+            textAlign: "center"},
 
         //for making multiple instances
         clone: function () {
@@ -29,6 +34,11 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
             this.speechrec.init('en-US');
 
         },
+
+        setDrawParam: function(paramkey,paramvalue){
+            this.drawparams[paramkey]=paramvalue;
+        },
+
         //clear
         //more specifically stop, but to be consistent with how we do other anims, we call it clear
         clear: function(){
@@ -81,7 +91,7 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
 
                 //sets up the pen
                 that.cvsctx.lineWidth = 2;
-                that.cvsctx.strokeStyle = 'rgb(0, 0, 0)';
+                that.cvsctx.strokeStyle = that.drawparams.wavColor;
                 that.cvsctx.beginPath();
                 //how long to drw each datapoint
                 var sliceWidth = cwidth * 1.0 / bufferLength;
@@ -105,9 +115,9 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
                 that.cvsctx.stroke();
 
                 //draw words
-                that.cvsctx.font = "14px Comic Sans MS";
-                that.cvsctx.fillStyle = "black";
-                that.cvsctx.textAlign = "center";
+                that.cvsctx.font = that.drawparams.font;
+                that.cvsctx.fillStyle = that.drawparams.textColor;
+                that.cvsctx.textAlign = that.drawparams.textAlign;
                 var cellvcenter = cheight/4;
                 var cellwidth=cwidth / 4;
                 var cellhcenter = cwidth / 8;

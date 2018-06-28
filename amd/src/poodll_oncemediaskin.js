@@ -1,11 +1,11 @@
 /* jshint ignore:start */
 define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll/upskin_radial',
     'filter_poodll/anim_hwave_mic','filter_poodll/dlg_devicesettings'],
-    function($,jqui, log, utils, upskin_radial, hwave_mic,settings) {
+    function($,jqui, log, utils, upskin_radial, hwave,settings) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Read Aloud Skin: initialising');
+    log.debug('PoodLL Once Recorder Skin: initialising');
 
     return {
     
@@ -42,24 +42,24 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             return;
         },		
 
-        fetch_status_bar: function(skin){
-            var status = '<div class="poodll_status_' + skin + '" width="320" height="50">00:00:00</div>';
+        fetch_status_bar: function(skinname){
+            var status = '<div class="poodll_status_' + skinname + '" width="320" height="50">00:00:00</div>';
             return status;
         },
         
-        fetch_preview_audio: function(skin){
-            var preview = '<audio class="poodll_preview_' + skin + ' hide"></audio>';
+        fetch_preview_audio: function(skinname){
+            var preview = '<audio class="poodll_preview_' + skinname + ' hide"></audio>';
             return preview;
         },
-        fetch_preview_video: function(skin){
-            return this.fetch_preview_audio(skin);
+        fetch_preview_video: function(skinname){
+            return this.fetch_preview_audio(skinname);
         },
-        fetch_resource_audio: function(skin){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" ></audio>';
+        fetch_resource_audio: function(skinname){
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skinname + ' hide" ></audio>';
             return resourceplayer;
         },
-        fetch_resource_video: function(skin){
-            return this.fetch_resource_audio(skin);
+        fetch_resource_video: function(skinname){
+            return this.fetch_resource_audio(skinname);
         },
 
         onMediaError: function(e) {
@@ -67,12 +67,12 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         },
 
         onMediaSuccess_video: function(controlbarid){
-            var ip = this.fetch_instanceprops(controlbarid);
+            var ip = this.fetch_instanceprops();
             this.set_visual_mode('recordingmode',controlbarid);
         },
 
         onMediaSuccess_audio: function(controlbarid){
-            var ip = this.fetch_instanceprops(controlbarid);
+            var ip = this.fetch_instanceprops();
             ip.controlbar.preview.attr('src',null);
 
             //clear messages
@@ -91,62 +91,66 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         },
 
         handle_timer_update: function(controlbarid){
-            var ip = this.fetch_instanceprops(controlbarid);
-            ip.controlbar.status.html(ip.timer.fetch_display_time());
+            var ip = this.fetch_instanceprops();
+            this.therecanim.displaytime =ip.timer.fetch_display_time();
+            this.update_status(controlbarid);
             if(ip.timer.seconds==0 && ip.timer.initseconds >0){
                  ip.controlbar.stopbutton.click();
             }
         },
 
        update_status: function(controlbarid){
-            var ip = this.fetch_instanceprops(controlbarid);
+            var ip = this.fetch_instanceprops();
             ip.controlbar.status.html(ip.timer.fetch_display_time());
         },
 
         fetch_uploader_skin: function(controlbarid, element){
-            var ip = this.fetch_instanceprops(controlbarid);
+            var ip = this.fetch_instanceprops();
             var upskin = upskin_radial.clone();
-            upskin.init(ip.config,element,ip.controlbar.playcanvas,ip.controlbar.status);
-            return upskin;
+            upskin.init(ip.config,element,ip.controlbar.uploadcanvas,ip.controlbar.uploadmessages);
+            upskin.setDrawParam('lineWidth',2);
+            upskin.setDrawParam('font', '14px Arial');
+                return upskin;
         },
 
         //set visuals for different states (ie recording or playing)
         set_visual_mode: function(mode, controlbarid){
             var self = this;
-            var ip = this.fetch_instanceprops(controlbarid);
+            var ip = this.fetch_instanceprops();
 
            switch(mode) {
 
-               case 'startmode':
-
-                   ip.controlbar.status.hide();
-                   self.disable_button(ip.controlbar.startbutton);
-                   self.enable_button(ip.controlbar.testbutton);
-                   self.disable_button(ip.controlbar.stopbutton);
-                   self.therecanim.clear();
-                   break;
 
                case 'readymode':
 
-                   ip.controlbar.status.hide();
+                   ip.controlbar.status.show();
                    self.enable_button(ip.controlbar.startbutton);
-                   self.disable_button(ip.controlbar.testbutton);
+                   self.disable_button(ip.controlbar.finishedbutton);
                    self.disable_button(ip.controlbar.stopbutton);
+                   ip.controlbar.playcanvas.show();
+                   ip.controlbar.uploadcanvas.hide();
+                   self.therecanim.setDrawParam('wavColor','#CCCCCC');
                    self.therecanim.clear();
                    break;
 
                case 'recordingmode':
                    //when testing(timer off) we do not want the stop button. Just really recording and allowearlyexit
-                   if (ip.config.allowearlyexit=="1" && ip.timer.enabled) {
-                        self.enable_button(ip.controlbar.stopbutton);
-                    }
+                   self.enable_button(ip.controlbar.stopbutton);
                    self.disable_button(ip.controlbar.startbutton);
-                   ip.controlbar.status.hide();
+                   ip.controlbar.playcanvas.show();
+                   ip.controlbar.uploadcanvas.hide();
+                   self.therecanim.setDrawParam('wavColor','#FF0000');
+                   self.therecanim.clear();
+                   ip.controlbar.status.show();
                     break;
 
                case 'aftermode':
                    self.disable_button(ip.controlbar.startbutton);
                    self.disable_button(ip.controlbar.stopbutton);
+                   self.therecanim.setDrawParam('wavColor','#CCCCCC');
+                   self.therecanim.clear();
+                   ip.controlbar.playcanvas.hide();
+                   ip.controlbar.uploadcanvas.show();
                    ip.controlbar.status.show();
 
                    break;
@@ -167,7 +171,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         
         //insert the control bar and return it to be reused
         prepare_controlbar: function(element,controlbarid, preview, resource, mediatype){
-                var ip = this.fetch_instanceprops(controlbarid);
+                var ip = this.fetch_instanceprops();
                 var skin_style = ip.config.media_skin_style;
 
 				var recorder_class = 'poodll_mediarecorder_audio';
@@ -178,21 +182,23 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 var ss_testlabel = M.util.get_string('recui_testmic','filter_poodll');
                 var ss_stoplabel = M.util.get_string('recui_stop','filter_poodll');
 
-                var status = this.fetch_status_bar('readaloud');
-                var controls ='<div class="poodll_mediarecorderholder_readaloud '
+                var status = this.fetch_status_bar('once');
+                var controls ='<div class="poodll_mediarecorderholder_once '
                 	+ recorder_class + '" id="holder_' + controlbarid + '">' ;
                 	
-                controls +='<div class="poodll_mediarecorderbox_readaloud" id="' + controlbarid + '">' ;
+                controls +='<div class="poodll_mediarecorderbox_once" id="' + controlbarid + '">' ;
                 controls += this.devsettings.fetch_dialogue_box();
                 controls += ip.errordialog.fetch_dialogue_box();
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 controls += preview,
 				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-				controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="120"></canvas>';
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_start-recording_readaloud">' + ss_startlabel + '</button>';
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_test-recording_readaloud">' + ss_testlabel +  '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_stop-recording_readaloud">' +  ss_stoplabel +  '</button>';
+				controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50"></canvas>';
                 controls += status,
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_once poodll_start-recording_once">' + ss_startlabel + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_stop-recording_once">' +  ss_stoplabel +  '</button>';
+                controls += '<canvas id="' + controlbarid + '_uploadcanvas" width="250" height="50"></canvas>';
+                controls +=  '<div class="poodll_uploadmessages_once"></div>';
+
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
                 //<i class="fa fa-stop" aria-hidden="true"></i>
@@ -200,12 +206,13 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
                     errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
-                    status: $('#' + controlbarid + ' .poodll_status_readaloud'),
-                    preview: $('#' + controlbarid + ' .poodll_preview_readaloud'),
-                    startbutton: $('#' + controlbarid + ' .poodll_start-recording_readaloud'),
-                    testbutton: $('#' + controlbarid + ' .poodll_test-recording_readaloud'),
-                    stopbutton: $('#' + controlbarid + ' .poodll_stop-recording_readaloud'),
-                    playcanvas: $('#' + controlbarid + '_playcanvas')    
+                    status: $('#' + controlbarid + ' .poodll_status_once'),
+                    preview: $('#' + controlbarid + ' .poodll_preview_once'),
+                    startbutton: $('#' + controlbarid + ' .poodll_start-recording_once'),
+                    stopbutton: $('#' + controlbarid + ' .poodll_stop-recording_once'),
+                    playcanvas: $('#' + controlbarid + '_playcanvas') ,
+                    uploadcanvas: $('#' + controlbarid + '_uploadcanvas') ,
+                    uploadmessages: $('#' + controlbarid + ' .poodll_uploadmessages_once')
                 };
             //settings and error dialogs
             //They use the same dialog and just fill it with diofferent stuff
@@ -214,7 +221,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             this.devsettings.set_dialogue_box(controlbar.settingsdialog);
 
                 return controlbar;
-        }, //end of fetch_control_bar_readaloud
+        }, //end of fetch_control_bar_once
 
 
         register_controlbar_events_video: function(onMediaSuccess, controlbarid) {
@@ -225,38 +232,17 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
             var self = this;
             var pmr=this.pmr;
-            var ip = this.fetch_instanceprops(controlbarid);
+            var ip = this.fetch_instanceprops();
 
             //init recording anim
             ip.config.recanim = 'hwave_mic';
-            var recanim=hwave_mic.clone();
+            var recanim=hwave.clone();
             self.therecanim = recanim;
             recanim.init(ip.audioanalyser,ip.controlbar.playcanvas.get(0));
 
             //set visual mode
-            this.set_visual_mode('startmode',controlbarid);
+            this.set_visual_mode('readymode',controlbarid);
 
-
-            //Test button click
-            ip.controlbar.testbutton.click(function() {
-                //we will start recording here.
-                //but its just a throwaway so we disable messages to API client and timer
-                ip.config.hermes.disable();
-                ip.timer.disable();
-
-                var testover = function(){
-                    //stop recording
-                    pmr.do_stop_audio(ip);
-                    //wave animation
-                    recanim.clear();
-                    if(recanim.sounddetected){
-                        self.set_visual_mode('readymode',controlbarid);
-                    }
-                }
-                pmr.do_start_audio(ip,  onMediaSuccess);
-                setTimeout(testover,4000);
-            });
-			
 
 			ip.controlbar.settingsicon.click(function(){
 				self.devsettings.open();
@@ -268,7 +254,6 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 // so we enable messages to API client and timer
                 ip.config.hermes.enable();
                 ip.timer.enable();
-
                 pmr.do_start_audio(ip,  onMediaSuccess);
             });
 
@@ -281,7 +266,6 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
                 //wave animation
                 recanim.clear();
-
 
                 //timer and status bar
                ip.timer.stop()
@@ -315,7 +299,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                // self.enable_button(ip.controlbar.startbutton);
 
             };
-        }, //end of register_control_bar_events_readaloud
+        }, //end of register_control_bar_events_once
 
 
 

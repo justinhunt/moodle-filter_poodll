@@ -61,7 +61,7 @@ define(['jquery','core/log'], function($, log) {
         },
 
 
-        showMessage: function(msg){
+        showMessage: function(msg,msgid){
             var m = $("#" + this.config.widgetid + "_messages");
             m.text(msg);
         }//End of send message

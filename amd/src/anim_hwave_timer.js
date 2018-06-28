@@ -3,23 +3,20 @@ define(['jquery','core/log'], function($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('anim_horizontal_wave: initialising');
+    log.debug('anim_horizontal_wave_ra: initialising');
 
     return {
 
         analyser: null,
         cvs: null,
         cvsctx: null,
-        drawparams: {wavColor: '#0',
-            barColor: '#ad2323',
-            shadowOffsetX: 0,
-            shadowOffsetY: 0,
-            shadowBlur: 10,
-            shadowColor: '#fff',
-            font: '18px Arial',
-            textAlign: "center",
-            textBaseline: 'middle'},
-
+        sounddetected: false,
+        displaytime: '00:00:00',
+        drawparams: {wavColor: "#CCCCCC",
+            textColor: "#000000",
+            lineWidth: 2,
+            font: '30px Georgia',
+            textAlign: "center"},
 
         //for making multiple instances
         clone: function () {
@@ -31,8 +28,8 @@ define(['jquery','core/log'], function($, log) {
         init: function (analyser, cvs) {
             this.cvs = cvs;
             this.cvsctx=cvs.getContext("2d");
+            this.cvsctx.textAlign=this.drawparams.textAlign;
             this.analyser = analyser;
-            this.clear();
         },
 
         setDrawParam: function(paramkey,paramvalue){
@@ -42,11 +39,16 @@ define(['jquery','core/log'], function($, log) {
         clear: function(){
             this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
             this.cvsctx.lineWidth = 2;
-            this.cvsctx.strokeStyle = this.drawparams.wavColor;
+            this.cvsctx.strokeStyle = this.drawparams.textColor;
             this.cvsctx.beginPath();
-            this.cvsctx.moveTo(0, this.cvs.height/2);
-            this.cvsctx.lineTo(this.cvs.width, this.cvs.height/2);
+            this.drawTime(this.cvsctx,this.displaytime,this.cvs.width,this.cvs.height);
             this.cvsctx.stroke();
+        },
+
+        drawTime: function(ctx,displaytime,cwidth,cheight){
+            ctx.fillStyle=this.drawparams.textColor;
+            ctx.font=this.drawparams.font;
+            ctx.fillText(displaytime,cwidth/2, (cheight/4) * 3);
         },
 
         start: function(){
@@ -57,8 +59,8 @@ define(['jquery','core/log'], function($, log) {
             var cheight = this.cvs.height;
             var canvasCtx = this.cvsctx;
             var analyser = this.analyser;
-            this.clear();
             var that = this;
+            this.clear();
 
             var draw = function () {
 
@@ -74,30 +76,45 @@ define(['jquery','core/log'], function($, log) {
                 //canvasCtx.fillRect(0, 0, cwidth, cheight);
                 canvasCtx.clearRect(0, 0, cwidth,cheight);
 
-                canvasCtx.lineWidth = 2;
+                canvasCtx.lineWidth = that.drawparams.lineWidth;
                 canvasCtx.strokeStyle = that.drawparams.wavColor;
-
                 canvasCtx.beginPath();
 
-                var sliceWidth = cwidth * 1.0 / bufferLength;
+                var lineheight = (cheight / 4) * 3;
+
+                var sliceWidth = cwidth * 2.0 / bufferLength;
                 var x = 0;
+                var oldy = 0;
+
+                //we check if we could capture sound here
+                if(bufferLength > 0) {
+                    var level = dataArray[bufferLength - 1];
+                    if(level !=128){
+                        that.sounddetected =true;
+                    }
+                }
 
                 for (var i = 0; i < bufferLength; i++) {
 
                     var v = dataArray[i] / 128.0;
-                    var y = v * cheight / 2;
+                    var y = v * lineheight / 2;
 
                     if (i === 0) {
                         canvasCtx.moveTo(x, y);
                     } else {
+                        //canvasCtx.lineTo(x, oldy);
                         canvasCtx.lineTo(x, y);
-                    }
 
+                    }
+                    oldy=y;
                     x += sliceWidth;
                 }
 
-                canvasCtx.lineTo(cwidth, cheight / 2);
+                canvasCtx.lineTo(cwidth, lineheight / 2);
+                //draw thetime
+                that.drawTime(canvasCtx,that.displaytime,cwidth,cheight);
                 canvasCtx.stroke();
+
             };
 
             draw();
