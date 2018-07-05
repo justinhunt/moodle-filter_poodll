@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.1.05 (Build 2018070500)
+-Added a once audio recorder preset
+-Added a appid/subtitle job params
+-tweaked native audio
+
 Version 3.1.04 (Build 2018062300)
 -refactored AMD code so skins were better organised
 -added a more flexible cloud job register method

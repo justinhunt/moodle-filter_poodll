@@ -398,16 +398,18 @@ class awstools
 
 
 
-    function stage_remote_process_job($host, $mediatype, $s3path, $s3outfilename,
-                                      $transcode,$transcribe, $language, $vocab, $notificationurl){
+    function stage_remote_process_job($host, $mediatype,$appid, $s3path, $s3outfilename,
+                                      $transcode,$transcribe,$subtitle, $language, $vocab, $notificationurl){
         $dbclient = $this->fetch_dynamoDBClient();
         $marshaler = new Marshaler();
         $tablename='poodll_jobs';
         $itemarray = Array();
         $itemarray['host'] = $host;
         $itemarray['filename'] = $s3outfilename;
+        $itemarray['appid'] = $appid;
         $itemarray['transcode'] = $transcode ? 'yes' : 'no';
         $itemarray['transcribe'] = $transcribe ? 'yes' : 'no';
+        $itemarray['subtitle'] = $subtitle ? 'yes' : 'no';
         $itemarray['language'] = $language;
         $itemarray['vocab'] = $vocab;
         $itemarray['s3path'] = $s3path;
