@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.06 (Build 2018070501)
+-Added a once audio recorder option to filter settings
+
 Version 3.1.05 (Build 2018070500)
 -Added a once audio recorder preset
 -Added a appid/subtitle job params

@@ -443,8 +443,8 @@ button.poodll_mediarecorder_button_readaloud {
 
 .poodll_mediarecorderholder_once .settingsicon{
 	position: absolute;
-	bottom: 75px;
-	right: 250px;
+	bottom: 5px;
+	right: 5px;
 }
 .poodll_mediarecorderholder_once .settingsicon button{
 	border: none !important;
@@ -467,6 +467,7 @@ button.poodll_mediarecorder_button_readaloud {
 	border: 1px solid #CCCCCC;
 	border-radius: 5px;
 	padding: 5px;
+	max-width: 320px;
 }
 
 .poodll_mediarecorderbox_once button:hover{

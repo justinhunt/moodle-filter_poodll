@@ -270,6 +270,7 @@ $string['plain_recorder']="Plain";
 $string['burntrose_recorder']="Burnt Rose  (old)";
 $string['onetwothree_recorder']="One Two Three";
 $string['gold_recorder']="Single Button (beta)";
+$string['once_recorder']="Once (audio only)";
 $string['bmr_recorder']="Burnt Rose";
 $string['shadow_recorder']="Shadow";
 $string['split_recorder']="Split";
