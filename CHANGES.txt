@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.07(Build 2018070502)
+-Added a workaround for the case where Catalysts local_aws is installed
+-added a 3rdpartylibs.xml 
+
 Version 3.1.06 (Build 2018070501)
 -Added a once audio recorder option to filter settings
 
