@@ -52,14 +52,16 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             return preview;
         },
         fetch_preview_video: function(skinname){
-            return this.fetch_preview_audio(skinname);
+            var preview = '<video class="poodll_preview_' + skinname + ' hide"></video>';
+            return preview;
         },
         fetch_resource_audio: function(skinname){
             var resourceplayer = '<audio class="poodll_resourceplayer_' + skinname + ' hide" ></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skinname){
-            return this.fetch_resource_audio(skinname);
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skinname + ' hide" ></video>';
+            return resourceplayer;
         },
 
         onMediaError: function(e) {
@@ -68,6 +70,15 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
         onMediaSuccess_video: function(controlbarid){
             var ip = this.fetch_instanceprops();
+
+            //clear messages
+            ip.uploader.Output('');
+
+            //timer and status bar
+            ip.timer.reset();
+            ip.timer.start();
+            this.update_status(controlbarid);
+
             this.set_visual_mode('recordingmode',controlbarid);
         },
 
@@ -120,24 +131,36 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
            switch(mode) {
 
-
                case 'readymode':
 
                    ip.controlbar.status.show();
                    self.enable_button(ip.controlbar.startbutton);
                    self.disable_button(ip.controlbar.finishedbutton);
                    self.disable_button(ip.controlbar.stopbutton);
-                   ip.controlbar.playcanvas.show();
                    ip.controlbar.uploadcanvas.hide();
                    self.therecanim.setDrawParam('wavColor','#CCCCCC');
                    self.therecanim.clear();
+                   if(ip.config.mediatype=='video'){
+                       ip.controlbar.playcanvas.hide();
+                       ip.controlbar.preview.removeClass('hide');
+                   }else{
+                       ip.controlbar.playcanvas.show();
+                       ip.controlbar.preview.addClass('hide');
+                   }
                    break;
 
                case 'recordingmode':
                    //when testing(timer off) we do not want the stop button. Just really recording and allowearlyexit
                    self.enable_button(ip.controlbar.stopbutton);
                    self.disable_button(ip.controlbar.startbutton);
-                   ip.controlbar.playcanvas.show();
+                   if(ip.config.mediatype=='video'){
+                       ip.controlbar.playcanvas.hide();
+                       ip.controlbar.preview.removeClass('hide');
+                   }else{
+                       ip.controlbar.playcanvas.show();
+                       ip.controlbar.preview.addClass('hide');
+                   }
+
                    ip.controlbar.uploadcanvas.hide();
                    self.therecanim.setDrawParam('wavColor','#FF0000');
                    self.therecanim.clear();
@@ -150,6 +173,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                    self.therecanim.setDrawParam('wavColor','#CCCCCC');
                    self.therecanim.clear();
                    ip.controlbar.playcanvas.hide();
+                   if(ip.config.mediatype=='video'){
+                       ip.controlbar.preview.addClass('hide');
+                   }
                    ip.controlbar.uploadcanvas.show();
                    ip.controlbar.status.show();
 
@@ -161,7 +187,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
        //insert the control bar and return it to be reused
         insert_controlbar_video: function(element, controlbarid, preview, resource) {
-            return this.prepare_controlbar_audio(element,controlbarid, preview, resource);
+            var controlbar = this.prepare_controlbar(element,controlbarid, preview, resource,'video');
+            return controlbar;
         },
         //insert the control bar and return it to be reused
         insert_controlbar_audio: function(element,controlbarid, preview, resource){
@@ -174,7 +201,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 var ip = this.fetch_instanceprops();
                 var skin_style = ip.config.media_skin_style;
 
-				var recorder_class = 'poodll_mediarecorder_audio';
+                var recorder_class = mediatype=='video' ?  'poodll_mediarecorder_video' : 'poodll_mediarecorder_audio';
 				var size_class = 'poodll_mediarecorder_size_auto';
 
 				var ss = this.pmr.fetch_strings();
@@ -192,11 +219,17 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 controls += preview,
 				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-				controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50"></canvas>';
+				controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50" class="poodll_mediarecorder_playcanvas_once"></canvas>';
                 controls += status,
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_once poodll_start-recording_once">' + ss_startlabel + '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_stop-recording_once">' +  ss_stoplabel +  '</button>';
-                controls += '<canvas id="' + controlbarid + '_uploadcanvas" width="250" height="50"></canvas>';
+                if(mediatype=='audio'){
+                    controls += '<canvas id="' + controlbarid + '_uploadcanvas" width="250" height="50" class="poodll_mediarecorder_uploadcanvas_once"></canvas>';
+                }else{
+                    //we keep the canvas same height as video, but narrowe so the radial stays under the timer (we center it with CSS)
+                    controls += '<canvas id="' + controlbarid + '_uploadcanvas" width="130" height="210" class="poodll_mediarecorder_uploadcanvas_once"></canvas>';
+                }
+
                 controls +=  '<div class="poodll_uploadmessages_once"></div>';
 
                 controls += '</div></div></div>';

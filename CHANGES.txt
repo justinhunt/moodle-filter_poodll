@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.08(Build 2018070503) [in progress]
+-Added a video version of once recorder
+
 Version 3.1.07(Build 2018070502)
 -Added a workaround for the case where Catalysts local_aws is installed
 -added a 3rdpartylibs.xml

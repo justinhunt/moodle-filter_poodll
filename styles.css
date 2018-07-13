@@ -462,7 +462,8 @@ button.poodll_mediarecorder_button_readaloud {
 	cursor: pointer;
 }
 
-.poodll_mediarecorder_audio .poodll_mediarecorderbox_once{
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_once,
+.poodll_mediarecorder_video .poodll_mediarecorderbox_once{
 	text-align: center;
 	border: 1px solid #CCCCCC;
 	border-radius: 5px;
@@ -495,8 +496,7 @@ button.poodll_mediarecorder_button_once {
 	color: #fff;
 	background-color: #00acdf;
 	border-color: #00acdf;
-
-	display: inline-block;
+	display: block;
 	font-weight: 400;
 	line-height: 1.25;
 	text-align: center;
@@ -528,6 +528,23 @@ button.poodll_mediarecorder_button_once {
 	font-family: georgia;
 	margin-top: 2px;
 	margin-bottom: 20px;
+}
+
+video.poodll_preview_once {
+	width: 280px;
+	min-height: 210px;
+}
+div.poodll_mediarecorder_video  canvas.poodll_mediarecorder_uploadcanvas_once {
+	margin: auto;
+	display: block;
+}
+div.poodll_mediarecorder_video div.poodll_status_once {
+	position: absolute;
+	background-color: #eee;
+	opacity: 0.5;
+	top: 16px;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 /*********************************************END****************************************/
 
