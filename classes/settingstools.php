@@ -302,6 +302,7 @@ public static function fetch_html5_recorder_items(){
         'onetwothree' => get_string('onetwothree_recorder', 'filter_poodll'),
         'burntrose' => get_string('burntrose_recorder', 'filter_poodll'),
         'once' => get_string('once_recorder', 'filter_poodll'),
+        'fresh' => get_string('fresh_recorder', 'filter_poodll'),
 		'gold' => get_string('gold_recorder','filter_poodll')
 	);
     return $items;

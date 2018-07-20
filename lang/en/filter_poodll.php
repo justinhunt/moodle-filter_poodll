@@ -275,6 +275,7 @@ $string['bmr_recorder']="Burnt Rose";
 $string['shadow_recorder']="Shadow";
 $string['split_recorder']="Split";
 $string['readaloud_recorder']="Read Aloud";
+$string['fresh_recorder']="Fresh";
 $string['fluencybuilder_recorder']="Fluency Builder";
 $string['html5recorder_skin_audio']="HTML5 Recorder Skin(Audio)";
 $string['html5recorder_skin_video']="HTML5 Recorder Skin(Video)";
