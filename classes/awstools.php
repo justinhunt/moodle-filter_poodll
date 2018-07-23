@@ -178,6 +178,7 @@ class awstools
         //to avoid clashes (which crash Moodle)
         $catalyst_s3_loader = $CFG->dirroot . '/local/aws/sdk/aws-autoloader.php';
         if (file_exists($catalyst_s3_loader)) {
+            $this->awsversion = "3.x";
             require_once($catalyst_s3_loader);
 
         }elseif($CFG->filter_poodll_aws_sdk=="2.x"){
