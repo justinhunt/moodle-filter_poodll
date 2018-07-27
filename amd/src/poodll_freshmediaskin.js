@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings','filter_poodll/anim_progress_bar_fresh', 'filter_poodll/anim_hwave_fresh', 'filter_poodll/anim_hwave_timer', 'filter_poodll/upskin_bar'], function($, jqui, log, utils, settings, anim_progress_bar, hwave, hwave_timer, upskin_bar) {
+define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/dlg_devicesettings','filter_poodll/anim_progress_bar_fresh', 'filter_poodll/anim_hwave_fresh', 'filter_poodll/anim_hwave_timer', 'filter_poodll/upskin_text'], function($, jqui, log, utils, settings, anim_progress_bar, hwave, hwave_timer, upskin) {
 
     "use strict"; // jshint ;_;
 
@@ -66,9 +66,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 
         fetch_uploader_skin: function(controlbarid, element){
             var ip = this.fetch_instanceprops();
-            var upskin = upskin_bar.clone();
-            upskin.init(ip.config,element,ip.controlbar.bmr_progresscanvas,ip.controlbar.status);
-            return upskin;
+            var theupskin = upskin.clone();
+            theupskin.init(ip.config,element,ip.controlbar.bmr_progresscanvas,ip.controlbar.status);
+            return theupskin;
         },
 
         onMediaError: function(e) {
@@ -188,8 +188,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     self.disable_button(ip.controlbar.startbutton);
                     self.enable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.pausebutton);
-                    self.enable_button(ip.controlbar.savebutton);
-                    self.enable_button(ip.controlbar.recordAgain);
+
                     //reset timer button
                     ip.controlbar.status.html(ip.timer.fetch_display_time(ip.timer.finalSeconds));
 
@@ -200,10 +199,12 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     self.disable_button(ip.controlbar.resumebutton);
                     self.hide_element(ip.controlbar.resumebutton);
                     self.hide_element(ip.controlbar.bmr_progresscanvas);
-
-                    if(!self.uploaded){
-                        //  self.enable_button(ip.controlbar.startbutton);
+                    if(self.uploaded) {
+                        self.disable_button(ip.controlbar.savebutton);
+                        self.disable_button(ip.controlbar.recordAgain);
+                    }else{
                         self.enable_button(ip.controlbar.savebutton);
+                        self.enable_button(ip.controlbar.recordAgain);
                     }
 
                     self.show_element(ip.controlbar.pausebutton);
@@ -232,6 +233,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     break;
 
                 case 'playmode':
+
                     ip.controlbar.statusText.text('Playing');
                     ip.controlbar.status.html('00:00:00');
 
@@ -291,6 +293,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 case 'uploadmode':
                     ip.controlbar.statusText.text('Uploading');
                     self.disable_button(ip.controlbar.savebutton);
+                    self.disable_button(ip.controlbar.recordAgain);
                     self.disable_button(ip.controlbar.startbutton);
                     self.show_element(ip.controlbar.bmr_progresscanvas);
 
@@ -647,7 +650,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     self.uploaded = true;
                 }else{
                     ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
-                }//end of if self.blobs		
+                }//end of if self.blobs
                 //probably not necessary  ... but getting odd ajax errors occasionally
                 return false;
             });//end of save recording
