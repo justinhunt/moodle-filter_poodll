@@ -412,8 +412,8 @@ button.poodll_mediarecorder_button_readaloud {
 
 .poodll_mediarecorderholder_once .settingsicon{
     position: absolute;
-    bottom: 5px;
-    right: 5px;
+    bottom: 0px;
+    right: 0px;
 }
 .poodll_mediarecorderholder_once .settingsicon button{
     border: none !important;

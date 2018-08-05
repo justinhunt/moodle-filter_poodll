@@ -218,7 +218,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 controls += ip.errordialog.fetch_dialogue_box();
                 controls +='<div class="style-holder ' + skin_style + '">' ;
                 controls += preview,
-				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+				controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn-poodllsettings" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
 				controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50" class="poodll_mediarecorder_playcanvas_once"></canvas>';
                 controls += status,
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_once poodll_start-recording_once">' + ss_startlabel + '</button>';
