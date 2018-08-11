@@ -284,11 +284,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 							controls += preview,
 							controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
 							controls +=  '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_start-recording_onetwothree"><i class="fa fa-microphone" aria-hidden="true"></i></button> ';
-							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
-							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_pause-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
-							controls += ' <button type="button" class="poodll_mediarecorder_button_onetwothree poodll_resume-recording_onetwothree pmr_disabled hide" disabled><i class="fa fa-microphone" aria-hidden="true"></i></button>';
+							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-recording_onetwothree pmr_disabled" style="display: none;" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
+							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_pause-recording_onetwothree pmr_disabled" style="display: none;" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
+							controls += ' <button type="button" class="poodll_mediarecorder_button_onetwothree poodll_resume-recording_onetwothree pmr_disabled" style="display: none;" disabled><i class="fa fa-microphone" aria-hidden="true"></i></button>';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_play-recording_onetwothree pmr_disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></button> ';
-							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-playing_onetwothree pmr_disabled hide" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
+							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_stop-playing_onetwothree pmr_disabled" style="display: none;" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
 							controls += '<button type="button" class="poodll_mediarecorder_button_onetwothree poodll_save-recording_onetwothree pmr_disabled" disabled><i class="fa fa-upload" aria-hidden="true"></i></button>';
 							controls += '<div style="clear:both;">';
 							controls += '<div class="task-helper">';
