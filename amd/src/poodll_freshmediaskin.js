@@ -48,7 +48,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         },
 
         fetch_preview_audio: function(skin){
-            var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
+            var preview = '<audio class="poodll_preview_' + skin + '" style="display: none;" controls></audio>';
             return preview;
         },
         fetch_preview_video: function(skin){
@@ -333,7 +333,6 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             }
 
             var ss = this.pmr.fetch_strings();
-            var hideshowupload = ip.showupload ? '' : 'hide';
             var record_icon = mediatype=='video' ?  'fa-video-camera' : 'fa-microphone';
             var recorder_class = mediatype=='video' ?  'poodll_mediarecorder_video' : 'poodll_mediarecorder_audio';
 
@@ -358,7 +357,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 '<div class="poodll_fresh_txt_control">Ready to record</div>' +
                 '<div class="poodll_fresh_settings_btn settingsicon" data-toggle="modal" data-target="#myModal id="settingsicon_'+controlbarid+'"></div>' +
                 '<div class="poodll_start-recording_fresh poodll_fresh_main_btn"></div>' +
-                '<div class="poodll_stop-playing-recording_fresh hide"></div>' +
+                '<div class="poodll_stop-playing-recording_fresh" style="display: none;"></div>' +
                 '<div class="poodll_pause-recording_fresh poodll_fresh_pause_btn bmr_disabled"></div>' +
                 '<div class="poodll_play-recording_fresh poodll_fresh_play_btn bmr_disabled"></div>' +
                 '</div>' +
@@ -367,17 +366,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 '<a class="poodll_fresh_record_btn bmr_disabled" href="#">Record Again</a>' +
                 '</div>';
 
-            controls += preview,
-                //controls += '<div class="settingsicon" id="settingsicon_'+controlbarid+'"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-
-                /*     controls +=  '<button type="button" class="poodll_mediarecorder_button_fresh poodll_start-recording_fresh"><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
-                     controls += ' <button type="button" class="poodll_mediarecorder_button_fresh poodll_resume-recording_fresh fresh_disabled hide" disabled><i class="fa ' + record_icon + '" aria-hidden="true"></i></button>';
-                     controls += '<button type="button" class="poodll_mediarecorder_button_fresh poodll_stop-recording_fresh fresh_disabled" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
-                     controls += '<button type="button" class="poodll_mediarecorder_button_fresh poodll_pause-recording_fresh fresh_disabled" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
-                     controls += ' <button type="button" class="poodll_mediarecorder_button_fresh poodll_play-recording_fresh fresh_disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></button>';
-                     controls += '<button type="button" class="poodll_save-recording_fresh ' + hideshowupload + '" disabled>' + ss['recui_save'] +'</button>'; */
-
-                controls += '</div>';
+            controls += preview;
+            controls += '</div>';
             controls += this.devsettings.fetch_dialogue_box();
             controls += ip.errordialog.fetch_dialogue_box();
             controls += '</div>';
@@ -667,11 +657,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         }, //end of register_control_bar_events_bmr
 
         show_element: function(element){
-            $(element).removeClass('hide');
             $(element).show();
         },
         hide_element: function(element){
-            $(element).addClass('hide');
             $(element).hide();
         },
         enable_button: function(button){

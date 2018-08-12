@@ -46,7 +46,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         },
         
         fetch_preview_audio: function(skin){
-            var preview = '<audio class="poodll_preview_' + skin + ' playsinline hide" controls></audio>';
+            var preview = '<audio class="poodll_preview_' + skin + ' playsinline" style="display: none;" controls></audio>';
             return preview;
         },
         fetch_preview_video: function(skin){
@@ -54,11 +54,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             return preview;
         },
         fetch_resource_audio: function(skin){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + '" style="display: none;" ></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skin){
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" ></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;"></video>';
             return resourceplayer;
         },
         fetch_uploader_skin: function(controlbarid, element){
@@ -133,18 +133,18 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                     ip.controlbar.preview.addClass('poodll_recording');
                     ip.controlbar.status.addClass('poodll_recording');
                     if(ip.config.mediatype=='audio'){
-                        ip.controlbar.preview.addClass('hide');
+                        ip.controlbar.preview.hide();
                     }
-                    ip.controlbar.status.removeClass('hide');
+                    ip.controlbar.status.show();
                     break;
 
                case 'previewmode':
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     if(ip.config.mediatype=='audio'){
-                        ip.controlbar.preview.removeClass('hide');
+                        ip.controlbar.preview.show();
                     }
-                    ip.controlbar.status.addClass('hide');
+                    ip.controlbar.status.hide();
                     break;
 
                case 'pausedmode':
@@ -186,7 +186,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 }
 
 				var ss = this.pmr.fetch_strings();
-				var hideshowupload = ip.showupload ? '' : 'hide';
+				var hideshowupload = ip.showupload ? 'inline-block' : 'none';
                 var controls ='<div class="poodll_mediarecorderholder_standard ' + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
 					controls +='<div class="poodll_mediarecorderbox_standard" id="' + controlbarid + '">' ;
 					controls += this.devsettings.fetch_dialogue_box();
@@ -199,9 +199,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 							controls +=  '<button type="button" class="poodll_mediarecorder_button_standard poodll_start-recording_standard">' + ss['recui_record'] + '</button>';
 							controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_stop-recording_standard pmr_disabled" disabled>' + ss['recui_stop'] + '</button>';
 							controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_pause-recording_standard pmr_disabled" disabled>' + ss['recui_pause'] + '</button>';
-							controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard pmr_disabled hide" disabled>' + ss['recui_continue'] + '</button>';
+							controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard pmr_disabled" style="display: none;" disabled>' + ss['recui_continue'] + '</button>';
 							controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_play-recording_standard pmr_disabled" disabled>' + ss['recui_play'] + '</button>';
-							controls += '<button type="button" class="poodll_save-recording_standard pmr_disabled ' + hideshowupload + '" disabled>' + ss['recui_save'] + '</button>';
+							controls += '<button type="button" class="poodll_save-recording_standard pmr_disabled" style="display: ' + hideshowupload  +';" disabled>' + ss['recui_save'] + '</button>';
 							controls += '</div>';
 						controls += '</div>';
 					controls += '</div>';
@@ -225,7 +225,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             //They use the same dialog and just fill it with different stuff
             //settings is on 'this' because it is shown from skin events, but errors are from pmr stuff
             ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
-            this.devsettings.set_dialogue_box(controlbar.settingsdialog)
+            this.devsettings.set_dialogue_box(controlbar.settingsdialog);
 				 
                 return controlbar;
         }, //end of fetch_control_bar_standard
@@ -246,9 +246,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 			});
 
             ip.controlbar.startbutton.click(function() {
-
                 pmr.do_start_audio(ip, onMediaSuccess);
-
             });
             
             ip.controlbar.stopbutton.click(function() {
@@ -344,7 +342,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
         disable_button: function(button){
             $(button).attr('disabled',true);
             $(button).addClass('pmr_disabled');
-        },
+        }
 
     };//end of returned object
 });//total end

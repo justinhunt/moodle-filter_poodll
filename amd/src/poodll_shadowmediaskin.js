@@ -45,7 +45,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
         },
         
         fetch_preview_audio: function(skin){
-            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" controls></audio>';
+            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' " style="display: none;" controls></audio>';
             return checkplayer;
         },
         fetch_preview_video: function(skin){
@@ -53,11 +53,11 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
             return checkplayer;
         },
         fetch_resource_audio: function(skin){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" playsinline controls></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + '" style="display: none;" src="@@RESOURCEURL@@" playsinline controls></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skin){
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" ></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;" src="@@RESOURCEURL@@" ></video>';
             return resourceplayer;
         },
         fetch_uploader_skin: function(controlbarid, element){
@@ -269,7 +269,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 + '<span class="fa fa-play-circle fa-4x"></span>' 
 				+ '</button>';
                
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-resource_shadow  hide">' 
+                controls +=  '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-resource_shadow" style="display: none;">'
                 + '<span class="fa fa-stop-circle fa-4x"></span>' 
 				+ '</button>';
                 
@@ -279,7 +279,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
  				+ '<span class="fa fa-microphone fa-4x"></span>' 
                 +  '</button>';
                 
-                controls += '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-recording_shadow pmr_disabled hide" disabled>'
+                controls += '<button type="button" class="poodll_mediarecorder_button_shadow poodll_stop-recording_shadow pmr_disabled" style="display: none;" disabled>'
                 + '<span class="fa fa-stop-circle fa-4x"></span>' 
 				+ '</button>';
 				
@@ -287,7 +287,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 + '<span class="fa fa-play-circle fa-4x"></span>' 
 				+ '</button>';
 				
-                controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_stopplayback-recording_shadow hide">'
+                controls += ' <button type="button" class="poodll_mediarecorder_button_shadow poodll_stopplayback-recording_shadow" style="display: none;">'
                 + '<span class="fa fa-stop-circle fa-4x"></span>' 
 				+ '</button>';
 
@@ -296,7 +296,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
 				
                 //controls += '<button type="button" class="poodll_save-recording_shadow pmr_disabled disabled hide>' + ss['recui_save'] +  '</button>';
 				
-				controls += '<div class="marker hide"><i class="fa fa-check" aria-hidden="true"></i></div>';
+				controls += '<div class="marker" style="display: none;"><i class="fa fa-check" aria-hidden="true"></i></div>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
 
@@ -354,10 +354,7 @@ define(['jquery','core/log','filter_poodll/utils_amd'], function($, log, utils) 
                 self.disable_button(this);
 				
 				
-				if(ip.controlbar.marker.hasClass('hide')){
-					ip.controlbar.marker.removeClass('hide');
-					console.log('check mark shown');
-				}
+				ip.controlbar.marker.show();
                 
                 var resourceplayer = ip.controlbar.resourceplayer.get(0);
                 pmr.do_play_audio(ip,resourceplayer);

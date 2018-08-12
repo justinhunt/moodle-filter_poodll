@@ -34,7 +34,6 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
         onUploadSuccess: function(controlbarid){
              $('#' + controlbarid + ' > .poodll_save-recording').hide();
-            // $('#' + controlbarid  + '_messages').hide();
              $('#' + controlbarid + ' > .poodll_savedsuccessfully').show();
         },
         
@@ -48,19 +47,19 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         },
         
         fetch_preview_audio: function(skinname){
-            var preview = '<audio class="poodll_preview_' + skinname + ' hide"></audio>';
+            var preview = '<audio class="poodll_preview_' + skinname + '" style="display: none;"></audio>';
             return preview;
         },
         fetch_preview_video: function(skinname){
-            var preview = '<video class="poodll_preview_' + skinname + ' hide"></video>';
+            var preview = '<video class="poodll_preview_' + skinname + '" style="display: none;"></video>';
             return preview;
         },
         fetch_resource_audio: function(skinname){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skinname + ' hide" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skinname + '" style="display: none;" ></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skinname){
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skinname + ' hide" ></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skinname + '" style="display: none;"></video>';
             return resourceplayer;
         },
 
@@ -142,10 +141,10 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                    self.therecanim.clear();
                    if(ip.config.mediatype=='video'){
                        ip.controlbar.playcanvas.hide();
-                       ip.controlbar.preview.removeClass('hide');
+                       ip.controlbar.preview.show();
                    }else{
                        ip.controlbar.playcanvas.show();
-                       ip.controlbar.preview.addClass('hide');
+                       ip.controlbar.preview.hide();
                    }
                    break;
 
@@ -155,10 +154,10 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                    self.disable_button(ip.controlbar.startbutton);
                    if(ip.config.mediatype=='video'){
                        ip.controlbar.playcanvas.hide();
-                       ip.controlbar.preview.removeClass('hide');
+                       ip.controlbar.preview.show();
                    }else{
                        ip.controlbar.playcanvas.show();
-                       ip.controlbar.preview.addClass('hide');
+                       ip.controlbar.preview.hide();
                    }
 
                    ip.controlbar.uploadcanvas.hide();
@@ -174,7 +173,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                    self.therecanim.clear();
                    ip.controlbar.playcanvas.hide();
                    if(ip.config.mediatype=='video'){
-                       ip.controlbar.preview.addClass('hide');
+                       ip.controlbar.preview.hide();
                    }
                    ip.controlbar.uploadcanvas.show();
                    ip.controlbar.status.show();

@@ -46,7 +46,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         },
         
         fetch_preview_audio: function(skin){
-            var preview = '<audio class="audio_preview_123 poodll_preview_' + skin + ' hide" width="100%" height="100%" controls></audio>';
+            var preview = '<audio class="audio_preview_123 poodll_preview_' + skin + '" style="display: none;" width="100%" height="100%" controls></audio>';
             return preview;
         },
         fetch_preview_video: function(skin){
@@ -54,11 +54,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             return preview;
         },
         fetch_resource_audio: function(skin){
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + '" style="display: none;"></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function(skin){
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" ></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;"></video>';
             return resourceplayer;
         },
         fetch_uploader_skin: function(controlbarid, element){
