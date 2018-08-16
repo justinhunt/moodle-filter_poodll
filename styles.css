@@ -438,6 +438,7 @@ button.poodll_mediarecorder_button_readaloud {
     border-radius: 5px;
     padding: 5px;
     max-width: 320px;
+	min-width: 320px;
 }
 
 .poodll_mediarecorderbox_once button:hover{
