@@ -2,6 +2,12 @@ Change List
 =========
 Version 3.1.08(Build 2018070503) [in progress]
 -Added a video version of once recorder
+-tidied up styles and recorder skins to be less affected by rogue theme css
+-removed burntrose recorder from html 5 rec. options and where selected, shift to use bmr
+-first official release of Fresh audio recorder skin
+-Added some new widget/player templates
+-Added compatibility-test.php to AWS v3 to assist with debugging issues
+
 
 Version 3.1.07(Build 2018070502)
 -Added a workaround for the case where Catalysts local_aws is installed

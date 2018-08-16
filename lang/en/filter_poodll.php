@@ -45,8 +45,7 @@ $string['camerafront'] = 'front';
 $string['cameraback'] = 'back';
 
 $string['awssdkversion'] = 'AWS SDK';
-$string['awssdkversion_desc'] = 'Poodll cloud recording uses Amazon Web Services (AWS). Version 3.x is supported but not shipped with Poodll. Version 2.x of the AWS SDK will work on PHP 5.3 or greater. If you need to use AWS SDK 3.x then place it in a folder called aws-v3 in filter/poodll/3rdparty.';
-
+$string['awssdkversion_desc'] = 'Poodll cloud recording uses Amazon Web Services (AWS). AWS SDK Ver. 3.x and Ver. 2.x are both included. Only version 3.x supports Amazon AI based featiures like text to speech.';
 $string['uploadkey'] = 'Upload key';
 $string['uploadkey_desc'] = 'Poodll cloud recording requires an upload key for recording. You should receive this when you sign up for Poodll. Enter the upload key here.';
 $string['uploadsecret'] = 'Upload secret';
@@ -267,10 +266,10 @@ $string['exportdiagnostics']="Export";
 
 //html5 recorder
 $string['plain_recorder']="Plain";
-$string['burntrose_recorder']="Burnt Rose  (old)";
+$string['burntrose_recorder']="Burnt Rose";
 $string['onetwothree_recorder']="One Two Three";
-$string['gold_recorder']="Single Button (beta)";
-$string['once_recorder']="Once (audio only)";
+$string['gold_recorder']="Single Button";
+$string['once_recorder']="Once";
 $string['bmr_recorder']="Burnt Rose";
 $string['shadow_recorder']="Shadow";
 $string['split_recorder']="Split";

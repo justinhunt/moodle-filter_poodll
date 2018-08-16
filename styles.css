@@ -369,7 +369,7 @@ button.poodll_mediarecorder_button_readaloud {
 	color: #fff;
 	background-color: #00acdf;
 	border-color: #00acdf;
-
+	background-image: none;
 	display: inline-block;
 	font-weight: 400;
 	line-height: 1.25;
@@ -465,6 +465,7 @@ button.poodll_mediarecorder_button_once {
     color: #fff;
     background-color: #00acdf;
     border-color: #00acdf;
+	background-image: none;
     display: block;
     font-weight: 400;
     line-height: 1.25;
