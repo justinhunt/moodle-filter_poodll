@@ -345,7 +345,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             var stage= this.stage;
             var ip = this.fetch_instanceprops(controlbarid);
             
-            //init radial progress
+            //init linear progress
             var hprogress = anim_progress_bar.clone();
             hprogress.init(ip.controlbar.progresscanvas);
 
