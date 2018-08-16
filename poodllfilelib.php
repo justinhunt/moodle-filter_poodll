@@ -141,9 +141,11 @@ require_once($CFG->libdir . '/filelib.php');
             $audiobytes     = $audiodata->get('AudioStream')->getContents();
 
             header('Content-Transfer-Encoding: binary');
-            header('Content-Type: audio/mpeg, audio/x-mpeg, audio/x-mpeg-3, audio/mpeg3');
+            //safari only like audio/mpeg .... i hope its not a problem
+            //header('Content-Type: audio/mpeg, audio/x-mpeg, audio/x-mpeg-3, audio/mpeg3');
+            header('Content-Type: audio/mpeg');
+            
             header('Content-length: ' . strlen($audiobytes));
-           // header('Content-Disposition: attachment; filename="poodlltts.mp3"');
             header('X-Pad: avoid browser bug');
             header('Cache-Control: no-cache');
 
