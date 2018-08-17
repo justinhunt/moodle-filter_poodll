@@ -2016,7 +2016,7 @@ Editor Fixes
     padding: 15px 0;
     position: relative;
     overflow: hidden;
-    max-width: 100%;
+    max-width: 370px;
 }
 
 .poodll_mediarecorderbox_bmr
@@ -2064,7 +2064,7 @@ audio.poodll_preview_fresh{
 }
 
 .poodll_mediarecorderbox_fresh {
-	width: 370px;
+	width: 100%;
 	text-align: center;
 }
 
