@@ -285,6 +285,7 @@ public static function fetch_extension_items($conf){
 		
 		$extensions =\filter_poodll\filtertools::fetch_extensions();
 		foreach($extensions as $ext){
+		    $ext = trim($ext);
 			switch($ext){
 				case 'youtube': $def_player='1';break;
 				case 'rss': $def_player='1';break;
