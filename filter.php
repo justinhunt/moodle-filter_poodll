@@ -350,6 +350,14 @@ class filter_poodll extends moodle_text_filter {
 		//stash this for passing to js
 		$filterprops['AUTOID']=$autoid;
 
+		//If we need a Cloud Poodll token, lets fetch it
+        if(strpos($poodlltemplate,'@@CLOUDPOODLLTOKEN@@') &&
+        !empty($conf['cpapiuser']) &&
+        !empty($conf['cpapisecret'])){
+            $token = \filter_poodll\poodlltools::fetch_token($conf['cpapiuser'],$conf['cpapisecret']);
+            $poodlltemplate = str_replace('@@CLOUDPOODLLTOKEN@@',$token,$poodlltemplate);
+        }
+
 		//If template requires a MOODLEPAGEID lets give them one
 		//this is a bit redundant now it can be done now with @@URLPARAM:id@@ 
 		$moodlepageid = optional_param('id',0,PARAM_INT);

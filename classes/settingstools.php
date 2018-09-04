@@ -120,7 +120,12 @@ public static function fetch_general_items(){
         get_string('skinstylevideo_details', 'filter_poodll'), '');
     $items[] = new \admin_setting_configcheckbox('filter_poodll_html5ondsafari', get_string('html5ondsafari', 'filter_poodll'), get_string('html5ondsafaridetails', 'filter_poodll'), 0);
 
-
+    //cloud poodll credentials
+    $items[] = new \admin_setting_heading('filter_poodll_cpapi_settings', get_string('cpapi_heading', 'filter_poodll'), get_string('cpapi_heading_desc', 'filter_poodll'));
+    $items[] = new \admin_setting_configtext('filter_poodll/cpapiuser', get_string('cpapiuser', 'filter_poodll'),
+        get_string('cpapiuser_details', 'filter_poodll'), '');
+    $items[] = new \admin_setting_configtext('filter_poodll/cpapisecret', get_string('cpapisecret', 'filter_poodll'),
+        get_string('cpapisecret_details', 'filter_poodll'), '');
 
 	//PoodLL Whiteboard
 	$items[] = new \admin_setting_heading('filter_poodll_whiteboard_setting', get_string('filter_poodll_whiteboard_heading', 'filter_poodll'), '');
@@ -130,9 +135,6 @@ public static function fetch_general_items(){
 	$items[] = new \admin_setting_configtext('filter_poodll_whiteboardheight', get_string('wboardheight', 'filter_poodll'), '', '350', PARAM_INT);
 	$items[] = new \admin_setting_configtext('filter_poodll_autosavewhiteboard', get_string('wboardautosave', 'filter_poodll'), get_string('wboardautosave_details', 'filter_poodll'), 2000, PARAM_INT);
     $items[] = new \admin_setting_configcheckbox('filter_poodll_whiteboardnozoom', get_string('wboardnozoom', 'filter_poodll'), get_string('wboardnozoom_details', 'filter_poodll'), 0);
-
-
-
 
     return $items;
 
@@ -307,7 +309,6 @@ public static function fetch_html5_recorder_items($mediatype="audio"){
             $items['bmr'] = get_string('bmr_recorder', 'filter_poodll');
             $items['onetwothree'] = get_string('onetwothree_recorder', 'filter_poodll');
             $items['once'] = get_string('once_recorder', 'filter_poodll');
-            $items['fresh'] = get_string('fresh_recorder', 'filter_poodll');
             break;
 
         case "audio":

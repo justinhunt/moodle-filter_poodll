@@ -352,3 +352,21 @@ $string['placeholderaudiosecs'] = "Audio Duration(secs)";
 $string['placeholderaudiosecs_details'] = "Duration in seconds to at least one decimal place of placeholder audio";
 $string['placeholdervideosecs'] = "Video Duration(secs)";
 $string['placeholdervideosecs_details'] = "Duration in seconds to at least one decimal place of placeholder video";
+
+//HTML5 audio video errors
+$string['recui_mediaaborterror'] = 'Something strange happened which prevented the webcam/microphone from being used';
+$string['recui_medianotallowederror'] = 'The user must allow the browser access to the webcam/microphone';
+$string['recui_medianotfounderror'] = 'There is no recording device connected or enabled';
+$string['recui_medianotreadableerror'] = 'Something is preventing the browser from accessing the webcam/microphone';
+$string['recui_medianotsupportederror'] = 'Your browser type does not support recording over an HTTP connection.';
+$string['recui_mediaoverconstrainederror'] = 'The current webcam/microphone can not produce a stream with the current requirements';
+$string['recui_mediasecurityerror'] = 'Your browser type does not support recording over an HTTP connection.';
+$string['recui_mediatypeerror'] = 'Failed to get stream because no media type was specified.';
+
+//Cloud Poodll API
+$string['cpapi_heading'] = 'Cloud Poodll API Settings';
+$string['cpapi_heading_desc'] = "Cloud Poodll allows you to embed recorders direct from cloud.poodll.com in widgets. This is optional and you do not need to fill this in.";
+$string['cpapiuser'] = 'Cloud Poodll Username';
+$string['cpapiuser_details'] = 'This is the same as your username at Poodll.com.';
+$string['cpapisecret'] = 'Cloud Poodll API Secret';
+$string['cpapisecret_details'] = "This is a special secret key that can be generated from the <a href='https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret'>API tab</a> in your members area on Poodll.com. ";

@@ -1,8 +1,11 @@
 Change List
 =========
-Version 3.1.08(Build 2018081700) [in progress]
+Version 3.1.09(Build 2018090300) [in progress]
 -fixed a size issue on the fresh recorder that shows up on the clean theme
-
+-Set the once recorder background to white (was transparant)
+-Fixed an issue with file extensions field accepting spaces and blowing up Moodle
+-Added language strings for media API errors that occur in HTML5 recorders.
+-Added support for fetching Cloud Poodll API tokens
 
 Version 3.1.08(Build 2018081600)
 -Added a video version of once recorder

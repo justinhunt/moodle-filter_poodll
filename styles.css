@@ -483,7 +483,9 @@ button.poodll_mediarecorder_button_once {
     font-size: 1rem;
     border-radius: .25rem;
 }
-
+.poodll_mediarecorderbox_once {
+	background-color: white;
+}
 .poodll_mediarecorderholder_once .poodll_mediarecorderbox_once{
     position: relative;
 }

@@ -193,7 +193,16 @@ class filter_poodll_renderer extends plugin_renderer_base
             'recui_uploaderror',
             'recui_nothingtosaveerror',
             'recui_takesnapshot',
-            'recui_cancelsnapshot'
+            'recui_cancelsnapshot',
+            //media errors
+            'recui_mediaaborterror',
+            'recui_medianotallowederror',
+            'recui_medianotfounderror',
+            'recui_medianotreadableerror',
+            'recui_medianotsupportederror',
+            'recui_mediaoverconstrainederror',
+            'recui_mediasecurityerror',
+            'recui_mediatypeerror'
         ),
             'filter_poodll');
 

@@ -33,8 +33,11 @@ define(['jquery','core/log','filter_poodll/dlg_poodll'], function($, log,dialog)
 			var self = this;
 			var ip = this.instanceprops;
 			var content = '<div class="filter_poodll_errordisplay">';
-		
-			  content += '<span>' + message + '</span>';
+            var displaytext = message;
+			  if(message['name']) {
+			  	 displaytext = M.util.get_string('recui_media' + message['name'].toLowerCase(),'filter_poodll');
+              }
+			  content += '<span>' + displaytext + '</span>';
 			  content += '</div>';
 			  //set the html to the dialog and DOM
 			  self.dlg.setContent(content);
