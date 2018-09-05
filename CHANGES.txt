@@ -1,6 +1,10 @@
 Change List
 =========
-Version 3.1.09(Build 2018090300) [in progress]
+Version 3.1.10(Build 2018090300)  -in progress-
+-Fixed popup recorder template
+-Fixed dictation template
+
+Version 3.1.09(Build 2018090300)
 -fixed a size issue on the fresh recorder that shows up on the clean theme
 -Set the once recorder background to white (was transparant)
 -Fixed an issue with file extensions field accepting spaces and blowing up Moodle
