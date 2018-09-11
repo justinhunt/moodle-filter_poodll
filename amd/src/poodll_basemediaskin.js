@@ -51,7 +51,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             return preview;
         },
         fetch_preview_video: function(skin){
-            var preview ='<video class="poodll_preview_' + skin + '" playsinline width="100%" height="100%"></video>';
+            var preview ='<video class="poodll_preview_' + skin + '" playsinline ></video>';
             return preview;
         },
         fetch_resource_audio: function(skin){

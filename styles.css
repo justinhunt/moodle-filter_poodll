@@ -505,7 +505,7 @@ button.poodll_mediarecorder_button_once {
 
 video.poodll_preview_once {
     width: 280px;
-	min-height: 210px;
+	height: 210px;
 }
 div.poodll_mediarecorder_video  canvas.poodll_mediarecorder_uploadcanvas_once {
 	margin: auto;
