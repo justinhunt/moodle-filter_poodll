@@ -25,6 +25,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             return this.skins[controlbarid];
         },
 
+        is_ios: function(){
+            return utils.is_ios();
+        },
 
         // This recorder supports the current browser
         supports_current_browser: function(config) {
@@ -120,6 +123,12 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     ip.uploader.init(element, config,upskin);
 
                     this.register_events_audio(controlbarid);
+
+                    //if this is the uploader skin, then we do not bother to get mediaDevices
+                    if( ip.config.media_skin=='upload' || ip.config.media_skin=='warning'){
+                        break;
+                    }
+
                     // force permissions;
                     navigator.mediaDevices.getUserMedia({"audio": true}).then(function(stream){
                         //do nothing
@@ -145,6 +154,12 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     ip.uploader.init(element, config,upskin);
 
                     this.register_events_video(controlbarid);
+
+                    //if this is the uploader skin, then we do not bother to get mediaDevices
+                    if( ip.config.media_skin=='upload' || ip.config.media_skin=='warning'){
+                        break;
+                    }
+
                     //force permissions and show in preview
                     navigator.mediaDevices.getUserMedia({"audio": true, "video": true}).then(function(stream){
                         //stop any playing tracks of the current stream
@@ -258,6 +273,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         warmup_context: function(ip) {
             var ctx = ip.audioctx;
+            //for chrome oct 2018
+            if(ctx.state=='suspended'){ctx.resume();}
+
             var buffer = ctx.createBuffer(1, 1, 22050);
             var source = ctx.createBufferSource();
             source.buffer = buffer;

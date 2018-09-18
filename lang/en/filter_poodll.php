@@ -142,6 +142,7 @@ $string['bgtranscode_audio'] = 'Perform Conversions to MP3 Background';
 $string['bgtranscodedetails_audio'] = 'This is more reliable than performing them while user waits. But the user will not get their audio till cron has run after saving. Only works if you are using FFMPEG and Moodle 2.7 or higher. For recordings in MP3 with the MP3 recorder, conversion takes place in the browser, not on the server. So server side conversion (FFMPEG) will not be used.'; 
 $string['recui_record'] ='Record';
 $string['recui_recordorchoose'] ='Record or Choose';
+$string['recui_choosefile'] ='Choose File';
 $string['recui_pause'] ='Pause';
 $string['recui_play'] ='Play';
 $string['recui_stop'] ='Stop';
@@ -176,6 +177,8 @@ $string['recui_ready'] ='Ready';
 $string['recui_finished'] ='Finished';
 $string['recui_playing'] ='Playing: ';
 $string['recui_recording'] ='Recording: ';
+$string['recui_unsupportedbrowser'] ='This browser can not record here. Sorry.<br>Please try Google Chrome on a Desktop PC.';
+
 $string['insert'] ='Insert';
 $string['cancel'] ='Cancel';
 
@@ -270,6 +273,7 @@ $string['burntrose_recorder']="Burnt Rose";
 $string['onetwothree_recorder']="One Two Three";
 $string['gold_recorder']="Single Button";
 $string['once_recorder']="Once";
+$string['upload_recorder']="Upload";
 $string['bmr_recorder']="Burnt Rose";
 $string['shadow_recorder']="Shadow";
 $string['split_recorder']="Split";

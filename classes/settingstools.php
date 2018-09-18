@@ -309,6 +309,7 @@ public static function fetch_html5_recorder_items($mediatype="audio"){
             $items['bmr'] = get_string('bmr_recorder', 'filter_poodll');
             $items['onetwothree'] = get_string('onetwothree_recorder', 'filter_poodll');
             $items['once'] = get_string('once_recorder', 'filter_poodll');
+            $items['upload'] = get_string('upload_recorder', 'filter_poodll');
             break;
 
         case "audio":
@@ -319,6 +320,7 @@ public static function fetch_html5_recorder_items($mediatype="audio"){
             $items['once'] = get_string('once_recorder', 'filter_poodll');
             $items['fresh'] = get_string('fresh_recorder', 'filter_poodll');
             $items['gold'] = get_string('gold_recorder','filter_poodll');
+            $items['upload'] = get_string('upload_recorder', 'filter_poodll');
     }
 
     return $items;

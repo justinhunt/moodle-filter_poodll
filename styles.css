@@ -400,6 +400,63 @@ button.poodll_mediarecorder_button_readaloud {
 /*********************************************END****************************************/
 
 
+/*
+	The Warning Recorder
+*/
+
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_warning,
+.poodll_mediarecorder_video .poodll_mediarecorderbox_warning{
+	text-align: center;
+	border: 1px solid #CCCCCC;
+	border-radius: 5px;
+	padding: 5px;
+	max-width: 320px;
+	min-width: 320px;
+	background-color: white;
+}
+
+div.poodll_mediarecorder_video  canvas.poodll_mediarecorder_uploadcanvas_warning {
+	margin: auto;
+	display: block;
+}
+
+/*********************************************END****************************************/
+
+/*
+	The Upload Recorder
+*/
+
+.poodll_mediarecorderbox_upload canvas.poodll-can-do-drag-drop {
+	background-color: white;
+	outline: 2px dashed black;
+	outline-offset: -10px;
+}
+
+
+.poodll_mediarecorderbox_upload canvas.is-poodll-drag-over {
+	background-color: grey;
+}
+
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_upload,
+.poodll_mediarecorder_video .poodll_mediarecorderbox_upload{
+	text-align: center;
+	border: 1px solid #CCCCCC;
+	border-radius: 5px;
+	padding: 5px;
+	max-width: 320px;
+	min-width: 320px;
+	background-color: white;
+}
+
+.poodll_mediarecorderbox_upload canvas{
+	margin-bottom: 5px;
+}
+
+div.poodll_mediarecorder_video  canvas.poodll_mediarecorder_uploadcanvas_upload {
+	margin: auto;
+	display: block;
+}
+
 /*********************************************END****************************************/
 
 /*
