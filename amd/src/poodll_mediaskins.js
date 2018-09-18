@@ -54,7 +54,7 @@ define(['jquery', 'core/log',
                     the_skin = freshskin.clone();
                     break;
                 case 'upload':
-                    the_skin = warningskin.clone();//uploadskin.clone();
+                    the_skin = uploadskin.clone();
                     break;
                 case 'warning':
                     the_skin = warningskin.clone();
