@@ -101,7 +101,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             var acceptmedia = '';
             switch(mediatype){
                 case 'video':
-                    acceptmedia='video/*';
+                    acceptmedia='video/webm,video/ogg,video/mp4,video/x-m4v,video/*';
                     break;
                 case 'snapshot':
                 case 'image':
