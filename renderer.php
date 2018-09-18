@@ -203,7 +203,8 @@ class filter_poodll_renderer extends plugin_renderer_base
             'recui_mediaoverconstrainederror',
             'recui_mediasecurityerror',
             'recui_mediatypeerror',
-            'recui_unsupportedbrowser'
+            'recui_unsupportedbrowser',
+            'recui_choosefile'
         ),
             'filter_poodll');
 
