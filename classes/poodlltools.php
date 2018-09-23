@@ -910,6 +910,12 @@ class poodlltools
             $config=get_config('filter_poodll');
             $fs=get_file_storage();
 
+            //under an odd set of circumstance, users using back button then re-recording perhaps in combo with "cancel"
+            //there may be an existing draft file record.
+            // This would error our placeholder save code and kill the reg of download task
+            $the_file = self::fetch_stored_file($draftfilerecord);
+            if($the_file){$the_file->delete();}
+
             $have_custom_placeholder = ($config->placeholderaudiofile && $mediatype=='audio')||
                 ($config->placeholdervideofile && $mediatype=='video');
 
@@ -931,6 +937,7 @@ class poodlltools
                         $filename = $config->placeholdervideofile;
                         break;
                 }
+
                 $custom_placeholder_file = $fs->get_file($syscontext->id, $component, $filearea, $itemid, $filepath, $filename);
                 $stored_file = $fs->create_file_from_storedfile($draftfilerecord,$custom_placeholder_file);
             }//end of if custom placeholder file
@@ -960,7 +967,14 @@ class poodlltools
             }
             return $stored_file ;
         }
-	
+
+    public static function fetch_stored_file($newrecord){
+        $fs=get_file_storage();
+        $pathnamehash = $fs->get_pathname_hash($newrecord->contextid, $newrecord->component, $newrecord->filearea, $newrecord->itemid, $newrecord->filepath, $newrecord->filename);
+        $thefile = $fs->get_file_by_hash($pathnamehash);
+        return $thefile;
+    }
+
 	public static function register_s3_download_task($mediatype,$infilename,$outfilename, $draftfilerecord){
          global $USER;
 
