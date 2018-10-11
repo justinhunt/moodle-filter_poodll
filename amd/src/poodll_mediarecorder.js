@@ -715,7 +715,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         fetch_strings: function() {
             var ss = [];
-            var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save','restart'];
+            var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save','restart','testmic','upload','recordagain','readytorecord'];
             $.each(keys, function(index, key) {
                 ss['recui_' + key] = M.util.get_string('recui_' + key, 'filter_poodll');
                 //log.debug(key + ':' + ss['recui_' + key]);

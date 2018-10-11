@@ -204,9 +204,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 				var size_class = 'poodll_mediarecorder_size_auto';
 
 				var ss = this.pmr.fetch_strings();
-                var ss_startlabel = M.util.get_string('recui_record','filter_poodll');
-                var ss_testlabel = M.util.get_string('recui_testmic','filter_poodll');
-                var ss_stoplabel = M.util.get_string('recui_stop','filter_poodll');
+                var ss_startlabel = ss['recui_record'];
+                var ss_testlabel = ss['recui_testmic'];
+                var ss_stoplabel = ss['recui_stop'];
 
                 var status = this.fetch_status_bar('once');
                 var controls ='<div class="poodll_mediarecorderholder_once '

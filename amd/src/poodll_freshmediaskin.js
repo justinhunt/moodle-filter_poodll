@@ -340,7 +340,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 + recorder_class + ' ' + size_class + '" id="holder_' + controlbarid + '">' ;
 
             controls +='<div class="poodll_mediarecorderbox_fresh" id="' + controlbarid + '">' ;
-            controls +='<audio style="display: none !important;" class="poodll-alert-recording" id="'+ controlbarid +'"><source src="https://poodll.com/wp-content/themes/Poodll-Theme/images/ding.mp3" type="audio/mpeg"></audio>' ;
+            controls +='<audio style="display: none !important;" class="poodll-alert-recording" id="'+ controlbarid +'"><source src="#" type="audio/mpeg"></audio>' ;
 
             controls +='<div class="style-holder ' + skin_style + '">' ;
             controls +='<div class="poodll_statusholder_fresh" >' ;
@@ -354,7 +354,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 '<div class="poodll_fresh_wave"></div>' +
                 '</div>' +
                 '<div class="poodll_fresh_control">' +
-                '<div class="poodll_fresh_txt_control">Ready to record</div>' +
+                '<div class="poodll_fresh_txt_control">' + ss['recui_readytorecord'] + '</div>' +
                 '<div class="poodll_fresh_settings_btn settingsicon" data-toggle="modal" data-target="#myModal id="settingsicon_'+controlbarid+'"></div>' +
                 '<div class="poodll_start-recording_fresh poodll_fresh_main_btn"></div>' +
                 '<div class="poodll_stop-playing-recording_fresh" style="display: none;"></div>' +
@@ -362,8 +362,8 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 '<div class="poodll_play-recording_fresh poodll_fresh_play_btn bmr_disabled"></div>' +
                 '</div>' +
                 '<div class="poodll_fresh_bottom_btns">' +
-                '<a class="poodll_save-recording_fresh poodll_fresh_upload_btn bmr_disabled" href="#">Upload</a>' +
-                '<a class="poodll_fresh_record_btn bmr_disabled" href="#">Record Again</a>' +
+                '<a class="poodll_save-recording_fresh poodll_fresh_upload_btn bmr_disabled" href="#">' + ss['recui_upload'] + '</a>' +
+                '<a class="poodll_fresh_record_btn bmr_disabled" href="#">' + ss['recui_recordagain'] + '</a>' +
                 '</div>';
 
             controls += preview;
