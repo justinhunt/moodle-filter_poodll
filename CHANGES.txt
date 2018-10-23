@@ -1,11 +1,12 @@
 Change List
 =========
-
+Version 3.1.11(Build 2018102300)
 -Removed old video js interactive transcripts
 -Added new interactive transcripts
 -Fixed hard coded strings in Once and Fresh recorders
+-Added download feature to html5 recorders
 
-Version 3.1.10(Build 2018090300)  -in progress-
+Version 3.1.10(Build 2018092300)
 -Fixed popup recorder template
 -Fixed dictation template
 -Added warning and upload skins

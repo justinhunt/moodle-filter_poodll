@@ -172,6 +172,7 @@ $string['recui_uploaderror'] ='An error occurred and your file has NOT been uplo
 $string['recui_btnupload'] ='Record or Choose a File';
 $string['recui_awaitingconfirmation'] ='Awaiting confirmation';
 $string['recui_openrecorderapp'] ='Poodll App';
+$string['recui_downloadfile'] ='Download Recording';
 $string['recui_uploadafile'] ='Upload File';
 $string['recui_uploadsuccess'] ='Uploaded successfully';
 $string['recui_awaitingconversion'] ='Awaiting conversion';

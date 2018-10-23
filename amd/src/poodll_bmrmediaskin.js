@@ -278,16 +278,18 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 controls += '<button type="button" class="poodll_mediarecorder_button_bmr poodll_pause-recording_bmr bmr_disabled" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
                 controls += ' <button type="button" class="poodll_mediarecorder_button_bmr poodll_play-recording_bmr bmr_disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></button>';
                 controls += '<button type="button" class="poodll_save-recording_bmr ' + hideshowupload + '" disabled>' + ss['recui_save'] +'</button>';
-						controls += '</div>';
-						controls += this.devsettings.fetch_dialogue_box();
-                        controls += ip.errordialog.fetch_dialogue_box();
-					controls += '</div>';		
+                controls += '</div>';
+                controls += this.devsettings.fetch_dialogue_box();
+                controls += ip.downloaddialog.fetch_dialogue_box();
+                controls += ip.errordialog.fetch_dialogue_box();
+                controls += '</div>';
                 controls += '</div>';
                 $(element).prepend(controls);
                 var controlbar ={
 					poodll_recording_alert: $('#' + controlbarid + ' .poodll-alert-recording'),
 					bmr_progresscanvas: $('#' + controlbarid + ' .bmr_range'),
                     settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
+                    downloaddialog: $('#' + controlbarid + ' .poodll_dialogue_box_download'),
                     errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
                     status: $('#' + controlbarid + ' .poodll_status_bmr'),
@@ -301,9 +303,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 };
 
 
-            //settings and error dialogs
-            //They use the same dialog and just fill it with diofferent stuff
+            //settings and error and download dialogs
             //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
+            ip.downloaddialog.set_dialogue_box(controlbar.downloaddialog);
             ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
             this.devsettings.set_dialogue_box(controlbar.settingsdialog);
 			return controlbar;
@@ -322,7 +324,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 
 			//Open the settings dialog
 			ip.controlbar.settingsicon.click(function(){
-				self.devsettings.open();
+                if(!self.uploaded) {
+                    self.devsettings.open();
+                }else{
+                    ip.downloaddialog.open();
+                }
 			});
 			
 			 //init progress bar

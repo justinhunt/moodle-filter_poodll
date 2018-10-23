@@ -4,8 +4,10 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
     'filter_poodll/audioanalyser',
     'filter_poodll/msr_poodll',
     'filter_poodll/dlg_errordisplay',
+    'filter_poodll/dlg_download',
     'filter_poodll/speech_poodll',
-    'filter_poodll/poodll_mediaskins'], function($, log, utils, adapter, uploader, hermes, timer,audioanalyser,poodll_msr,errordialog,speechrecognition, mediaskins) {
+    'filter_poodll/poodll_mediaskins'], function($, log, utils, adapter, uploader, hermes, timer,audioanalyser,
+                                                 poodll_msr, errordialog, downloaddialog,speechrecognition, mediaskins) {
 
     "use strict"; // jshint ;_;
 
@@ -82,6 +84,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             ip.videocaptureheight = config.media_videocaptureheight;
             ip.errordialog=errordialog.clone();
             ip.errordialog.init(ip);
+            ip.downloaddialog=downloaddialog.clone();
+            ip.downloaddialog.init(this,ip);
 
             //init the hermes
             //putting it in config allows us to post messages from uploader and skin as required
@@ -258,6 +262,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             log.debug('from poodllmediarecorder: uploadfailure');
             var controlbarid = 'filter_poodll_controlbar_' + widgetid;
             theskin.onUploadFailure(controlbarid);
+            //if it failed we want to push the user to download this file
+            theskin.fetch_instanceprops().downloaddialog.open(theskin.pmr,theskin.instanceprops);
         },
 
 
@@ -333,47 +339,13 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             if (ip.blobs && ip.blobs.length > 0) {
                 log.debug('playing type:' + ip.blobs[0].type);
-
-                switch (ip.blobs[0].type) {
-
-                    case 'audio/wav':
-                    case 'audio/pcm':
-                        // log.debug('concat wavs');
-                        // mediastreamrecorder adds a header to each wav blob,
-                        // we remove them and combine audodata and new header
-                        utils.concatenateWavBlobs(ip.blobs, function(concatenatedBlob) {
-                            var mediaurl = URL.createObjectURL(concatenatedBlob);
-                            preview.src = mediaurl;
-                            preview.controls = true;
-                            preview.volume = ip.previewvolume;
-                            preview.play();
-                        });
-                        break;
-                    case 'video/webm':
-                    case 'audio/ogg':
-                    case 'audio/webm':
-                    default:
-                        //log.debug('blobs:' + ip.blobs.length);
-                        var concatenatedBlob = utils.simpleConcatenateBlobs(ip.blobs, ip.blobs[0].type);
-                        //log.debug('concatenatedBlob:' +  utils.bytesToSize(concatenatedBlob.size) );
-
-                        var mediaurl = URL.createObjectURL(concatenatedBlob);
-                        preview.src = mediaurl;
-                        preview.controls = true;
-                        preview.volume = ip.previewvolume;
-                        preview.play();
-                        break;
-
-                    case 'olddefault':
-                        utils.concatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                            var mediaurl = URL.createObjectURL(concatenatedBlob);
-                            preview.src = mediaurl;
-                            preview.controls = true;
-                            preview.volume = ip.previewvolume;
-                            preview.play();
-                        }); // end of concatenate blobs
-                }// end of switch
-
+                utils.doConcatenateBlobs(ip.blobs,function(concatenatedBlob) {
+                    var mediaurl = URL.createObjectURL(concatenatedBlob);
+                    preview.src = mediaurl;
+                    preview.controls = true;
+                    preview.volume = ip.previewvolume;
+                    preview.play();
+                });
                 // Click the stop button if playback ends;
                 $(preview).bind('ended', function() { ip.controlbar.stopbutton.click(); });
 
@@ -394,27 +366,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             // pulled down at PHP time ..
             // this is one of those cases where a simple thing is hard ...J 20160919
             if (ip.blobs && ip.blobs.length > 0) {
-                switch (ip.blobs[0].type) {
-                    case 'audio/wav':
-                    case 'audio/pcm':
-                        // mediastreamrecorder adds a header to each wav blob,
-                        // we remove them and combine audodata and new header
-                        utils.concatenateWavBlobs(ip.blobs, function(concatenatedBlob) {
-                            ip.uploader.uploadBlob(concatenatedBlob, ip.blobs[0].type);
-                        });
-                        break;
-                    case 'audio/ogg':
-                    case 'audio/webm':
-                    case 'video/webm':
-                    default:
-                        var concatenatedBlob = utils.simpleConcatenateBlobs(ip.blobs, ip.blobs[0].type);
-                        ip.uploader.uploadBlob(concatenatedBlob, ip.blobs[0].type);
-                        break;
-                    case 'old default':
-                        utils.concatenateBlobs(ip.blobs, ip.blobs[0].type, function(concatenatedBlob) {
-                            ip.uploader.uploadBlob(concatenatedBlob, ip.blobs[0].type);
-                        }); // end of concatenate blobs
-                }// end of switch case
+                utils.doConcatenateBlobs(ip.blobs,function(concatenatedBlob) {
+                    ip.uploader.uploadBlob(concatenatedBlob, ip.blobs[0].type);
+                });
                 ip.uploaded = true;
                 ip.controlbar.startbutton.attr('disabled', true);
             }// end of if self.blobs
@@ -715,7 +669,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         fetch_strings: function() {
             var ss = [];
-            var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save','restart','testmic','upload','recordagain','readytorecord'];
+            var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save','restart','testmic','upload','recordagain','readytorecord','downloadfile'];
             $.each(keys, function(index, key) {
                 ss['recui_' + key] = M.util.get_string('recui_' + key, 'filter_poodll');
                 //log.debug(key + ':' + ss['recui_' + key]);

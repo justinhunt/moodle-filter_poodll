@@ -190,6 +190,7 @@ class filter_poodll_renderer extends plugin_renderer_base
             'recui_converting',
             'recui_uploading',
             'recui_uploadafile',
+            'recui_downloadfile',
             'recui_uploadsuccess',
             'recui_awaitingconversion',
             'recui_openrecorderapp',

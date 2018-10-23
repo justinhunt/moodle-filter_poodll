@@ -299,6 +299,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 						controls += '</div>';
 					controls += '</div>';
 					controls += this.devsettings.fetch_dialogue_box();
+                    controls += ip.downloaddialog.fetch_dialogue_box();
                     controls += ip.errordialog.fetch_dialogue_box();
                 controls += '</div>';
 				
@@ -306,6 +307,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
                 var controlbar ={
                     settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
+                    downloaddialog: $('#' + controlbarid + ' .poodll_dialogue_box_download'),
                     errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
 					settingsicon: $('#' + controlbarid + ' .settingsicon'),
 					stepone: $('#' + controlbarid + ' .step-1'),
@@ -325,9 +327,9 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                     savebutton: $('#' + controlbarid + ' .poodll_save-recording_onetwothree')    
                 };
                 
-                //settings and error dialogs
-                //They use the same dialog and just fill it with diofferent stuff
+                //settings and error and download dialogs
                 //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
+                ip.downloaddialog.set_dialogue_box(controlbar.downloaddialog);
                 ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
                 this.devsettings.set_dialogue_box(controlbar.settingsdialog);
                 
@@ -350,7 +352,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             hprogress.init(ip.controlbar.progresscanvas);
 
 			ip.controlbar.settingsicon.click(function(){
-				self.devsettings.open();
+			    if(!self.uploaded) {
+                    self.devsettings.open();
+                }else{
+			        ip.downloaddialog.open();
+                }
 			});
 			
 			ip.controlbar.startbutton.click(function() {

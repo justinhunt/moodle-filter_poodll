@@ -97,7 +97,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         prepare_controlbar: function(element,controlbarid, preview, resource, mediatype){
             var ip = this.fetch_instance_props();
 
-            //what media are we accepting and hopw to display that
+            //what media are we accepting and how to display that
             var acceptmedia = '';
             switch(mediatype){
                 case 'video':

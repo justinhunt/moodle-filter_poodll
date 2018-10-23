@@ -369,6 +369,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             controls += preview;
             controls += '</div>';
             controls += this.devsettings.fetch_dialogue_box();
+            controls += ip.downloaddialog.fetch_dialogue_box();
             controls += ip.errordialog.fetch_dialogue_box();
             controls += '</div>';
             controls += '</div>';
@@ -377,6 +378,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
                 poodll_recording_alert: $('#' + controlbarid + ' .poodll-alert-recording'),
                 bmr_progresscanvas: $('#' + controlbarid + ' .fresh_range'),
                 settingsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_settings'),
+                downloaddialog: $('#' + controlbarid + ' .poodll_dialogue_box_download'),
                 errorsdialog: $('#' + controlbarid + ' .poodll_dialogue_box_errors'),
                 settingsicon: $('#' + controlbarid + ' .settingsicon'),
                 status: $('#' + controlbarid + ' .poodll_status_fresh'),
@@ -398,6 +400,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
             //settings and error dialogs
             //They use the same dialog and just fill it with diofferent stuff
             //settings is on 'this' because it is shown from skkn events, but errors are from pmr stuff
+            ip.downloaddialog.set_dialogue_box(controlbar.downloaddialog);
             ip.errordialog.set_dialogue_box(controlbar.errorsdialog);
             this.devsettings.set_dialogue_box(controlbar.settingsdialog);
             return controlbar;
@@ -416,7 +419,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd','filter_poodll/
 
             //Open the settings dialog
             ip.controlbar.settingsicon.click(function(){
-                self.devsettings.open();
+                if(!self.uploaded) {
+                    self.devsettings.open();
+                }else{
+                    ip.downloaddialog.open();
+                }
             });
 
             //init progress bar

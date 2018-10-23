@@ -52,7 +52,7 @@ define(['jquery','core/log'], function($, log) {
         },
         
                 
-        concatenateWavBlobs: function(blobs,callback){
+        _concatenateWavBlobs: function(blobs,callback){
            
            //fetch our header
            var allbytes = []; //this will be an array of arraybuffers
@@ -98,7 +98,7 @@ define(['jquery','core/log'], function($, log) {
             
         }, //end of concatenateWavBlobs
         
-      concatenateBlobs: function(blobs, type, callback) {
+      _standardConcatenateBlobs: function(blobs, type, callback) {
             var buffers = [];
             var index = 0;
     
@@ -143,8 +143,28 @@ define(['jquery','core/log'], function($, log) {
             readAsArrayBuffer();
         }, //end of Concatenate blobs
         
-        simpleConcatenateBlobs: function(blobs, type) {
+        _simpleConcatenateBlobs: function(blobs, type) {
             return new Blob(blobs,{'type': type});
+        },
+
+        doConcatenateBlobs: function(theblobs,thecallback){
+            switch (theblobs[0].type) {
+                case 'audio/wav':
+                case 'audio/pcm':
+                    // mediastreamrecorder adds a header to each wav blob,
+                    // we remove them and combine audiodata and new header
+                    this._concatenateWavBlobs(theblobs,thecallback);
+                    break;
+                case 'audio/ogg':
+                case 'audio/webm':
+                case 'video/webm':
+                default:
+                    var concatenatedBlob = this._simpleConcatenateBlobs(theblobs, theblobs[0].type);
+                    thecallback(concatenatedBlob );
+                    break;
+                case 'old default':
+                    this._standardConcatenateBlobs(theblobs, theblobs[0].type, thecallback); // end of concatenate blobs
+            }// end of switch case
         },
 
 
