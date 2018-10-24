@@ -5,6 +5,8 @@ Version 3.1.11(Build 2018102300)
 -Added new interactive transcripts
 -Fixed hard coded strings in Once and Fresh recorders
 -Added download feature to html5 recorders
+-Added subtitle support to Flowplayer First frame, Video JS, Media Element CDN and Native video players.
+-Added new version of Flowplayer for Flowplayer First Frame
 
 Version 3.1.10(Build 2018092300)
 -Fixed popup recorder template
