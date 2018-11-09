@@ -134,6 +134,7 @@ class awstools
 
 
             case self::REGION_USE1:
+            default:
                 $this->pipeline_video ='1498352710890-ybul2c';
                 $this->pipeline_audio ='1498352776647-bgnr1z';
                 $this->preset_mp4 = "1498353119116-pdxliz";
@@ -204,6 +205,9 @@ class awstools
                 break;
             case 'sydney':
                 $ret = self::REGION_APSE2;
+                break;
+            case 'ottawa':
+                $ret = self::REGION_CAC1;
                 break;
             case 'tokyo':
             default:
