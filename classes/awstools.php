@@ -209,6 +209,15 @@ class awstools
             case 'ottawa':
                 $ret = self::REGION_CAC1;
                 break;
+            case 'saopaulo':
+                $ret = self::REGION_SAE1;
+                break;
+            case 'frankfurt':
+                $ret = self::REGION_EUC1;
+                break;
+            case 'london':
+                $ret = self::REGION_EUW2;
+                break;
             case 'tokyo':
             default:
             $ret = self::REGION_APN1;
