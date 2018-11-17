@@ -416,8 +416,6 @@ class awstools
 		  return $job = $create_job_result['Job'];
 	}
 
-
-
     function stage_remote_process_job($host, $mediatype,$appid, $s3path, $s3outfilename,
                                       $transcode,$transcoder,$transcribe,$subtitle, $language, $vocab, $notificationurl){
         $dbclient = $this->fetch_dynamoDBClient();
