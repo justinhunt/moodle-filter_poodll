@@ -485,7 +485,7 @@ class poodlltools
 		global $CFG, $USER, $COURSE;
 
 		$lm = new \filter_poodll\licensemanager();
-                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+                $registration_status = $lm->validate_license();
 		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
 			return $lm->fetch_unregistered_content($registration_status);
 		}
@@ -812,7 +812,7 @@ class poodlltools
 		global $CFG,$PAGE;
 
 		$lm = new \filter_poodll\licensemanager();
-                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+                $registration_status = $lm->validate_license();
 		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
 			return $lm->fetch_unregistered_content($registration_status);
 		}
@@ -827,7 +827,7 @@ class poodlltools
 		global $PAGE, $CFG;
 
 		$lm = new \filter_poodll\licensemanager();
-                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+                $registration_status = $lm->validate_license();
 		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
 			return $lm->fetch_unregistered_content($registration_status);
 		}
@@ -843,7 +843,7 @@ class poodlltools
 		global $CFG, $PAGE;
 
 		$lm = new \filter_poodll\licensemanager();
-                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+                $registration_status = $lm->validate_license();
 		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
 			return $lm->fetch_unregistered_content($registration_status);
 		}
@@ -1361,7 +1361,7 @@ class poodlltools
 		global $CFG, $PAGE;
 
 		$lm = new \filter_poodll\licensemanager();
-                $registration_status = $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+                $registration_status = $lm->validate_license();
 		if($registration_status != \filter_poodll\licensemanager::FILTER_POODLL_IS_REGISTERED){
 			return $lm->fetch_unregistered_content($registration_status);
 		}

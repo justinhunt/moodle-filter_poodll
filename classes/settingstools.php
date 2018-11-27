@@ -47,7 +47,25 @@ public static function fetch_general_items(){
 	$items = array();
 
         $items[] = new \admin_setting_heading('filter_poodll_registration_settings', get_string('filter_poodll_registration_heading', 'filter_poodll'), get_string('filter_poodll_registration_explanation', 'filter_poodll'));
-		$regkey_desc = get_string('registrationkey_explanation', 'filter_poodll');
+
+    //cloud poodll credentials
+    $items[] = new \admin_setting_configtext('filter_poodll/cpapiuser', get_string('cpapiuser', 'filter_poodll'),
+        get_string('cpapiuser_details', 'filter_poodll'), '');
+
+    //we show a summary of the users apps if we can get the info
+    $apiuser=get_config('filter_poodll','cpapiuser');
+    $apisecret=get_config('filter_poodll','cpapisecret');
+    if($apiuser && $apisecret) {
+        $lm = new \filter_poodll\licensemanager();
+        $tokeninfo = $lm->fetch_token_for_display($apiuser, $apisecret);
+    }else{
+        $tokeninfo = get_string('cpapisecret_details', 'filter_poodll');
+    }
+    $items[] = new \admin_setting_configtext('filter_poodll/cpapisecret', get_string('cpapisecret', 'filter_poodll'),
+        $tokeninfo, '');
+
+    //legacy license key stuff
+        $regkey_desc = get_string('registrationkey_explanation', 'filter_poodll');
 		if($CFG && property_exists($CFG,'filter_poodll_registrationkey') && !empty($CFG->filter_poodll_registrationkey)){
 			$lm = new \filter_poodll\licensemanager();
 			$lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
@@ -119,13 +137,6 @@ public static function fetch_general_items(){
     $items[] = new \admin_setting_configtext('filter_poodll/skinstylevideo', get_string('skinstylevideo', 'filter_poodll'),
         get_string('skinstylevideo_details', 'filter_poodll'), '');
     $items[] = new \admin_setting_configcheckbox('filter_poodll_html5ondsafari', get_string('html5ondsafari', 'filter_poodll'), get_string('html5ondsafaridetails', 'filter_poodll'), 0);
-
-    //cloud poodll credentials
-    $items[] = new \admin_setting_heading('filter_poodll_cpapi_settings', get_string('cpapi_heading', 'filter_poodll'), get_string('cpapi_heading_desc', 'filter_poodll'));
-    $items[] = new \admin_setting_configtext('filter_poodll/cpapiuser', get_string('cpapiuser', 'filter_poodll'),
-        get_string('cpapiuser_details', 'filter_poodll'), '');
-    $items[] = new \admin_setting_configtext('filter_poodll/cpapisecret', get_string('cpapisecret', 'filter_poodll'),
-        get_string('cpapisecret_details', 'filter_poodll'), '');
 
 	//PoodLL Whiteboard
 	$items[] = new \admin_setting_heading('filter_poodll_whiteboard_setting', get_string('filter_poodll_whiteboard_heading', 'filter_poodll'), '');

@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,20 +16,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * PoodLL filter
+ * A token refreshing helper for Read Aloud
  *
- * @package    filter
- * @subpackage poodll
- * @copyright  2015 Justin Hunt poodllsupport@gmail.com
+ *
+ * @package    filter_poodll
+ * @copyright  Justin Hunt (justin@poodll.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-defined('MOODLE_INTERNAL') || die();
 
+require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
 
-$plugin->version   =  2018112500;
-$plugin->requires  = 2016052300;//moodle 3.1.0
-$plugin->component = 'filter_poodll'; 
-$plugin->maturity  = MATURITY_STABLE;
-$plugin->release   = '3.1.13(Build 2018112500)';
+use \filter_poodll\constants;
 
+require_login(0, false);
+$systemcontext = context_system::instance();
+
+if(has_capability('moodle/site:config',$systemcontext)){
+    $apiuser = get_config(constants::MOD_FRANKY,'cpapiuser');
+    $apisecret=get_config(constants::MOD_FRANKY,'cpapisecret');
+    $force=true;
+    if($apiuser && $apisecret) {
+        $lm = new \filter_poodll\licensemanager();
+        $lm->fetch_token($apiuser, $apisecret, $force);
+    }
+}
+redirect($CFG->wwwroot . '/admin/settings.php?section=filter_poodll_general');

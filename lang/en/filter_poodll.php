@@ -24,10 +24,9 @@ $string['filter_poodll_whiteboard_heading'] = 'Whiteboard Settings';
 $string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings (Flash only)';
 $string['filter_poodll_registration_heading'] ='Register your Poodll';
 $string['filter_poodll_flashcards_heading'] ='Flashcards Settings';
-$string['filter_poodll_registration_explanation'] ="Poodll 3 requires a registration key. If you do not have one visit Poodll.com to get one.";
-
+$string['filter_poodll_registration_explanation'] ="To authorise Poodll enter your Poodll API username and secret, or your license key (deprecated), but not both. You can obtain this from <a href='https://poodll.com/member'>https://poodll.com/member</a> after subscribing.";
 $string['registrationkey'] = 'Registration Key';
-$string['registrationkey_explanation'] ="Enter your Poodll registration key here. You can obtain a key from <a href='https://poodll.com/pricing'>https://poodll.com/pricing</a>";
+$string['registrationkey_explanation'] ="Enter your Poodll registration key here only if you have not entered an API key and secret above. You can obtain a key from <a href='https://poodll.com/pricing'>https://poodll.com/pricing</a>";
 $string['license_details'] ='<br> -------------- <br> License type: {$a->license_type} <br> Expires(JST): {$a->expire_date} <br> Registered URL: {$a->registered_url} ';
 
 $string['usecloudrecording'] = 'Cloud recording';
@@ -373,9 +372,18 @@ $string['recui_mediasecurityerror'] = 'Your browser type does not support record
 $string['recui_mediatypeerror'] = 'Failed to get stream because no media type was specified.';
 
 //Cloud Poodll API
-$string['cpapi_heading'] = 'Cloud Poodll API Settings';
-$string['cpapi_heading_desc'] = "Cloud Poodll allows you to embed recorders direct from cloud.poodll.com in widgets. This is optional and you do not need to fill this in.";
-$string['cpapiuser'] = 'Cloud Poodll Username';
+$string['cpapi_heading'] = 'Poodll API Settings';
+$string['cpapiuser'] = 'Poodll API Username';
 $string['cpapiuser_details'] = 'This is the same as your username at Poodll.com.';
-$string['cpapisecret'] = 'Cloud Poodll API Secret';
-$string['cpapisecret_details'] = "This is a special secret key that can be generated from the <a href='https://support.poodll.com/support/solutions/articles/19000083076-cloud-poodll-api-secret'>API tab</a> in your members area on Poodll.com. ";
+$string['cpapisecret'] = 'Poodll API Secret';
+$string['cpapisecret_details'] = "This is a special secret key that can be obtained from your members area on Poodll.com. ";
+
+//API summary display info
+$string['displaysubs'] = '{$a->subscriptionname} : expires {$a->expiredate}';
+$string['noapiuser'] = "No API username entered.";
+$string['noapisecret'] = "No API secret entered.";
+$string['credentialsinvalid'] = "The API username and secret entered could not be used to get access. Please check them.";
+$string['appauthorised']= $string['pluginname'] . " is authorised for this site.";
+$string['appnotauthorised']= $string['pluginname'] . " is NOT authorised for this site.";
+$string['refreshtoken']= "Refresh license information";
+$string['notokenincache']= "Refresh to see license information. Contact Poodll support if there is a problem.";

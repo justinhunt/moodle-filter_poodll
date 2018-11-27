@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
  */
 class licensemanager
 {
+    const FILTER_POODLL_VAL_BY_REGCODE = 1;
+    const FILTER_POODLL_VAL_BY_APICREDS = 2;
     const FILTER_POODLL_IS_REGISTERED = 0;
     const FILTER_POODLL_IS_UNREGISTERED = 1;
     const FILTER_POODLL_IS_EXPIRED = 2;
@@ -42,12 +44,23 @@ class licensemanager
     const FILTER_POODLL_LICENSE_INDIVIDUAL = 2512;
     const FILTER_POODLL_LICENSE_FREETRIAL = 2583;
 
-    private $registered_url='';
+    //are we validated
     private $validated = false;
+    private $validation_method = false;
+
+    //data parsed from registration code
+    private $registered_url='';
     private $cloud_access_key='';
     private $cloud_access_secret='';
     private $expire_date='';
     private $license_type=0;
+
+    //data parsed from api tokenobject
+    private $api_registered_url='';
+    private $api_cloud_access_key='';
+    private $api_cloud_access_secret='';
+    private $api_expire_date='';
+    private $api_license_type=0;
     
      
     /**
@@ -57,6 +70,17 @@ class licensemanager
      */
     public function get_cloud_access_key($regkey)
     {
+       //if we are using API keys
+        $apiuser = get_config(constants::MOD_FRANKY,'cpapiuser');
+        $apisecret = get_config(constants::MOD_FRANKY,'cpapisecret');
+        if($this->validation_method == self::FILTER_POODLL_VAL_BY_APICREDS && $this->validated) {
+           return $this->api_cloud_access_key;
+       }elseif(!empty($apiuser) && !empty($apisecret)){
+            $tokenobject = $this->fetch_token($apiuser,$apisecret);
+            if($tokenobject){return $tokenobject->awsaccessid;}
+        }
+
+       //Else we are using reg code
        if(empty($this->cloud_access_key)){
             if(empty($regkey)){return false;}
             $decrypted = $this->decrypt_registration_key($regkey);
@@ -73,6 +97,18 @@ class licensemanager
      */
     public function get_cloud_access_secret($regkey)
     {
+        //if we are using API keys
+        $apiuser = get_config(constants::MOD_FRANKY,'cpapiuser');
+        $apisecret = get_config(constants::MOD_FRANKY,'cpapisecret');
+        if($this->validation_method == self::FILTER_POODLL_VAL_BY_APICREDS && $this->validated) {
+            return $this->api_cloud_access_secret;
+        }elseif(!empty($apiuser) && !empty($apisecret)) {
+            $tokenobject = $this->fetch_token($apiuser, $apisecret);
+            if ($tokenobject) {
+                return $tokenobject->awsaccesssecret;
+            }
+        }
+        //Else we are using reg code
         if(empty($this->cloud_access_secret)){
             if(empty($regkey)){return false;}
             $decrypted = $this->decrypt_registration_key($regkey);
@@ -118,6 +154,24 @@ class licensemanager
     	return $details;
     }
 
+    public function validate_license(){
+        global $CFG;
+        $apiuser = get_config(constants::MOD_FRANKY,'cpapiuser');
+        $apisecret = get_config(constants::MOD_FRANKY,'cpapisecret');
+        $regkey = $CFG->filter_poodll_registrationkey;
+        if(empty($apiuser) || empty($apisecret)){
+            $regstatus = $this->validate_registrationkey($regkey);
+            $this->validation_method = self::FILTER_POODLL_VAL_BY_REGCODE;
+        }else{
+            $regstatus = $this->validate_api_creds($apiuser,$apisecret);
+            $this->validation_method = self::FILTER_POODLL_VAL_BY_APICREDS;
+        }
+        if($regstatus == self::FILTER_POODLL_IS_REGISTERED){
+            $this->validated = true;
+        }
+        return $regstatus;
+    }
+
     /**
      * Check the registration key is valid
      *
@@ -147,43 +201,52 @@ class licensemanager
 
         if($diff < 0){return self::FILTER_POODLL_IS_EXPIRED;}
         
+        return $this->check_registered_url($this->registered_url,true);
+
+    }
+
+    protected function check_registered_url($theurl,$wildcardok=true){
+        global $CFG;
+
         //get arrays of the wwwroot and registered url
         //just in case, lowercase'ify them
         $thewwwroot =  strtolower($CFG->wwwroot);
-        $theregisteredurl =  strtolower($this->registered_url);
+        $theregisteredurl =  strtolower($theurl);
         $theregisteredurl =trim($theregisteredurl);
+
+        //add http:// or https:// to URLs that do not have it
+        if(strpos($theregisteredurl,'https://')!==0 &&
+            strpos($theregisteredurl,'http://')!==0){
+            $theregisteredurl= 'https://' . $theregisteredurl;
+        }
+
+        //if neither parsed successfully, that a no straight up
         $wwwroot_bits = parse_url($thewwwroot);
         $registered_bits = parse_url($theregisteredurl);
-        
-        //if neither parsed successfully, that a no straight up
         if(!$wwwroot_bits || ! $registered_bits){
             return self::FILTER_POODLL_IS_UNREGISTERED;
         }
-        
+
         //get the subdomain widlcard address, ie *.a.b.c.d.com
-         $wildcard_subdomain_wwwroot='';
+        $wildcard_subdomain_wwwroot='';
         if(array_key_exists('host',$wwwroot_bits)){
             $wildcardparts = explode('.',$wwwroot_bits['host']);
             $wildcardparts[0]='*';
             $wildcard_subdomain_wwwroot = implode('.',$wildcardparts);
-        }else{    
+        }else{
             return self::FILTER_POODLL_IS_UNREGISTERED;
         }
-        
+
         //match either the exact domain or the wildcard domain or fail
         if(array_key_exists('host', $registered_bits)){
             //this will cover exact matches and path matches
             if($registered_bits['host'] === $wwwroot_bits['host']){
                 $this->validated = true;
                 return self::FILTER_POODLL_IS_REGISTERED;
-            //this will cover subdomain matches but only for institution bigdog and enterprise license
-            }elseif(($registered_bits['host']=== $wildcard_subdomain_wwwroot) &&
-                ( $this->license_type==self::FILTER_POODLL_LICENSE_INSTITUTION
-                    || $this->license_type==self::FILTER_POODLL_LICENSE_BIGDOG
-                    || $this->license_type==self::FILTER_POODLL_LICENSE_ENTERPRISE ))
-                {
-
-                 $this->validated = true;
+                //this will cover subdomain matches but only for institution bigdog and enterprise license
+            }elseif(($registered_bits['host']=== $wildcard_subdomain_wwwroot) && $wildcardok)
+            {
+                //yay we are registered!!!!
                 return self::FILTER_POODLL_IS_REGISTERED;
             }else{
                 return self::FILTER_POODLL_IS_UNREGISTERED;
@@ -192,7 +255,6 @@ class licensemanager
             return self::FILTER_POODLL_IS_UNREGISTERED;
         }
     }
-
 
     protected function parse_decrypted_data($decrypted_data){
        // print_r($decrypted_data);
@@ -249,5 +311,196 @@ $pubkey = openssl_get_publickey($pubcert);
 return $pubkey;
 }
 
+/* API Key stuff from here */
 
+    /**
+     * Check the api key and secret validate this site and app
+     *
+     *
+     */
+    public function validate_api_creds($apiuser,$apisecret)
+    {
+        //fetch token or bust
+        $tokenobject = $this->fetch_token($apiuser,$apisecret);
+        if(!$tokenobject){
+            return self::FILTER_POODLL_IS_UNREGISTERED;
+        }
+
+        //check sites and apps and subs exist
+        if(!$tokenobject->apps){return self::FILTER_POODLL_IS_UNREGISTERED;}
+        if(!$tokenobject->sites){return self::FILTER_POODLL_IS_UNREGISTERED;}
+        if(!$tokenobject->subs){return self::FILTER_POODLL_IS_UNREGISTERED;}
+
+        //check at least one subscription is current
+        $havecurrentsub = false;
+        foreach($tokenobject->subs as $sub){
+            if($sub->expiredate > time()){
+                $havecurrentsub = true;
+                break;
+            }
+        }
+        if(!$havecurrentsub){return self::FILTER_POODLL_IS_UNREGISTERED;}
+
+        //if the app (filter_poodll) is authorised, and the site URL is ok, return true
+        //else its false.
+        foreach($tokenobject->apps as $app){
+            if($app==constants::MOD_FRANKY){
+                foreach($tokenobject->sites as $site){
+                    $isregistered = $this->check_registered_url($site,true);
+                    if($isregistered){
+                        //update our reg info for later
+                        $this->api_registered_url=$site;
+                        $this->api_cloud_access_key=$tokenobject->awsaccessid;
+                        $this->api_cloud_access_secret=$tokenobject->awsaccesssecret;
+                        $this->api_license_type=$sub->subscriptionid;
+                        $this->api_expire_date=$sub->expiredate;
+                        //return validated flag
+                        return self::FILTER_POODLL_IS_REGISTERED;
+                    }
+                }
+            }
+        }
+        return self::FILTER_POODLL_IS_UNREGISTERED;
+    }
+
+    //we use curl to fetch Tokens from cloudpoodll
+    //this is our helper
+    protected function curl_fetch($url,$postdata=false)
+    {
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        if ($postdata) {
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
+        }
+        $contents = curl_exec($ch);
+        curl_close($ch);
+        return $contents;
+    }
+
+    //This is called from the settings page and we do not want to make calls out to cloud.poodll.com on settings
+    //page load, for performance and stability issues. So if the cache is empty and/or no token, we just show a
+    //"refresh token" link
+    public function fetch_token_for_display($apiuser,$apisecret){
+        global $CFG;
+
+        //First check that we have an API id and secret
+        //refresh token
+        $refresh = \html_writer::link($CFG->wwwroot . '/filter/poodll/refreshtoken.php',
+                get_string('refreshtoken',constants::MOD_FRANKY)) . '<br>';
+
+
+        $message = '';
+        $apiuser = trim($apiuser);
+        $apisecret = trim($apisecret);
+        if(empty($apiuser)){
+            $message .= get_string('noapiuser',constants::MOD_FRANKY) . '<br>';
+        }
+        if(empty($apisecret)){
+            $message .= get_string('noapisecret',constants::MOD_FRANKY);
+        }
+
+        if(!empty($message)){
+            return $refresh . $message;
+        }
+
+        //Fetch from cache and process the results and display
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::MOD_FRANKY, 'token');
+        $tokenobject = $cache->get('recentpoodlltoken');
+
+        //if we have no token object the creds were wrong ... or something
+        if(!($tokenobject)){
+            $message = get_string('notokenincache',constants::MOD_FRANKY);
+            //if we have an object but its no good, creds werer wrong ..or something
+        }elseif(!property_exists($tokenobject,'token') || empty($tokenobject->token)){
+            $message = get_string('credentialsinvalid',constants::MOD_FRANKY);
+            //if we do not have subs, then we are on a very old token or something is wrong, just get out of here.
+        }elseif(!property_exists($tokenobject,'subs')){
+            $message = 'No subscriptions found at all';
+        }
+        if(!empty($message)){
+            return $refresh . $message;
+        }
+
+        //we have enough info to display a report. Lets go.
+        foreach ($tokenobject->subs as $sub){
+            $sub->expiredate = date('d/m/Y',$sub->expiredate);
+            $message .= get_string('displaysubs',constants::MOD_FRANKY, $sub) . '<br>';
+        }
+        //Is app authorised
+        if(in_array(constants::MOD_FRANKY,$tokenobject->apps)){
+            $message .= get_string('appauthorised',constants::MOD_FRANKY) . '<br>';
+        }else{
+            $message .= get_string('appnotauthorised',constants::MOD_FRANKY) . '<br>';
+        }
+
+        return $refresh . $message;
+
+    }
+
+    //We need a Poodll token to make all this recording and transcripts happen
+    public function fetch_token($apiuser, $apisecret, $force=false)
+    {
+
+        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::MOD_FRANKY, 'token');
+        $tokenobject = $cache->get('recentpoodlltoken');
+        $tokenuser = $cache->get('recentpoodlluser');
+        $apiuser = trim($apiuser);
+        $apisecret = trim($apisecret);
+
+        //if we got a token and its less than expiry time
+        // use the cached one
+        if($tokenobject && $tokenuser && $tokenuser==$apiuser && !$force){
+            if($tokenobject->validuntil == 0 || $tokenobject->validuntil > time()){
+                return $tokenobject;
+            }
+        }
+
+        // Send the request & save response to $resp
+        $token_url ="https://cloud.poodll.com/local/cpapi/poodlltoken.php";
+        $postdata = array(
+            'username' => $apiuser,
+            'password' => $apisecret,
+            'service'=>'cloud_poodll'
+        );
+        $token_response = $this->curl_fetch($token_url,$postdata);
+        if ($token_response) {
+            $resp_object = json_decode($token_response);
+            if($resp_object && property_exists($resp_object,'token')) {
+                //store the expiry timestamp and adjust it for diffs between our server times
+                if($resp_object->validuntil) {
+                    $validuntil = $resp_object->validuntil - ($resp_object->poodlltime - time());
+                    //we refresh one hour out, to prevent any overlap
+                    $validuntil = $validuntil - (1 * HOURSECS);
+                }else{
+                    $validuntil = 0;
+                }
+
+                //make sure the token has all the bits in it we expect before caching it
+                $tokenobject = $resp_object;//new \stdClass();
+                $tokenobject->validuntil = $validuntil;
+                if(!property_exists($tokenobject,'subs')){
+                    $tokenobject->subs = false;
+                }
+                if(!property_exists($tokenobject,'apps')){
+                    $tokenobject->apps = false;
+                }
+                if(!property_exists($tokenobject,'sites')){
+                    $tokenobject->sites = false;
+                }
+                $cache->set('recentpoodlltoken', $tokenobject);
+                $cache->set('recentpoodlluser', $apiuser);
+
+            }else{
+                $tokenobject = false;
+                if($resp_object && property_exists($resp_object,'error')) {
+                    //ERROR = $resp_object->error
+                }
+            }
+        }else{
+            $tokenobject=false;
+        }
+        return $tokenobject;
+    }
 }
