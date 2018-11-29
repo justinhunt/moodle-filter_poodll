@@ -24,7 +24,7 @@ $string['filter_poodll_whiteboard_heading'] = 'Whiteboard Settings';
 $string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings (Flash only)';
 $string['filter_poodll_registration_heading'] ='Register your Poodll';
 $string['filter_poodll_flashcards_heading'] ='Flashcards Settings';
-$string['filter_poodll_registration_explanation'] ="To authorise Poodll enter your Poodll API username and secret, or your license key (deprecated), but not both. You can obtain this from <a href='https://poodll.com/member'>https://poodll.com/member</a> after subscribing.";
+$string['filter_poodll_registration_explanation'] ="To authorise Poodll enter your Poodll API username and secret, or your license key (deprecated), but not both. You can obtain these from <a href='https://poodll.com/member'>https://poodll.com/member</a> after subscribing.";
 $string['registrationkey'] = 'Registration Key';
 $string['registrationkey_explanation'] ="Enter your Poodll registration key here only if you have not entered an API key and secret above. You can obtain a key from <a href='https://poodll.com/pricing'>https://poodll.com/pricing</a>";
 $string['license_details'] ='<br> -------------- <br> License type: {$a->license_type} <br> Expires(JST): {$a->expire_date} <br> Registered URL: {$a->registered_url} ';
@@ -376,7 +376,7 @@ $string['cpapi_heading'] = 'Poodll API Settings';
 $string['cpapiuser'] = 'Poodll API Username';
 $string['cpapiuser_details'] = 'This is the same as your username at Poodll.com.';
 $string['cpapisecret'] = 'Poodll API Secret';
-$string['cpapisecret_details'] = "This is a special secret key that can be obtained from your members area on Poodll.com. ";
+$string['cpapisecret_details'] = "This can be obtained from the API creds tab on your members area at Poodll.com. ";
 
 //API summary display info
 $string['displaysubs'] = '{$a->subscriptionname} : expires {$a->expiredate}';
