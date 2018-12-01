@@ -129,9 +129,9 @@ public static function fetch_general_items(){
 	$audiooptions = self::fetch_html5_recorder_items("audio");
     $videooptions = self::fetch_html5_recorder_items("video");
 	$items[] = new \admin_setting_configselect('filter_poodll/html5recorder_skin_audio', get_string('html5recorder_skin_audio', 'filter_poodll'),
-        '', 'standard', $audiooptions);
+        '', 'onetwothree', $audiooptions);
     $items[] = new \admin_setting_configselect('filter_poodll/html5recorder_skin_video', get_string('html5recorder_skin_video', 'filter_poodll'),
-        '', 'standard', $videooptions);
+        '', 'onetwothree', $videooptions);
     $items[] = new \admin_setting_configtext('filter_poodll/skinstyleaudio', get_string('skinstyleaudio', 'filter_poodll'),
         get_string('skinstyleaudio_details', 'filter_poodll'), '');
     $items[] = new \admin_setting_configtext('filter_poodll/skinstylevideo', get_string('skinstylevideo', 'filter_poodll'),
