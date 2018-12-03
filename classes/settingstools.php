@@ -80,7 +80,7 @@ public static function fetch_general_items(){
 	//removed aws 3.x version from distributable because it was too large and not required
 	//if its needed added aws sdk for php in a folder called aws-v3 in /filter/poodll/3rdparty
 	//$options = array('2.x' => 'Version 2.x', '3.x'=>"Version 3.x");
-	$options = array('2.x' => 'Version 2.x','3.x' => 'Version 3.x');
+	$options = array('none'=>get_string('noawssdk','filter_poodll'),'2.x' => 'Version 2.x','3.x' => 'Version 3.x');
     if($CFG->version >= 2018041002 && version_compare(phpversion(), '5.5.0', '>=')) {
         $def = '3.x';
     }else{

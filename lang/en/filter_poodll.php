@@ -387,3 +387,4 @@ $string['appauthorised']= "Poodll filter is authorised for this site.";
 $string['appnotauthorised']=  "Poodll filter is NOT authorised for this site.";
 $string['refreshtoken']= "Refresh license information";
 $string['notokenincache']= "Refresh to see license information. Contact Poodll support if there is a problem.";
+$string['noawssdk']='Do not load AWS SDK';

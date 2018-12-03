@@ -30,8 +30,8 @@ class licensemanager
 {
     const FILTER_POODLL_VAL_BY_REGCODE = 1;
     const FILTER_POODLL_VAL_BY_APICREDS = 2;
-    const FILTER_POODLL_IS_REGISTERED = 0;
-    const FILTER_POODLL_IS_UNREGISTERED = 1;
+    const FILTER_POODLL_IS_REGISTERED = 1;
+    const FILTER_POODLL_IS_UNREGISTERED = 0;
     const FILTER_POODLL_IS_EXPIRED = 2;
 
     const FILTER_POODLL_LICENSE_ENTERPRISE = 4135;
@@ -346,8 +346,8 @@ return $pubkey;
         foreach($tokenobject->apps as $app){
             if($app==constants::MOD_FRANKY){
                 foreach($tokenobject->sites as $site){
-                    $isregistered = $this->check_registered_url($site,true);
-                    if($isregistered){
+                    $reg_status = $this->check_registered_url($site,true);
+                    if($reg_status == self::FILTER_POODLL_IS_REGISTERED){
                         //update our reg info for later
                         $this->api_registered_url=$site;
                         $this->api_cloud_access_key=$tokenobject->awsaccessid;

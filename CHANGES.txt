@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.1.14(Build 2018120300)
+-Fixed bug where API username/secret would not be recognised
+-Added 'none' option for AWS SDK loading
+-Added a check for enrol_arlo which loads Guzzle , which crashes AWS SDK load. Sets to AWS SDK v2 in that case.
+
 Version 3.1.13(Build 2018112500)
 -adds support for Poodll API in place of license key
 Version 3.1.12(Build 2018110900)

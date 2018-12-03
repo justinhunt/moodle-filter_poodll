@@ -178,15 +178,28 @@ class awstools
         //Poodll carries its own AWS SDK, but if catalyst's local_aws is installed we use that
         //to avoid clashes (which crash Moodle)
         $catalyst_s3_loader = $CFG->dirroot . '/local/aws/sdk/aws-autoloader.php';
+        //enrol_arlo loads guzzle which crashes AWS SDK3 (since it can not load it twice)
+        $enrolarlo_guzzle = $CFG->dirroot . '/enrol/arlo/vendor/guzzlehttp/guzzle/src/Client.php';
+
         if (file_exists($catalyst_s3_loader)) {
             $this->awsversion = "3.x";
             require_once($catalyst_s3_loader);
+
+        }elseif(file_exists($enrolarlo_guzzle)){
+            //We use AWS 2.x if Arlo is loading guzzle
+            $this->awsversion = "2.x";
+            require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
 
         }elseif($CFG->filter_poodll_aws_sdk=="2.x"){
             //We need to support pre 5.5 versions of PHP
             // but aws 3.x is from php 5.5 and up.
             $this->awsversion = "2.x";
             require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
+
+        }elseif($CFG->filter_poodll_aws_sdk=="none"){
+            //If AWS is loaded from somewhere else, and user set this, then lets assume its loaded and just carry on
+            $this->awsversion = "3.x";
+
         }else{
             $this->awsversion = "3.x";
             require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
