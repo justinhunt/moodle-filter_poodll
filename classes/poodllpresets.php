@@ -165,7 +165,7 @@ class poodllpresets extends \admin_setting {
             }
             foreach($dirs as $dir) {
                 foreach ($dir as $fileinfo) {
-                    if (!$fileinfo->isDot()) {
+                    if (!$fileinfo->isDot() && !$fileinfo->isDir()) {
                         $preset = self::parse_preset_template($fileinfo);
                         //if this is a generico template we want to set show_atto to true
                         if ($preset) {

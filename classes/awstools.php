@@ -180,30 +180,48 @@ class awstools
         $catalyst_s3_loader = $CFG->dirroot . '/local/aws/sdk/aws-autoloader.php';
         //enrol_arlo loads guzzle which crashes AWS SDK3 (since it can not load it twice)
         $enrolarlo_guzzle = $CFG->dirroot . '/enrol/arlo/vendor/guzzlehttp/guzzle/src/Client.php';
+        $PHP55 = version_compare(phpversion(), '5.5.0','>=');
 
-        if (file_exists($catalyst_s3_loader)) {
-            $this->awsversion = "3.x";
-            require_once($catalyst_s3_loader);
+        switch($CFG->filter_poodll_aws_sdk){
+            case constants::AWS_V2:
+                $this->awsversion = constants::AWS_V2;
+                require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
+                break;
+            case constants::AWS_V3:
+                $this->awsversion = constants::AWS_V3;
+                require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
+                break;
+            case constants::AWS_NONE:
+                //If user set this, then lets assume its loaded and just carry on
+                $this->awsversion = "3.x";
+                break;
+            case constants::AWS_LOCAL:
+                $this->awsversion = constants::AWS_V3;
+                require_once($catalyst_s3_loader);
+                break;
+            case constants::AWS_AUTO:
+            default:
+                if (file_exists($catalyst_s3_loader) && $PHP55) {
+                    $this->awsversion = constants::AWS_V3;
+                    require_once($catalyst_s3_loader);
 
-        }elseif(file_exists($enrolarlo_guzzle)){
-            //We use AWS 2.x if Arlo is loading guzzle
-            $this->awsversion = "2.x";
-            require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
+                }elseif(file_exists($enrolarlo_guzzle)) {
+                    //We use AWS 2.x if Arlo is loading guzzle
+                    $this->awsversion = constants::AWS_V2;
+                    require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
 
-        }elseif($CFG->filter_poodll_aws_sdk=="2.x"){
-            //We need to support pre 5.5 versions of PHP
-            // but aws 3.x is from php 5.5 and up.
-            $this->awsversion = "2.x";
-            require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
+                }elseif(!$PHP55){
+                    //We need to support pre 5.5 versions of PHP
+                    // but aws 3.x is from php 5.5 and up.
+                    $this->awsversion = constants::AWS_V2;
+                    require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
 
-        }elseif($CFG->filter_poodll_aws_sdk=="none"){
-            //If AWS is loaded from somewhere else, and user set this, then lets assume its loaded and just carry on
-            $this->awsversion = "3.x";
-
-        }else{
-            $this->awsversion = "3.x";
-            require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
+                }else{
+                    $this->awsversion = constants::AWS_V3;
+                    require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
+                }
         }
+
     }
 
     public static function parse_region($region){
@@ -456,7 +474,7 @@ class awstools
                 'Item' => $marshaler->marshalItem($itemarray)
             ]);
             return true;
-        }catch(DynamoDbException $e){
+        }catch(Exception $e){
             echo "Unable to put item:\n";
             echo $e->getMessage() . "\n";
             return $e->getMessage() ;
@@ -608,12 +626,29 @@ class awstools
 		}
 		
 		$cmd = $s3client->getCommand('PutObject', $options);
-		if($this->awsversion=="3.x"){
-			$request = $s3client->createPresignedRequest($cmd, '+' . $minutes .' minutes');
-			$theurl = (string) $request->getUri();
-		}else{
-			$theurl =$cmd->createPresignedUrl('+' . $minutes .' minutes');
-		}
+		$awsversion = $this->awsversion;
+
+		//due to AWS SDK conflict in other plugins,
+        // Poodll Feedback has been known to arrive here with diff SDK ver. loaded
+        //We check for that here.
+		if($awsversion==constants::AWS_V2){
+		    if(!method_exists($cmd,'createPresignedUrl') &&
+            method_exists($s3client,'createPresignedRequest') ){
+                $awsversion=constants::AWS_V3;
+            }
+        }
+        //this can fail with SDK loading issues we return an error message in that case
+        try {
+            if ($awsversion == constants::AWS_V3) {
+                $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
+                $theurl = (string)$request->getUri();
+            } else {
+                $theurl = $cmd->createPresignedUrl('+' . $minutes . ' minutes');
+            }
+        }catch(Exception $e){
+		    print_error($e->getMessage());
+            $theurl = $e->getMessage() ;
+        }
 		return $theurl;
 	}
 	

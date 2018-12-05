@@ -57,6 +57,7 @@ class diagnosticstools {
         //general version info
         $ds['moodle_version'] = $CFG->version;
         $ds['os_version'] = php_uname();
+        $ds['php_version'] = phpversion();
         //server time
         date_default_timezone_set('Asia/Tokyo');
         $timestamp = time();
@@ -73,10 +74,13 @@ class diagnosticstools {
         $ds['qtype_poodllrecording_version'] = get_config('qtype_poodllrecording', 'version');
         $ds['data_field_version'] = get_config('datafield_poodll', 'version');
         $ds['repository_poodll'] = get_config('repository_poodll', 'version');
+        $ds['atto_cloudpoodll_version'] = get_config('atto_cloudpoodll', 'version');
+        $ds['assignsubmission_cloudpoodll_version'] = get_config('assignsubmission_cloudpoodll', 'version');
+        $ds['mod_readaloud_version'] = get_config('mod_readaloud', 'version');
 
-        //license info
+        //Registration Key info
+        $lm = new \filter_poodll\licensemanager();
         if ($CFG && property_exists($CFG, 'filter_poodll_registrationkey') && !empty($CFG->filter_poodll_registrationkey)) {
-            $lm = new \filter_poodll\licensemanager();
             $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
             $license_details = $lm->fetch_license_details();
             $display_license_details = get_string('license_details', 'filter_poodll', $license_details);
@@ -84,6 +88,16 @@ class diagnosticstools {
             $display_license_details = "";
         }
         $ds['license_details'] = $display_license_details;
+
+        //API credentials info
+        $apiuser=get_config('filter_poodll','cpapiuser');
+        $apisecret=get_config('filter_poodll','cpapisecret');
+        $ds['apiuser'] = $apiuser ? $apiuser : '';
+        $ds['apisecret'] = $apisecret ? $apisecret : '';
+        if($apiuser && $apisecret) {
+            $ds['api_details'] = $lm->fetch_token_for_display($apiuser,$apisecret);
+        }
+
 
         //get active users
         $oneyearago = strtotime('-1 year');

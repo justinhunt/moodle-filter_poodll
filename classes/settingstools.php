@@ -20,6 +20,8 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/filelib.php');
 
+use \filter_poodll\constants;
+
 
 /**
  *
@@ -80,12 +82,9 @@ public static function fetch_general_items(){
 	//removed aws 3.x version from distributable because it was too large and not required
 	//if its needed added aws sdk for php in a folder called aws-v3 in /filter/poodll/3rdparty
 	//$options = array('2.x' => 'Version 2.x', '3.x'=>"Version 3.x");
-	$options = array('none'=>get_string('noawssdk','filter_poodll'),'2.x' => 'Version 2.x','3.x' => 'Version 3.x');
-    if($CFG->version >= 2018041002 && version_compare(phpversion(), '5.5.0', '>=')) {
-        $def = '3.x';
-    }else{
-        $def = '2.x';
-    }
+	$options = self::fetch_awssdk_options();
+    $def = constants::AWS_AUTO;
+
 	$items[] = new \admin_setting_configselect('filter_poodll_aws_sdk', get_string('awssdkversion', 'filter_poodll'), 
 		get_string('awssdkversion_desc', 'filter_poodll'), $def, $options);
 
@@ -311,7 +310,18 @@ public static function fetch_extension_items($conf){
 		return $items;
 }//end of fetch extension items
 
+//The options for AWS SDK loading
+public static function fetch_awssdk_options(){
+ $items = array();
+    $items[constants::AWS_AUTO] =get_string('awssdkauto','filter_poodll');
+    $items[constants::AWS_NONE] =get_string('awssdknone','filter_poodll');
+    $items[constants::AWS_V2] =get_string('awssdkv2','filter_poodll');
+    $items[constants::AWS_V3] =get_string('awssdkv3','filter_poodll');
+    $items[constants::AWS_LOCAL] =get_string('awssdklocal','filter_poodll');
+    return $items;
+}
 
+//The options for HTML5 recorder skins
 public static function fetch_html5_recorder_items($mediatype="audio"){
     $items = array();
     switch ($mediatype){

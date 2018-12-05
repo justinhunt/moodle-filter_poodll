@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.1.15(Build 2018120500)
+-Added more options for AWS loading
+-Added more information to support info file
+-Added a switch to detect a conflict and switch awssdk version when fetching presigned url
+-Added a check for dirs in presets folder which could cause a nasty error
+
 Version 3.1.14(Build 2018120300)
 -Fixed bug where API username/secret would not be recognised
 -Added 'none' option for AWS SDK loading
@@ -7,6 +13,7 @@ Version 3.1.14(Build 2018120300)
 
 Version 3.1.13(Build 2018112500)
 -adds support for Poodll API in place of license key
+
 Version 3.1.12(Build 2018110900)
 -added support for AWS Ottawa region (ca-central-1)
 -added transcoder option to cloud poodll params

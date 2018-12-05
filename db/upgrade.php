@@ -26,6 +26,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use \filter_poodll\constants;
 
 /**
  * Upgrade code for the poodll filter
@@ -89,5 +90,21 @@ function xmldb_filter_poodll_upgrade($oldversion) {
             set_config('filter_poodll_aws_sdk', '3.x');
         }
     }
+
+    if($oldversion < 2018120500) {
+        if (property_exists($CFG, 'filter_poodll_aws_sdk')) {
+            $currentvalue=get_config('filter_poodll_aws_sdk');
+            switch($currentvalue){
+                case constants::AWS_NONE:
+                case constants::AWS_V2:
+                    //lets just leave it like that.
+                    //they probably had a reason for this
+                    break;
+                default:
+                    set_config('filter_poodll_aws_sdk', constants::AWS_AUTO);
+            }
+        }
+    }
+
     return true;
 }

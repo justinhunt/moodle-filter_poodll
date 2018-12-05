@@ -44,7 +44,7 @@ $string['camerafront'] = 'front';
 $string['cameraback'] = 'back';
 
 $string['awssdkversion'] = 'AWS SDK';
-$string['awssdkversion_desc'] = 'Poodll cloud recording uses Amazon Web Services (AWS). AWS SDK Ver. 3.x and Ver. 2.x are both included. Only version 3.x supports Amazon AI based featiures like text to speech.';
+$string['awssdkversion_desc'] = 'Poodll includes AWS SDK Ver. 3 and Ver. 2. Only version 3 supports Amazon AI based featiures like text to speech. Because other plugins use AWS SDK too, to avoid conflicts \'Auto select\' is recommended. Or install and use <a href="https://moodle.org/plugins/local_aws">local_aws</a>';
 $string['uploadkey'] = 'Upload key';
 $string['uploadkey_desc'] = 'Poodll cloud recording requires an upload key for recording. You should receive this when you sign up for Poodll. Enter the upload key here.';
 $string['uploadsecret'] = 'Upload secret';
@@ -387,4 +387,8 @@ $string['appauthorised']= "Poodll filter is authorised for this site.";
 $string['appnotauthorised']=  "Poodll filter is NOT authorised for this site.";
 $string['refreshtoken']= "Refresh license information";
 $string['notokenincache']= "Refresh to see license information. Contact Poodll support if there is a problem.";
-$string['noawssdk']='Do not load AWS SDK';
+$string['awssdknone']='Do not use AWS SDK';
+$string['awssdkv2']='Use AWS SDK V2';
+$string['awssdkv3']='Use AWS SDK V3';
+$string['awssdklocal']='Use AWS SDK from plugin local_aws';
+$string['awssdkauto']='Auto select AWS SDK';

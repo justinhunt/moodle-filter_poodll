@@ -135,20 +135,8 @@ class licensemanager
             case self::FILTER_POODLL_LICENSE_INSTITUTION:
                 $details->license_type='Institution';
                 break;
-            case self::FILTER_POODLL_LICENSE_TINY:
-    			$details->license_type='Tiny';
-    			break;
-            case self::FILTER_POODLL_LICENSE_STANDARD:
-                $details->license_type='Standard';
-                break;
-            case self::FILTER_POODLL_LICENSE_BIGDOG:
-                $details->license_type='Big';
-                break;
-            case self::FILTER_POODLL_LICENSE_ENTERPRISE:
-                $details->license_type='Enterprise';
-                break;
     		default:
-    			$details->license_type="";
+    			$details->license_type="Other: " . $this->license_type;
     	}
     	$details->registered_url = $this->registered_url;
     	return $details;
