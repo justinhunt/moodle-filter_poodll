@@ -4,7 +4,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd'],
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Upload Media skin: initialising');
+    log.debug('PoodLL Warning Media skin: initialising');
 
     return {
 

@@ -416,11 +416,24 @@ return $pubkey;
             $sub->expiredate = date('d/m/Y',$sub->expiredate);
             $message .= get_string('displaysubs',constants::MOD_FRANKY, $sub) . '<br>';
         }
-        //Is app authorised
-        if(in_array(constants::MOD_FRANKY,$tokenobject->apps)){
-            $message .= get_string('appauthorised',constants::MOD_FRANKY) . '<br>';
-        }else{
+        //Is site authorised
+        $haveauthsite=false;
+        foreach ($tokenobject->sites as $site) {
+            if($this->check_registered_url($site)==self::FILTER_POODLL_IS_REGISTERED){
+                $haveauthsite=true;
+                break;
+            }
+        }
+        if(!$haveauthsite){
             $message .= get_string('appnotauthorised',constants::MOD_FRANKY) . '<br>';
+        }else {
+
+            //Is app authorised
+            if (in_array(constants::MOD_FRANKY, $tokenobject->apps)) {
+                $message .= get_string('appauthorised', constants::MOD_FRANKY) . '<br>';
+            } else {
+                $message .= get_string('appnotauthorised', constants::MOD_FRANKY) . '<br>';
+            }
         }
 
         return $refresh . $message;

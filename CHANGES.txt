@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.16([Unreleased])
+-Added a better check for license status on general settings page
+
 Version 3.1.15(Build 2018120500)
 -Added more options for AWS loading
 -Added more information to support info file
