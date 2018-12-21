@@ -219,7 +219,7 @@ define(['jquery','core/log','filter_poodll/utils_amd','filter_poodll/upskin_bar'
             //play button
             var playbuttonhtml =  '<button type="button" class="poodll_mediarecorder_button_split poodll_play-resource_split">'
             + '<p style="margin-bottom: 0px; font-size: 24px;">Start</p></button>';
-            var topsplit='<div class="poodll_mediarecorder_split_topsplit">' + playbuttonhtml + '</div>';
+            var topsplit='<div class="poodll_mediarecorderholder_split poodll_mediarecorder_split_topsplit">' + playbuttonhtml + '</div>';
 
             //divider
             var divider = "<hr />";

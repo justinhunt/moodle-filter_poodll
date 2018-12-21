@@ -976,7 +976,8 @@ audio.poodll_preview_standard{
 /* MEDIA RECORDER Split SKIN */
 
 .poodll_mediarecorder_button_split{
-	width: 370px;
+	max-width: 370px;
+	width: 100%;
 	border: 3px solid #555;
 	height: 50px;
 	border-radius: 20px;
@@ -995,7 +996,8 @@ audio.poodll_preview_standard{
 }
 
 div.poodll_mediarecorderholder_split{
-	width: 370px;
+	max-width: 370px;
+	width: 100%;
 	height: auto;
 	margin: auto;
 }
@@ -1003,20 +1005,22 @@ div.poodll_mediarecorderholder_split{
 div.poodll_mediarecorder_split_topsplit {
 	display: block;
 	margin: auto;
-	width: 370px;
+	/* width: 370px; */
 }
+
 
 .poodll_mediarecorderbox_split hr{
 	border: none;
 }
 
 .poodll_mediarecorderbox_split {
-	width: 370px;
+	/* width: 370px; */
 	text-align: left;
 }
 .poodll_status_split {
 	margin-top: 5px;
-	width: 370px;
+	width: 100%;
+	max-width: 370px;
 	height: 30px;
 	margin-bottom: 8px;
 	text-align: center;
@@ -1029,7 +1033,9 @@ div.poodll_mediarecorder_split_topsplit {
 }
 .split_range {
 	height: 30px;
-	width: 370px;
+
+	width: 100%;
+	max-width: 370px;
 	position: absolute;
 	display: block;
 }
