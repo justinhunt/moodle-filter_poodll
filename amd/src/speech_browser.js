@@ -29,6 +29,16 @@ define(['jquery','core/log'], function($, log) {
 
             this.register_events();
         },
+
+        set_grammar: function(grammar){
+            var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
+            if(SpeechGrammarList) {
+                var speechRecognitionList = new SpeechGrammarList();
+                speechRecognitionList.addFromString(grammar, 1);
+                this.recognition.grammars = speechRecognitionList;
+            }
+        },
+
         start: function(){
             if (this.recognizing) {
                 return;

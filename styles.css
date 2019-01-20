@@ -312,6 +312,158 @@ Base Media skin Setting Integration
 /*********************************************END****************************************/
 
 /*
+	The Read Seed Audio Recorders
+*/
+
+.poodll_mediarecorderholder_readseed{
+	position:relative;
+}
+
+.poodll_mediarecorderholder_readseed .settingsicon{
+	position: absolute;
+	bottom: 75px;
+	right: 250px;
+}
+.poodll_mediarecorderholder_readseed .settingsicon button{
+	border: none !important;
+	background: transparent !important;
+}
+.poodll_mediarecorderholder_readseed .settingsicon button i{
+	font-size: 18px !important;
+	color: #333 !important;
+}
+.poodll_mediarecorderholder_readseed .settingsicon button:focus{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_readseed .settingsicon button i:hover{
+	cursor: pointer;
+}
+
+.poodll_mediarecorder_audio .poodll_mediarecorder_playcanvas_readseed {
+	/* dimensions need to be declared on component */
+	/* height: 180px; */
+	/* width: 50px; */
+
+}
+
+.poodll_mediarecorder_audio .poodll_mediarecorder_caption_readseed {
+	/* nothing to do yet */
+}
+
+.poodll_mediarecorderbox_readseed.poodll_mediarecorder_readseed_testbuttonready {
+	color:#444;
+	font-size: xx-large;
+	background: #CBF2DC;
+	border-color: #3e7327;
+}
+.poodll_mediarecorderbox_readseed.poodll_mediarecorder_readseed_testbuttonrecording {
+	color:#444;
+	background: #CBF2DC;
+	border-color: #3e7327;
+}
+.poodll_mediarecorderbox_readseed.poodll_mediarecorder_readseed_startbuttonready {
+	color:#fffa90;
+	font-size: xx-large;
+	background: #3ea8ef;
+	border-color: #2b78e4;
+}
+.poodll_mediarecorderbox_readseed.poodll_mediarecorder_readseed_startbuttoncountdown {
+	color:#fffa90;
+	background: #3ea8ef;
+	border-color: #2b78e4;
+}
+.poodll_mediarecorderbox_readseed.poodll_mediarecorder_readseed_startbuttonrecording {
+	color:#fffa90;
+	background: #e06c6c;
+	border-color: #e41426;
+}
+.poodll_mediarecorderbox_readseed.poodll_mediarecorder_readseed_uploading {
+	color:#444;
+	background: #eeeeee;
+	border-color: #3e7327;
+}
+.poodll_mediarecorderbox_readseed.poodll_mediarecorder_readseed_allfinished {
+	color:#444;
+	background: #eeeeee;
+	border-color: #3e7327;
+}
+/* div button styling */
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_readseed {
+	display: flex;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 5px;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+	cursor:pointer;
+	vertical-align:middle;
+	padding: 5px;
+	text-align: center;
+	max-width: 210px;
+	min-width: 210px;
+	max-height: 80px;
+	min-height: 80px;
+}
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_readseed.readseed_canclick:active {
+	box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
+	font-weight: bold;
+	cursor: pointer;
+}
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_readseed.readseed_canclick:hover {
+	/* -webkit-transform: scale(1.1); */
+	box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
+	font-weight: bold;
+	cursor: pointer;
+}
+/* end of button styling */
+
+.poodll_mediarecorderbox_readseed canvas{
+	margin-bottom: 5px;
+}
+button.poodll_mediarecorder_button_readseed {
+
+	transition: filter 0.5s ease;
+	margin: auto;
+	width: 180px;
+	color: #fff;
+	background-color: #00acdf;
+	border-color: #00acdf;
+	background-image: none;
+	display: inline-block;
+	font-weight: 400;
+	line-height: 1.25;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	border: 1px solid transparent;
+	padding: .5rem 1rem;
+	font-size: 1rem;
+	border-radius: .25rem;
+}
+
+.poodll_mediarecorderholder_readseed .poodll_mediarecorderbox_readseed{
+	position: relative;
+}
+.poodll_mediarecorderholder_readseed .poodll_mediarecorderbox_readseed .pmr_disabled{
+	display: none;
+}
+
+.poodll_mediarecorderholder_readseed .poodll_mediarecorderbox_readseed button:focus {
+	outline-style: none;
+}
+/*********************************************END****************************************/
+
+
+/*********************************************END****************************************/
+
+/*
 	The Read Aloud Audio Recorders
 */
 

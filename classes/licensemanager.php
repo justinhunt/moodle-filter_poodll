@@ -355,16 +355,12 @@ return $pubkey;
     //this is our helper
     protected function curl_fetch($url,$postdata=false)
     {
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        if ($postdata) {
-            curl_setopt($ch, CURLOPT_POST, true);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postdata);
-        }
-        $contents = curl_exec($ch);
-        curl_close($ch);
-        return $contents;
+        global $CFG;
+        require_once($CFG->libdir.'/filelib.php');
+        $curl = new \curl();
+
+        $result = $curl->get($url, $postdata);
+        return $result;
     }
 
     //This is called from the settings page and we do not want to make calls out to cloud.poodll.com on settings

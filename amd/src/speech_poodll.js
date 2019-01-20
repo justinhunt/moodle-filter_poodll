@@ -28,6 +28,11 @@ define(['jquery','core/log','filter_poodll/speech_browser'], function($, log,bro
                 log.debug('no usable speech recognizer found');
             }
         },
+
+        set_grammar: function(grammar){
+            this.recognizer.set_grammar(grammar);
+        },
+
         start: function(){
             if(!this.recognizer){return;}
             this.recognizer.onfinalspeechcapture = this.onfinalspeechcapture;
