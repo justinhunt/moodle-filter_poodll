@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.19 (Build unreleased)
+-improved timer on recorders which seemed to slip at times
+-added support for cloudpoodll non-transcode recorders
+
 Version 3.1.18 (Build 2019012001)
 -Removed old SWF files that were bloating Poodll
 

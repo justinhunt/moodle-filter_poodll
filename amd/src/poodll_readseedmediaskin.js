@@ -293,7 +293,13 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
             //set visual mode
             this.set_visual_mode('testbuttonready',controlbarid);
 
-            ip.controlbar.bigbutton.click(function(){
+            ip.controlbar.bigbutton.click(function(e){
+                //we do not want the dialog and other things to trigger events here
+                //just the caption and the button itself
+                if(e.target!== this && !$(e.target).hasClass('poodll_mediarecorder_caption_readseed')){
+                    return;
+                }
+
                 switch (self.buttonmode){
                     case 'testbuttonready':
 
@@ -310,14 +316,20 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                         ip.timer.disable();
 
                         var testover = function(){
-                            //stop recording
-                            pmr.do_stop_audio(ip);
+                            if(ip.mediaRecorder) {
+                                //stop recording
+                                pmr.do_stop_audio(ip);
+                            }
                             //wave animation
                             recanim.clear();
                             ip.config.hermes.enable();
                             if(recanim.sounddetected){
                                 self.set_visual_mode('startbuttonready',controlbarid);
                             }else{
+                                var messageObject ={};
+                                messageObject.type="recorderstatus";
+                                messageObject.status = 'testrecordingfailed';
+                                ip.config.hermes.postMessage(messageObject);
                                 self.set_visual_mode('testbuttonready',controlbarid);
                             }
                         }
@@ -370,7 +382,11 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
             });
 
-			ip.controlbar.settingsicon.click(function(){
+			ip.controlbar.settingsicon.click(function(e){
+			    log.debug("we no proapagato");
+                // Do not pass this event on
+                e.stopPropagation();
+                //handle click properly
                 if(!self.uploaded) {
                     self.devsettings.open();
                 }else{

@@ -458,6 +458,25 @@ button.poodll_mediarecorder_button_readseed {
 .poodll_mediarecorderholder_readseed .poodll_mediarecorderbox_readseed button:focus {
 	outline-style: none;
 }
+
+/* dialog */
+.poodll_mediarecorderbox_readseed .poodll_dialogue_box .poodll_dialogue_content {
+	display: none;
+}
+.poodll_mediarecorderbox_readseed .poodll_dialogue_box span.devicesettings_select_label,.poodll_mediarecorderbox_readseed .poodll_dialogue_box .devicesettings_select {
+	font-size: small;
+	padding: 0px;
+	margin: 0px;
+}
+.poodll_mediarecorderbox_readseed  .poodll_close_modal {
+	height: 25px;
+}
+
+.poodll_mediarecorderbox_readseed  .filter_poodll_errordisplay {
+	font-size: 10px;
+	margin-top: 5px;
+}
+
 /*********************************************END****************************************/
 
 

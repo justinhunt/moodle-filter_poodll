@@ -3,7 +3,7 @@ define(['jquery','core/log'], function($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('Universal Uploader: initialising');
+    log.debug('Timer: initialising');
 
     return {
         increment: 1,
@@ -32,11 +32,31 @@ define(['jquery','core/log'], function($, log) {
             var self = this;
             this.finalseconds=0;
             if(this.initseconds > 0){this.increment=-1;}else{this.increment = 1;}
-            this.intervalhandle = setInterval(function(){
+            this.intervalhandle = this.customSetInterval(function(){
                     self.seconds = self.seconds + self.increment;
                     self.finalseconds=self.finalseconds+1;
                     self.callback();
             },1000);
+        },
+
+        //we use a custom set interval which self adjusts for inaccuracies.
+        customSetInterval: function(func, time){
+            var lastTime = Date.now(),
+            lastDelay = time,
+            outp = {};
+
+            function tick(){
+                var now = Date.now(),
+                    dTime = now - lastTime;
+
+                lastTime = now;
+                lastDelay = time + lastDelay - dTime;
+                outp.id = setTimeout(tick, lastDelay);
+                func();
+
+            }
+            outp.id = setTimeout(tick, time);
+            return outp;
         },
 
         disable: function(){
@@ -60,7 +80,7 @@ define(['jquery','core/log'], function($, log) {
         },
 
         stop: function(){
-            clearInterval(this.intervalhandle);
+            clearTimeout(this.intervalhandle.id);
         },
 
         reset: function(){

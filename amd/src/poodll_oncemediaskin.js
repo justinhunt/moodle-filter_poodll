@@ -306,7 +306,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 recanim.clear();
 
                 //timer and status bar
-               ip.timer.stop()
+               ip.timer.stop();
                self.update_status(controlbarid);
 
                //call upload right away

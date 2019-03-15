@@ -448,7 +448,7 @@ class awstools
 	}
 
     function stage_remote_process_job($host, $mediatype,$appid, $s3path, $s3outfilename,
-                                      $transcode,$transcoder,$transcribe,$subtitle, $language, $vocab, $notificationurl){
+                                      $transcode,$transcoder,$transcribe,$subtitle, $language, $vocab, $notificationurl,$sourcemimetype){
         $dbclient = $this->fetch_dynamoDBClient();
         $marshaler = new Marshaler();
         $tablename='poodll_jobs';
@@ -467,6 +467,7 @@ class awstools
         $itemarray['timecreated'] = date("Y-m-d H:i:s");
         $itemarray['expiretime'] = strtotime('+24 hours');
         $itemarray['notificationurl'] = $notificationurl;
+        $itemarray['sourcemimetype'] = $sourcemimetype;
 
         try {
             $dbclient->putItem([
