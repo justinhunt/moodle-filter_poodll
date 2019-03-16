@@ -56,6 +56,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 case "video/mpeg3": ext = "3gpp";break;
                 case "video/mp4": ext = "mp4";break;
                 case "video/webm": ext = "webm";break;
+                case "video/ogg": ext = "ogg";break;
             }
             return ext;
         },
@@ -111,6 +112,8 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             messageObject.type = "awaitingprocessing";
             messageObject.mediaurl = filename;
             messageObject.mediafilename = uploader.config.s3filename;
+            messageObject.sourcefilename = uploader.config.sourcefilename;
+            messageObject.sourcemimetype = uploader.config.sourcemimetype;
             messageObject.s3root = uploader.config.s3root;
             messageObject.id = uploader.config.id;
             messageObject.updatecontrol = uploader.config.updatecontrol;
@@ -185,6 +188,8 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 messageObject.type = "filesubmitted";
                 messageObject.mediaurl = uploader.config.s3root + uploader.config.s3filename;
                 messageObject.mediafilename = uploader.config.s3filename;
+                messageObject.sourcefilename = uploader.config.sourcefilename;
+                messageObject.sourcemimetype = uploader.config.sourcemimetype;
                 messageObject.s3root = uploader.config.s3root;
                 messageObject.id = uploader.config.id;
                 messageObject.updatecontrol = uploader.config.updatecontrol;
@@ -241,14 +246,14 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         },
 
         // upload Media file to wherever
-        uploadFile: function(filedata,filetype) {
+        uploadFile: function(filedata,sourcemimetype) {
 
             var xhr = new XMLHttpRequest();
             var config = this.config;
             var uploader = this;
 
             //get the file extension from the filetype
-            var ext = this.fetchFileExtension(filetype);
+            var sourceext = this.fetchFileExtension(sourcemimetype);
 
             //is this an iframe embed
             if(typeof config.iframeembed == 'undefined'){
@@ -264,10 +269,14 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             //alert user that we are now uploading
             this.upskin.showMessage(M.util.get_string('recui_uploading', 'filter_poodll'),'recui_uploading');
 
+            //init sourcemimetype and sourcefilename
+            uploader.config.sourcemimetype = sourcemimetype;
+            uploader.config.sourcefilename = upload.config.s3filename;
+
             xhr.onreadystatechange = function(e){
                 if(using_s3 && this.readyState===4) {
                     if (config.iframeembed) {
-                        uploader.postprocess_uploadfromiframeembed(uploader,ext);
+                        uploader.update_filenames(uploader,sourceext);
                     } else {
                         //ping Moodle and inform that we have a new file
                         uploader.postprocess_s3_upload(uploader);
@@ -290,7 +299,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                     //We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
                     //spent hours tracking that down ...justin 20121012
                     params += "&paramone=" + encodeURIComponent(filedata);
-                    params += "&paramtwo=" + ext;
+                    params += "&paramtwo=" + sourceext;
                     params += "&paramthree=" + config.mediatype;
                     params += "&requestid=" + config.widgetid;
                     params += "&contextid=" + config.p2;
@@ -315,7 +324,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                         //We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
                         //spent hours tracking that down ...justin 20121012
                         params += "&paramone=" + encodeURIComponent(base64filedata);
-                        params += "&paramtwo=" + ext;
+                        params += "&paramtwo=" + sourceext;
                         params += "&paramthree=" + config.mediatype;
                         params += "&requestid=" + config.widgetid;
                         params += "&contextid=" + config.p2;
@@ -334,31 +343,31 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             }//end of if using_s3
         },
 
-        postprocess_uploadfromiframeembed: function(uploader,ext){
+        update_filenames: function(uploader,sourceext){
             var config = uploader.config;
-            var xhr = new XMLHttpRequest();
-            var that = this;
 
-            //now its a bit hacky, but if the user is NOT transcoding,
-            // only now do we know the true final file extension (ext)
-            //we just alerted the cloud poodll api service, and now we need to change it here(default is mp3).
-            //the actual 'filename' we have is part of the uploaded URL, so changing that is risky. ..
-            //  .... we might not find the uploaded file to postprocess
-            if(!config.transcode){
-                switch(config.mediatype){
-                    case 'audio':
-                        uploader.config.s3filename = config.s3filename.replace('.mp3', '.' + ext);
+            //now its a bit hacky, but
+            // only now do we know the true final file extension (ext) and mimetype of unconv. media
+            // so we want to save that and if the user is NOT transcoding,
+            //we want to change the s3filename from the default mp4/mp3 to whatever the mimetype inidicates, ie sourceext
+
+            switch(config.mediatype){
+                case 'audio':
+                    //source info
+                    uploader.config.sourcefilename = config.s3filename.replace('.mp3', '.' + sourceext);
+                    if(!config.transcode) {
+                        uploader.config.s3filename = uploader.config.sourcefilename;
+                        //do we need this, I think its old and noone uses it.
                         uploader.config.cloudfilename = uploader.config.s3filename;
-                        break;
-                    case 'video':
-                        uploader.config.s3filename = config.s3filename.replace('.mp4', '.' + ext);
-                        break;
-                }
+                    }
+                    break;
+                case 'video':
+                    uploader.config.sourcefilename = config.s3filename.replace('.mp4', '.' + sourceext);
+                    if(!config.transcode) {
+                        uploader.config.s3filename = uploader.config.sourcefilename;
+                    }
+                    break;
             }
-            //we now do cloud post processing from lambda, so we just return here.
-            return;
-
-
         },
 
         postprocess_s3_upload: function(uploader){
