@@ -271,7 +271,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
 
             //init sourcemimetype and sourcefilename
             uploader.config.sourcemimetype = sourcemimetype;
-            uploader.config.sourcefilename = upload.config.s3filename;
+            uploader.config.sourcefilename = uploader.config.s3filename;
 
             xhr.onreadystatechange = function(e){
                 if(using_s3 && this.readyState===4) {
