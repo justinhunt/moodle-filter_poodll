@@ -1023,16 +1023,28 @@ class poodlltools
 
         $ret = false;
         $awstools = new \filter_poodll\awstools();
+
+        $sleepcount = 0;
+        $maxsleeps = 2;
+        $file_not_there = true;
         
-        //does file exist on s3 in bucket
-		if($awstools->does_file_exist($mediatype,$infilename,'in' )){
-			$awstools->create_one_transcoding_job($mediatype,$infilename,$outfilename);
-			$ret = true;
-        }else {
-            if ($USER->id) {
-                self::send_debug_data(SELF::LOG_NOTHING_TO_TRANSCODE, 'Nothing to transcode:' . $infilename, $USER->id, \context_user::instance($USER->id)->id);
+        //does file exist on s3 in bucket, look for it a few times, there can be delays and fast clickin' types can trigger
+        // a race condition
+        while($sleepcount<=$maxsleeps && $file_not_there){
+            if($awstools->does_file_exist($mediatype,$infilename,'in' )){
+                $file_not_there=false;
+                $awstools->create_one_transcoding_job($mediatype,$infilename,$outfilename);
+                $ret = true;
+            }else{
+                $sleepcount++;
+                sleep(1);
             }
-		}
+        }
+
+		//if we still do not have our file, all is lost. But if we have a user we can at least log an error.
+        if ($file_not_there && $USER->id) {
+            self::send_debug_data(SELF::LOG_NOTHING_TO_TRANSCODE, 'Nothing to transcode:' . $infilename, $USER->id, \context_user::instance($USER->id)->id);
+        }
         return $ret;
 	}
         
