@@ -373,6 +373,26 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
 
         postprocess_s3_upload: function(uploader){
             var config = uploader.config;
+            const formData = new FormData();
+            formData.append("datatype", "handles3upload");
+            formData.append("contextid", config.p2);
+            formData.append("component", config.p3);
+            formData.append("filearea", config.p4);
+            formData.append("itemid", config.p5);
+            formData.append("filename", config.filename);
+            formData.append("mediatype", config.mediatype);
+            //navigator beacon polyfill
+            if (!navigator.sendBeacon) {
+                navigator.sendBeacon = function(url, thedata) {
+                    window.fetch(url, {method: 'POST', body: thedata, credentials: 'include'});
+                };
+            }
+            //we use navigator beacon over xhr because there are times believe it or not, when a page load happens and that kills
+            //the request. causing lost files
+            navigator.sendBeacon(M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', formData);
+            return;
+
+/*
             var xhr = new XMLHttpRequest();
             var that = this;
 
@@ -399,9 +419,8 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
             xhr.setRequestHeader("Cache-Control", "no-cache");
-            //  xhr.setRequestHeader("Content-length", params.length);
-            //  xhr.setRequestHeader("Connection", "close");
             xhr.send(params);
+*/
 
         },
 
