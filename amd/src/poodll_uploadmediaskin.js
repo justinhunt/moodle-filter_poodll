@@ -208,7 +208,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
         FileSelectHandler: function(files,uploader) {
 
             // process all File objects
-            for (var i = 0, file; file = files[i]; i++) {;
+            for (var i = 0, file; file = files[i]; i++) {
                 uploader.uploadBlob(file,file.type);
             }
 

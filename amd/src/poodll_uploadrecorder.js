@@ -3,7 +3,7 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL upload Recorder: initialising');
+    log.debug('PoodLL Upload Recorder: initialising');
 
     return {
     
@@ -79,7 +79,6 @@ define(['jquery','core/log', 'filter_poodll/uploader'], function($, log, uploade
         
          // handle audio/video/image file uploads for Mobile
         register_events: function(widgetid) {
-
 			var self =this;
             $('#' + widgetid + '_poodllfileselect').on('change',function(e){
                     self.FileSelectHandler(e,widgetid); }

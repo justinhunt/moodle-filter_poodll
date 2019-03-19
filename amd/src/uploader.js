@@ -50,6 +50,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 case "audio/ogg": ext = "ogg";break;
                 case "video/quicktime": ext = "mov";break;
                 case "audio/mpeg3": ext = "mp3";break;
+                case "audio/mp3": ext = "mp3";break;
                 case "audio/webm": ext = "webm";break;
                 case "audio/x-mpeg-3": ext = "mp3";break;
                 case "audio/3gpp": ext = "3gpp";break;
