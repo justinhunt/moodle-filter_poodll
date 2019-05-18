@@ -466,11 +466,12 @@ class awstools
                 case 2:
                     $itemarray['transcribe'] = 'googlecloudspeech';
                     break;
+                default:
+                    $itemarray['transcribe'] = 'no';
             }
         }else{
             $itemarray['transcribe'] = 'no';
         }
-        $itemarray['transcribe'] = $transcribe ? 'yes' : 'no';
         $itemarray['subtitle'] = $subtitle ? 'yes' : 'no';
         $itemarray['language'] = $language;
         $itemarray['vocab'] = $vocab;
