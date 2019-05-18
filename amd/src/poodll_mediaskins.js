@@ -7,12 +7,13 @@ define(['jquery', 'core/log',
     'filter_poodll/poodll_shadowmediaskin',
     'filter_poodll/poodll_splitmediaskin',
     'filter_poodll/poodll_fbmediaskin',
+    'filter_poodll/poodll_pushmediaskin',
     'filter_poodll/poodll_readaloudmediaskin',
     'filter_poodll/poodll_readseedmediaskin',
     'filter_poodll/poodll_oncemediaskin',
     'filter_poodll/poodll_freshmediaskin',
     'filter_poodll/poodll_uploadmediaskin',
-    'filter_poodll/poodll_warningmediaskin'], function($, log, baseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin, readaloudskin, readseedskin, onceskin, freshskin, uploadskin, warningskin) {
+    'filter_poodll/poodll_warningmediaskin'], function($, log, baseskin, onetwothreeskin, goldskin, bmrskin, shadowskin,splitskin, fluencybuilderskin, pushskin, readaloudskin,readseedskin, onceskin, freshskin, uploadskin, warningskin) {
 
     "use strict"; // jshint ;_;
 
@@ -38,6 +39,9 @@ define(['jquery', 'core/log',
                     break;
                 case 'fluencybuilder':
                     the_skin = fluencybuilderskin.clone();
+                    break;
+                case 'push':
+                    the_skin = pushskin.clone();
                     break;
                 case 'readaloud':
                     the_skin = readaloudskin.clone();

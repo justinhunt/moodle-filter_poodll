@@ -5,7 +5,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
 
     "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Read Aloud Skin: initialising');
+    log.debug('PoodLL Read Seed Skin: initialising');
 
     return {
     
@@ -245,7 +245,7 @@ define(['jquery','jqueryui','core/log','filter_poodll/utils_amd', 'filter_poodll
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_readseed poodll_test-recording_readseed">' + ss_testlabel +  '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_readseed poodll_stop-recording_readseed">' +  ss_stoplabel +  '</button>';
                 */
-                controls += status,
+                controls += status;
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
                 //<i class="fa fa-stop" aria-hidden="true"></i>

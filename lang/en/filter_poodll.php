@@ -182,6 +182,7 @@ $string['recui_finished'] ='Finished';
 $string['recui_playing'] ='Playing: ';
 $string['recui_recording'] ='Recording: ';
 $string['recui_unsupportedbrowser'] ='This browser can not record here. Sorry.<br>Please try Google Chrome on a Desktop PC.';
+$string['recui_recording'] ='Push to Speak';
 
 $string['insert'] ='Insert';
 $string['cancel'] ='Cancel';

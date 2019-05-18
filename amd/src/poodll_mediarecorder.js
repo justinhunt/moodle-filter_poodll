@@ -92,6 +92,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             ip.config.hermes  = hermes.clone();
             ip.config.hermes.init(config.id, config.allowedURL,config.iframeembed);
 
+            // init our skin
+            var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
+
             //Speech recognition
             if(config.speechevents && ip.speechrec.supports_browser() ){
                 if(!config.language){config.language='en-US';}
@@ -101,11 +104,12 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     messageObject.type="speech";
                     messageObject.capturedspeech = speechtext;
                     ip.config.hermes.postMessage(messageObject);
+                    //send message to our skin
+                    if(theskin.hasOwnProperty('onfinalspeechcapture')){
+                        theskin.onfinalspeechcapture(speechtext);
+                    }
                 };
             }
-
-            // init our skin
-            var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
 
             // add callbacks for uploadsuccess and upload failure
             ip.config.onuploadsuccess = function(widgetid) { that.onUploadSuccess(widgetid, theskin); };

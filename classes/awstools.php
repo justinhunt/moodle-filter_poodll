@@ -458,6 +458,18 @@ class awstools
         $itemarray['appid'] = $appid;
         $itemarray['transcode'] = $transcode ? 'yes' : 'no';
         $itemarray['transcoder'] = $transcoder;
+        if($transcribe){
+            switch($transcribe){
+                case 1:
+                    $itemarray['transcribe'] = 'amazontranscribe';
+                    break;
+                case 2:
+                    $itemarray['transcribe'] = 'googlecloudspeech';
+                    break;
+            }
+        }else{
+            $itemarray['transcribe'] = 'no';
+        }
         $itemarray['transcribe'] = $transcribe ? 'yes' : 'no';
         $itemarray['subtitle'] = $subtitle ? 'yes' : 'no';
         $itemarray['language'] = $language;

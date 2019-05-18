@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.21(Build unreleased)
+-added pushtospeak recorder
+
 Version 3.1.20(Build 2019031902)
 -Another stability tweak to support situation where upload/postprocess and page unload overlap
 

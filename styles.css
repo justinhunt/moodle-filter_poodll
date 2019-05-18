@@ -309,6 +309,181 @@ Base Media skin Setting Integration
 .poodll_mediarecorderholder_gold .poodll_mediarecorderbox_gold button:focus {
     outline-style: none;
 }
+
+/*********************************************END****************************************/
+
+/*
+	The PUSH Audio Recorder
+*/
+
+.poodll_mediarecorderholder_push{
+	position:relative;
+}
+
+.poodll_mediarecorderholder_push .settingsicon{
+	position: absolute;
+	bottom: 75px;
+	right: 250px;
+}
+.poodll_mediarecorderholder_push .settingsicon button{
+	border: none !important;
+	background: transparent !important;
+}
+.poodll_mediarecorderholder_push .settingsicon button i{
+	font-size: 18px !important;
+	color: #333 !important;
+}
+.poodll_mediarecorderholder_push .settingsicon button:focus{
+	border: none;
+	background: transparent;
+}
+.poodll_mediarecorderholder_push .settingsicon button i:hover{
+	cursor: pointer;
+}
+
+.poodll_mediarecorder_audio .poodll_mediarecorder_playcanvas_push {
+	/* dimensions need to be declared on component */
+	/* height: 180px; */
+	/* width: 50px; */
+
+}
+
+.poodll_mediarecorder_audio .poodll_mediarecorder_caption_push {
+	font-size: 1.2em;
+	/*font-weight: normal;*/
+}
+
+.poodll_mediarecorder_audio .poodll_mediarecorder_caption_push:before {
+	font-family: FontAwesome;
+	content: "\F130";
+	padding-right: 0.5em;
+}
+
+.poodll_mediarecorderbox_push.poodll_mediarecorder_push_testbuttonready {
+	color:#444;
+	background: #CBF2DC;
+	border-color: #3e7327;
+}
+.poodll_mediarecorderbox_push.poodll_mediarecorder_push_testbuttonrecording {
+	color:#444;
+	background: #CBF2DC;
+	border-color: #3e7327;
+}
+.poodll_mediarecorderbox_push.poodll_mediarecorder_push_startbuttonready {
+	color:#fffa90;
+	background: #3ea8ef;
+	border-color: #2b78e4;
+}
+.poodll_mediarecorderbox_push.poodll_mediarecorder_push_startbuttoncountdown {
+	color:#fffa90;
+	background: #3ea8ef;
+	border-color: #2b78e4;
+}
+.poodll_mediarecorderbox_push.poodll_mediarecorder_push_startbuttonrecording {
+	color:#fffa90;
+	background: #e06c6c;
+	border-color: #e41426;
+}
+.poodll_mediarecorderbox_push.poodll_mediarecorder_push_uploading {
+	color:#444;
+	background: #eeeeee;
+	border-color: #3e7327;
+}
+.poodll_mediarecorderbox_push.poodll_mediarecorder_push_allfinished {
+	color:#444;
+	background: #eeeeee;
+	border-color: #3e7327;
+}
+/* div button styling */
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_push {
+	display: flex;
+	border-style: solid;
+	border-width: 2px;
+	border-radius: 5px;
+	align-items: center;
+	justify-content: center;
+	box-shadow: 0 0 5px -1px rgba(0,0,0,0.2);
+	cursor:pointer;
+	vertical-align:middle;
+	padding: 5px;
+	text-align: center;
+	max-width: 210px;
+	min-width: 210px;
+	max-height: 45px;
+	min-height: 45px;
+}
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_push.push_canclick:active {
+	box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
+	font-weight: bold;
+	cursor: pointer;
+}
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_push.push_canclick:hover {
+	/* -webkit-transform: scale(1.1); */
+	box-shadow: 0 0 5px -1px rgba(0,0,0,0.6);
+	font-weight: bold;
+	cursor: pointer;
+}
+/* end of button styling */
+
+.poodll_mediarecorderbox_push canvas{
+	margin-bottom: 5px;
+}
+button.poodll_mediarecorder_button_push {
+	transition: filter 0.5s ease;
+	margin: auto;
+	width: 180px;
+	color: #fff;
+	background-color: #00acdf;
+	border-color: #00acdf;
+	background-image: none;
+	display: inline-block;
+	font-weight: 400;
+	line-height: 1.25;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	cursor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	border: 1px solid transparent;
+	padding: .5rem 1rem;
+	font-size: 0.6rem;
+	border-radius: .25rem;
+}
+
+.poodll_mediarecorderholder_push .poodll_mediarecorderbox_push{
+	position: relative;
+}
+.poodll_mediarecorderholder_push .poodll_mediarecorderbox_push .pmr_disabled{
+	display: none;
+}
+
+.poodll_mediarecorderholder_push .poodll_mediarecorderbox_push button:focus {
+	outline-style: none;
+}
+
+/* dialog */
+.poodll_mediarecorderbox_push .poodll_dialogue_box .poodll_dialogue_content {
+	display: none;
+}
+.poodll_mediarecorderbox_push .poodll_dialogue_box span.devicesettings_select_label,.poodll_mediarecorderbox_push .poodll_dialogue_box .devicesettings_select {
+	font-size: small;
+	padding: 0px;
+	margin: 0px;
+}
+.poodll_mediarecorderbox_push  .poodll_close_modal {
+	height: 25px;
+}
+
+.poodll_mediarecorderbox_push  .filter_poodll_errordisplay {
+	font-size: 10px;
+	margin-top: 5px;
+}
+/*********************************************END****************************************/
+
+
 /*********************************************END****************************************/
 
 /*

@@ -1437,7 +1437,6 @@ class poodlltools
         $widgetopts->callbackjs = $callbackjs;
         $widgetopts->quicktimesignedurl =$quicktime_signed_url;
 
-
 		//store the filename
 		$widgetopts->filename = $filename;
 		$widgetopts->s3filename = $s3filename;
