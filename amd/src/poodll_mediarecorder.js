@@ -514,9 +514,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 //save a reference to the stream
                 self.laststream[controlbarid]=stream;
 
+                //set encoder
+                var encoder='auto';
+                if(ip.config.hasOwnProperty('encoder')){
+                    encoder=ip.config.encoder;
+                }
+
                 // get blob after specific time interval
                 ip.mediaRecorder = poodll_msr;
-                ip.mediaRecorder.init( stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype); // new MediaStreamRecorder(stream);
+                ip.mediaRecorder.init( stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype,encoder); // new MediaStreamRecorder(stream);
                 ip.mediaRecorder.mimeType = ip.audiomimetype;
                 ip.mediaRecorder.audioChannels = 1;
 
@@ -559,9 +565,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 //restream preview video_player
                 self.restream_preview_video_player(controlbarid,stream);
 
+                //set encoder
+                var encoder='auto';
+                if(ip.config.hasOwnProperty('encoder')){
+                    encoder=ip.config.encoder;
+                }
+
                 //choose and turn on the recorder
                 ip.mediaRecorder = poodll_msr;
-                ip.mediaRecorder.init(stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype);
+                ip.mediaRecorder.init(stream, ip.audioctx,ip.audioanalyser,ip.config.mediatype,encoder);
 
 
 

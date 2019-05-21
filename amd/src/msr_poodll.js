@@ -24,7 +24,7 @@ define(['jquery',
 
         // init the poodll recorder
         // basically we check the users preferred recorders and if the rec supports the browser
-        init: function(mediaStream,audioctx,audioanalyser,mediaType) {
+        init: function(mediaStream,audioctx,audioanalyser,mediaType,encoder) {
                 //we want to use the same context for absolutely everything
                 //so we pass it around. analyser should be available to skins but we set it up here
                 this.audioctx = audioctx;
@@ -32,8 +32,21 @@ define(['jquery',
 
 
             //this is where we choose which recorder/encoder set we will use
-            //if browser has mediarecorder, lets use it! (FF/Chrome)
-            if (typeof MediaRecorder !== 'undefined') {
+            if(encoder!='auto') {
+                switch(encoder){
+                    case 'stereoaudio':
+                        if(mediaType == 'audio'){
+                            this.therecorder = stereoaudiorecorder;
+                        }else{
+                            this.therecorder =  plainrecorder;
+                        }
+                        break;
+                    case 'plain':
+                    default:
+                        this.therecorder =  plainrecorder;
+                }
+                //if browser has mediarecorder, lets use it! (FF/Chrome)
+            }else if (typeof MediaRecorder !== 'undefined') {
                 this.therecorder =  plainrecorder;
                 log.debug('using plain recorder');
 
