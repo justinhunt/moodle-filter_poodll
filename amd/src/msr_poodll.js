@@ -30,7 +30,6 @@ define(['jquery',
                 this.audioctx = audioctx;
                 this.audioanalyser= audioanalyser;
 
-
             //this is where we choose which recorder/encoder set we will use
             if(encoder!='auto') {
                 switch(encoder){

@@ -1,7 +1,10 @@
 Change List
 =========
-Version 3.1.21(Build unreleased)
+Version 3.1.21(Build 2019052000)
 -added pushtospeak recorder
+-added better speech cards
+-added hints for audio encoder
+-support Moodle 3.7
 
 Version 3.1.20(Build 2019031902)
 -Another stability tweak to support situation where upload/postprocess and page unload overlap
