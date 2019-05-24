@@ -80,7 +80,7 @@ function fetchJSWidgetCode($widget,$params,$width,$height, $bgcolor="#FFFFFF"){
 		$paramobj->height = $height;
 		$paramobj->id = $widgetid;
 		$paramobj->accessible = true;
-		$paramobj->appenddivid = $widgetid + 'Container';
+		$paramobj->appenddivid = $widgetid . 'Container';
 		$retjson = json_encode($paramobj);
 		return $retjson;
 	}
