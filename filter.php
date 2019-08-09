@@ -104,10 +104,18 @@ class filter_poodll extends moodle_text_filter {
     	//I just gave up and do it myself and stuff it in $this->courseconfig . bug?? Justin 20150106
     	if($this->localconfig && !empty($this->localconfig)){
     		$this->courseconfig = $this->localconfig;
-    	}
-    	if(!$this->courseconfig){
-    		$this->courseconfig = filter_get_local_config('poodll', context_course::instance($COURSE->id)->id);
-    	}
+		}
+
+        if ($this->courseconfig === null) {
+            $cache = \cache::make_from_params(\cache_store::MODE_REQUEST, 'filter_poodll', 'local_config');
+            $contextid = context_course::instance($COURSE->id)->id;
+            $data = $cache->get($contextid);
+            if ($data === false) {
+                $data = filter_get_local_config('poodll', $contextid);
+                $cache->set($contextid, $data);
+            }
+            $this->courseconfig = $data;
+        }
     	
 		if($this->courseconfig && isset($this->courseconfig[$prop]) && $this->courseconfig[$prop] != 'sitedefault') {
 			return $this->courseconfig[$prop];
