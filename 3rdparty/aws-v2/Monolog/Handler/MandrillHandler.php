@@ -18,19 +18,17 @@ use Monolog\Logger;
  *
  * @author Adam Nicholson <adamnicholson10@gmail.com>
  */
-class MandrillHandler extends MailHandler
-{
+class MandrillHandler extends MailHandler {
     protected $message;
     protected $apiKey;
 
     /**
-     * @param string                  $apiKey  A valid Mandrill API key
+     * @param string $apiKey A valid Mandrill API key
      * @param callable|\Swift_Message $message An example message for real messages, only the body will be replaced
-     * @param int                     $level   The minimum logging level at which this handler will be triggered
-     * @param Boolean                 $bubble  Whether the messages that are handled can bubble up the stack or not
+     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
      */
-    public function __construct($apiKey, $message, $level = Logger::ERROR, $bubble = true)
-    {
+    public function __construct($apiKey, $message, $level = Logger::ERROR, $bubble = true) {
         parent::__construct($level, $bubble);
 
         if (!$message instanceof \Swift_Message && is_callable($message)) {
@@ -46,8 +44,7 @@ class MandrillHandler extends MailHandler
     /**
      * {@inheritdoc}
      */
-    protected function send($content, array $records)
-    {
+    protected function send($content, array $records) {
         $message = clone $this->message;
         $message->setBody($content);
         $message->setDate(time());
@@ -58,9 +55,9 @@ class MandrillHandler extends MailHandler
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query(array(
-            'key' => $this->apiKey,
-            'raw_message' => (string) $message,
-            'async' => false,
+                'key' => $this->apiKey,
+                'raw_message' => (string) $message,
+                'async' => false,
         )));
 
         Curl\Util::execute($ch);

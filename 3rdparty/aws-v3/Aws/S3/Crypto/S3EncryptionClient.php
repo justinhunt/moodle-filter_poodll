@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3\Crypto;
 
 use Aws\HashingStream;
@@ -18,8 +19,7 @@ use GuzzleHttp\Psr7;
  * Provides a wrapper for an S3Client that supplies functionality to encrypt
  * data on putObject[Async] calls and decrypt data on getObject[Async] calls.
  */
-class S3EncryptionClient extends AbstractCryptoClient
-{
+class S3EncryptionClient extends AbstractCryptoClient {
     use EncryptionTrait, DecryptionTrait, CipherBuilderTrait, CryptoParamsTrait;
 
     private $client;
@@ -34,15 +34,14 @@ class S3EncryptionClient extends AbstractCryptoClient
      *                                           files for metadata storage.
      */
     public function __construct(
-        S3Client $client,
-        $instructionFileSuffix = null
+            S3Client $client,
+            $instructionFileSuffix = null
     ) {
         $this->client = $client;
         $this->instructionFileSuffix = $instructionFileSuffix;
     }
 
-    private static function getDefaultStrategy()
-    {
+    private static function getDefaultStrategy() {
         return new HeadersMetadataStrategy();
     }
 
@@ -82,8 +81,7 @@ class S3EncryptionClient extends AbstractCryptoClient
      * @throws \InvalidArgumentException Thrown when arguments above are not
      *                                   passed or are passed incorrectly.
      */
-    public function putObjectAsync(array $args)
-    {
+    public function putObjectAsync(array $args) {
         $provider = $this->getMaterialsProvider($args);
         unset($args['@MaterialsProvider']);
 
@@ -96,42 +94,41 @@ class S3EncryptionClient extends AbstractCryptoClient
         $envelope = new MetadataEnvelope();
 
         return Promise\promise_for($this->encrypt(
-            Psr7\stream_for($args['Body']),
-            $args['@CipherOptions'] ?: [],
-            $provider,
-            $envelope
+                Psr7\stream_for($args['Body']),
+                $args['@CipherOptions'] ?: [],
+                $provider,
+                $envelope
         ))->then(
-            function ($encryptedBodyStream) use ($args) {
-                $hash = new PhpHash('sha256');
-                $hashingEncryptedBodyStream = new HashingStream(
-                    $encryptedBodyStream,
-                    $hash,
-                    self::getContentShaDecorator($args)
-                );
-                return [$hashingEncryptedBodyStream, $args];
-            }
-        )->then(
-            function ($putObjectContents) use ($strategy, $envelope) {
-                list($bodyStream, $args) = $putObjectContents;
-                if ($strategy === null) {
-                    $strategy = self::getDefaultStrategy();
+                function($encryptedBodyStream) use ($args) {
+                    $hash = new PhpHash('sha256');
+                    $hashingEncryptedBodyStream = new HashingStream(
+                            $encryptedBodyStream,
+                            $hash,
+                            self::getContentShaDecorator($args)
+                    );
+                    return [$hashingEncryptedBodyStream, $args];
                 }
-
-                $updatedArgs = $strategy->save($envelope, $args);
-                $updatedArgs['Body'] = $bodyStream;
-                return $updatedArgs;
-            }
         )->then(
-            function ($args) {
-                unset($args['@CipherOptions']);
-                return $this->client->putObjectAsync($args);
-            }
+                function($putObjectContents) use ($strategy, $envelope) {
+                    list($bodyStream, $args) = $putObjectContents;
+                    if ($strategy === null) {
+                        $strategy = self::getDefaultStrategy();
+                    }
+
+                    $updatedArgs = $strategy->save($envelope, $args);
+                    $updatedArgs['Body'] = $bodyStream;
+                    return $updatedArgs;
+                }
+        )->then(
+                function($args) {
+                    unset($args['@CipherOptions']);
+                    return $this->client->putObjectAsync($args);
+                }
         );
     }
 
-    private static function getContentShaDecorator(&$args)
-    {
-        return function ($hash) use (&$args) {
+    private static function getContentShaDecorator(&$args) {
+        return function($hash) use (&$args) {
             $args['ContentSHA256'] = bin2hex($hash);
         };
     }
@@ -174,8 +171,7 @@ class S3EncryptionClient extends AbstractCryptoClient
      * @throws \InvalidArgumentException Thrown when arguments above are not
      *                                   passed or are passed incorrectly.
      */
-    public function putObject(array $args)
-    {
+    public function putObject(array $args) {
         return $this->putObjectAsync($args)->wait();
     }
 
@@ -215,8 +211,7 @@ class S3EncryptionClient extends AbstractCryptoClient
      * @throws \InvalidArgumentException Thrown when required arguments are not
      *                                   passed or are passed incorrectly.
      */
-    public function getObjectAsync(array $args)
-    {
+    public function getObjectAsync(array $args) {
         $provider = $this->getMaterialsProvider($args);
         unset($args['@MaterialsProvider']);
 
@@ -232,48 +227,48 @@ class S3EncryptionClient extends AbstractCryptoClient
         }
 
         $promise = $this->client->getObjectAsync($args)
-            ->then(
-                function ($result) use (
-                    $provider,
-                    $instructionFileSuffix,
-                    $strategy,
-                    $args
-                ) {
-                    if ($strategy === null) {
-                        $strategy = $this->determineGetObjectStrategy(
-                            $result,
-                            $instructionFileSuffix
-                        );
-                    }
+                ->then(
+                        function($result) use (
+                                $provider,
+                                $instructionFileSuffix,
+                                $strategy,
+                                $args
+                        ) {
+                            if ($strategy === null) {
+                                $strategy = $this->determineGetObjectStrategy(
+                                        $result,
+                                        $instructionFileSuffix
+                                );
+                            }
 
-                    $envelope = $strategy->load($args + [
-                        'Metadata' => $result['Metadata']
-                    ]);
+                            $envelope = $strategy->load($args + [
+                                            'Metadata' => $result['Metadata']
+                                    ]);
 
-                    $provider = $provider->fromDecryptionEnvelope($envelope);
+                            $provider = $provider->fromDecryptionEnvelope($envelope);
 
-                    $result['Body'] = $this->decrypt(
-                        $result['Body'],
-                        $provider,
-                        $envelope,
-                        isset($args['@CipherOptions'])
-                            ? $args['@CipherOptions']
-                            : []
-                    );
-                    return $result;
-                }
-            )->then(
-                function ($result) use ($saveAs) {
-                    if (!empty($saveAs)) {
-                        file_put_contents(
-                            $saveAs,
-                            (string)$result['Body'],
-                            LOCK_EX
-                        );
-                    }
-                    return $result;
-                }
-            );
+                            $result['Body'] = $this->decrypt(
+                                    $result['Body'],
+                                    $provider,
+                                    $envelope,
+                                    isset($args['@CipherOptions'])
+                                            ? $args['@CipherOptions']
+                                            : []
+                            );
+                            return $result;
+                        }
+                )->then(
+                        function($result) use ($saveAs) {
+                            if (!empty($saveAs)) {
+                                file_put_contents(
+                                        $saveAs,
+                                        (string) $result['Body'],
+                                        LOCK_EX
+                                );
+                            }
+                            return $result;
+                        }
+                );
 
         return $promise;
     }
@@ -310,8 +305,7 @@ class S3EncryptionClient extends AbstractCryptoClient
      * @throws \InvalidArgumentException Thrown when arguments above are not
      *                                   passed or are passed incorrectly.
      */
-    public function getObject(array $args)
-    {
+    public function getObject(array $args) {
         return $this->getObjectAsync($args)->wait();
     }
 }

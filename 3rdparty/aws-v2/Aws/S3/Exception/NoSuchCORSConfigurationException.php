@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified bucket does not have a CORs configuration.
  */
-class NoSuchCORSConfigurationException extends S3Exception {}
+class NoSuchCORSConfigurationException extends S3Exception {
+}

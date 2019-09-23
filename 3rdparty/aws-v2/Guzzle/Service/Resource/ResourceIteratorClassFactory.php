@@ -11,8 +11,7 @@ use Guzzle\Service\Command\CommandInterface;
  * root namespace using the name of a {@see CommandInterface} object as a convention for determining the name of an
  * iterator class. The command name is converted to CamelCase and Iterator is appended (e.g. abc_foo => AbcFoo).
  */
-class ResourceIteratorClassFactory extends AbstractResourceIteratorFactory
-{
+class ResourceIteratorClassFactory extends AbstractResourceIteratorFactory {
     /** @var array List of namespaces used to look for classes */
     protected $namespaces;
 
@@ -20,11 +19,10 @@ class ResourceIteratorClassFactory extends AbstractResourceIteratorFactory
     protected $inflector;
 
     /**
-     * @param string|array       $namespaces List of namespaces for iterator objects
-     * @param InflectorInterface $inflector  Inflector used to resolve class names
+     * @param string|array $namespaces List of namespaces for iterator objects
+     * @param InflectorInterface $inflector Inflector used to resolve class names
      */
-    public function __construct($namespaces = array(), InflectorInterface $inflector = null)
-    {
+    public function __construct($namespaces = array(), InflectorInterface $inflector = null) {
         $this->namespaces = (array) $namespaces;
         $this->inflector = $inflector ?: Inflector::getDefault();
     }
@@ -36,15 +34,13 @@ class ResourceIteratorClassFactory extends AbstractResourceIteratorFactory
      *
      * @return self
      */
-    public function registerNamespace($namespace)
-    {
+    public function registerNamespace($namespace) {
         array_unshift($this->namespaces, $namespace);
 
         return $this;
     }
 
-    protected function getClassName(CommandInterface $command)
-    {
+    protected function getClassName(CommandInterface $command) {
         $iteratorName = $this->inflector->camel($command->getName()) . 'Iterator';
 
         // Determine the name of the class to load

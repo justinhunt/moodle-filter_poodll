@@ -20,8 +20,7 @@ use Monolog\Formatter\LineFormatter;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-abstract class AbstractHandler implements HandlerInterface
-{
+abstract class AbstractHandler implements HandlerInterface {
     protected $level = Logger::DEBUG;
     protected $bubble = true;
 
@@ -32,11 +31,10 @@ abstract class AbstractHandler implements HandlerInterface
     protected $processors = array();
 
     /**
-     * @param int     $level  The minimum logging level at which this handler will be triggered
+     * @param int $level The minimum logging level at which this handler will be triggered
      * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
      */
-    public function __construct($level = Logger::DEBUG, $bubble = true)
-    {
+    public function __construct($level = Logger::DEBUG, $bubble = true) {
         $this->setLevel($level);
         $this->bubble = $bubble;
     }
@@ -44,16 +42,14 @@ abstract class AbstractHandler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function isHandling(array $record)
-    {
+    public function isHandling(array $record) {
         return $record['level'] >= $this->level;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function handleBatch(array $records)
-    {
+    public function handleBatch(array $records) {
         foreach ($records as $record) {
             $this->handle($record);
         }
@@ -64,17 +60,16 @@ abstract class AbstractHandler implements HandlerInterface
      *
      * This will be called automatically when the object is destroyed
      */
-    public function close()
-    {
+    public function close() {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function pushProcessor($callback)
-    {
+    public function pushProcessor($callback) {
         if (!is_callable($callback)) {
-            throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method), '.var_export($callback, true).' given');
+            throw new \InvalidArgumentException('Processors must be valid callables (callback or object with an __invoke method), ' .
+                    var_export($callback, true) . ' given');
         }
         array_unshift($this->processors, $callback);
 
@@ -84,8 +79,7 @@ abstract class AbstractHandler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function popProcessor()
-    {
+    public function popProcessor() {
         if (!$this->processors) {
             throw new \LogicException('You tried to pop from an empty processor stack.');
         }
@@ -96,8 +90,7 @@ abstract class AbstractHandler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function setFormatter(FormatterInterface $formatter)
-    {
+    public function setFormatter(FormatterInterface $formatter) {
         $this->formatter = $formatter;
 
         return $this;
@@ -106,8 +99,7 @@ abstract class AbstractHandler implements HandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function getFormatter()
-    {
+    public function getFormatter() {
         if (!$this->formatter) {
             $this->formatter = $this->getDefaultFormatter();
         }
@@ -121,8 +113,7 @@ abstract class AbstractHandler implements HandlerInterface
      * @param  int|string $level Level or level name
      * @return self
      */
-    public function setLevel($level)
-    {
+    public function setLevel($level) {
         $this->level = Logger::toMonologLevel($level);
 
         return $this;
@@ -133,8 +124,7 @@ abstract class AbstractHandler implements HandlerInterface
      *
      * @return int
      */
-    public function getLevel()
-    {
+    public function getLevel() {
         return $this->level;
     }
 
@@ -145,8 +135,7 @@ abstract class AbstractHandler implements HandlerInterface
      *                         false means that bubbling is not permitted.
      * @return self
      */
-    public function setBubble($bubble)
-    {
+    public function setBubble($bubble) {
         $this->bubble = $bubble;
 
         return $this;
@@ -158,13 +147,11 @@ abstract class AbstractHandler implements HandlerInterface
      * @return Boolean true means that this handler allows bubbling.
      *                 false means that bubbling is not permitted.
      */
-    public function getBubble()
-    {
+    public function getBubble() {
         return $this->bubble;
     }
 
-    public function __destruct()
-    {
+    public function __destruct() {
         try {
             $this->close();
         } catch (\Exception $e) {
@@ -179,8 +166,7 @@ abstract class AbstractHandler implements HandlerInterface
      *
      * @return FormatterInterface
      */
-    protected function getDefaultFormatter()
-    {
+    protected function getDefaultFormatter() {
         return new LineFormatter();
     }
 }

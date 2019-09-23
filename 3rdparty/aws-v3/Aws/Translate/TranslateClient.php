@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Translate;
 
 use Aws\AwsClient;
@@ -8,4 +9,5 @@ use Aws\AwsClient;
  * @method \Aws\Result translateText(array $args = [])
  * @method \GuzzleHttp\Promise\Promise translateTextAsync(array $args = [])
  */
-class TranslateClient extends AwsClient {}
+class TranslateClient extends AwsClient {
+}

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use Psr\Http\Message\RequestInterface;
@@ -16,21 +17,21 @@ use GuzzleHttp\Promise\FulfilledPromise;
  *
  * @return callable
  */
-function constantly($value)
-{
-    return function () use ($value) { return $value; };
+function constantly($value) {
+    return function() use ($value) {
+        return $value;
+    };
 }
 
 /**
  * Filters values that do not satisfy the predicate function $pred.
  *
- * @param mixed    $iterable Iterable sequence of data.
+ * @param mixed $iterable Iterable sequence of data.
  * @param callable $pred Function that accepts a value and returns true/false
  *
  * @return \Generator
  */
-function filter($iterable, callable $pred)
-{
+function filter($iterable, callable $pred) {
     foreach ($iterable as $value) {
         if ($pred($value)) {
             yield $value;
@@ -41,13 +42,12 @@ function filter($iterable, callable $pred)
 /**
  * Applies a map function $f to each value in a collection.
  *
- * @param mixed    $iterable Iterable sequence of data.
- * @param callable $f        Map function to apply.
+ * @param mixed $iterable Iterable sequence of data.
+ * @param callable $f Map function to apply.
  *
  * @return \Generator
  */
-function map($iterable, callable $f)
-{
+function map($iterable, callable $f) {
     foreach ($iterable as $value) {
         yield $f($value);
     }
@@ -58,13 +58,12 @@ function map($iterable, callable $f)
  * value in the sequence and yields the application of the map function to each
  * value.
  *
- * @param mixed    $iterable Iterable sequence of data.
- * @param callable $f        Map function to apply.
+ * @param mixed $iterable Iterable sequence of data.
+ * @param callable $f Map function to apply.
  *
  * @return \Generator
  */
-function flatmap($iterable, callable $f)
-{
+function flatmap($iterable, callable $f) {
     foreach (map($iterable, $f) as $outer) {
         foreach ($outer as $inner) {
             yield $inner;
@@ -75,13 +74,12 @@ function flatmap($iterable, callable $f)
 /**
  * Partitions the input sequence into partitions of the specified size.
  *
- * @param mixed    $iterable Iterable sequence of data.
+ * @param mixed $iterable Iterable sequence of data.
  * @param int $size Size to make each partition (except possibly the last chunk)
  *
  * @return \Generator
  */
-function partition($iterable, $size)
-{
+function partition($iterable, $size) {
     $buffer = [];
     foreach ($iterable as $value) {
         $buffer[] = $value;
@@ -109,10 +107,9 @@ function partition($iterable, $size)
  *
  * @return callable
  */
-function or_chain()
-{
+function or_chain() {
     $fns = func_get_args();
-    return function () use ($fns) {
+    return function() use ($fns) {
         $args = func_get_args();
         foreach ($fns as $fn) {
             $result = $args ? call_user_func_array($fn, $args) : $fn();
@@ -139,15 +136,14 @@ function or_chain()
  * @return mixed Returns the JSON decoded data. Note that JSON objects are
  *     decoded as associative arrays.
  */
-function load_compiled_json($path)
-{
+function load_compiled_json($path) {
     if ($compiled = @include("$path.php")) {
         return $compiled;
     }
 
     if (!file_exists($path)) {
         throw new \InvalidArgumentException(
-            sprintf("File not found: %s", $path)
+                sprintf("File not found: %s", $path)
         );
     }
 
@@ -157,8 +153,7 @@ function load_compiled_json($path)
 /**
  * No-op
  */
-function clear_compiled_json()
-{
+function clear_compiled_json() {
     // pass
 }
 
@@ -169,13 +164,12 @@ function clear_compiled_json()
 /**
  * Iterates over the files in a directory and works with custom wrappers.
  *
- * @param string   $path Path to open (e.g., "s3://foo/bar").
+ * @param string $path Path to open (e.g., "s3://foo/bar").
  * @param resource $context Stream wrapper context.
  *
  * @return \Generator Yields relative filename strings.
  */
-function dir_iterator($path, $context = null)
-{
+function dir_iterator($path, $context = null) {
     $dh = $context ? opendir($path, $context) : opendir($path);
     if (!$dh) {
         throw new \InvalidArgumentException('File not found: ' . $path);
@@ -193,13 +187,12 @@ function dir_iterator($path, $context = null)
  * will read the first file from a stream wrapper, then rewind, then read
  * it again).
  *
- * @param string   $path    Path to traverse (e.g., s3://bucket/key, /tmp)
+ * @param string $path Path to traverse (e.g., s3://bucket/key, /tmp)
  * @param resource $context Stream context options.
  *
  * @return \Generator Yields absolute filenames.
  */
-function recursive_dir_iterator($path, $context = null)
-{
+function recursive_dir_iterator($path, $context = null) {
     $invalid = ['.' => true, '..' => true];
     $pathLen = strlen($path) + 1;
     $iterator = dir_iterator($path, $context);
@@ -216,10 +209,10 @@ function recursive_dir_iterator($path, $context = null)
             if (is_dir($fullPath)) {
                 $queue[] = $iterator;
                 $iterator = map(
-                    dir_iterator($fullPath, $context),
-                    function ($file) use ($fullPath, $pathLen) {
-                        return substr("{$fullPath}/{$file}", $pathLen);
-                    }
+                        dir_iterator($fullPath, $context),
+                        function($file) use ($fullPath, $pathLen) {
+                            return substr("{$fullPath}/{$file}", $pathLen);
+                        }
                 );
                 continue;
             }
@@ -240,8 +233,7 @@ function recursive_dir_iterator($path, $context = null)
  * @return string Returns a string containing the type of the variable and
  *                if a class is provided, the class name.
  */
-function describe_type($input)
-{
+function describe_type($input) {
     switch (gettype($input)) {
         case 'object':
             return 'object(' . get_class($input) . ')';
@@ -260,12 +252,11 @@ function describe_type($input)
  *
  * @return callable
  */
-function default_http_handler()
-{
+function default_http_handler() {
     $version = (string) ClientInterface::VERSION;
     if ($version[0] === '5') {
         return new \Aws\Handler\GuzzleV5\GuzzleHandler();
-    } elseif ($version[0] === '6') {
+    } else if ($version[0] === '6') {
         return new \Aws\Handler\GuzzleV6\GuzzleHandler();
     }
 
@@ -282,23 +273,22 @@ function default_http_handler()
  * @return RequestInterface
  * @throws \RuntimeException
  */
-function serialize(CommandInterface $command)
-{
+function serialize(CommandInterface $command) {
     $request = null;
     $handlerList = $command->getHandlerList();
 
     // Return a mock result.
     $handlerList->setHandler(
-        function (CommandInterface $_, RequestInterface $r) use (&$request) {
-            $request = $r;
-            return new FulfilledPromise(new Result([]));
-        }
+            function(CommandInterface $_, RequestInterface $r) use (&$request) {
+                $request = $r;
+                return new FulfilledPromise(new Result([]));
+            }
     );
 
     call_user_func($handlerList->resolve(), $command)->wait();
     if (!$request instanceof RequestInterface) {
         throw new \RuntimeException(
-            'Calling handler did not serialize request'
+                'Calling handler did not serialize request'
         );
     }
 
@@ -317,8 +307,7 @@ function serialize(CommandInterface $command)
  * @return array
  * @throws \InvalidArgumentException if the service is not supported.
  */
-function manifest($service = null)
-{
+function manifest($service = null) {
     // Load the manifest and create aliases for lowercased namespaces
     static $manifest = [];
     static $aliases = [];
@@ -341,11 +330,11 @@ function manifest($service = null)
     $service = strtolower($service);
     if (isset($manifest[$service])) {
         return $manifest[$service] + ['endpoint' => $service];
-    } elseif (isset($aliases[$service])) {
+    } else if (isset($aliases[$service])) {
         return manifest($aliases[$service]);
     }
 
     throw new \InvalidArgumentException(
-        "The service \"{$service}\" is not provided by the AWS SDK for PHP."
+            "The service \"{$service}\" is not provided by the AWS SDK for PHP."
     );
 }

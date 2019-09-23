@@ -10,21 +10,18 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * This listener simplifies the SSE-C process by encoding and hashing the key.
  */
-class SseCpkListener implements EventSubscriberInterface
-{
-    public static function getSubscribedEvents()
-    {
+class SseCpkListener implements EventSubscriberInterface {
+    public static function getSubscribedEvents() {
         return array('command.before_prepare' => 'onCommandBeforePrepare');
     }
 
-    public function onCommandBeforePrepare(Event $event)
-    {
+    public function onCommandBeforePrepare(Event $event) {
         /** @var CommandInterface $command */
         $command = $event['command'];
 
         // Allows only HTTPS connections when using SSE-C
         if ($command['SSECustomerKey'] ||
-            $command['CopySourceSSECustomerKey']
+                $command['CopySourceSSECustomerKey']
         ) {
             $this->validateScheme($command);
         }
@@ -40,17 +37,16 @@ class SseCpkListener implements EventSubscriberInterface
         }
     }
 
-    private function validateScheme(CommandInterface $command)
-    {
+    private function validateScheme(CommandInterface $command) {
         if ($command->getClient()->getConfig('scheme') !== 'https') {
             throw new RuntimeException('You must configure your S3 client to '
-                . 'use HTTPS in order to use the SSE-C features.');
+                    . 'use HTTPS in order to use the SSE-C features.');
         }
     }
 
     private function prepareSseParams(
-        CommandInterface $command,
-        $isCopy = false
+            CommandInterface $command,
+            $isCopy = false
     ) {
         $prefix = $isCopy ? 'CopySource' : '';
 

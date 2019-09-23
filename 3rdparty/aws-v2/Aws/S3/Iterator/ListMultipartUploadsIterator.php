@@ -26,13 +26,11 @@ use Aws\Common\Iterator\AwsResourceIterator;
  *
  * - return_prefixes: Set to true to return both prefixes and uploads
  */
-class ListMultipartUploadsIterator extends AwsResourceIterator
-{
+class ListMultipartUploadsIterator extends AwsResourceIterator {
     /**
      * {@inheritdoc}
      */
-    protected function handleResults(Model $result)
-    {
+    protected function handleResults(Model $result) {
         // Get the list of uploads
         $uploads = $result->get('Uploads') ?: array();
 

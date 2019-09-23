@@ -22,8 +22,7 @@ use Guzzle\Http\Message\Response;
 /**
  * Default AWS exception
  */
-class ServiceResponseException extends RuntimeException
-{
+class ServiceResponseException extends RuntimeException {
     /**
      * @var Response Response
      */
@@ -54,8 +53,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @param string $code Exception code
      */
-    public function setExceptionCode($code)
-    {
+    public function setExceptionCode($code) {
         $this->exceptionCode = $code;
     }
 
@@ -64,8 +62,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return string|null
      */
-    public function getExceptionCode()
-    {
+    public function getExceptionCode() {
         return $this->exceptionCode;
     }
 
@@ -74,8 +71,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @param string $type Exception type
      */
-    public function setExceptionType($type)
-    {
+    public function setExceptionType($type) {
         $this->exceptionType = $type;
     }
 
@@ -84,8 +80,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return string|null
      */
-    public function getExceptionType()
-    {
+    public function getExceptionType() {
         return $this->exceptionType;
     }
 
@@ -94,8 +89,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @param string $id Request ID
      */
-    public function setRequestId($id)
-    {
+    public function setRequestId($id) {
         $this->requestId = $id;
     }
 
@@ -104,8 +98,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return string|null
      */
-    public function getRequestId()
-    {
+    public function getRequestId() {
         return $this->requestId;
     }
 
@@ -114,8 +107,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @param Response $response Response
      */
-    public function setResponse(Response $response)
-    {
+    public function setResponse(Response $response) {
         $this->response = $response;
     }
 
@@ -124,8 +116,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return Response|null
      */
-    public function getResponse()
-    {
+    public function getResponse() {
         return $this->response;
     }
 
@@ -134,8 +125,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @param RequestInterface $request
      */
-    public function setRequest(RequestInterface $request)
-    {
+    public function setRequest(RequestInterface $request) {
         $this->request = $request;
     }
 
@@ -144,8 +134,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return RequestInterface|null
      */
-    public function getRequest()
-    {
+    public function getRequest() {
         return $this->request;
     }
 
@@ -154,8 +143,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return int|null
      */
-    public function getStatusCode()
-    {
+    public function getStatusCode() {
         return $this->response ? $this->response->getStatusCode() : null;
     }
 
@@ -164,14 +152,13 @@ class ServiceResponseException extends RuntimeException
      *
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         $message = get_class($this) . ': '
-            . 'AWS Error Code: ' . $this->getExceptionCode() . ', '
-            . 'Status Code: ' . $this->getStatusCode() . ', '
-            . 'AWS Request ID: ' . $this->getRequestId() . ', '
-            . 'AWS Error Type: ' . $this->getExceptionType() . ', '
-            . 'AWS Error Message: ' . $this->getMessage();
+                . 'AWS Error Code: ' . $this->getExceptionCode() . ', '
+                . 'Status Code: ' . $this->getStatusCode() . ', '
+                . 'AWS Request ID: ' . $this->getRequestId() . ', '
+                . 'AWS Error Type: ' . $this->getExceptionType() . ', '
+                . 'AWS Error Message: ' . $this->getMessage();
 
         // Add the User-Agent if available
         if ($this->request) {
@@ -190,8 +177,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return string|null Returns null if no response was received
      */
-    public function getAwsRequestId()
-    {
+    public function getAwsRequestId() {
         return $this->requestId;
     }
 
@@ -202,8 +188,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return string|null Returns null if no response was received
      */
-    public function getAwsErrorType()
-    {
+    public function getAwsErrorType() {
         return $this->exceptionType;
     }
 
@@ -214,8 +199,7 @@ class ServiceResponseException extends RuntimeException
      *
      * @return string|null Returns null if no response was received
      */
-    public function getAwsErrorCode()
-    {
+    public function getAwsErrorCode() {
         return $this->exceptionCode;
     }
 }

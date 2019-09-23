@@ -10,8 +10,7 @@ namespace Psr\Http\Message;
  * state of the current instance and return an instance that contains the
  * changed state.
  */
-interface UploadedFileInterface
-{
+interface UploadedFileInterface {
     /**
      * Retrieve a stream representing the uploaded file.
      *
@@ -63,7 +62,7 @@ interface UploadedFileInterface
      *     the second or subsequent call to the method.
      */
     public function moveTo($targetPath);
-    
+
     /**
      * Retrieve the file size.
      *
@@ -74,7 +73,7 @@ interface UploadedFileInterface
      * @return int|null The file size in bytes or null if unknown.
      */
     public function getSize();
-    
+
     /**
      * Retrieve the error associated with the uploaded file.
      *
@@ -90,7 +89,7 @@ interface UploadedFileInterface
      * @return int One of PHP's UPLOAD_ERR_XXX constants.
      */
     public function getError();
-    
+
     /**
      * Retrieve the filename sent by the client.
      *
@@ -105,7 +104,7 @@ interface UploadedFileInterface
      *     was provided.
      */
     public function getClientFilename();
-    
+
     /**
      * Retrieve the media type sent by the client.
      *

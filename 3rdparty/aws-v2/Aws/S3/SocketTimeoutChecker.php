@@ -30,15 +30,13 @@ use Guzzle\Plugin\Backoff\AbstractBackoffStrategy;
  * transfer. This plugin will attempt to retry these failed requests, and if using a local file, will clear the
  * stat cache of the file and set a new content-length header on the upload.
  */
-class SocketTimeoutChecker extends AbstractBackoffStrategy
-{
+class SocketTimeoutChecker extends AbstractBackoffStrategy {
     const ERR = 'Your socket connection to the server was not read from or written to within the timeout period';
 
     /**
      * {@inheridoc}
      */
-    public function __construct(BackoffStrategyInterface $next = null)
-    {
+    public function __construct(BackoffStrategyInterface $next = null) {
         if ($next) {
             $this->setNext($next);
         }
@@ -47,8 +45,7 @@ class SocketTimeoutChecker extends AbstractBackoffStrategy
     /**
      * {@inheridoc}
      */
-    public function makesDecision()
-    {
+    public function makesDecision() {
         return true;
     }
 
@@ -56,14 +53,14 @@ class SocketTimeoutChecker extends AbstractBackoffStrategy
      * {@inheritdoc}
      */
     protected function getDelay(
-        $retries,
-        RequestInterface $request,
-        Response $response = null,
-        HttpException $e = null
+            $retries,
+            RequestInterface $request,
+            Response $response = null,
+            HttpException $e = null
     ) {
         if ($response
-            && $response->getStatusCode() == 400
-            && strpos($response->getBody(), self::ERR)
+                && $response->getStatusCode() == 400
+                && strpos($response->getBody(), self::ERR)
         ) {
             return true;
         }

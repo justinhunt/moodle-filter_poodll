@@ -17,6 +17,8 @@
 namespace Aws\S3\Exception;
 
 /**
- * The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this endpoint.
+ * The bucket you are attempting to access must be addressed using the specified endpoint. Please send all future requests to this
+ * endpoint.
  */
-class PermanentRedirectException extends S3Exception {}
+class PermanentRedirectException extends S3Exception {
+}

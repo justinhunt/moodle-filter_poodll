@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/uploader','filter_poodll/lzflash'], function($, log, utils, uploader, lz) {
+define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader', 'filter_poodll/lzflash'], function ($, log, utils, uploader, lz) {
 
     "use strict"; // jshint ;
 
@@ -9,43 +9,45 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/uploader',
 
         instanceprops: [],
 
-        fetch_instance_props : function(widgetid){
+        fetch_instance_props: function (widgetid) {
             return this.instanceprops[widgetid];
         },
 
-        init_instance_props: function(widgetid){
+        init_instance_props: function (widgetid) {
             var props = {};
-            props.savebutton= null;
-            props.audiodatacontrol= null;
-            props.config= null;
+            props.savebutton = null;
+            props.audiodatacontrol = null;
+            props.config = null;
             props.uploader = null;
             this.instanceprops[widgetid] = props
         },
-    
+
         // This recorder supports the current browser
-        supports_current_browser: function(config) { 
+        supports_current_browser: function (config) {
             var iOS = utils.is_ios();
             var isAndroid = utils.is_android();
-            if (iOS || (!config.flashonandroid && isAndroid)){
+            if (iOS || (!config.flashonandroid && isAndroid)) {
                 return false;
-            }else{
-                if(config.mediatype!='audio'){return false;}
+            } else {
+                if (config.mediatype != 'audio') {
+                    return false;
+                }
 
                 log.debug('PoodLL Flash Recorder: supports this browser');
                 return true;
             }
         },
-        
+
         // Perform the embed of this recorder on the page
         //into the element passed in. with config
-        embed: function(element, config) { 
-        
+        embed: function (element, config) {
+
             //if we are bypassing cloud tweak a few things
-            if(config.flashmp3_cloudbypass==1){
+            if (config.flashmp3_cloudbypass == 1) {
                 config.posturl = config.cloudbypassurl;
-                config.filename=false;
-                config.s3filename =false;
-                config.using_s3=false;
+                config.filename = false;
+                config.s3filename = false;
+                config.using_s3 = false;
             }
             this.init_instance_props(config.widgetid);
             var ip = this.fetch_instance_props(config.widgetid);
@@ -54,82 +56,84 @@ define(['jquery','core/log','filter_poodll/utils_amd', 'filter_poodll/uploader',
             //because flash wont pass filedata correctly to DOM
             //we need to upload direct from flash
             ip.ie = utils.is_ie();
-            if(ip.ie){
-                config.flashmp3audio_widgetjson = config.flashmp3audio_widgetjson.replace('sendmethod=post','sendmethod=ajax');
+            if (ip.ie) {
+                config.flashmp3audio_widgetjson = config.flashmp3audio_widgetjson.replace('sendmethod=post', 'sendmethod=ajax');
             }
 
             //set config
             ip.config = config;
 
-           //swf recorder
-            var swfopts = $.parseJSON(config.flashmp3audio_widgetjson);                    
+            //swf recorder
+            var swfopts = $.parseJSON(config.flashmp3audio_widgetjson);
             lz.embed.swf(swfopts);
-     
-         //savebutton
-         var savebuttonstyle = '';
-         if(ip.ie){savebuttonstyle = ' style="display: none" ';}
-          var savebuttonid = config.widgetid + '_savebutton';
-          var savecontrol ='<button id="' + savebuttonid + '" type="button" class="poodll_save-recording"' + savebuttonstyle + '>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
-          $(element).append(savecontrol);
+
+            //savebutton
+            var savebuttonstyle = '';
+            if (ip.ie) {
+                savebuttonstyle = ' style="display: none" ';
+            }
+            var savebuttonid = config.widgetid + '_savebutton';
+            var savecontrol = '<button id="' + savebuttonid + '" type="button" class="poodll_save-recording"' + savebuttonstyle + '>' + M.util.get_string('recui_save', 'filter_poodll') + '</button>';
+            $(element).append(savecontrol);
 
 
-           //audio control
-           var audiodatacontrolid = config.widgetid + '_adc';
-            var audiocontrol ='<input type="hidden" name="audiodatacontrol" id="' + audiodatacontrolid + '" value="" />';
-           $(element).prepend(audiocontrol);
-     
+            //audio control
+            var audiodatacontrolid = config.widgetid + '_adc';
+            var audiocontrol = '<input type="hidden" name="audiodatacontrol" id="' + audiodatacontrolid + '" value="" />';
+            $(element).prepend(audiocontrol);
+
             //init the uploader
-            ip.uploader  = uploader.clone();
-            ip.uploader.init(element,config);
-     
+            ip.uploader = uploader.clone();
+            ip.uploader.init(element, config);
+
             //register events
-            lz.embed[config.widgetid].setCanvasAttribute('audiodatacontrol',audiodatacontrolid);
-            ip.savebutton = $('#' + savebuttonid );
-            ip.audiodatacontrol = $('#' + audiodatacontrolid );
+            lz.embed[config.widgetid].setCanvasAttribute('audiodatacontrol', audiodatacontrolid);
+            ip.savebutton = $('#' + savebuttonid);
+            ip.audiodatacontrol = $('#' + audiodatacontrolid);
             this.registerevents(config.widgetid);
         },
-        
-        registerevents: function(widgetid){
+
+        registerevents: function (widgetid) {
             var ip = this.fetch_instance_props(widgetid);
             ip.audioblob = false;
 
-            ip.savebutton.click(function() {
-              //here we convert a string of base64 data into a blob which represents 
-              //an mp3 file.  
-              var audiodata = atob(ip.audiodatacontrol.val());
-              
-              //we check if there is actually any data,because if not we want to complain
-              //if this is a resubmit, impossible though, we pass through to upload
-                var haveaudiodata=audiodata && audiodata.length > 0;
-              if(!haveaudiodata && !ip.audioblob){
-                ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror','filter_poodll'));
-                return false;
-              }
+            ip.savebutton.click(function () {
+                //here we convert a string of base64 data into a blob which represents 
+                //an mp3 file.  
+                var audiodata = atob(ip.audiodatacontrol.val());
 
-              //create our audioblob if it is empty .. most likely
-              if(!ip.audioblob && haveaudiodata) {
-                  var audioblobdata = [];
-                  for (var i = 0; i < audiodata.length; i++) {
-                      audioblobdata.push(audiodata.charCodeAt(i));
-                  }
-                  ip.audioblob = new Blob([new Uint8Array(audioblobdata)], {type: 'audio/mpeg3'});
-              }
+                //we check if there is actually any data,because if not we want to complain
+                //if this is a resubmit, impossible though, we pass through to upload
+                var haveaudiodata = audiodata && audiodata.length > 0;
+                if (!haveaudiodata && !ip.audioblob) {
+                    ip.uploader.Output(M.util.get_string('recui_nothingtosaveerror', 'filter_poodll'));
+                    return false;
+                }
 
-              //and we upload that blob
-              ip.uploader.uploadBlob(ip.audioblob,'audio/mpeg3');
-              //we would like to disable the recorder here
-              var apicall = 'poodllapi.mp3_disable()';
-              lz.embed[ip.config.widgetid].callMethod(apicall);
+                //create our audioblob if it is empty .. most likely
+                if (!ip.audioblob && haveaudiodata) {
+                    var audioblobdata = [];
+                    for (var i = 0; i < audiodata.length; i++) {
+                        audioblobdata.push(audiodata.charCodeAt(i));
+                    }
+                    ip.audioblob = new Blob([new Uint8Array(audioblobdata)], {type: 'audio/mpeg3'});
+                }
 
-              //we no longer need the data in the audiodata control and it will get submitted
+                //and we upload that blob
+                ip.uploader.uploadBlob(ip.audioblob, 'audio/mpeg3');
+                //we would like to disable the recorder here
+                var apicall = 'poodllapi.mp3_disable()';
+                lz.embed[ip.config.widgetid].callMethod(apicall);
+
+                //we no longer need the data in the audiodata control and it will get submitted
                 //with the form which we don't want. So we clear it here. Justin 2017-03/03
                 ip.audiodatacontrol.val('');
 
 
-              //just in case
-              return false;
+                //just in case
+                return false;
             });//end of save button click
-        
+
         }
     }//end of returned object
 });//total end

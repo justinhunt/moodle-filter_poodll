@@ -21,8 +21,7 @@ use Aws\Common\Exception\InvalidArgumentException;
 /**
  * Contains hashing utilities
  */
-class HashUtils
-{
+class HashUtils {
     /**
      * Converts a hash in hex form to binary form
      *
@@ -30,8 +29,7 @@ class HashUtils
      *
      * @return string Hash in binary form
      */
-    public static function hexToBin($hash)
-    {
+    public static function hexToBin($hash) {
         // If using PHP 5.4, there is a native function to convert from hex to binary
         static $useNative;
         if ($useNative === null) {
@@ -52,8 +50,7 @@ class HashUtils
      *
      * @return string Hash in hex form
      */
-    public static function binToHex($hash)
-    {
+    public static function binToHex($hash) {
         return bin2hex($hash);
     }
 
@@ -65,8 +62,7 @@ class HashUtils
      * @return bool
      * @throws InvalidArgumentException if the algorithm doesn't exist
      */
-    public static function validateAlgorithm($algorithm)
-    {
+    public static function validateAlgorithm($algorithm) {
         if (!in_array($algorithm, hash_algos(), true)) {
             throw new InvalidArgumentException("The hashing algorithm specified ({$algorithm}) does not exist.");
         }

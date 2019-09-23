@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Credentials;
 
 use Aws;
@@ -40,8 +41,7 @@ use GuzzleHttp\Promise;
  * $creds = $promise->wait();
  * </code>
  */
-class CredentialProvider
-{
+class CredentialProvider {
     const ENV_KEY = 'AWS_ACCESS_KEY_ID';
     const ENV_SECRET = 'AWS_SECRET_ACCESS_KEY';
     const ENV_SESSION = 'AWS_SESSION_TOKEN';
@@ -63,16 +63,15 @@ class CredentialProvider
      *
      * @return callable
      */
-    public static function defaultProvider(array $config = [])
-    {
+    public static function defaultProvider(array $config = []) {
         $localCredentialProviders = self::localCredentialProviders();
         $remoteCredentialProviders = self::remoteCredentialProviders($config);
 
         return self::memoize(
-            call_user_func_array(
-                'self::chain',
-                array_merge($localCredentialProviders, $remoteCredentialProviders)
-            )
+                call_user_func_array(
+                        'self::chain',
+                        array_merge($localCredentialProviders, $remoteCredentialProviders)
+                )
         );
     }
 
@@ -83,11 +82,10 @@ class CredentialProvider
      *
      * @return callable
      */
-    public static function fromCredentials(CredentialsInterface $creds)
-    {
+    public static function fromCredentials(CredentialsInterface $creds) {
         $promise = Promise\promise_for($creds);
 
-        return function () use ($promise) {
+        return function() use ($promise) {
             return $promise;
         };
     }
@@ -99,14 +97,13 @@ class CredentialProvider
      *
      * @return callable
      */
-    public static function chain()
-    {
+    public static function chain() {
         $links = func_get_args();
         if (empty($links)) {
             throw new \InvalidArgumentException('No providers in chain');
         }
 
-        return function () use ($links) {
+        return function() use ($links) {
             /** @var callable $parent */
             $parent = array_shift($links);
             $promise = $parent();
@@ -126,9 +123,8 @@ class CredentialProvider
      *
      * @return callable
      */
-    public static function memoize(callable $provider)
-    {
-        return function () use ($provider) {
+    public static function memoize(callable $provider) {
+        return function() use ($provider) {
             static $result;
             static $isConstant;
 
@@ -145,20 +141,20 @@ class CredentialProvider
 
             // Return credentials that could expire and refresh when needed.
             return $result
-                ->then(function (CredentialsInterface $creds) use ($provider, &$isConstant, &$result) {
-                    // Determine if these are constant credentials.
-                    if (!$creds->getExpiration()) {
-                        $isConstant = true;
-                        return $creds;
-                    }
+                    ->then(function(CredentialsInterface $creds) use ($provider, &$isConstant, &$result) {
+                        // Determine if these are constant credentials.
+                        if (!$creds->getExpiration()) {
+                            $isConstant = true;
+                            return $creds;
+                        }
 
-                    // Refresh expired credentials.
-                    if (!$creds->isExpired()) {
-                        return $creds;
-                    }
-                    // Refresh the result and forward the promise.
-                    return $result = $provider();
-                });
+                        // Refresh expired credentials.
+                        if (!$creds->isExpired()) {
+                            return $creds;
+                        }
+                        // Refresh the result and forward the promise.
+                        return $result = $provider();
+                    });
         };
     }
 
@@ -176,32 +172,32 @@ class CredentialProvider
      * @return callable
      */
     public static function cache(
-        callable $provider,
-        CacheInterface $cache,
-        $cacheKey = null
+            callable $provider,
+            CacheInterface $cache,
+            $cacheKey = null
     ) {
         $cacheKey = $cacheKey ?: 'aws_cached_credentials';
 
-        return function () use ($provider, $cache, $cacheKey) {
+        return function() use ($provider, $cache, $cacheKey) {
             $found = $cache->get($cacheKey);
             if ($found instanceof CredentialsInterface && !$found->isExpired()) {
                 return Promise\promise_for($found);
             }
 
             return $provider()
-                ->then(function (CredentialsInterface $creds) use (
-                    $cache,
-                    $cacheKey
-                ) {
-                    $cache->set(
-                        $cacheKey,
-                        $creds,
-                        null === $creds->getExpiration() ?
-                            0 : $creds->getExpiration() - time()
-                    );
+                    ->then(function(CredentialsInterface $creds) use (
+                            $cache,
+                            $cacheKey
+                    ) {
+                        $cache->set(
+                                $cacheKey,
+                                $creds,
+                                null === $creds->getExpiration() ?
+                                        0 : $creds->getExpiration() - time()
+                        );
 
-                    return $creds;
-                });
+                        return $creds;
+                    });
         };
     }
 
@@ -211,20 +207,19 @@ class CredentialProvider
      *
      * @return callable
      */
-    public static function env()
-    {
-        return function () {
+    public static function env() {
+        return function() {
             // Use credentials from environment variables, if available
             $key = getenv(self::ENV_KEY);
             $secret = getenv(self::ENV_SECRET);
             if ($key && $secret) {
                 return Promise\promise_for(
-                    new Credentials($key, $secret, getenv(self::ENV_SESSION) ?: NULL)
+                        new Credentials($key, $secret, getenv(self::ENV_SESSION) ?: null)
                 );
             }
 
             return self::reject('Could not find environment variable '
-                . 'credentials in ' . self::ENV_KEY . '/' . self::ENV_SECRET);
+                    . 'credentials in ' . self::ENV_KEY . '/' . self::ENV_SECRET);
         };
     }
 
@@ -237,8 +232,7 @@ class CredentialProvider
      * @return InstanceProfileProvider
      * @see Aws\Credentials\InstanceProfileProvider for $config details.
      */
-    public static function instanceProfile(array $config = [])
-    {
+    public static function instanceProfile(array $config = []) {
         return new InstanceProfileProvider($config);
     }
 
@@ -252,8 +246,7 @@ class CredentialProvider
      * @return EcsCredentialProvider
      * @see Aws\Credentials\EcsCredentialProvider for $config details.
      */
-    public static function ecsCredentials(array $config = [])
-    {
+    public static function ecsCredentials(array $config = []) {
         return new EcsCredentialProvider($config);
     }
 
@@ -264,8 +257,7 @@ class CredentialProvider
      * @return callable
      * @see Aws\Credentials\AssumeRoleCredentialProvider for $config details.
      */
-    public static function assumeRole(array $config=[])
-    {
+    public static function assumeRole(array $config = []) {
         return new AssumeRoleCredentialProvider($config);
     }
 
@@ -273,19 +265,18 @@ class CredentialProvider
      * Credentials provider that creates credentials using an ini file stored
      * in the current user's home directory.
      *
-     * @param string|null $profile  Profile to use. If not specified will use
+     * @param string|null $profile Profile to use. If not specified will use
      *                              the "default" profile in "~/.aws/credentials".
      * @param string|null $filename If provided, uses a custom filename rather
      *                              than looking in the home directory.
      *
      * @return callable
      */
-    public static function ini($profile = null, $filename = null)
-    {
+    public static function ini($profile = null, $filename = null) {
         $filename = $filename ?: (self::getHomeDir() . '/.aws/credentials');
         $profile = $profile ?: (getenv(self::ENV_PROFILE) ?: 'default');
 
-        return function () use ($profile, $filename) {
+        return function() use ($profile, $filename) {
             if (!is_readable($filename)) {
                 return self::reject("Cannot read credentials from $filename");
             }
@@ -297,25 +288,25 @@ class CredentialProvider
                 return self::reject("'$profile' not found in credentials file");
             }
             if (!isset($data[$profile]['aws_access_key_id'])
-                || !isset($data[$profile]['aws_secret_access_key'])
+                    || !isset($data[$profile]['aws_secret_access_key'])
             ) {
                 return self::reject("No credentials present in INI profile "
-                    . "'$profile' ($filename)");
+                        . "'$profile' ($filename)");
             }
 
             if (empty($data[$profile]['aws_session_token'])) {
                 $data[$profile]['aws_session_token']
-                    = isset($data[$profile]['aws_security_token'])
+                        = isset($data[$profile]['aws_security_token'])
                         ? $data[$profile]['aws_security_token']
                         : null;
             }
 
             return Promise\promise_for(
-                new Credentials(
-                    $data[$profile]['aws_access_key_id'],
-                    $data[$profile]['aws_secret_access_key'],
-                    $data[$profile]['aws_session_token']
-                )
+                    new Credentials(
+                            $data[$profile]['aws_access_key_id'],
+                            $data[$profile]['aws_secret_access_key'],
+                            $data[$profile]['aws_session_token']
+                    )
             );
         };
     }
@@ -329,12 +320,11 @@ class CredentialProvider
      *
      * @return array
      */
-    private static function localCredentialProviders()
-    {
+    private static function localCredentialProviders() {
         return [
-            self::env(),
-            self::ini(),
-            self::ini('profile default', self::getHomeDir() . '/.aws/config')
+                self::env(),
+                self::ini(),
+                self::ini('profile default', self::getHomeDir() . '/.aws/config')
         ];
     }
 
@@ -348,21 +338,20 @@ class CredentialProvider
      * @see Aws\Credentials\InstanceProfileProvider for $config details.
      * @see Aws\Credentials\EcsCredentialProvider for $config details.
      */
-    private static function remoteCredentialProviders(array $config = [])
-    {
+    private static function remoteCredentialProviders(array $config = []) {
         if (!empty(getenv(EcsCredentialProvider::ENV_URI))) {
             $providers['ecs'] = self::ecsCredentials($config);
         }
         $providers['instance'] = self::instanceProfile($config);
 
         if (isset($config['credentials'])
-            && $config['credentials'] instanceof CacheInterface
+                && $config['credentials'] instanceof CacheInterface
         ) {
             foreach ($providers as $key => $provider) {
                 $providers[$key] = self::cache(
-                    $provider,
-                    $config['credentials'],
-                    'aws_cached_' . $key . '_credentials'
+                        $provider,
+                        $config['credentials'],
+                        'aws_cached_' . $key . '_credentials'
                 );
             }
         }
@@ -375,8 +364,7 @@ class CredentialProvider
      *
      * @return null|string
      */
-    private static function getHomeDir()
-    {
+    private static function getHomeDir() {
         // On Linux/Unix-like systems, use the HOME environment variable
         if ($homeDir = getenv('HOME')) {
             return $homeDir;
@@ -389,8 +377,7 @@ class CredentialProvider
         return ($homeDrive && $homePath) ? $homeDrive . $homePath : null;
     }
 
-    private static function reject($msg)
-    {
+    private static function reject($msg) {
         return new Promise\RejectedPromise(new CredentialsException($msg));
     }
 }

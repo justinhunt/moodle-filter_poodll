@@ -22,21 +22,19 @@ use Guzzle\Common\AbstractHasDispatcher;
 /**
  * Abstract wait implementation
  */
-abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInterface
-{
+abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInterface {
     protected $attempts = 0;
     protected $config = array();
 
     /**
      * {@inheritdoc}
      */
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array(
             // About to check if the waiter needs to wait
-            'waiter.before_attempt',
+                'waiter.before_attempt',
             // About to sleep
-            'waiter.before_wait',
+                'waiter.before_wait',
         );
     }
 
@@ -45,8 +43,7 @@ abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInt
      *
      * @return int
      */
-    public function getMaxAttempts()
-    {
+    public function getMaxAttempts() {
         return isset($this->config[self::MAX_ATTEMPTS]) ? $this->config[self::MAX_ATTEMPTS] : 10;
     }
 
@@ -55,16 +52,14 @@ abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInt
      *
      * @return int
      */
-    public function getInterval()
-    {
+    public function getInterval() {
         return isset($this->config[self::INTERVAL]) ? $this->config[self::INTERVAL] : 0;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setMaxAttempts($maxAttempts)
-    {
+    public function setMaxAttempts($maxAttempts) {
         $this->config[self::MAX_ATTEMPTS] = $maxAttempts;
 
         return $this;
@@ -73,8 +68,7 @@ abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInt
     /**
      * {@inheritdoc}
      */
-    public function setInterval($interval)
-    {
+    public function setInterval($interval) {
         $this->config[self::INTERVAL] = $interval;
 
         return $this;
@@ -87,8 +81,7 @@ abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInt
      *
      * @return self
      */
-    public function setConfig(array $config)
-    {
+    public function setConfig(array $config) {
         if (isset($config['waiter.before_attempt'])) {
             $this->getEventDispatcher()->addListener('waiter.before_attempt', $config['waiter.before_attempt']);
             unset($config['waiter.before_attempt']);
@@ -107,14 +100,13 @@ abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInt
     /**
      * {@inheritdoc}
      */
-    public function wait()
-    {
+    public function wait() {
         $this->attempts = 0;
 
         do {
             $this->dispatch('waiter.before_attempt', array(
-                'waiter' => $this,
-                'config' => $this->config,
+                    'waiter' => $this,
+                    'config' => $this->config,
             ));
 
             if ($this->doWait()) {
@@ -126,8 +118,8 @@ abstract class AbstractWaiter extends AbstractHasDispatcher implements WaiterInt
             }
 
             $this->dispatch('waiter.before_wait', array(
-                'waiter' => $this,
-                'config' => $this->config,
+                    'waiter' => $this,
+                    'config' => $this->config,
             ));
 
             if ($this->getInterval()) {

@@ -21,8 +21,7 @@ use Aws\Common\Exception\RuntimeException;
 /**
  * State of a multipart upload
  */
-abstract class AbstractTransferState implements TransferStateInterface
-{
+abstract class AbstractTransferState implements TransferStateInterface {
     /**
      * @var UploadIdInterface Object holding params used to identity the upload part
      */
@@ -43,16 +42,14 @@ abstract class AbstractTransferState implements TransferStateInterface
      *
      * @param UploadIdInterface $uploadId Upload identifier object
      */
-    public function __construct(UploadIdInterface $uploadId)
-    {
+    public function __construct(UploadIdInterface $uploadId) {
         $this->uploadId = $uploadId;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getUploadId()
-    {
+    public function getUploadId() {
         return $this->uploadId;
     }
 
@@ -63,8 +60,7 @@ abstract class AbstractTransferState implements TransferStateInterface
      *
      * @return string|null
      */
-    public function getFromId($key)
-    {
+    public function getFromId($key) {
         $params = $this->uploadId->toParams();
 
         return isset($params[$key]) ? $params[$key] : null;
@@ -73,16 +69,14 @@ abstract class AbstractTransferState implements TransferStateInterface
     /**
      * {@inheritdoc}
      */
-    public function getPart($partNumber)
-    {
+    public function getPart($partNumber) {
         return isset($this->parts[$partNumber]) ? $this->parts[$partNumber] : null;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function addPart(UploadPartInterface $part)
-    {
+    public function addPart(UploadPartInterface $part) {
         $partNumber = $part->getPartNumber();
         $this->parts[$partNumber] = $part;
 
@@ -92,24 +86,21 @@ abstract class AbstractTransferState implements TransferStateInterface
     /**
      * {@inheritdoc}
      */
-    public function hasPart($partNumber)
-    {
+    public function hasPart($partNumber) {
         return isset($this->parts[$partNumber]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getPartNumbers()
-    {
+    public function getPartNumbers() {
         return array_keys($this->parts);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setAborted($aborted)
-    {
+    public function setAborted($aborted) {
         $this->aborted = (bool) $aborted;
 
         return $this;
@@ -118,40 +109,35 @@ abstract class AbstractTransferState implements TransferStateInterface
     /**
      * {@inheritdoc}
      */
-    public function isAborted()
-    {
+    public function isAborted() {
         return $this->aborted;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function count()
-    {
+    public function count() {
         return count($this->parts);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getIterator()
-    {
+    public function getIterator() {
         return new \ArrayIterator($this->parts);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
-    {
+    public function serialize() {
         return serialize(get_object_vars($this));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         $data = unserialize($serialized);
         foreach (get_object_vars($this) as $property => $oldValue) {
             if (array_key_exists($property, $data)) {

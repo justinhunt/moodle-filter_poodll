@@ -22,12 +22,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Listener used to change the way in which buckets are referenced (path/virtual style) based on context
  */
-class BucketStyleListener implements EventSubscriberInterface
-{
+class BucketStyleListener implements EventSubscriberInterface {
     private static $exclusions = array('GetBucketLocation' => true);
 
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array('command.after_prepare' => array('onCommandAfterPrepare', -255));
     }
 
@@ -36,8 +34,7 @@ class BucketStyleListener implements EventSubscriberInterface
      *
      * @param Event $event Event emitted
      */
-    public function onCommandAfterPrepare(Event $event)
-    {
+    public function onCommandAfterPrepare(Event $event) {
         $command = $event['command'];
         $bucket = $command['Bucket'];
         $request = $command->getRequest();
@@ -61,7 +58,7 @@ class BucketStyleListener implements EventSubscriberInterface
         // Switch to virtual if PathStyle is disabled, or not a DNS compatible bucket name, or the scheme is
         // http, or the scheme is https and there are no dots in the host header (avoids SSL issues)
         if (!$command['PathStyle'] && $command->getClient()->isValidBucketName($bucket)
-            && !($command->getRequest()->getScheme() == 'https' && strpos($bucket, '.'))
+                && !($command->getRequest()->getScheme() == 'https' && strpos($bucket, '.'))
         ) {
             // Switch to virtual hosted bucket
             $request->setHost($bucket . '.' . $request->getHost());
@@ -72,17 +69,17 @@ class BucketStyleListener implements EventSubscriberInterface
 
         if (!$bucket) {
             $request->getParams()->set('s3.resource', '/');
-        } elseif ($pathStyle) {
+        } else if ($pathStyle) {
             // Path style does not need a trailing slash
             $request->getParams()->set(
-                's3.resource',
-                '/' . rawurlencode($bucket) . ($key ? ('/' . S3Client::encodeKey($key)) : '')
+                    's3.resource',
+                    '/' . rawurlencode($bucket) . ($key ? ('/' . S3Client::encodeKey($key)) : '')
             );
         } else {
             // Bucket style needs a trailing slash
             $request->getParams()->set(
-                's3.resource',
-                '/' . rawurlencode($bucket) . ($key ? ('/' . S3Client::encodeKey($key)) : '/')
+                    's3.resource',
+                    '/' . rawurlencode($bucket) . ($key ? ('/' . S3Client::encodeKey($key)) : '/')
             );
         }
     }

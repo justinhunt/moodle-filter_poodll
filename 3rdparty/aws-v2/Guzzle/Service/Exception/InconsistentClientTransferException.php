@@ -7,8 +7,7 @@ use Guzzle\Common\Exception\RuntimeException;
 /**
  * Command transfer exception when commands do not all use the same client
  */
-class InconsistentClientTransferException extends RuntimeException
-{
+class InconsistentClientTransferException extends RuntimeException {
     /**
      * @var array Commands with an invalid client
      */
@@ -17,12 +16,11 @@ class InconsistentClientTransferException extends RuntimeException
     /**
      * @param array $commands Invalid commands
      */
-    public function __construct(array $commands)
-    {
+    public function __construct(array $commands) {
         $this->invalidCommands = $commands;
         parent::__construct(
-            'Encountered commands in a batch transfer that use inconsistent clients. The batching ' .
-            'strategy you use with a command transfer must divide command batches by client.'
+                'Encountered commands in a batch transfer that use inconsistent clients. The batching ' .
+                'strategy you use with a command transfer must divide command batches by client.'
         );
     }
 
@@ -31,8 +29,7 @@ class InconsistentClientTransferException extends RuntimeException
      *
      * @return array
      */
-    public function getCommands()
-    {
+    public function getCommands() {
         return $this->invalidCommands;
     }
 }

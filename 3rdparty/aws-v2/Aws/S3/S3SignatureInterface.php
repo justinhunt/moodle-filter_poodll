@@ -21,4 +21,5 @@ use Aws\Common\Signature\SignatureInterface;
 /**
  * @deprecated
  */
-interface S3SignatureInterface extends SignatureInterface {}
+interface S3SignatureInterface extends SignatureInterface {
+}

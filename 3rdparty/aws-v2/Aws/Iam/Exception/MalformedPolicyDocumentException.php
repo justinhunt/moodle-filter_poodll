@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * The request was rejected because the policy document was malformed. The error message describes the specific error.
  */
-class MalformedPolicyDocumentException extends IamException {}
+class MalformedPolicyDocumentException extends IamException {
+}

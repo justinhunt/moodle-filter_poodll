@@ -28,15 +28,14 @@ use Guzzle\Plugin\Backoff\AbstractBackoffStrategy;
 /**
  * Backoff logic that handles retrying requests when credentials expire
  */
-class ExpiredCredentialsChecker extends AbstractBackoffStrategy
-{
+class ExpiredCredentialsChecker extends AbstractBackoffStrategy {
     /**
      * @var array Array of known retrying exception codes
      */
     protected $retryable = array(
-        'RequestExpired' => true,
-        'ExpiredTokenException' => true,
-        'ExpiredToken' => true
+            'RequestExpired' => true,
+            'ExpiredTokenException' => true,
+            'ExpiredToken' => true
     );
 
     /**
@@ -49,13 +48,11 @@ class ExpiredCredentialsChecker extends AbstractBackoffStrategy
         $this->next = $next;
     }
 
-    public function makesDecision()
-    {
+    public function makesDecision() {
         return true;
     }
 
-    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null)
-    {
+    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null) {
         if ($response && $response->isClientError()) {
 
             $parts = $this->exceptionParser->parse($request, $response);

@@ -21,13 +21,12 @@ use Aws\Common\Client\AwsClientInterface;
 /**
  * State of a multipart upload
  */
-interface TransferStateInterface extends \Countable, \IteratorAggregate, \Serializable
-{
+interface TransferStateInterface extends \Countable, \IteratorAggregate, \Serializable {
     /**
      * Create the transfer state from the results of list parts request
      *
-     * @param AwsClientInterface $client   Client used to send the request
-     * @param UploadIdInterface  $uploadId Params needed to identify the upload and form the request
+     * @param AwsClientInterface $client Client used to send the request
+     * @param UploadIdInterface $uploadId Params needed to identify the upload and form the request
      *
      * @return self
      */

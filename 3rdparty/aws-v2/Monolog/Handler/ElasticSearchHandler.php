@@ -33,8 +33,7 @@ use Elastica\Exception\ExceptionInterface;
  *
  * @author Jelle Vink <jelle.vink@gmail.com>
  */
-class ElasticSearchHandler extends AbstractProcessingHandler
-{
+class ElasticSearchHandler extends AbstractProcessingHandler {
     /**
      * @var Client
      */
@@ -46,38 +45,35 @@ class ElasticSearchHandler extends AbstractProcessingHandler
     protected $options = array();
 
     /**
-     * @param Client  $client  Elastica Client object
-     * @param array   $options Handler configuration
-     * @param int     $level   The minimum logging level at which this handler will be triggered
-     * @param Boolean $bubble  Whether the messages that are handled can bubble up the stack or not
+     * @param Client $client Elastica Client object
+     * @param array $options Handler configuration
+     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
      */
-    public function __construct(Client $client, array $options = array(), $level = Logger::DEBUG, $bubble = true)
-    {
+    public function __construct(Client $client, array $options = array(), $level = Logger::DEBUG, $bubble = true) {
         parent::__construct($level, $bubble);
         $this->client = $client;
         $this->options = array_merge(
-            array(
-                'index'          => 'monolog',      // Elastic index name
-                'type'           => 'record',       // Elastic document type
-                'ignore_error'   => false,          // Suppress Elastica exceptions
-            ),
-            $options
+                array(
+                        'index' => 'monolog',      // Elastic index name
+                        'type' => 'record',       // Elastic document type
+                        'ignore_error' => false,          // Suppress Elastica exceptions
+                ),
+                $options
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function write(array $record)
-    {
+    protected function write(array $record) {
         $this->bulkSend(array($record['formatted']));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setFormatter(FormatterInterface $formatter)
-    {
+    public function setFormatter(FormatterInterface $formatter) {
         if ($formatter instanceof ElasticaFormatter) {
             return parent::setFormatter($formatter);
         }
@@ -86,37 +82,35 @@ class ElasticSearchHandler extends AbstractProcessingHandler
 
     /**
      * Getter options
+     *
      * @return array
      */
-    public function getOptions()
-    {
+    public function getOptions() {
         return $this->options;
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function getDefaultFormatter()
-    {
+    protected function getDefaultFormatter() {
         return new ElasticaFormatter($this->options['index'], $this->options['type']);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function handleBatch(array $records)
-    {
+    public function handleBatch(array $records) {
         $documents = $this->getFormatter()->formatBatch($records);
         $this->bulkSend($documents);
     }
 
     /**
      * Use Elasticsearch bulk API to send list of documents
-     * @param  array             $documents
+     *
+     * @param  array $documents
      * @throws \RuntimeException
      */
-    protected function bulkSend(array $documents)
-    {
+    protected function bulkSend(array $documents) {
         try {
             $this->client->addDocuments($documents);
         } catch (ExceptionInterface $e) {

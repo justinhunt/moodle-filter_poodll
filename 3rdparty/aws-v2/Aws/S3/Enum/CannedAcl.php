@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable CannedAcl values
  */
-class CannedAcl extends Enum
-{
+class CannedAcl extends Enum {
     const PRIVATE_ACCESS = 'private';
     const PUBLIC_READ = 'public-read';
     const PUBLIC_READ_WRITE = 'public-read-write';

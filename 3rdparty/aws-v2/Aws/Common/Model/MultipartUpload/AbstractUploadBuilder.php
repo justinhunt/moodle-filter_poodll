@@ -24,8 +24,7 @@ use Guzzle\Http\EntityBody;
  * Easily create a multipart uploader used to quickly and reliably upload a
  * large file or data stream to Amazon S3 using multipart uploads
  */
-abstract class AbstractUploadBuilder
-{
+abstract class AbstractUploadBuilder {
     /**
      * @var AwsClientInterface Client used to transfer requests
      */
@@ -51,8 +50,7 @@ abstract class AbstractUploadBuilder
      *
      * @return static
      */
-    public static function newInstance()
-    {
+    public static function newInstance() {
         return new static;
     }
 
@@ -63,8 +61,7 @@ abstract class AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setClient(AwsClientInterface $client)
-    {
+    public function setClient(AwsClientInterface $client) {
         $this->client = $client;
 
         return $this;
@@ -80,8 +77,7 @@ abstract class AbstractUploadBuilder
      *
      * @return $this
      */
-    public function resumeFrom($state)
-    {
+    public function resumeFrom($state) {
         $this->state = $state;
 
         return $this;
@@ -97,8 +93,7 @@ abstract class AbstractUploadBuilder
      * @return $this
      * @throws InvalidArgumentException when the source cannot be found or opened
      */
-    public function setSource($source)
-    {
+    public function setSource($source) {
         // Use the contents of a file as the data source
         if (is_string($source)) {
             if (!file_exists($source)) {
@@ -125,8 +120,7 @@ abstract class AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setHeaders(array $headers)
-    {
+    public function setHeaders(array $headers) {
         $this->headers = $headers;
 
         return $this;

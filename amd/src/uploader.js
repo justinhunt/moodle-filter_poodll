@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upskin_plain) {
+define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, upskin_plain) {
 
     "use strict"; // jshint ;_;
 
@@ -10,106 +10,236 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         config: null,
 
         //for making multiple instances
-        clone: function(){
-            return $.extend(true,{},this);
+        clone: function () {
+            return $.extend(true, {}, this);
         },
 
-        init: function(element,config,upskin){
+        init: function (element, config, upskin) {
             this.config = config;
-            if(upskin){
-                this.upskin= upskin;
-            }else{
-                this.upskin=upskin_plain.clone();
-                this.upskin.init(config,element,false,false);
+            if (upskin) {
+                this.upskin = upskin;
+            } else {
+                this.upskin = upskin_plain.clone();
+                this.upskin.init(config, element, false, false);
             }
             this.upskin.initControls();
+            this.registerEvents();
         },
 
-        uploadBlob: function(blob,filetype){
+        registerEvents: function () {
+            //register our receive message handler
+            var that = this;
+            window.addEventListener('message', function (e) {
+                // Must be our parent
+                if (e.origin !== that.config.allowedURL) {
+                    return;
+                }
+
+                //process data and if it is valid do the action
+                var data = e.data;
+                if (data && data.hasOwnProperty('id') &&
+                    data.id == that.config.id && data.hasOwnProperty('type')) {
+                    switch (data.type) {
+                        case 'fetch_upload_url':
+                            that.fetchNewUploadDetails();
+                            break;
+                    }
+                }
+            });
+        },
+
+        fetchNewUploadDetails: function () {
+
+            //The REST API we are calling
+            var functionname = 'local_cpapi_fetch_upload_details';
+
+            //fetch the Posturl. We need this.
+            //set up our ajax request
+            var xhr = new XMLHttpRequest();
+            var that = this;
+
+            //set up our handler for the response
+            xhr.onreadystatechange = function (e) {
+                if (this.readyState === 4) {
+                    if (xhr.status == 200) {
+
+                        //get a yes or forgetit or tryagain
+                        var payload = xhr.responseText;
+                        var payloadobject = JSON.parse(payload);
+                        if (payloadobject) {
+
+                            //returnCode > 0  indicates an error
+                            if (payloadobject.returnCode > 0) {
+                                //We alert the iframe host that something did not go right
+                                var messageObject = {};
+                                messageObject.id = that.config.id;
+                                messageObject.type = "error";
+                                messageObject.code = payloadobject.returnCode;
+                                messageObject.message = payloadobject.returnMessage;
+                                window.parent.postMessage(messageObject, that.config.allowedURL);
+                                return;
+                                //if all good, then lets do the embed
+                            } else {
+                                that.config.allowedURL = payloadobject.allowedURL;
+                                that.config.posturl = payloadobject.postURL;
+                                that.config.filename = payloadobject.filename;
+                                that.config.s3filename = payloadobject.s3filename;
+                                that.config.s3root = payloadobject.s3root;
+                                that.config.cloudfilename = payloadobject.shortfilename;
+                                that.config.cloudroot = payloadobject.shortroot;
+                            }
+
+                        } else {
+                            log.debug('error:' + payloadobject.message);
+
+                        }
+                    } else {
+                        log.debug('Not 200 response:' + xhr.status);
+                    }
+                }
+            };
+
+            //log.debug(params);
+            var xhrparams = "wstoken=" + this.config.wstoken
+                + "&wsfunction=" + functionname
+                + "&moodlewsrestformat=" + this.config.moodlewsrestformat
+                + "&mediatype=" + this.config.mediatype
+                + '&parent=' + this.config.parent
+                + '&appid=' + this.config.appid
+                + '&owner=' + this.config.owner
+                + '&region=' + this.config.region
+                + '&expiredays=' + this.config.expiredays
+                + '&transcode=' + this.config.transcode
+                + '&transcoder=' + this.config.transcoder
+                + '&transcribe=' + this.config.transcribe
+                + '&subtitle=' + this.config.subtitle
+                + '&transcribelanguage=' + this.config.language
+                + '&transcribevocab=' + this.config.transcribevocab
+                + '&notificationurl=' + this.config.notificationurl
+                + '&sourcemimetype=' + this.config.sourcemimetype;
+
+            var serverurl = M.cfg.wwwroot + "/webservice/rest/server.php";
+            xhr.open("POST", serverurl, true);
+            xhr.setRequestHeader("Cache-Control", "no-cache");
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.send(xhrparams);
+        },
+
+        uploadBlob: function (blob, filetype) {
             this.uploadFile(blob, filetype);
             return;
         },
         //extract filename from the text returned as response to upload
-        extractFilename: function(returntext){
-            var searchkey ="success<filename>";
-            var start= returntext.indexOf(searchkey);
-            if (start<1){return false;}
+        extractFilename: function (returntext) {
+            var searchkey = "success<filename>";
+            var start = returntext.indexOf(searchkey);
+            if (start < 1) {
+                return false;
+            }
             var end = returntext.indexOf("</filename>");
-            var filename= returntext.substring(start+(searchkey.length),end);
+            var filename = returntext.substring(start + (searchkey.length), end);
             return filename;
         },
 
         //fetch file extension from the filetype
-        fetchFileExtension: function(filetype){
-            var ext="";
+        fetchFileExtension: function (filetype) {
+            var ext = "";
             //Might need more mimetypes than this, and 3gpp maynot work
-            switch(filetype){
-                case "image/jpeg": ext = "jpg";break;
-                case "image/png": ext = "png";break;
-                case "audio/wav": ext = "wav";break;
-                case "audio/ogg": ext = "ogg";break;
-                case "video/quicktime": ext = "mov";break;
-                case "audio/mpeg3": ext = "mp3";break;
-                case "audio/mp3": ext = "mp3";break;
-                case "audio/webm": ext = "webm";break;
-                case "audio/x-mpeg-3": ext = "mp3";break;
-                case "audio/3gpp": ext = "3gpp";break;
-                case "video/mpeg3": ext = "3gpp";break;
-                case "video/mp4": ext = "mp4";break;
-                case "video/webm": ext = "webm";break;
-                case "video/ogg": ext = "ogg";break;
+            switch (filetype) {
+                case "image/jpeg":
+                    ext = "jpg";
+                    break;
+                case "image/png":
+                    ext = "png";
+                    break;
+                case "audio/wav":
+                    ext = "wav";
+                    break;
+                case "audio/ogg":
+                    ext = "ogg";
+                    break;
+                case "video/quicktime":
+                    ext = "mov";
+                    break;
+                case "audio/mpeg3":
+                    ext = "mp3";
+                    break;
+                case "audio/mp3":
+                    ext = "mp3";
+                    break;
+                case "audio/webm":
+                    ext = "webm";
+                    break;
+                case "audio/x-mpeg-3":
+                    ext = "mp3";
+                    break;
+                case "audio/3gpp":
+                    ext = "3gpp";
+                    break;
+                case "video/mpeg3":
+                    ext = "3gpp";
+                    break;
+                case "video/mp4":
+                    ext = "mp4";
+                    break;
+                case "video/webm":
+                    ext = "webm";
+                    break;
+                case "video/ogg":
+                    ext = "ogg";
+                    break;
             }
             return ext;
         },
 
-        pokeFilename: function(filename,uploader){
+        pokeFilename: function (filename, uploader) {
 
             var upc = '';
-            if(typeof uploader.config.updatecontrol !== 'undefined' && uploader.config.updatecontrol !==''){
-                upc=$('[id="' + uploader.config.updatecontrol + '"]');
+            if (typeof uploader.config.updatecontrol !== 'undefined' && uploader.config.updatecontrol !== '') {
+                upc = $('[id="' + uploader.config.updatecontrol + '"]');
                 //the code below used to work until odd chars in question id annoyed jquery 3
                 //upc = $('#' + uploader.config.updatecontrol);
             }
-            if(upc.length<1){
+            if (upc.length < 1) {
                 upc = $('[id="' + uploader.config.updatecontrol + '"]', window.parent.document);
             }
             if (upc.length > 0) {
                 upc.get(0).value = filename;
-            }else{
+            } else {
                 log.debug('upload failed #2');
-                uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'),'recui_uploaderror');
+                uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'), 'recui_uploaderror');
                 return false;
             }
             upc.trigger('change');
             return true;
         },
 
-        alertRecorderSuccess: function(widgetid){
-            if(this.config.hasOwnProperty('onuploadsuccess')){
+        alertRecorderSuccess: function (widgetid) {
+            if (this.config.hasOwnProperty('onuploadsuccess')) {
                 this.config.onuploadsuccess(widgetid);
             }
         },
 
-        alertRecorderFailure: function(widgetid){
-            if(this.config.hasOwnProperty('onuploadfailure')){
+        alertRecorderFailure: function (widgetid) {
+            if (this.config.hasOwnProperty('onuploadfailure')) {
                 this.config.onuploadfailure(widgetid);
             }
         },
 
         //We can detect conversion by pinging the s3 out filename
         //this is only done in the iFrame
-        completeAfterProcessing: function(uploader,filename, waitms){
+        completeAfterProcessing: function (uploader, filename, waitms) {
 
             //alert the skin that we are awaiting processing
-            this.upskin.showMessage(M.util.get_string('recui_awaitingconversion', 'filter_poodll'),'recui_awaitingconversion');
+            this.upskin.showMessage(M.util.get_string('recui_awaitingconversion', 'filter_poodll'), 'recui_awaitingconversion');
 
             //this will always be true ...
-            if(uploader.config.iframeembed){
-                filename =  uploader.config.s3root + uploader.config.s3filename;
+            if (uploader.config.iframeembed) {
+                filename = uploader.config.s3root + uploader.config.s3filename;
             }
 
             //We alert the iframe host that a file is now awaiting conversion
-            var messageObject ={};
+            var messageObject = {};
             messageObject.type = "awaitingprocessing";
             messageObject.mediaurl = filename;
             messageObject.mediafilename = uploader.config.s3filename;
@@ -118,9 +248,9 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             messageObject.s3root = uploader.config.s3root;
             messageObject.id = uploader.config.id;
             messageObject.updatecontrol = uploader.config.updatecontrol;
-            if(uploader.config.transcribe){
+            if (uploader.config.transcribe) {
                 messageObject.transcripturl = filename + '.txt';
-                messageObject.transcriptfilename = uploader.config.s3filename  + '.txt';
+                messageObject.transcriptfilename = uploader.config.s3filename + '.txt';
             }
             uploader.config.hermes.postMessage(messageObject);
 
@@ -128,34 +258,36 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             var that = this;
             $.ajax({
                 url: uploader.config.s3root + uploader.config.s3filename,
-                method:'HEAD',
+                method: 'HEAD',
                 cache: false,
-                error: function()
-                {
+                error: function () {
                     //We get here if its a 404 or 403. So settimout here and wait for file to arrive
                     //we increment the timeout period each time to prevent bottlenecks
                     log.debug('403 errors are normal here, till the file arrives back from conversion');
-                    setTimeout(function(){that.completeAfterProcessing(uploader,filename,waitms+500);},waitms);
+                    setTimeout(function () {
+                        that.completeAfterProcessing(uploader, filename, waitms + 500);
+                    }, waitms);
                 },
-                success: function(data, textStatus, xhr)
-                {
-                    switch(xhr.status){
+                success: function (data, textStatus, xhr) {
+                    switch (xhr.status) {
                         case 200:
-                            that.doUploadCompleteCallback(uploader,filename);
+                            that.doUploadCompleteCallback(uploader, filename);
                             break;
                         default:
-                            setTimeout(function(){that.completeAfterProcessing(uploader,filename,waitms+500);},waitms);
+                            setTimeout(function () {
+                                that.completeAfterProcessing(uploader, filename, waitms + 500);
+                            }, waitms);
                     }
 
                 }
             });
         },
 
-        doUploadCompleteCallback: function(uploader,filename){
+        doUploadCompleteCallback: function (uploader, filename) {
 
             //in the case of an iframeembed we need a full URL not just a filename
-            if(uploader.config.iframeembed){
-                filename =  uploader.config.s3root + uploader.config.s3filename;
+            if (uploader.config.iframeembed) {
+                filename = uploader.config.s3root + uploader.config.s3filename;
             }
 
             //For callbackjs and for postmessage we need an array of stuff
@@ -167,10 +299,10 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             callbackObject[4] = uploader.config.s3filename;
 
             //alert the skin that we were successful
-            this.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'),'recui_uploadsuccess');
+            this.upskin.showMessage(M.util.get_string('recui_uploadsuccess', 'filter_poodll'), 'recui_uploadsuccess');
 
             //invoke callbackjs if we have one, otherwise just update the control(default behav.)
-            if(!uploader.config.iframeembed) {
+            if (!uploader.config.iframeembed) {
                 if (uploader.config.callbackjs && uploader.config.callbackjs != '') {
                     if (typeof(uploader.config.callbackjs) === 'function') {
                         uploader.config.callbackjs(callbackObject);
@@ -182,10 +314,10 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                     //by default we just poke the filename
                     uploader.pokeFilename(filename, uploader);
                 }
-            }else{
+            } else {
                 //in the case of an iframeembed we will also post a message to the host, they can choose to handle it or not
                 //The callback object above scan prob. be phased out. But not all integrations will use iframes either.
-                var messageObject ={};
+                var messageObject = {};
                 messageObject.type = "filesubmitted";
                 messageObject.mediaurl = uploader.config.s3root + uploader.config.s3filename;
                 messageObject.mediafilename = uploader.config.s3filename;
@@ -194,9 +326,9 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                 messageObject.s3root = uploader.config.s3root;
                 messageObject.id = uploader.config.id;
                 messageObject.updatecontrol = uploader.config.updatecontrol;
-                if(uploader.config.transcribe){
+                if (uploader.config.transcribe) {
                     messageObject.transcripturl = uploader.config.s3root + uploader.config.s3filename + '.txt';
-                    messageObject.transcriptfilename = uploader.config.s3filename  + '.txt';
+                    messageObject.transcriptfilename = uploader.config.s3filename + '.txt';
                 }
 
                 uploader.config.hermes.postMessage(messageObject);
@@ -204,13 +336,13 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         },
 
         //after an upload handle the filename poke and callback call
-        postProcessUpload: function(e,uploader){
+        postProcessUpload: function (e, uploader) {
             var xhr = e.currentTarget;
-            if (xhr.readyState == 4 ) {
+            if (xhr.readyState == 4) {
 
                 uploader.upskin.deactivateProgressSession();
 
-                if(xhr.status==200) {
+                if (xhr.status == 200) {
                     var filename = uploader.config.filename;
                     if (!filename) {
                         filename = uploader.extractFilename(xhr.responseText);
@@ -225,18 +357,18 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                     //in an iframeembed we only  do this after conversion is complete. so we run a poll to check compl.
                     //in standard Moodle we have a placeholder file to deal with any slow conversions. so we don't poll
                     if (uploader.config.iframeembed) {
-                        this.completeAfterProcessing(uploader, filename,1000);
-                    }else{
+                        this.completeAfterProcessing(uploader, filename, 1000);
+                    } else {
                         this.doUploadCompleteCallback(uploader, filename);
                     }
 
                     //alert the recorder that this was successful
                     this.alertRecorderSuccess(uploader.config.widgetid);
 
-                }else{
+                } else {
                     log.debug('upload failed #3');
                     log.debug(xhr);
-                    uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'),'recui_uploaderror');
+                    uploader.upskin.showMessage(M.util.get_string('recui_uploaderror', 'filter_poodll'), 'recui_uploaderror');
 
                     //alert the recorder that this failed
                     this.alertRecorderFailure(uploader.config.widgetid);
@@ -247,7 +379,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
         },
 
         // upload Media file to wherever
-        uploadFile: function(filedata,sourcemimetype) {
+        uploadFile: function (filedata, sourcemimetype) {
 
             var xhr = new XMLHttpRequest();
             var config = this.config;
@@ -257,8 +389,8 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             var sourceext = this.fetchFileExtension(sourcemimetype);
 
             //is this an iframe embed
-            if(typeof config.iframeembed == 'undefined'){
-                config.iframeembed=false;
+            if (typeof config.iframeembed == 'undefined') {
+                config.iframeembed = false;
             }
 
             //are we using s3
@@ -268,34 +400,34 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             this.upskin.initProgressSession(xhr);
 
             //alert user that we are now uploading
-            this.upskin.showMessage(M.util.get_string('recui_uploading', 'filter_poodll'),'recui_uploading');
+            this.upskin.showMessage(M.util.get_string('recui_uploading', 'filter_poodll'), 'recui_uploading');
 
             //init sourcemimetype and sourcefilename
             uploader.config.sourcemimetype = sourcemimetype;
             uploader.config.sourcefilename = uploader.config.s3filename;
 
-            xhr.onreadystatechange = function(e){
-                if(using_s3 && this.readyState===4) {
+            xhr.onreadystatechange = function (e) {
+                if (using_s3 && this.readyState === 4) {
                     if (config.iframeembed) {
-                        uploader.update_filenames(uploader,sourceext);
+                        uploader.update_filenames(uploader, sourceext);
                     } else {
                         //ping Moodle and inform that we have a new file
                         uploader.postprocess_s3_upload(uploader);
                     }
                 }
-                uploader.postProcessUpload(e,uploader);
+                uploader.postProcessUpload(e, uploader);
 
             };
 
-            if(using_s3){
-                xhr.open("put",config.posturl, true);
+            if (using_s3) {
+                xhr.open("put", config.posturl, true);
                 xhr.setRequestHeader("Content-Type", 'application/octet-stream');
                 xhr.send(filedata);
-            }else{
+            } else {
 
                 //We NEED to redo this bit of code ..
                 //its duplicating!!!
-                if(!(filedata instanceof Blob)){
+                if (!(filedata instanceof Blob)) {
                     var params = "datatype=uploadfile";
                     //We must URI encode the filedata, because otherwise the "+" characters get turned into spaces
                     //spent hours tracking that down ...justin 20121012
@@ -308,17 +440,17 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                     params += "&filearea=" + config.p4;
                     params += "&itemid=" + config.p5;
 
-                    xhr.open("POST",config.posturl, true);
+                    xhr.open("POST", config.posturl, true);
                     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                     xhr.setRequestHeader("Cache-Control", "no-cache");
                     //xhr.setRequestHeader("Content-length", params.length);
                     //xhr.setRequestHeader("Connection", "close");
                     xhr.send(params);
-                }else{
+                } else {
                     //we have to base64 string the blob  before sending it
                     var reader = new window.FileReader();
                     reader.readAsDataURL(filedata);
-                    reader.onloadend = function() {
+                    reader.onloadend = function () {
                         var base64filedata = reader.result;
                         //log.debug(params);
                         var params = "datatype=uploadfile";
@@ -333,7 +465,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                         params += "&filearea=" + config.p4;
                         params += "&itemid=" + config.p5;
 
-                        xhr.open("POST",config.posturl, true);
+                        xhr.open("POST", config.posturl, true);
                         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
                         xhr.setRequestHeader("Cache-Control", "no-cache");
                         // xhr.setRequestHeader("Content-length", params.length);
@@ -344,7 +476,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             }//end of if using_s3
         },
 
-        update_filenames: function(uploader,sourceext){
+        update_filenames: function (uploader, sourceext) {
             var config = uploader.config;
 
             //now its a bit hacky, but
@@ -352,11 +484,11 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             // so we want to save that and if the user is NOT transcoding,
             //we want to change the s3filename from the default mp4/mp3 to whatever the mimetype inidicates, ie sourceext
 
-            switch(config.mediatype){
+            switch (config.mediatype) {
                 case 'audio':
                     //source info
                     uploader.config.sourcefilename = config.s3filename.replace('.mp3', '.' + sourceext);
-                    if(!config.transcode) {
+                    if (!config.transcode) {
                         uploader.config.s3filename = uploader.config.sourcefilename;
                         //do we need this, I think its old and noone uses it.
                         uploader.config.cloudfilename = uploader.config.s3filename;
@@ -364,14 +496,14 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
                     break;
                 case 'video':
                     uploader.config.sourcefilename = config.s3filename.replace('.mp4', '.' + sourceext);
-                    if(!config.transcode) {
+                    if (!config.transcode) {
                         uploader.config.s3filename = uploader.config.sourcefilename;
                     }
                     break;
             }
         },
 
-        postprocess_s3_upload: function(uploader){
+        postprocess_s3_upload: function (uploader) {
             var config = uploader.config;
             const formData = new FormData();
             formData.append("datatype", "handles3upload");
@@ -383,7 +515,7 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             formData.append("mediatype", config.mediatype);
             //navigator beacon polyfill
             if (!navigator.sendBeacon) {
-                navigator.sendBeacon = function(url, thedata) {
+                navigator.sendBeacon = function (url, thedata) {
                     window.fetch(url, {method: 'POST', body: thedata, credentials: 'include'});
                 };
             }
@@ -392,63 +524,63 @@ define(['jquery','core/log','filter_poodll/upskin_plain'], function($, log, upsk
             navigator.sendBeacon(M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', formData);
             return;
 
-/*
-            var xhr = new XMLHttpRequest();
-            var that = this;
+            /*
+                        var xhr = new XMLHttpRequest();
+                        var that = this;
 
-            //lets do a little error checking
-            //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
-            xhr.onreadystatechange = function(){
-                if(this.readyState===4){
-                    if(xhr.status!=200){
-                        that.upskin.showMessage('Post Process s3 Upload Error:' + xhr.status, 'recui_uploaderror');
-                        $('#' + that.config.widgetid + '_messages').show();
-                    }
-                }
-            };
+                        //lets do a little error checking
+                        //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
+                        xhr.onreadystatechange = function(){
+                            if(this.readyState===4){
+                                if(xhr.status!=200){
+                                    that.upskin.showMessage('Post Process s3 Upload Error:' + xhr.status, 'recui_uploaderror');
+                                    $('#' + that.config.widgetid + '_messages').show();
+                                }
+                            }
+                        };
 
-            //log.debug(params);
-            var params = "datatype=handles3upload";
-            params += "&contextid=" + config.p2;
-            params += "&component=" + config.p3;
-            params += "&filearea=" + config.p4;
-            params += "&itemid=" + config.p5;
-            params += "&filename=" + config.filename;
-            params += "&mediatype=" + config.mediatype;
+                        //log.debug(params);
+                        var params = "datatype=handles3upload";
+                        params += "&contextid=" + config.p2;
+                        params += "&component=" + config.p3;
+                        params += "&filearea=" + config.p4;
+                        params += "&itemid=" + config.p5;
+                        params += "&filename=" + config.filename;
+                        params += "&mediatype=" + config.mediatype;
 
-            xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("Cache-Control", "no-cache");
-            xhr.send(params);
-*/
+                        xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
+                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                        xhr.setRequestHeader("Cache-Control", "no-cache");
+                        xhr.send(params);
+            */
 
         },
 
         //function to call the callback function with arguments
-        executeFunctionByName: function(functionName, context , args ) {
+        executeFunctionByName: function (functionName, context, args) {
 
             //var args = Array.prototype.slice.call(arguments).splice(2);
             var namespaces = functionName.split(".");
             var func = namespaces.pop();
-            for(var i = 0; i < namespaces.length; i++) {
+            for (var i = 0; i < namespaces.length; i++) {
                 context = context[namespaces[i]];
             }
             return context[func].call(this, args);
         },
 
-        dataURItoBlob: function(dataURI, mimetype) {
+        dataURItoBlob: function (dataURI, mimetype) {
             var byteString = atob(dataURI.split(',')[1]);
             var ab = new ArrayBuffer(byteString.length);
             var ia = new Uint8Array(ab);
             for (var i = 0; i < byteString.length; i++) {
                 ia[i] = byteString.charCodeAt(i);
             }
-            return new Blob([ab], { type: mimetype });
+            return new Blob([ab], {type: mimetype});
         },//end of dataURItoBlob
 
         //some recorder skins call this directly, so we just pass it through to the upskin
-        Output: function(msg){
-            this.upskin.showMessage(msg,'recorderskinmsg');
+        Output: function (msg) {
+            this.upskin.showMessage(msg, 'recorderskinmsg');
         }
     };//end of returned object
 });//total end

@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * A conflicting conditional operation is currently in progress against this resource. Please try again.
  */
-class OperationAbortedException extends S3Exception {}
+class OperationAbortedException extends S3Exception {
+}

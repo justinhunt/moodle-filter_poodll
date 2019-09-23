@@ -22,8 +22,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * HTTP request class to send requests
  */
-class Request extends AbstractMessage implements RequestInterface
-{
+class Request extends AbstractMessage implements RequestInterface {
     /** @var EventDispatcherInterface */
     protected $eventDispatcher;
 
@@ -57,34 +56,32 @@ class Request extends AbstractMessage implements RequestInterface
     /** @var bool */
     protected $isRedirect = false;
 
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array(
             // Called when receiving or uploading data through cURL
-            'curl.callback.read', 'curl.callback.write', 'curl.callback.progress',
+                'curl.callback.read', 'curl.callback.write', 'curl.callback.progress',
             // Cloning a request
-            'request.clone',
+                'request.clone',
             // About to send the request, sent request, completed transaction
-            'request.before_send', 'request.sent', 'request.complete',
+                'request.before_send', 'request.sent', 'request.complete',
             // A request received a successful response
-            'request.success',
+                'request.success',
             // A request received an unsuccessful response
-            'request.error',
+                'request.error',
             // An exception is being thrown because of an unsuccessful response
-            'request.exception',
+                'request.exception',
             // Received response status line
-            'request.receive.status_line'
+                'request.receive.status_line'
         );
     }
 
     /**
-     * @param string           $method  HTTP method
-     * @param string|Url       $url     HTTP URL to connect to. The URI scheme, host header, and URI are parsed from the
+     * @param string $method HTTP method
+     * @param string|Url $url HTTP URL to connect to. The URI scheme, host header, and URI are parsed from the
      *                                  full URL. If query string parameters are present they will be parsed as well.
      * @param array|Collection $headers HTTP headers
      */
-    public function __construct($method, $url, $headers = array())
-    {
+    public function __construct($method, $url, $headers = array()) {
         parent::__construct();
         $this->method = strtoupper($method);
         $this->curlOptions = new Collection();
@@ -96,7 +93,7 @@ class Request extends AbstractMessage implements RequestInterface
                 // Deal with collisions with Host and Authorization
                 if ($key == 'host' || $key == 'Host') {
                     $this->setHeader($key, $value);
-                } elseif ($value instanceof HeaderInterface) {
+                } else if ($value instanceof HeaderInterface) {
                     $this->addHeader($key, $value);
                 } else {
                     foreach ((array) $value as $v) {
@@ -109,8 +106,7 @@ class Request extends AbstractMessage implements RequestInterface
         $this->setState(self::STATE_NEW);
     }
 
-    public function __clone()
-    {
+    public function __clone() {
         if ($this->eventDispatcher) {
             $this->eventDispatcher = clone $this->eventDispatcher;
         }
@@ -129,8 +125,7 @@ class Request extends AbstractMessage implements RequestInterface
      *
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         return $this->getRawHeaders() . "\r\n\r\n";
     }
 
@@ -140,36 +135,31 @@ class Request extends AbstractMessage implements RequestInterface
      * @param Event $event Received
      * @throws BadResponseException if the response is not successful
      */
-    public static function onRequestError(Event $event)
-    {
+    public static function onRequestError(Event $event) {
         $e = BadResponseException::factory($event['request'], $event['response']);
         $event['request']->setState(self::STATE_ERROR, array('exception' => $e) + $event->toArray());
         throw $e;
     }
 
-    public function setClient(ClientInterface $client)
-    {
+    public function setClient(ClientInterface $client) {
         $this->client = $client;
 
         return $this;
     }
 
-    public function getClient()
-    {
+    public function getClient() {
         return $this->client;
     }
 
-    public function getRawHeaders()
-    {
+    public function getRawHeaders() {
         $protocolVersion = $this->protocolVersion ?: '1.1';
 
         return trim($this->method . ' ' . $this->getResource()) . ' '
-            . strtoupper(str_replace('https', 'http', $this->url->getScheme()))
-            . '/' . $protocolVersion . "\r\n" . implode("\r\n", $this->getHeaderLines());
+                . strtoupper(str_replace('https', 'http', $this->url->getScheme()))
+                . '/' . $protocolVersion . "\r\n" . implode("\r\n", $this->getHeaderLines());
     }
 
-    public function setUrl($url)
-    {
+    public function setUrl($url) {
         if ($url instanceof Url) {
             $this->url = $url;
         } else {
@@ -189,8 +179,7 @@ class Request extends AbstractMessage implements RequestInterface
         return $this;
     }
 
-    public function send()
-    {
+    public function send() {
         if (!$this->client) {
             throw new RuntimeException('A client must be set on the request');
         }
@@ -198,79 +187,66 @@ class Request extends AbstractMessage implements RequestInterface
         return $this->client->send($this);
     }
 
-    public function getResponse()
-    {
+    public function getResponse() {
         return $this->response;
     }
 
-    public function getQuery($asString = false)
-    {
+    public function getQuery($asString = false) {
         return $asString
-            ? (string) $this->url->getQuery()
-            : $this->url->getQuery();
+                ? (string) $this->url->getQuery()
+                : $this->url->getQuery();
     }
 
-    public function getMethod()
-    {
+    public function getMethod() {
         return $this->method;
     }
 
-    public function getScheme()
-    {
+    public function getScheme() {
         return $this->url->getScheme();
     }
 
-    public function setScheme($scheme)
-    {
+    public function setScheme($scheme) {
         $this->url->setScheme($scheme);
 
         return $this;
     }
 
-    public function getHost()
-    {
+    public function getHost() {
         return $this->url->getHost();
     }
 
-    public function setHost($host)
-    {
+    public function setHost($host) {
         $this->url->setHost($host);
         $this->setPort($this->url->getPort());
 
         return $this;
     }
 
-    public function getProtocolVersion()
-    {
+    public function getProtocolVersion() {
         return $this->protocolVersion;
     }
 
-    public function setProtocolVersion($protocol)
-    {
+    public function setProtocolVersion($protocol) {
         $this->protocolVersion = $protocol;
 
         return $this;
     }
 
-    public function getPath()
-    {
+    public function getPath() {
         return '/' . ltrim($this->url->getPath(), '/');
     }
 
-    public function setPath($path)
-    {
+    public function setPath($path) {
         $this->url->setPath($path);
 
         return $this;
     }
 
-    public function getPort()
-    {
+    public function getPort() {
         return $this->url->getPort();
     }
 
-    public function setPort($port)
-    {
+    public function setPort($port) {
         $this->url->setPort($port);
 
         // Include the port in the Host header if it is not the default port for the scheme of the URL
@@ -284,23 +260,20 @@ class Request extends AbstractMessage implements RequestInterface
         return $this;
     }
 
-    public function getUsername()
-    {
+    public function getUsername() {
         return $this->username;
     }
 
-    public function getPassword()
-    {
+    public function getPassword() {
         return $this->password;
     }
 
-    public function setAuth($user, $password = '', $scheme = CURLAUTH_BASIC)
-    {
+    public function setAuth($user, $password = '', $scheme = CURLAUTH_BASIC) {
         static $authMap = array(
-            'basic'  => CURLAUTH_BASIC,
-            'digest' => CURLAUTH_DIGEST,
-            'ntlm'   => CURLAUTH_NTLM,
-            'any'    => CURLAUTH_ANY
+                'basic' => CURLAUTH_BASIC,
+                'digest' => CURLAUTH_DIGEST,
+                'ntlm' => CURLAUTH_NTLM,
+                'any' => CURLAUTH_ANY
         );
 
         // If we got false or null, disable authentication
@@ -328,15 +301,14 @@ class Request extends AbstractMessage implements RequestInterface
             $this->setHeader('Authorization', 'Basic ' . base64_encode($this->username . ':' . $this->password));
         } else {
             $this->getCurlOptions()
-                ->set(CURLOPT_HTTPAUTH, $scheme)
-                ->set(CURLOPT_USERPWD, $this->username . ':' . $this->password);
+                    ->set(CURLOPT_HTTPAUTH, $scheme)
+                    ->set(CURLOPT_USERPWD, $this->username . ':' . $this->password);
         }
 
         return $this;
     }
 
-    public function getResource()
-    {
+    public function getResource() {
         $resource = $this->getPath();
         if ($query = (string) $this->url->getQuery()) {
             $resource .= '?' . $query;
@@ -345,18 +317,15 @@ class Request extends AbstractMessage implements RequestInterface
         return $resource;
     }
 
-    public function getUrl($asObject = false)
-    {
+    public function getUrl($asObject = false) {
         return $asObject ? clone $this->url : (string) $this->url;
     }
 
-    public function getState()
-    {
+    public function getState() {
         return $this->state;
     }
 
-    public function setState($state, array $context = array())
-    {
+    public function setState($state, array $context = array()) {
         $oldState = $this->state;
         $this->state = $state;
 
@@ -382,9 +351,9 @@ class Request extends AbstractMessage implements RequestInterface
             case self::STATE_ERROR:
                 if (isset($context['exception'])) {
                     $this->dispatch('request.exception', array(
-                        'request'   => $this,
-                        'response'  => isset($context['response']) ? $context['response'] : $this->response,
-                        'exception' => isset($context['exception']) ? $context['exception'] : null
+                            'request' => $this,
+                            'response' => isset($context['response']) ? $context['response'] : $this->response,
+                            'exception' => isset($context['exception']) ? $context['exception'] : null
                     ));
                 }
         }
@@ -392,13 +361,11 @@ class Request extends AbstractMessage implements RequestInterface
         return $this->state;
     }
 
-    public function getCurlOptions()
-    {
+    public function getCurlOptions() {
         return $this->curlOptions;
     }
 
-    public function startResponse(Response $response)
-    {
+    public function startResponse(Response $response) {
         $this->state = self::STATE_TRANSFER;
         $response->setEffectiveUrl((string) $this->getUrl());
         $this->response = $response;
@@ -406,13 +373,12 @@ class Request extends AbstractMessage implements RequestInterface
         return $this;
     }
 
-    public function setResponse(Response $response, $queued = false)
-    {
+    public function setResponse(Response $response, $queued = false) {
         $response->setEffectiveUrl((string) $this->url);
 
         if ($queued) {
             $ed = $this->getEventDispatcher();
-            $ed->addListener('request.before_send', $f = function ($e) use ($response, &$f, $ed) {
+            $ed->addListener('request.before_send', $f = function($e) use ($response, &$f, $ed) {
                 $e['request']->setResponse($response);
                 $ed->removeListener('request.before_send', $f);
             }, -9999);
@@ -430,8 +396,7 @@ class Request extends AbstractMessage implements RequestInterface
         return $this;
     }
 
-    public function setResponseBody($body)
-    {
+    public function setResponseBody($body) {
         // Attempt to open a file for writing if a string was passed
         if (is_string($body)) {
             // @codeCoverageIgnoreStart
@@ -446,8 +411,7 @@ class Request extends AbstractMessage implements RequestInterface
         return $this;
     }
 
-    public function getResponseBody()
-    {
+    public function getResponseBody() {
         if ($this->responseBody === null) {
             $this->responseBody = EntityBody::factory()->setCustomData('default', true);
         }
@@ -462,14 +426,12 @@ class Request extends AbstractMessage implements RequestInterface
      * @deprecated Use getResponseBody()->isSeekable()
      * @codeCoverageIgnore
      */
-    public function isResponseBodyRepeatable()
-    {
+    public function isResponseBodyRepeatable() {
         Version::warn(__METHOD__ . ' is deprecated. Use $request->getResponseBody()->isRepeatable()');
         return !$this->responseBody ? true : $this->responseBody->isRepeatable();
     }
 
-    public function getCookies()
-    {
+    public function getCookies() {
         if ($cookie = $this->getHeader('Cookie')) {
             $data = ParserRegistry::getInstance()->getParser('cookie')->parseCookie($cookie);
             return $data['cookies'];
@@ -478,15 +440,13 @@ class Request extends AbstractMessage implements RequestInterface
         return array();
     }
 
-    public function getCookie($name)
-    {
+    public function getCookie($name) {
         $cookies = $this->getCookies();
 
         return isset($cookies[$name]) ? $cookies[$name] : null;
     }
 
-    public function addCookie($name, $value)
-    {
+    public function addCookie($name, $value) {
         if (!$this->hasHeader('Cookie')) {
             $this->setHeader('Cookie', "{$name}={$value}");
         } else {
@@ -499,8 +459,7 @@ class Request extends AbstractMessage implements RequestInterface
         return $this;
     }
 
-    public function removeCookie($name)
-    {
+    public function removeCookie($name) {
         if ($cookie = $this->getHeader('Cookie')) {
             foreach ($cookie as $cookieValue) {
                 if (strpos($cookieValue, $name . '=') === 0) {
@@ -512,16 +471,14 @@ class Request extends AbstractMessage implements RequestInterface
         return $this;
     }
 
-    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher)
-    {
+    public function setEventDispatcher(EventDispatcherInterface $eventDispatcher) {
         $this->eventDispatcher = $eventDispatcher;
         $this->eventDispatcher->addListener('request.error', array(__CLASS__, 'onRequestError'), -255);
 
         return $this;
     }
 
-    public function getEventDispatcher()
-    {
+    public function getEventDispatcher() {
         if (!$this->eventDispatcher) {
             $this->setEventDispatcher(new EventDispatcher());
         }
@@ -529,15 +486,13 @@ class Request extends AbstractMessage implements RequestInterface
         return $this->eventDispatcher;
     }
 
-    public function dispatch($eventName, array $context = array())
-    {
+    public function dispatch($eventName, array $context = array()) {
         $context['request'] = $this;
 
         return $this->getEventDispatcher()->dispatch($eventName, new Event($context));
     }
 
-    public function addSubscriber(EventSubscriberInterface $subscriber)
-    {
+    public function addSubscriber(EventSubscriberInterface $subscriber) {
         $this->getEventDispatcher()->addSubscriber($subscriber);
 
         return $this;
@@ -548,11 +503,10 @@ class Request extends AbstractMessage implements RequestInterface
      *
      * @return array
      */
-    protected function getEventArray()
-    {
+    protected function getEventArray() {
         return array(
-            'request'  => $this,
-            'response' => $this->response
+                'request' => $this,
+                'response' => $this->response
         );
     }
 
@@ -562,8 +516,7 @@ class Request extends AbstractMessage implements RequestInterface
      * @param array $context Contextual information
      * @throws RequestException|BadResponseException on unsuccessful responses
      */
-    protected function processResponse(array $context = array())
-    {
+    protected function processResponse(array $context = array()) {
         if (!$this->response) {
             // If no response, then processResponse shouldn't have been called
             $e = new RequestException('Error completing request');
@@ -604,8 +557,7 @@ class Request extends AbstractMessage implements RequestInterface
      * @deprecated Use Guzzle\Plugin\Cache\DefaultCanCacheStrategy
      * @codeCoverageIgnore
      */
-    public function canCache()
-    {
+    public function canCache() {
         Version::warn(__METHOD__ . ' is deprecated. Use Guzzle\Plugin\Cache\DefaultCanCacheStrategy.');
         if (class_exists('Guzzle\Plugin\Cache\DefaultCanCacheStrategy')) {
             $canCache = new \Guzzle\Plugin\Cache\DefaultCanCacheStrategy();
@@ -619,8 +571,7 @@ class Request extends AbstractMessage implements RequestInterface
      * @deprecated Use the history plugin (not emitting a warning as this is built-into the RedirectPlugin for now)
      * @codeCoverageIgnore
      */
-    public function setIsRedirect($isRedirect)
-    {
+    public function setIsRedirect($isRedirect) {
         $this->isRedirect = $isRedirect;
 
         return $this;
@@ -630,8 +581,7 @@ class Request extends AbstractMessage implements RequestInterface
      * @deprecated Use the history plugin
      * @codeCoverageIgnore
      */
-    public function isRedirect()
-    {
+    public function isRedirect() {
         Version::warn(__METHOD__ . ' is deprecated. Use the HistoryPlugin to track this.');
         return $this->isRedirect;
     }

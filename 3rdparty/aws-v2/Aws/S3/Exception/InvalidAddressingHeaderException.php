@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * You must specify the Anonymous role.
  */
-class InvalidAddressingHeaderException extends S3Exception {}
+class InvalidAddressingHeaderException extends S3Exception {
+}

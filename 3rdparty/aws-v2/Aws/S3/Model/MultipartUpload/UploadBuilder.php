@@ -25,8 +25,7 @@ use Aws\S3\Model\Acp;
  * Easily create a multipart uploader used to quickly and reliably upload a
  * large file or data stream to Amazon S3 using multipart uploads
  */
-class UploadBuilder extends AbstractUploadBuilder
-{
+class UploadBuilder extends AbstractUploadBuilder {
     /**
      * @var int Concurrency level to transfer the parts
      */
@@ -69,8 +68,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setBucket($bucket)
-    {
+    public function setBucket($bucket) {
         return $this->setOption('Bucket', $bucket);
     }
 
@@ -81,8 +79,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setKey($key)
-    {
+    public function setKey($key) {
         return $this->setOption('Key', $key);
     }
 
@@ -93,8 +90,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setMinPartSize($minSize)
-    {
+    public function setMinPartSize($minSize) {
         $this->minPartSize = (int) max((int) $minSize, AbstractTransfer::MIN_PART_SIZE);
 
         return $this;
@@ -109,8 +105,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setConcurrency($concurrency)
-    {
+    public function setConcurrency($concurrency) {
         $this->concurrency = $concurrency;
 
         return $this;
@@ -123,8 +118,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setMd5($md5)
-    {
+    public function setMd5($md5) {
         $this->md5 = $md5;
 
         return $this;
@@ -139,8 +133,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function calculateMd5($calculateMd5)
-    {
+    public function calculateMd5($calculateMd5) {
         $this->calculateEntireMd5 = (bool) $calculateMd5;
 
         return $this;
@@ -154,8 +147,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function calculatePartMd5($usePartMd5)
-    {
+    public function calculatePartMd5($usePartMd5) {
         $this->calculatePartMd5 = (bool) $usePartMd5;
 
         return $this;
@@ -168,21 +160,19 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setAcp(Acp $acp)
-    {
+    public function setAcp(Acp $acp) {
         return $this->setOption('ACP', $acp);
     }
 
     /**
      * Set an option to pass to the initial CreateMultipartUpload operation
      *
-     * @param string $name  Option name
+     * @param string $name Option name
      * @param string $value Option value
      *
      * @return $this
      */
-    public function setOption($name, $value)
-    {
+    public function setOption($name, $value) {
         $this->commandOptions[$name] = $value;
 
         return $this;
@@ -195,8 +185,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function addOptions(array $options)
-    {
+    public function addOptions(array $options) {
         $this->commandOptions = array_replace($this->commandOptions, $options);
 
         return $this;
@@ -209,8 +198,7 @@ class UploadBuilder extends AbstractUploadBuilder
      *
      * @return $this
      */
-    public function setTransferOptions(array $options)
-    {
+    public function setTransferOptions(array $options) {
         $this->transferOptions = $options;
 
         return $this;
@@ -221,14 +209,13 @@ class UploadBuilder extends AbstractUploadBuilder
      * @throws InvalidArgumentException when attempting to resume a transfer using a non-seekable stream
      * @throws InvalidArgumentException when missing required properties (bucket, key, client, source)
      */
-    public function build()
-    {
+    public function build() {
         if ($this->state instanceof TransferState) {
             $this->commandOptions = array_replace($this->commandOptions, $this->state->getUploadId()->toParams());
         }
 
         if (!isset($this->commandOptions['Bucket']) || !isset($this->commandOptions['Key'])
-            || !$this->client || !$this->source
+                || !$this->client || !$this->source
         ) {
             throw new InvalidArgumentException('You must specify a Bucket, Key, client, and source.');
         }
@@ -240,30 +227,29 @@ class UploadBuilder extends AbstractUploadBuilder
         // If no state was set, then create one by initiating or loading a multipart upload
         if (is_string($this->state)) {
             $this->state = TransferState::fromUploadId($this->client, UploadId::fromParams(array(
-                'Bucket'   => $this->commandOptions['Bucket'],
-                'Key'      => $this->commandOptions['Key'],
-                'UploadId' => $this->state
+                    'Bucket' => $this->commandOptions['Bucket'],
+                    'Key' => $this->commandOptions['Key'],
+                    'UploadId' => $this->state
             )));
-        } elseif (!$this->state) {
+        } else if (!$this->state) {
             $this->state = $this->initiateMultipartUpload();
         }
 
         $options = array_replace(array(
-            'min_part_size' => $this->minPartSize,
-            'part_md5'      => (bool) $this->calculatePartMd5,
-            'concurrency'   => $this->concurrency
+                'min_part_size' => $this->minPartSize,
+                'part_md5' => (bool) $this->calculatePartMd5,
+                'concurrency' => $this->concurrency
         ), $this->transferOptions);
 
         return $this->concurrency > 1
-            ? new ParallelTransfer($this->client, $this->state, $this->source, $options)
-            : new SerialTransfer($this->client, $this->state, $this->source, $options);
+                ? new ParallelTransfer($this->client, $this->state, $this->source, $options)
+                : new SerialTransfer($this->client, $this->state, $this->source, $options);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function initiateMultipartUpload()
-    {
+    protected function initiateMultipartUpload() {
         // Determine Content-Type
         if (!isset($this->commandOptions['ContentType'])) {
             if ($mimeType = $this->source->getContentType()) {
@@ -272,9 +258,9 @@ class UploadBuilder extends AbstractUploadBuilder
         }
 
         $params = array_replace(array(
-            Ua::OPTION        => Ua::MULTIPART_UPLOAD,
-            'command.headers' => $this->headers,
-            'Metadata'        => array()
+                Ua::OPTION => Ua::MULTIPART_UPLOAD,
+                'command.headers' => $this->headers,
+                'Metadata' => array()
         ), $this->commandOptions);
 
         // Calculate the MD5 hash if none was set and it is asked of the builder

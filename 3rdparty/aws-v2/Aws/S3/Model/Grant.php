@@ -23,17 +23,16 @@ use Guzzle\Common\ToArrayInterface;
 /**
  * Amazon S3 Grant model
  */
-class Grant implements ToArrayInterface
-{
+class Grant implements ToArrayInterface {
     /**
      * @var array A map of permissions to operation parameters
      */
     protected static $parameterMap = array(
-        Permission::READ         => 'GrantRead',
-        Permission::WRITE        => 'GrantWrite',
-        Permission::READ_ACP     => 'GrantReadACP',
-        Permission::WRITE_ACP    => 'GrantWriteACP',
-        Permission::FULL_CONTROL => 'GrantFullControl'
+            Permission::READ => 'GrantRead',
+            Permission::WRITE => 'GrantWrite',
+            Permission::READ_ACP => 'GrantReadACP',
+            Permission::WRITE_ACP => 'GrantWriteACP',
+            Permission::FULL_CONTROL => 'GrantFullControl'
     );
 
     /**
@@ -49,11 +48,10 @@ class Grant implements ToArrayInterface
     /**
      * Constructs an ACL
      *
-     * @param Grantee $grantee    Affected grantee
-     * @param string  $permission Permission applied
+     * @param Grantee $grantee Affected grantee
+     * @param string $permission Permission applied
      */
-    public function __construct(Grantee $grantee, $permission)
-    {
+    public function __construct(Grantee $grantee, $permission) {
         $this->setGrantee($grantee);
         $this->setPermission($permission);
     }
@@ -65,8 +63,7 @@ class Grant implements ToArrayInterface
      *
      * @return $this
      */
-    public function setGrantee(Grantee $grantee)
-    {
+    public function setGrantee(Grantee $grantee) {
         $this->grantee = $grantee;
 
         return $this;
@@ -77,8 +74,7 @@ class Grant implements ToArrayInterface
      *
      * @return Grantee
      */
-    public function getGrantee()
-    {
+    public function getGrantee() {
         return $this->grantee;
     }
 
@@ -91,12 +87,11 @@ class Grant implements ToArrayInterface
      *
      * @throws InvalidArgumentException
      */
-    public function setPermission($permission)
-    {
+    public function setPermission($permission) {
         $valid = Permission::values();
         if (!in_array($permission, $valid)) {
             throw new InvalidArgumentException('The permission must be one of '
-                . 'the following: ' . implode(', ', $valid) . '.');
+                    . 'the following: ' . implode(', ', $valid) . '.');
         }
 
         $this->permission = $permission;
@@ -109,8 +104,7 @@ class Grant implements ToArrayInterface
      *
      * @return string
      */
-    public function getPermission()
-    {
+    public function getPermission() {
         return $this->permission;
     }
 
@@ -119,21 +113,19 @@ class Grant implements ToArrayInterface
      *
      * @return array
      */
-    public function getParameterArray()
-    {
+    public function getParameterArray() {
         return array(
-            self::$parameterMap[$this->permission] => $this->grantee->getHeaderValue()
+                self::$parameterMap[$this->permission] => $this->grantee->getHeaderValue()
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function toArray()
-    {
+    public function toArray() {
         return array(
-            'Grantee'    => $this->grantee->toArray(),
-            'Permission' => $this->permission
+                'Grantee' => $this->grantee->toArray(),
+                'Permission' => $this->permission
         );
     }
 }

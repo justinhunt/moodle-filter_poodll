@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Indicates that the Versioning configuration specified in the request is invalid.
  */
-class IllegalVersioningConfigurationException extends S3Exception {}
+class IllegalVersioningConfigurationException extends S3Exception {
+}

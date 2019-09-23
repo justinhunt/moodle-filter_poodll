@@ -19,4 +19,5 @@ namespace Aws\ElasticTranscoder\Exception;
 /**
  * One or more required parameter values were not provided in the request.
  */
-class ValidationException extends ElasticTranscoderException {}
+class ValidationException extends ElasticTranscoderException {
+}

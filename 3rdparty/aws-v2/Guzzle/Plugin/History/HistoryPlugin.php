@@ -10,16 +10,14 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Maintains a list of requests and responses sent using a request or client
  */
-class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Countable
-{
+class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Countable {
     /** @var int The maximum number of requests to maintain in the history */
     protected $limit = 10;
 
     /** @var array Requests and responses that have passed through the plugin */
     protected $transactions = array();
 
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array('request.sent' => array('onRequestSent', 9999));
     }
 
@@ -28,8 +26,7 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         $lines = array();
         foreach ($this->transactions as $entry) {
             $response = isset($entry['response']) ? $entry['response'] : '';
@@ -42,13 +39,12 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
     /**
      * Add a request to the history
      *
-     * @param RequestInterface $request  Request to add
-     * @param Response         $response Response of the request
+     * @param RequestInterface $request Request to add
+     * @param Response $response Response of the request
      *
      * @return HistoryPlugin
      */
-    public function add(RequestInterface $request, Response $response = null)
-    {
+    public function add(RequestInterface $request, Response $response = null) {
         if (!$response && $request->getResponse()) {
             $response = $request->getResponse();
         }
@@ -68,8 +64,7 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return HistoryPlugin
      */
-    public function setLimit($limit)
-    {
+    public function setLimit($limit) {
         $this->limit = (int) $limit;
 
         return $this;
@@ -80,8 +75,7 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return int
      */
-    public function getLimit()
-    {
+    public function getLimit() {
         return $this->limit;
     }
 
@@ -91,8 +85,7 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return array
      */
-    public function getAll()
-    {
+    public function getAll() {
         return $this->transactions;
     }
 
@@ -101,10 +94,9 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return \ArrayIterator
      */
-    public function getIterator()
-    {
+    public function getIterator() {
         // Return an iterator just like the old iteration of the HistoryPlugin for BC compatibility (use getAll())
-        return new \ArrayIterator(array_map(function ($entry) {
+        return new \ArrayIterator(array_map(function($entry) {
             $entry['request']->getParams()->set('actual_response', $entry['response']);
             return $entry['request'];
         }, $this->transactions));
@@ -115,8 +107,7 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return int
      */
-    public function count()
-    {
+    public function count() {
         return count($this->transactions);
     }
 
@@ -125,8 +116,7 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return RequestInterface
      */
-    public function getLastRequest()
-    {
+    public function getLastRequest() {
         $last = end($this->transactions);
 
         return $last['request'];
@@ -137,8 +127,7 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return Response|null
      */
-    public function getLastResponse()
-    {
+    public function getLastResponse() {
         $last = end($this->transactions);
 
         return isset($last['response']) ? $last['response'] : null;
@@ -149,15 +138,13 @@ class HistoryPlugin implements EventSubscriberInterface, \IteratorAggregate, \Co
      *
      * @return HistoryPlugin
      */
-    public function clear()
-    {
+    public function clear() {
         $this->transactions = array();
 
         return $this;
     }
 
-    public function onRequestSent(Event $event)
-    {
+    public function onRequestSent(Event $event) {
         $this->add($event['request'], $event['response']);
     }
 }

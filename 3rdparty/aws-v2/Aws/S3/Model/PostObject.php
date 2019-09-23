@@ -24,8 +24,7 @@ use Guzzle\Http\Url;
 /**
  * Encapsulates the logic for getting the data for an S3 object POST upload form
  */
-class PostObject extends Collection
-{
+class PostObject extends Collection {
     /**
      * @var S3Client The S3 client being used to sign the policy
      */
@@ -90,8 +89,7 @@ class PostObject extends Collection
      * @param $bucket
      * @param array $options
      */
-    public function __construct(S3Client $client, $bucket, array $options = array())
-    {
+    public function __construct(S3Client $client, $bucket, array $options = array()) {
         $this->setClient($client);
         $this->setBucket($bucket);
         parent::__construct($options);
@@ -103,12 +101,11 @@ class PostObject extends Collection
      *
      * @return PostObject
      */
-    public function prepareData()
-    {
+    public function prepareData() {
         // Validate required options
         $options = Collection::fromConfig($this->data, array(
-            'ttd' => '+1 hour',
-            'key' => '^${filename}',
+                'ttd' => '+1 hour',
+                'key' => '^${filename}',
         ));
 
         // Format ttd option
@@ -123,8 +120,8 @@ class PostObject extends Collection
 
         // Setup policy document
         $policy = array(
-            'expiration' => gmdate(DateFormat::ISO8601_S3, $ttd),
-            'conditions' => array(array('bucket' => $this->bucket))
+                'expiration' => gmdate(DateFormat::ISO8601_S3, $ttd),
+                'conditions' => array(array('bucket' => $this->bucket))
         );
 
         // Configure the endpoint/action
@@ -139,12 +136,12 @@ class PostObject extends Collection
 
         // Setup basic form
         $this->formAttributes = array(
-            'action' => (string) $url,
-            'method' => 'POST',
-            'enctype' => 'multipart/form-data'
+                'action' => (string) $url,
+                'method' => 'POST',
+                'enctype' => 'multipart/form-data'
         );
         $this->formInputs = array(
-            'AWSAccessKeyId' => $this->client->getCredentials()->getAccessKeyId()
+                'AWSAccessKeyId' => $this->client->getCredentials()->getAccessKeyId()
         );
 
         // Add success action status
@@ -152,7 +149,7 @@ class PostObject extends Collection
         if ($status && in_array($status, array(200, 201, 204))) {
             $this->formInputs['success_action_status'] = (string) $status;
             $policy['conditions'][] = array(
-                'success_action_status' => (string) $status
+                    'success_action_status' => (string) $status
             );
             unset($options['success_action_status']);
         }
@@ -186,8 +183,7 @@ class PostObject extends Collection
      *
      * @return PostObject
      */
-    public function setClient(S3Client $client)
-    {
+    public function setClient(S3Client $client) {
         $this->client = $client;
 
         return $this;
@@ -198,8 +194,7 @@ class PostObject extends Collection
      *
      * @return S3Client
      */
-    public function getClient()
-    {
+    public function getClient() {
         return $this->client;
     }
 
@@ -210,8 +205,7 @@ class PostObject extends Collection
      *
      * @return PostObject
      */
-    public function setBucket($bucket)
-    {
+    public function setBucket($bucket) {
         $this->bucket = $bucket;
 
         return $this;
@@ -222,8 +216,7 @@ class PostObject extends Collection
      *
      * @return string
      */
-    public function getBucket()
-    {
+    public function getBucket() {
         return $this->bucket;
     }
 
@@ -232,8 +225,7 @@ class PostObject extends Collection
      *
      * @return array
      */
-    public function getFormAttributes()
-    {
+    public function getFormAttributes() {
         return $this->formAttributes;
     }
 
@@ -242,8 +234,7 @@ class PostObject extends Collection
      *
      * @return array
      */
-    public function getFormInputs()
-    {
+    public function getFormInputs() {
         return $this->formInputs;
     }
 
@@ -252,24 +243,22 @@ class PostObject extends Collection
      *
      * @return string
      */
-    public function getJsonPolicy()
-    {
+    public function getJsonPolicy() {
         return $this->jsonPolicy;
     }
 
     /**
      * Handles the encoding, singing, and injecting of the policy
      */
-    protected function applyPolicy()
-    {
+    protected function applyPolicy() {
         $jsonPolicy64 = base64_encode($this->jsonPolicy);
         $this->formInputs['policy'] = $jsonPolicy64;
 
         $this->formInputs['signature'] = base64_encode(hash_hmac(
-            'sha1',
-            $jsonPolicy64,
-            $this->client->getCredentials()->getSecretKey(),
-            true
+                'sha1',
+                $jsonPolicy64,
+                $this->client->getCredentials()->getSecretKey(),
+                true
         ));
     }
 }

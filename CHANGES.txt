@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.1.22(Build 2019092400)
+-Improved InteractiveTranscriptVideo (had not been working on Safari)
+-Set default AWS SDK to V2 on Windows servers
+-Tweaked cron job processing
+
 Version 3.1.21(Build 2019052000)
 -added pushtospeak recorder
 -added better speech cards

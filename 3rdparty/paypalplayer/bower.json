@@ -15,7 +15,7 @@
     "video",
     "accessible"
   ],
- "license": "BSD",
+  "license": "BSD",
   "ignore": [
     "**/.*",
     "node_modules",

@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * The request was rejected because the type of user for the transaction was incorrect.
  */
-class InvalidUserTypeException extends IamException {}
+class InvalidUserTypeException extends IamException {
+}

@@ -7,8 +7,7 @@ use Guzzle\Common\Exception\InvalidArgumentException;
 /**
  * API parameter object used with service descriptions
  */
-class Parameter
-{
+class Parameter {
     protected $name;
     protected $description;
     protected $serviceDescription;
@@ -87,19 +86,18 @@ class Parameter
      * - $ref:          (string) String referencing a service description model. The parameter is replaced by the
      *                  schema contained in the model.
      *
-     * @param array                       $data        Array of data as seen in service descriptions
+     * @param array $data Array of data as seen in service descriptions
      * @param ServiceDescriptionInterface $description Service description used to resolve models if $ref tags are found
      *
      * @throws InvalidArgumentException
      */
-    public function __construct(array $data = array(), ServiceDescriptionInterface $description = null)
-    {
+    public function __construct(array $data = array(), ServiceDescriptionInterface $description = null) {
         if ($description) {
             if (isset($data['$ref'])) {
                 if ($model = $description->getModel($data['$ref'])) {
                     $data = $model->toArray() + $data;
                 }
-            } elseif (isset($data['extends'])) {
+            } else if (isset($data['extends'])) {
                 // If this parameter extends from another parameter then start with the actual data
                 // union in the parent's data (e.g. actual supersedes parent)
                 if ($extends = $description->getModel($data['extends'])) {
@@ -131,11 +129,10 @@ class Parameter
      *
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         static $checks = array('required', 'description', 'static', 'type', 'format', 'instanceOf', 'location', 'sentAs',
-            'pattern', 'minimum', 'maximum', 'minItems', 'maxItems', 'minLength', 'maxLength', 'data', 'enum',
-            'filters');
+                'pattern', 'minimum', 'maximum', 'minItems', 'maxItems', 'minLength', 'maxLength', 'data', 'enum',
+                'filters');
 
         $result = array();
 
@@ -182,8 +179,7 @@ class Parameter
      *
      * @return mixed Returns the value, a static value if one is present, or a default value
      */
-    public function getValue($value)
-    {
+    public function getValue($value) {
         if ($this->static || ($this->default !== null && $value === null)) {
             return $this->default;
         }
@@ -198,8 +194,7 @@ class Parameter
      *
      * @return mixed Returns the filtered value
      */
-    public function filter($value)
-    {
+    public function filter($value) {
         // Formats are applied exclusively and supersed filters
         if ($this->format) {
             return SchemaFormatter::format($this->format, $value);
@@ -218,7 +213,7 @@ class Parameter
                     foreach ($filter['args'] as &$data) {
                         if ($data == '@value') {
                             $data = $value;
-                        } elseif ($data == '@api') {
+                        } else if ($data == '@api') {
                             $data = $this;
                         }
                     }
@@ -237,8 +232,7 @@ class Parameter
      *
      * @return string
      */
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
@@ -247,8 +241,7 @@ class Parameter
      *
      * @return string
      */
-    public function getWireName()
-    {
+    public function getWireName() {
         return $this->sentAs ?: $this->name;
     }
 
@@ -259,8 +252,7 @@ class Parameter
      *
      * @return self
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
 
         return $this;
@@ -271,8 +263,7 @@ class Parameter
      *
      * @return string|array
      */
-    public function getType()
-    {
+    public function getType() {
         return $this->type;
     }
 
@@ -283,8 +274,7 @@ class Parameter
      *
      * @return self
      */
-    public function setType($type)
-    {
+    public function setType($type) {
         $this->type = $type;
 
         return $this;
@@ -295,8 +285,7 @@ class Parameter
      *
      * @return bool
      */
-    public function getRequired()
-    {
+    public function getRequired() {
         return $this->required;
     }
 
@@ -307,8 +296,7 @@ class Parameter
      *
      * @return self
      */
-    public function setRequired($isRequired)
-    {
+    public function setRequired($isRequired) {
         $this->required = (bool) $isRequired;
 
         return $this;
@@ -319,8 +307,7 @@ class Parameter
      *
      * @return string|null
      */
-    public function getDefault()
-    {
+    public function getDefault() {
         return $this->default;
     }
 
@@ -331,8 +318,7 @@ class Parameter
      *
      * @return self
      */
-    public function setDefault($default)
-    {
+    public function setDefault($default) {
         $this->default = $default;
 
         return $this;
@@ -343,8 +329,7 @@ class Parameter
      *
      * @return string|null
      */
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->description;
     }
 
@@ -355,8 +340,7 @@ class Parameter
      *
      * @return self
      */
-    public function setDescription($description)
-    {
+    public function setDescription($description) {
         $this->description = $description;
 
         return $this;
@@ -367,8 +351,7 @@ class Parameter
      *
      * @return int|null
      */
-    public function getMinimum()
-    {
+    public function getMinimum() {
         return $this->minimum;
     }
 
@@ -379,8 +362,7 @@ class Parameter
      *
      * @return self
      */
-    public function setMinimum($min)
-    {
+    public function setMinimum($min) {
         $this->minimum = $min;
 
         return $this;
@@ -391,8 +373,7 @@ class Parameter
      *
      * @return int|null
      */
-    public function getMaximum()
-    {
+    public function getMaximum() {
         return $this->maximum;
     }
 
@@ -403,8 +384,7 @@ class Parameter
      *
      * @return self
      */
-    public function setMaximum($max)
-    {
+    public function setMaximum($max) {
         $this->maximum = $max;
 
         return $this;
@@ -415,8 +395,7 @@ class Parameter
      *
      * @return int
      */
-    public function getMinLength()
-    {
+    public function getMinLength() {
         return $this->minLength;
     }
 
@@ -427,8 +406,7 @@ class Parameter
      *
      * @return self
      */
-    public function setMinLength($min)
-    {
+    public function setMinLength($min) {
         $this->minLength = $min;
 
         return $this;
@@ -439,8 +417,7 @@ class Parameter
      *
      * @return int|null
      */
-    public function getMaxLength()
-    {
+    public function getMaxLength() {
         return $this->maxLength;
     }
 
@@ -451,8 +428,7 @@ class Parameter
      *
      * @return self
      */
-    public function setMaxLength($max)
-    {
+    public function setMaxLength($max) {
         $this->maxLength = $max;
 
         return $this;
@@ -463,8 +439,7 @@ class Parameter
      *
      * @return int|null
      */
-    public function getMaxItems()
-    {
+    public function getMaxItems() {
         return $this->maxItems;
     }
 
@@ -475,8 +450,7 @@ class Parameter
      *
      * @return self
      */
-    public function setMaxItems($max)
-    {
+    public function setMaxItems($max) {
         $this->maxItems = $max;
 
         return $this;
@@ -487,8 +461,7 @@ class Parameter
      *
      * @return int
      */
-    public function getMinItems()
-    {
+    public function getMinItems() {
         return $this->minItems;
     }
 
@@ -499,8 +472,7 @@ class Parameter
      *
      * @return self
      */
-    public function setMinItems($min)
-    {
+    public function setMinItems($min) {
         $this->minItems = $min;
 
         return $this;
@@ -511,8 +483,7 @@ class Parameter
      *
      * @return string|null
      */
-    public function getLocation()
-    {
+    public function getLocation() {
         return $this->location;
     }
 
@@ -523,8 +494,7 @@ class Parameter
      *
      * @return self
      */
-    public function setLocation($location)
-    {
+    public function setLocation($location) {
         $this->location = $location;
 
         return $this;
@@ -536,8 +506,7 @@ class Parameter
      *
      * @return string|null
      */
-    public function getSentAs()
-    {
+    public function getSentAs() {
         return $this->sentAs;
     }
 
@@ -548,8 +517,7 @@ class Parameter
      *
      * @return self
      */
-    public function setSentAs($name)
-    {
+    public function setSentAs($name) {
         $this->sentAs = $name;
 
         return $this;
@@ -563,15 +531,14 @@ class Parameter
      *
      * @return array|mixed|null
      */
-    public function getData($name = null)
-    {
+    public function getData($name = null) {
         if (!$name) {
             return $this->data;
         }
 
         if (isset($this->data[$name])) {
             return $this->data[$name];
-        } elseif (isset($this->{$name})) {
+        } else if (isset($this->{$name})) {
             return $this->{$name};
         }
 
@@ -582,12 +549,11 @@ class Parameter
      * Set the extra data properties of the parameter or set a specific extra property
      *
      * @param string|array|null $nameOrData The name of a specific extra to set or an array of extras to set
-     * @param mixed|null        $data       When setting a specific extra property, specify the data to set for it
+     * @param mixed|null $data When setting a specific extra property, specify the data to set for it
      *
      * @return self
      */
-    public function setData($nameOrData, $data = null)
-    {
+    public function setData($nameOrData, $data = null) {
         if (is_array($nameOrData)) {
             $this->data = $nameOrData;
         } else {
@@ -602,8 +568,7 @@ class Parameter
      *
      * @return mixed|null
      */
-    public function getStatic()
-    {
+    public function getStatic() {
         return $this->static;
     }
 
@@ -614,8 +579,7 @@ class Parameter
      *
      * @return self
      */
-    public function setStatic($static)
-    {
+    public function setStatic($static) {
         $this->static = (bool) $static;
 
         return $this;
@@ -626,8 +590,7 @@ class Parameter
      *
      * @return array
      */
-    public function getFilters()
-    {
+    public function getFilters() {
         return $this->filters ?: array();
     }
 
@@ -638,8 +601,7 @@ class Parameter
      *
      * @return self
      */
-    public function setFilters(array $filters)
-    {
+    public function setFilters(array $filters) {
         $this->filters = array();
         foreach ($filters as $filter) {
             $this->addFilter($filter);
@@ -656,8 +618,7 @@ class Parameter
      * @return self
      * @throws InvalidArgumentException
      */
-    public function addFilter($filter)
-    {
+    public function addFilter($filter) {
         if (is_array($filter)) {
             if (!isset($filter['method'])) {
                 throw new InvalidArgumentException('A [method] value must be specified for each complex filter');
@@ -678,8 +639,7 @@ class Parameter
      *
      * @return OperationInterface|Parameter|null
      */
-    public function getParent()
-    {
+    public function getParent() {
         return $this->parent;
     }
 
@@ -690,8 +650,7 @@ class Parameter
      *
      * @return self
      */
-    public function setParent($parent)
-    {
+    public function setParent($parent) {
         $this->parent = $parent;
 
         return $this;
@@ -702,8 +661,7 @@ class Parameter
      *
      * @return array
      */
-    public function getProperties()
-    {
+    public function getProperties() {
         if (!$this->propertiesCache) {
             $this->propertiesCache = array();
             foreach (array_keys($this->properties) as $name) {
@@ -721,8 +679,7 @@ class Parameter
      *
      * @return null|Parameter
      */
-    public function getProperty($name)
-    {
+    public function getProperty($name) {
         if (!isset($this->properties[$name])) {
             return null;
         }
@@ -743,8 +700,7 @@ class Parameter
      *
      * @return self
      */
-    public function removeProperty($name)
-    {
+    public function removeProperty($name) {
         unset($this->properties[$name]);
         $this->propertiesCache = null;
 
@@ -758,8 +714,7 @@ class Parameter
      *
      * @return self
      */
-    public function addProperty(Parameter $property)
-    {
+    public function addProperty(Parameter $property) {
         $this->properties[$property->getName()] = $property;
         $property->setParent($this);
         $this->propertiesCache = null;
@@ -772,8 +727,7 @@ class Parameter
      *
      * @return bool|Parameter|null
      */
-    public function getAdditionalProperties()
-    {
+    public function getAdditionalProperties() {
         if (is_array($this->additionalProperties)) {
             $this->additionalProperties = new static($this->additionalProperties, $this->serviceDescription);
             $this->additionalProperties->setParent($this);
@@ -789,8 +743,7 @@ class Parameter
      *
      * @return self
      */
-    public function setAdditionalProperties($additional)
-    {
+    public function setAdditionalProperties($additional) {
         $this->additionalProperties = $additional;
 
         return $this;
@@ -803,8 +756,7 @@ class Parameter
      *
      * @return self
      */
-    public function setItems(Parameter $items = null)
-    {
+    public function setItems(Parameter $items = null) {
         if ($this->items = $items) {
             $this->items->setParent($this);
         }
@@ -817,8 +769,7 @@ class Parameter
      *
      * @return Parameter|null
      */
-    public function getItems()
-    {
+    public function getItems() {
         if (is_array($this->items)) {
             $this->items = new static($this->items, $this->serviceDescription);
             $this->items->setParent($this);
@@ -832,8 +783,7 @@ class Parameter
      *
      * @return null|string
      */
-    public function getInstanceOf()
-    {
+    public function getInstanceOf() {
         return $this->instanceOf;
     }
 
@@ -844,8 +794,7 @@ class Parameter
      *
      * @return self
      */
-    public function setInstanceOf($instanceOf)
-    {
+    public function setInstanceOf($instanceOf) {
         $this->instanceOf = $instanceOf;
 
         return $this;
@@ -856,8 +805,7 @@ class Parameter
      *
      * @return array|null
      */
-    public function getEnum()
-    {
+    public function getEnum() {
         return $this->enum;
     }
 
@@ -868,8 +816,7 @@ class Parameter
      *
      * @return self
      */
-    public function setEnum(array $enum = null)
-    {
+    public function setEnum(array $enum = null) {
         $this->enum = $enum;
 
         return $this;
@@ -880,8 +827,7 @@ class Parameter
      *
      * @return string
      */
-    public function getPattern()
-    {
+    public function getPattern() {
         return $this->pattern;
     }
 
@@ -892,8 +838,7 @@ class Parameter
      *
      * @return self
      */
-    public function setPattern($pattern)
-    {
+    public function setPattern($pattern) {
         $this->pattern = $pattern;
 
         return $this;
@@ -904,8 +849,7 @@ class Parameter
      *
      * @return string
      */
-    public function getFormat()
-    {
+    public function getFormat() {
         return $this->format;
     }
 
@@ -916,8 +860,7 @@ class Parameter
      *
      * @return self
      */
-    public function setFormat($format)
-    {
+    public function setFormat($format) {
         $this->format = $format;
 
         return $this;

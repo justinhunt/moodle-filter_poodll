@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Your key is too long.
  */
-class KeyTooLongException extends S3Exception {}
+class KeyTooLongException extends S3Exception {
+}

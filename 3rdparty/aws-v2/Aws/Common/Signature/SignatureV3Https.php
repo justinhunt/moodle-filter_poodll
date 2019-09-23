@@ -22,12 +22,11 @@ use Guzzle\Http\Message\RequestInterface;
 
 /**
  * Implementation of Signature Version 3 HTTPS
+ *
  * @link http://docs.aws.amazon.com/Route53/latest/DeveloperGuide/RESTAuthentication.html
  */
-class SignatureV3Https extends AbstractSignature
-{
-    public function signRequest(RequestInterface $request, CredentialsInterface $credentials)
-    {
+class SignatureV3Https extends AbstractSignature {
+    public function signRequest(RequestInterface $request, CredentialsInterface $credentials) {
         // Add a date header if one is not set
         if (!$request->hasHeader('date') && !$request->hasHeader('x-amz-date')) {
             $request->setHeader('Date', gmdate(DateFormat::RFC1123, $this->getTimestamp()));

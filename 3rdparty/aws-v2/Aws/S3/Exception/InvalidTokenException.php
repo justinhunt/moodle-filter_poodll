@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The provided token is malformed or otherwise invalid.
  */
-class InvalidTokenException extends S3Exception {}
+class InvalidTokenException extends S3Exception {
+}

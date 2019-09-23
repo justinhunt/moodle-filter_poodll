@@ -11,14 +11,12 @@ use Guzzle\Http\Message\RequestInterface;
  * request. A closure key and \Closure value must be passed to the command in the constructor. The closure must
  * accept the command object as an argument.
  */
-class ClosureCommand extends AbstractCommand
-{
+class ClosureCommand extends AbstractCommand {
     /**
      * {@inheritdoc}
      * @throws InvalidArgumentException if a closure was not passed
      */
-    protected function init()
-    {
+    protected function init() {
         if (!$this['closure']) {
             throw new InvalidArgumentException('A closure must be passed in the parameters array');
         }
@@ -28,8 +26,7 @@ class ClosureCommand extends AbstractCommand
      * {@inheritdoc}
      * @throws UnexpectedValueException If the closure does not return a request
      */
-    protected function build()
-    {
+    protected function build() {
         $closure = $this['closure'];
         /** @var $closure \Closure */
         $this->request = $closure($this, $this->operation);

@@ -23,8 +23,7 @@ use Guzzle\Service\Builder\ServiceBuilderLoader;
 /**
  * Base class for interacting with web service clients
  */
-class Aws extends ServiceBuilder
-{
+class Aws extends ServiceBuilder {
     /**
      * @var string Current version of the SDK
      */
@@ -45,18 +44,17 @@ class Aws extends ServiceBuilder
      * 4. If you are on Amazon EC2, you can use the default configuration file and not provide any credentials so that
      *    you are using InstanceProfile credentials.
      *
-     * @param array|string $config           The full path to a .php or .js|.json file, or an associative array of data
+     * @param array|string $config The full path to a .php or .js|.json file, or an associative array of data
      *                                       to use as global parameters to pass to each service.
-     * @param array        $globalParameters Global parameters to pass to every service as it is instantiated.
+     * @param array $globalParameters Global parameters to pass to every service as it is instantiated.
      *
      * @return Aws
      */
-    public static function factory($config = null, array $globalParameters = array())
-    {
+    public static function factory($config = null, array $globalParameters = array()) {
         if (!$config) {
             // If nothing is passed in, then use the default configuration file with credentials from the environment
             $config = self::getDefaultServiceDefinition();
-        } elseif (is_array($config)) {
+        } else if (is_array($config)) {
             // If an array was passed, then use the default configuration file with parameter overrides
             $globalParameters = $config;
             $config = self::getDefaultServiceDefinition();
@@ -64,7 +62,7 @@ class Aws extends ServiceBuilder
 
         $loader = new ServiceBuilderLoader();
         $loader->addAlias('_aws', self::getDefaultServiceDefinition())
-            ->addAlias('_sdk1', __DIR__  . '/Resources/sdk1-config.php');
+                ->addAlias('_sdk1', __DIR__ . '/Resources/sdk1-config.php');
 
         return $loader->load($config, $globalParameters);
     }
@@ -74,9 +72,8 @@ class Aws extends ServiceBuilder
      *
      * @return string
      */
-    public static function getDefaultServiceDefinition()
-    {
-        return __DIR__  . '/Resources/aws-config.php';
+    public static function getDefaultServiceDefinition() {
+        return __DIR__ . '/Resources/aws-config.php';
     }
 
     /**
@@ -84,8 +81,7 @@ class Aws extends ServiceBuilder
      *
      * @return array
      */
-    public function getConfig()
-    {
+    public function getConfig() {
         return $this->builderConfig;
     }
 
@@ -97,8 +93,7 @@ class Aws extends ServiceBuilder
      * @return Aws
      * @deprecated "Facades" are being removed in version 3.0 of the SDK.
      */
-    public function enableFacades($namespace = null)
-    {
+    public function enableFacades($namespace = null) {
         Facade::mountFacades($this, $namespace);
 
         return $this;

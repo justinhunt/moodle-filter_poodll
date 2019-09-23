@@ -22,13 +22,12 @@ use Guzzle\Http\Message\Response;
 /**
  * Interface used to create AWS exception
  */
-interface ExceptionFactoryInterface
-{
+interface ExceptionFactoryInterface {
     /**
      * Returns an AWS service specific exception
      *
-     * @param RequestInterface $request  Unsuccessful request
-     * @param Response         $response Unsuccessful response that was encountered
+     * @param RequestInterface $request Unsuccessful request
+     * @param Response $response Unsuccessful response that was encountered
      *
      * @return \Exception|AwsExceptionInterface
      */

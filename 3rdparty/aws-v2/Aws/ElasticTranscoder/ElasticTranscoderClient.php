@@ -27,33 +27,70 @@ use Guzzle\Service\Resource\ResourceIteratorInterface;
 /**
  * Client to interact with Amazon Elastic Transcoder
  *
- * @method Model cancelJob(array $args = array()) {@command ElasticTranscoder CancelJob}
- * @method Model createJob(array $args = array()) {@command ElasticTranscoder CreateJob}
- * @method Model createPipeline(array $args = array()) {@command ElasticTranscoder CreatePipeline}
- * @method Model createPreset(array $args = array()) {@command ElasticTranscoder CreatePreset}
- * @method Model deletePipeline(array $args = array()) {@command ElasticTranscoder DeletePipeline}
- * @method Model deletePreset(array $args = array()) {@command ElasticTranscoder DeletePreset}
- * @method Model listJobsByPipeline(array $args = array()) {@command ElasticTranscoder ListJobsByPipeline}
- * @method Model listJobsByStatus(array $args = array()) {@command ElasticTranscoder ListJobsByStatus}
- * @method Model listPipelines(array $args = array()) {@command ElasticTranscoder ListPipelines}
- * @method Model listPresets(array $args = array()) {@command ElasticTranscoder ListPresets}
- * @method Model readJob(array $args = array()) {@command ElasticTranscoder ReadJob}
- * @method Model readPipeline(array $args = array()) {@command ElasticTranscoder ReadPipeline}
- * @method Model readPreset(array $args = array()) {@command ElasticTranscoder ReadPreset}
- * @method Model testRole(array $args = array()) {@command ElasticTranscoder TestRole}
- * @method Model updatePipeline(array $args = array()) {@command ElasticTranscoder UpdatePipeline}
- * @method Model updatePipelineNotifications(array $args = array()) {@command ElasticTranscoder UpdatePipelineNotifications}
- * @method Model updatePipelineStatus(array $args = array()) {@command ElasticTranscoder UpdatePipelineStatus}
- * @method ResourceIteratorInterface getListJobsByPipelineIterator(array $args = array()) The input array uses the parameters of the ListJobsByPipeline operation
- * @method ResourceIteratorInterface getListJobsByStatusIterator(array $args = array()) The input array uses the parameters of the ListJobsByStatus operation
- * @method ResourceIteratorInterface getListPipelinesIterator(array $args = array()) The input array uses the parameters of the ListPipelines operation
- * @method ResourceIteratorInterface getListPresetsIterator(array $args = array()) The input array uses the parameters of the ListPresets operation
+ * @method Model cancelJob(array $args = array()) {
+@command ElasticTranscoder CancelJob
+}
+ * @method Model createJob(array $args = array()) {
+@command ElasticTranscoder CreateJob
+}
+ * @method Model createPipeline(array $args = array()) {
+@command ElasticTranscoder CreatePipeline
+}
+ * @method Model createPreset(array $args = array()) {
+@command ElasticTranscoder CreatePreset
+}
+ * @method Model deletePipeline(array $args = array()) {
+@command ElasticTranscoder DeletePipeline
+}
+ * @method Model deletePreset(array $args = array()) {
+@command ElasticTranscoder DeletePreset
+}
+ * @method Model listJobsByPipeline(array $args = array()) {
+@command ElasticTranscoder ListJobsByPipeline
+}
+ * @method Model listJobsByStatus(array $args = array()) {
+@command ElasticTranscoder ListJobsByStatus
+}
+ * @method Model listPipelines(array $args = array()) {
+@command ElasticTranscoder ListPipelines
+}
+ * @method Model listPresets(array $args = array()) {
+@command ElasticTranscoder ListPresets
+}
+ * @method Model readJob(array $args = array()) {
+@command ElasticTranscoder ReadJob
+}
+ * @method Model readPipeline(array $args = array()) {
+@command ElasticTranscoder ReadPipeline
+}
+ * @method Model readPreset(array $args = array()) {
+@command ElasticTranscoder ReadPreset
+}
+ * @method Model testRole(array $args = array()) {
+@command ElasticTranscoder TestRole
+}
+ * @method Model updatePipeline(array $args = array()) {
+@command ElasticTranscoder UpdatePipeline
+}
+ * @method Model updatePipelineNotifications(array $args = array()) {
+@command ElasticTranscoder UpdatePipelineNotifications
+}
+ * @method Model updatePipelineStatus(array $args = array()) {
+@command ElasticTranscoder UpdatePipelineStatus
+}
+ * @method ResourceIteratorInterface getListJobsByPipelineIterator(array $args = array()) The input array uses the parameters of
+ *         the ListJobsByPipeline operation
+ * @method ResourceIteratorInterface getListJobsByStatusIterator(array $args = array()) The input array uses the parameters of the
+ *         ListJobsByStatus operation
+ * @method ResourceIteratorInterface getListPipelinesIterator(array $args = array()) The input array uses the parameters of the
+ *         ListPipelines operation
+ * @method ResourceIteratorInterface getListPresetsIterator(array $args = array()) The input array uses the parameters of the
+ *         ListPresets operation
  *
  * @link http://docs.aws.amazon.com/aws-sdk-php/v2/guide/service-elastictranscoder.html User guide
  * @link http://docs.aws.amazon.com/aws-sdk-php/v2/api/class-Aws.ElasticTranscoder.ElasticTranscoderClient.html API docs
  */
-class ElasticTranscoderClient extends AbstractClient
-{
+class ElasticTranscoderClient extends AbstractClient {
     const LATEST_API_VERSION = '2012-09-25';
 
     /**
@@ -64,15 +101,14 @@ class ElasticTranscoderClient extends AbstractClient
      * @return self
      * @link http://docs.aws.amazon.com/aws-sdk-php/v2/guide/configuration.html#client-configuration-options
      */
-    public static function factory($config = array())
-    {
+    public static function factory($config = array()) {
         return ClientBuilder::factory(__NAMESPACE__)
-            ->setConfig($config)
-            ->setConfigDefaults(array(
-                Options::VERSION             => self::LATEST_API_VERSION,
-                Options::SERVICE_DESCRIPTION => __DIR__ . '/Resources/elastictranscoder-%s.php'
-            ))
-            ->setExceptionParser(new JsonRestExceptionParser())
-            ->build();
+                ->setConfig($config)
+                ->setConfigDefaults(array(
+                        Options::VERSION => self::LATEST_API_VERSION,
+                        Options::SERVICE_DESCRIPTION => __DIR__ . '/Resources/elastictranscoder-%s.php'
+                ))
+                ->setExceptionParser(new JsonRestExceptionParser())
+                ->build();
     }
 }

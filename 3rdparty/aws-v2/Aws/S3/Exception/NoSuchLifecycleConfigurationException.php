@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The lifecycle configuration does not exist.
  */
-class NoSuchLifecycleConfigurationException extends S3Exception {}
+class NoSuchLifecycleConfigurationException extends S3Exception {
+}

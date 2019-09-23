@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable GranteeType values
  */
-class GranteeType extends Enum
-{
+class GranteeType extends Enum {
     const USER = 'CanonicalUser';
     const EMAIL = 'AmazonCustomerByEmail';
     const GROUP = 'Group';

@@ -24,8 +24,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * It also implements RFC 5861's `stale-if-error` Cache-Control extension, allowing stale cache responses to be used
  * when an error is encountered (such as a `500 Internal Server Error` or DNS failure).
  */
-class CachePlugin implements EventSubscriberInterface
-{
+class CachePlugin implements EventSubscriberInterface {
     /** @var RevalidationInterface Cache revalidation strategy */
     protected $revalidation;
 
@@ -48,16 +47,15 @@ class CachePlugin implements EventSubscriberInterface
      *                                           requests are sent to a resource. Defaults to false.
      * @throws InvalidArgumentException if no cache is provided and Doctrine cache is not installed
      */
-    public function __construct($options = null)
-    {
+    public function __construct($options = null) {
         if (!is_array($options)) {
             if ($options instanceof CacheAdapterInterface) {
                 $options = array('storage' => new DefaultCacheStorage($options));
-            } elseif ($options instanceof CacheStorageInterface) {
+            } else if ($options instanceof CacheStorageInterface) {
                 $options = array('storage' => $options);
-            } elseif ($options) {
+            } else if ($options) {
                 $options = array('storage' => new DefaultCacheStorage(CacheAdapterFactory::fromCache($options)));
-            } elseif (!class_exists('Doctrine\Common\Cache\ArrayCache')) {
+            } else if (!class_exists('Doctrine\Common\Cache\ArrayCache')) {
                 // @codeCoverageIgnoreStart
                 throw new InvalidArgumentException('No cache was provided and Doctrine is not installed');
                 // @codeCoverageIgnoreEnd
@@ -68,30 +66,29 @@ class CachePlugin implements EventSubscriberInterface
 
         // Add a cache storage if a cache adapter was provided
         $this->storage = isset($options['storage'])
-            ? $options['storage']
-            : new DefaultCacheStorage(new DoctrineCacheAdapter(new ArrayCache()));
+                ? $options['storage']
+                : new DefaultCacheStorage(new DoctrineCacheAdapter(new ArrayCache()));
 
         if (!isset($options['can_cache'])) {
             $this->canCache = new DefaultCanCacheStrategy();
         } else {
             $this->canCache = is_callable($options['can_cache'])
-                ? new CallbackCanCacheStrategy($options['can_cache'])
-                : $options['can_cache'];
+                    ? new CallbackCanCacheStrategy($options['can_cache'])
+                    : $options['can_cache'];
         }
 
         // Use the provided revalidation strategy or the default
         $this->revalidation = isset($options['revalidation'])
-            ? $options['revalidation']
-            : new DefaultRevalidation($this->storage, $this->canCache);
+                ? $options['revalidation']
+                : new DefaultRevalidation($this->storage, $this->canCache);
     }
 
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array(
-            'request.before_send' => array('onRequestBeforeSend', -255),
-            'request.sent'        => array('onRequestSent', 255),
-            'request.error'       => array('onRequestError', 0),
-            'request.exception'   => array('onRequestException', 0),
+                'request.before_send' => array('onRequestBeforeSend', -255),
+                'request.sent' => array('onRequestSent', 255),
+                'request.error' => array('onRequestError', 0),
+                'request.exception' => array('onRequestException', 0),
         );
     }
 
@@ -100,8 +97,7 @@ class CachePlugin implements EventSubscriberInterface
      *
      * @param Event $event
      */
-    public function onRequestBeforeSend(Event $event)
-    {
+    public function onRequestBeforeSend(Event $event) {
         $request = $event['request'];
         $request->addHeader('Via', sprintf('%s GuzzleCache/%s', $request->getProtocolVersion(), Version::VERSION));
 
@@ -126,8 +122,8 @@ class CachePlugin implements EventSubscriberInterface
             $params = $request->getParams();
             $params['cache.lookup'] = true;
             $response->setHeader(
-                'Age',
-                time() - strtotime($response->getDate() ? : $response->getLastModified() ?: 'now')
+                    'Age',
+                    time() - strtotime($response->getDate() ?: $response->getLastModified() ?: 'now')
             );
             // Validate that the response satisfies the request
             if ($this->canResponseSatisfyRequest($request, $response)) {
@@ -144,14 +140,13 @@ class CachePlugin implements EventSubscriberInterface
      *
      * @param Event $event
      */
-    public function onRequestSent(Event $event)
-    {
+    public function onRequestSent(Event $event) {
         $request = $event['request'];
         $response = $event['response'];
 
         if ($request->getParams()->get('cache.hit') === null &&
-            $this->canCache->canCacheRequest($request) &&
-            $this->canCache->canCacheResponse($response)
+                $this->canCache->canCacheRequest($request) &&
+                $this->canCache->canCacheResponse($response)
         ) {
             $this->storage->cache($request, $response);
         }
@@ -164,8 +159,7 @@ class CachePlugin implements EventSubscriberInterface
      *
      * @param Event $event
      */
-    public function onRequestError(Event $event)
-    {
+    public function onRequestError(Event $event) {
         $request = $event['request'];
 
         if (!$this->canCache->canCacheRequest($request)) {
@@ -174,8 +168,8 @@ class CachePlugin implements EventSubscriberInterface
 
         if ($response = $this->storage->fetch($request)) {
             $response->setHeader(
-                'Age',
-                time() - strtotime($response->getLastModified() ? : $response->getDate() ?: 'now')
+                    'Age',
+                    time() - strtotime($response->getLastModified() ?: $response->getDate() ?: 'now')
             );
 
             if ($this->canResponseSatisfyFailedRequest($request, $response)) {
@@ -194,8 +188,7 @@ class CachePlugin implements EventSubscriberInterface
      *
      * @return null
      */
-    public function onRequestException(Event $event)
-    {
+    public function onRequestException(Event $event) {
         if (!$event['exception'] instanceof CurlException) {
             return;
         }
@@ -206,7 +199,7 @@ class CachePlugin implements EventSubscriberInterface
         }
 
         if ($response = $this->storage->fetch($request)) {
-            $response->setHeader('Age', time() - strtotime($response->getDate() ? : 'now'));
+            $response->setHeader('Age', time() - strtotime($response->getDate() ?: 'now'));
             if (!$this->canResponseSatisfyFailedRequest($request, $response)) {
                 return;
             }
@@ -220,20 +213,19 @@ class CachePlugin implements EventSubscriberInterface
     /**
      * Check if a cache response satisfies a request's caching constraints
      *
-     * @param RequestInterface $request  Request to validate
-     * @param Response         $response Response to validate
+     * @param RequestInterface $request Request to validate
+     * @param Response $response Response to validate
      *
      * @return bool
      */
-    public function canResponseSatisfyRequest(RequestInterface $request, Response $response)
-    {
+    public function canResponseSatisfyRequest(RequestInterface $request, Response $response) {
         $responseAge = $response->calculateAge();
         $reqc = $request->getHeader('Cache-Control');
         $resc = $response->getHeader('Cache-Control');
 
         // Check the request's max-age header against the age of the response
         if ($reqc && $reqc->hasDirective('max-age') &&
-            $responseAge > $reqc->getDirective('max-age')) {
+                $responseAge > $reqc->getDirective('max-age')) {
             return false;
         }
 
@@ -244,8 +236,8 @@ class CachePlugin implements EventSubscriberInterface
                 if ($maxStale !== true && $response->getFreshness() < (-1 * $maxStale)) {
                     return false;
                 }
-            } elseif ($resc && $resc->hasDirective('max-age')
-                && $responseAge > $resc->getDirective('max-age')
+            } else if ($resc && $resc->hasDirective('max-age')
+                    && $responseAge > $resc->getDirective('max-age')
             ) {
                 return false;
             }
@@ -266,13 +258,12 @@ class CachePlugin implements EventSubscriberInterface
     /**
      * Check if a cache response satisfies a failed request's caching constraints
      *
-     * @param RequestInterface $request  Request to validate
-     * @param Response         $response Response to validate
+     * @param RequestInterface $request Request to validate
+     * @param Response $response Response to validate
      *
      * @return bool
      */
-    public function canResponseSatisfyFailedRequest(RequestInterface $request, Response $response)
-    {
+    public function canResponseSatisfyFailedRequest(RequestInterface $request, Response $response) {
         $reqc = $request->getHeader('Cache-Control');
         $resc = $response->getHeader('Cache-Control');
         $requestStaleIfError = $reqc ? $reqc->getDirective('stale-if-error') : null;
@@ -298,8 +289,7 @@ class CachePlugin implements EventSubscriberInterface
      *
      * @param string $url URL to purge
      */
-    public function purge($url)
-    {
+    public function purge($url) {
         // BC compatibility with previous version that accepted a Request object
         $url = $url instanceof RequestInterface ? $url->getUrl() : $url;
         $this->storage->purge($url);
@@ -308,11 +298,10 @@ class CachePlugin implements EventSubscriberInterface
     /**
      * Add the plugin's headers to a response
      *
-     * @param RequestInterface $request  Request
-     * @param Response         $response Response to add headers to
+     * @param RequestInterface $request Request
+     * @param Response $response Response to add headers to
      */
-    protected function addResponseHeaders(RequestInterface $request, Response $response)
-    {
+    protected function addResponseHeaders(RequestInterface $request, Response $response) {
         $params = $request->getParams();
         $response->setHeader('Via', sprintf('%s GuzzleCache/%s', $request->getProtocolVersion(), Version::VERSION));
 
@@ -328,7 +317,7 @@ class CachePlugin implements EventSubscriberInterface
 
         if ($params['cache.hit'] === true) {
             $xcache = 'HIT from GuzzleCache';
-        } elseif ($params['cache.hit'] == 'error') {
+        } else if ($params['cache.hit'] == 'error') {
             $xcache = 'HIT_ERROR from GuzzleCache';
         } else {
             $xcache = 'MISS from GuzzleCache';

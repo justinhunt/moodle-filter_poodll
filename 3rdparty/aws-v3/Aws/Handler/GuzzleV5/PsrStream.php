@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Handler\GuzzleV5;
 
 use GuzzleHttp\Stream\StreamDecoratorTrait;
@@ -10,25 +11,21 @@ use Psr\Http\Message\StreamInterface as Psr7StreamInterface;
  *
  * @codeCoverageIgnore
  */
-class PsrStream implements Psr7StreamInterface
-{
+class PsrStream implements Psr7StreamInterface {
     use StreamDecoratorTrait;
 
     /** @var GuzzleStreamInterface */
     private $stream;
 
-    public function __construct(GuzzleStreamInterface $stream)
-    {
+    public function __construct(GuzzleStreamInterface $stream) {
         $this->stream = $stream;
     }
 
-    public function rewind()
-    {
+    public function rewind() {
         $this->stream->seek(0);
     }
 
-    public function getContents()
-    {
+    public function getContents() {
         return $this->stream->getContents();
     }
 }

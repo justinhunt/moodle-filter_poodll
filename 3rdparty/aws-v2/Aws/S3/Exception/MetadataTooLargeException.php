@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Your metadata headers exceed the maximum allowed metadata size.
  */
-class MetadataTooLargeException extends S3Exception {}
+class MetadataTooLargeException extends S3Exception {
+}

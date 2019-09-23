@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -12,17 +12,19 @@ define(['jquery','core/log'], function($, log) {
         x: null,
         y: null,
         currenttime: 0,
-		enabled: false,
+        enabled: false,
         showpercent: false,
-        drawparams: {lineWidth: 10,
-                    barColor: '#ad2323',
-                    shadowOffsetX: 0,
-                    shadowOffsetY: 0,
-                    shadowBlur: 10,
-                    shadowColor: '#fff',
-                    font: '18px Arial',
-                    textAlign: "center",
-                    textBaseline: 'middle'},
+        drawparams: {
+            lineWidth: 10,
+            barColor: '#ad2323',
+            shadowOffsetX: 0,
+            shadowOffsetY: 0,
+            shadowBlur: 10,
+            shadowColor: '#fff',
+            font: '18px Arial',
+            textAlign: "center",
+            textBaseline: 'middle'
+        },
 
 
         //for making multiple instances
@@ -31,22 +33,22 @@ define(['jquery','core/log'], function($, log) {
         },
 
         //pass in config, the jquery video/audio object, and a function to be called when conversion has finshed
-        init: function (playcanvas, barcolor,showpercent) {
+        init: function (playcanvas, barcolor, showpercent) {
             //stash the key actors for calling from draw
             this.playcanvas = playcanvas.get(0);
             this.x = this.playcanvas.width / 2;
             this.y = this.playcanvas.height / 2;
             this.context = this.playcanvas.getContext('2d');
-            if(showpercent) {
+            if (showpercent) {
                 this.showpercent = showpercent;
             }
-            if(showpercent) {
-                this.setDrawParam('barColor',barcolor);
+            if (showpercent) {
+                this.setDrawParam('barColor', barcolor);
             }
         },
 
-        setDrawParam: function(paramkey,paramvalue){
-          this.drawparams[paramkey]=paramvalue;
+        setDrawParam: function (paramkey, paramvalue) {
+            this.drawparams[paramkey] = paramvalue;
         },
 
         clear: function () {
@@ -57,14 +59,14 @@ define(['jquery','core/log'], function($, log) {
         },
 
         stop: function () {
-        	this.enabled= false;
-        	//this.clear();
+            this.enabled = false;
+            //this.clear();
         },
 
         start: function () {
             this.clear();
-        	this.enabled=true;
-        	var that = this;
+            this.enabled = true;
+            var that = this;
 
             //set draw params, l
             this.context.lineWidth = this.drawparams.lineWidth;
@@ -72,39 +74,39 @@ define(['jquery','core/log'], function($, log) {
             this.context.setLineDash([]);
             this.context.shadowOffsetX = this.drawparams.shadowOffsetX;
             this.context.shadowOffsetY = this.drawparams.shadowOffsetY;
-            this.context.shadowBlur = this.drawparams.shadowBlur ;
+            this.context.shadowBlur = this.drawparams.shadowBlur;
             this.context.shadowColor = this.drawparams.shadowColor;
-            this.context.font=this.drawparams.font;
-            this.context.textAlign=this.drawparams.textAlign;
-            this.context.textBaseline=this.drawparams.textBaseline;
+            this.context.font = this.drawparams.font;
+            this.context.textAlign = this.drawparams.textAlign;
+            this.context.textBaseline = this.drawparams.textBaseline;
 
 
-			var draw= function () {
-                if(!that.enabled){
-                   return;
+            var draw = function () {
+                if (!that.enabled) {
+                    return;
                 }
                 that.clear();
-				var radius = Math.min(that.x, that.y) - that.context.lineWidth;//65;
-				var counterClockwise = false;
-				var circ = Math.PI * 2;
-				var quart = Math.PI / 2;
-				var current = that.fetchCurrent();
-				that.context.beginPath();
-				that.context.arc(that.x, that.y, radius, -(quart), ((circ) * current) - quart, counterClockwise);
+                var radius = Math.min(that.x, that.y) - that.context.lineWidth;//65;
+                var counterClockwise = false;
+                var circ = Math.PI * 2;
+                var quart = Math.PI / 2;
+                var current = that.fetchCurrent();
+                that.context.beginPath();
+                that.context.arc(that.x, that.y, radius, -(quart), ((circ) * current) - quart, counterClockwise);
 
-				//draw progress if we are doing that
-                if(that.showpercent){
-                    that.context.fillText(parseInt(current * 100)  + '%',that.x,that.y);
+                //draw progress if we are doing that
+                if (that.showpercent) {
+                    that.context.fillText(parseInt(current * 100) + '%', that.x, that.y);
                 }
 
-				that.context.stroke();
+                that.context.stroke();
 
-				var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
-								  window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
+                var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
+                    window.webkitRequestAnimationFrame || window.msRequestAnimationFrame;
                 requestAnimationFrame(draw);
 
-			}//end of draw
-			draw();
-    	}//end of enable
+            }//end of draw
+            draw();
+        }//end of enable
     };//end of returned object
 });//total end

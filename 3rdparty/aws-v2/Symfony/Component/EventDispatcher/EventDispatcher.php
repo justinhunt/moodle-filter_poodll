@@ -25,16 +25,14 @@ namespace Symfony\Component\EventDispatcher;
  * @author Jordi Boggiano <j.boggiano@seld.be>
  * @author Jordan Alliot <jordan.alliot@gmail.com>
  */
-class EventDispatcher implements EventDispatcherInterface
-{
+class EventDispatcher implements EventDispatcherInterface {
     private $listeners = array();
     private $sorted = array();
 
     /**
      * {@inheritdoc}
      */
-    public function dispatch($eventName, Event $event = null)
-    {
+    public function dispatch($eventName, Event $event = null) {
         if (null === $event) {
             $event = new Event();
         }
@@ -52,8 +50,7 @@ class EventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function getListeners($eventName = null)
-    {
+    public function getListeners($eventName = null) {
         if (null !== $eventName) {
             if (!isset($this->listeners[$eventName])) {
                 return array();
@@ -80,13 +77,12 @@ class EventDispatcher implements EventDispatcherInterface
      *
      * Returns null if the event or the listener does not exist.
      *
-     * @param string   $eventName The name of the event
-     * @param callable $listener  The listener
+     * @param string $eventName The name of the event
+     * @param callable $listener The listener
      *
      * @return int|null The event listener priority
      */
-    public function getListenerPriority($eventName, $listener)
-    {
+    public function getListenerPriority($eventName, $listener) {
         if (!isset($this->listeners[$eventName])) {
             return;
         }
@@ -101,16 +97,14 @@ class EventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function hasListeners($eventName = null)
-    {
+    public function hasListeners($eventName = null) {
         return (bool) count($this->getListeners($eventName));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function addListener($eventName, $listener, $priority = 0)
-    {
+    public function addListener($eventName, $listener, $priority = 0) {
         $this->listeners[$eventName][$priority][] = $listener;
         unset($this->sorted[$eventName]);
     }
@@ -118,8 +112,7 @@ class EventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function removeListener($eventName, $listener)
-    {
+    public function removeListener($eventName, $listener) {
         if (!isset($this->listeners[$eventName])) {
             return;
         }
@@ -134,12 +127,11 @@ class EventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function addSubscriber(EventSubscriberInterface $subscriber)
-    {
+    public function addSubscriber(EventSubscriberInterface $subscriber) {
         foreach ($subscriber->getSubscribedEvents() as $eventName => $params) {
             if (is_string($params)) {
                 $this->addListener($eventName, array($subscriber, $params));
-            } elseif (is_string($params[0])) {
+            } else if (is_string($params[0])) {
                 $this->addListener($eventName, array($subscriber, $params[0]), isset($params[1]) ? $params[1] : 0);
             } else {
                 foreach ($params as $listener) {
@@ -152,8 +144,7 @@ class EventDispatcher implements EventDispatcherInterface
     /**
      * {@inheritdoc}
      */
-    public function removeSubscriber(EventSubscriberInterface $subscriber)
-    {
+    public function removeSubscriber(EventSubscriberInterface $subscriber) {
         foreach ($subscriber->getSubscribedEvents() as $eventName => $params) {
             if (is_array($params) && is_array($params[0])) {
                 foreach ($params as $listener) {
@@ -172,11 +163,10 @@ class EventDispatcher implements EventDispatcherInterface
      * for each listener.
      *
      * @param callable[] $listeners The event listeners
-     * @param string     $eventName The name of the event to dispatch
-     * @param Event      $event     The event object to pass to the event handlers/listeners
+     * @param string $eventName The name of the event to dispatch
+     * @param Event $event The event object to pass to the event handlers/listeners
      */
-    protected function doDispatch($listeners, $eventName, Event $event)
-    {
+    protected function doDispatch($listeners, $eventName, Event $event) {
         foreach ($listeners as $listener) {
             if ($event->isPropagationStopped()) {
                 break;
@@ -190,8 +180,7 @@ class EventDispatcher implements EventDispatcherInterface
      *
      * @param string $eventName The name of the event
      */
-    private function sortListeners($eventName)
-    {
+    private function sortListeners($eventName) {
         krsort($this->listeners[$eventName]);
         $this->sorted[$eventName] = call_user_func_array('array_merge', $this->listeners[$eventName]);
     }

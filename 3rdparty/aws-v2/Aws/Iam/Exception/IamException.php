@@ -21,4 +21,5 @@ use Aws\Common\Exception\ServiceResponseException;
 /**
  * Default service exception class
  */
-class IamException extends ServiceResponseException {}
+class IamException extends ServiceResponseException {
+}

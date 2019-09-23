@@ -8,8 +8,7 @@ use Guzzle\Http\Message\RequestInterface;
 /**
  * Http request exception
  */
-class RequestException extends RuntimeException implements HttpException
-{
+class RequestException extends RuntimeException implements HttpException {
     /** @var RequestInterface */
     protected $request;
 
@@ -20,8 +19,7 @@ class RequestException extends RuntimeException implements HttpException
      *
      * @return RequestException
      */
-    public function setRequest(RequestInterface $request)
-    {
+    public function setRequest(RequestInterface $request) {
         $this->request = $request;
 
         return $this;
@@ -32,8 +30,7 @@ class RequestException extends RuntimeException implements HttpException
      *
      * @return RequestInterface
      */
-    public function getRequest()
-    {
+    public function getRequest() {
         return $this->request;
     }
 }

@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * The request was rejected because the certificate is invalid.
  */
-class InvalidCertificateException extends IamException {}
+class InvalidCertificateException extends IamException {
+}

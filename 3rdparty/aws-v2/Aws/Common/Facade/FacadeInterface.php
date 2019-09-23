@@ -23,8 +23,7 @@ namespace Aws\Common\Facade;
  *
  * @deprecated "Facades" are being removed in version 3.0 of the SDK.
  */
-interface FacadeInterface
-{
+interface FacadeInterface {
     /**
      * Returns the key used to access the client instance from the Service Builder
      *

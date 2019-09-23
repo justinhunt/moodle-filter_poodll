@@ -9,8 +9,7 @@ use Guzzle\Http\Message\RequestInterface;
  * Proxies requests and connections to a pool of internal curl_multi handles. Each recursive call will add requests
  * to the next available CurlMulti handle.
  */
-class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
-{
+class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface {
     protected $handles = array();
     protected $groups = array();
     protected $queued = array();
@@ -18,11 +17,10 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
     protected $selectTimeout;
 
     /**
-     * @param int   $maxHandles The maximum number of idle CurlMulti handles to allow to remain open
+     * @param int $maxHandles The maximum number of idle CurlMulti handles to allow to remain open
      * @param float $selectTimeout timeout for curl_multi_select
      */
-    public function __construct($maxHandles = 3, $selectTimeout = 1.0)
-    {
+    public function __construct($maxHandles = 3, $selectTimeout = 1.0) {
         $this->maxHandles = $maxHandles;
         $this->selectTimeout = $selectTimeout;
         // You can get some weird "Too many open files" errors when sending a large amount of requests in parallel.
@@ -32,15 +30,13 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
         class_exists('Guzzle\Http\Exception\CurlException');
     }
 
-    public function add(RequestInterface $request)
-    {
+    public function add(RequestInterface $request) {
         $this->queued[] = $request;
 
         return $this;
     }
 
-    public function all()
-    {
+    public function all() {
         $requests = $this->queued;
         foreach ($this->handles as $handle) {
             $requests = array_merge($requests, $handle->all());
@@ -49,8 +45,7 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
         return $requests;
     }
 
-    public function remove(RequestInterface $request)
-    {
+    public function remove(RequestInterface $request) {
         foreach ($this->queued as $i => $r) {
             if ($request === $r) {
                 unset($this->queued[$i]);
@@ -67,8 +62,7 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
         return false;
     }
 
-    public function reset($hard = false)
-    {
+    public function reset($hard = false) {
         $this->queued = array();
         $this->groups = array();
         foreach ($this->handles as $handle) {
@@ -81,8 +75,7 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
         return $this;
     }
 
-    public function send()
-    {
+    public function send() {
         if ($this->queued) {
             $group = $this->getAvailableHandle();
             // Add this handle to a list of handles than is claimed
@@ -105,8 +98,7 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
         }
     }
 
-    public function count()
-    {
+    public function count() {
         return count($this->all());
     }
 
@@ -115,8 +107,7 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
      *
      * @return CurlMulti
      */
-    protected function getAvailableHandle()
-    {
+    protected function getAvailableHandle() {
         // Grab a handle that is not claimed
         foreach ($this->handles as $h) {
             if (!in_array($h, $this->groups, true)) {
@@ -135,8 +126,7 @@ class CurlMultiProxy extends AbstractHasDispatcher implements CurlMultiInterface
     /**
      * Trims down unused CurlMulti handles to limit the number of open connections
      */
-    protected function cleanupHandles()
-    {
+    protected function cleanupHandles() {
         if ($diff = max(0, count($this->handles) - $this->maxHandles)) {
             for ($i = count($this->handles) - 1; $i > 0 && $diff > 0; $i--) {
                 if (!count($this->handles[$i])) {

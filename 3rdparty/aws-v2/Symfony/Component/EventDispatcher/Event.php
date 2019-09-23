@@ -25,8 +25,7 @@ namespace Symfony\Component\EventDispatcher;
  * @author Roman Borschel <roman@code-factory.org>
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-class Event
-{
+class Event {
     /**
      * @var bool Whether no further event listeners should be triggered
      */
@@ -49,8 +48,7 @@ class Event
      *
      * @return bool Whether propagation was already stopped for this event
      */
-    public function isPropagationStopped()
-    {
+    public function isPropagationStopped() {
         return $this->propagationStopped;
     }
 
@@ -61,8 +59,7 @@ class Event
      * further event listener will be triggered once any trigger calls
      * stopPropagation().
      */
-    public function stopPropagation()
-    {
+    public function stopPropagation() {
         $this->propagationStopped = true;
     }
 
@@ -73,8 +70,7 @@ class Event
      *
      * @deprecated since version 2.4, to be removed in 3.0. The event dispatcher is passed to the listener call.
      */
-    public function setDispatcher(EventDispatcherInterface $dispatcher)
-    {
+    public function setDispatcher(EventDispatcherInterface $dispatcher) {
         $this->dispatcher = $dispatcher;
     }
 
@@ -85,9 +81,10 @@ class Event
      *
      * @deprecated since version 2.4, to be removed in 3.0. The event dispatcher is passed to the listener call.
      */
-    public function getDispatcher()
-    {
-        @trigger_error('The '.__METHOD__.' method is deprecated since version 2.4 and will be removed in 3.0. The event dispatcher instance can be received in the listener call instead.', E_USER_DEPRECATED);
+    public function getDispatcher() {
+        @trigger_error('The ' . __METHOD__ .
+                ' method is deprecated since version 2.4 and will be removed in 3.0. The event dispatcher instance can be received in the listener call instead.',
+                E_USER_DEPRECATED);
 
         return $this->dispatcher;
     }
@@ -99,9 +96,10 @@ class Event
      *
      * @deprecated since version 2.4, to be removed in 3.0. The event name is passed to the listener call.
      */
-    public function getName()
-    {
-        @trigger_error('The '.__METHOD__.' method is deprecated since version 2.4 and will be removed in 3.0. The event name can be received in the listener call instead.', E_USER_DEPRECATED);
+    public function getName() {
+        @trigger_error('The ' . __METHOD__ .
+                ' method is deprecated since version 2.4 and will be removed in 3.0. The event name can be received in the listener call instead.',
+                E_USER_DEPRECATED);
 
         return $this->name;
     }
@@ -113,8 +111,7 @@ class Event
      *
      * @deprecated since version 2.4, to be removed in 3.0. The event name is passed to the listener call.
      */
-    public function setName($name)
-    {
+    public function setName($name) {
         $this->name = $name;
     }
 }

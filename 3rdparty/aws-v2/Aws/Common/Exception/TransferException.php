@@ -21,4 +21,5 @@ use Guzzle\Http\Exception\CurlException;
 /**
  * Transfer request exception
  */
-class TransferException extends CurlException implements AwsExceptionInterface {}
+class TransferException extends CurlException implements AwsExceptionInterface {
+}

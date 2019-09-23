@@ -25,8 +25,7 @@ use Guzzle\Service\ClientInterface;
 /**
  * Interface that all AWS clients implement
  */
-interface AwsClientInterface extends ClientInterface
-{
+interface AwsClientInterface extends ClientInterface {
     /**
      * Returns the AWS credentials associated with the client
      *
@@ -93,7 +92,7 @@ interface AwsClientInterface extends ClientInterface
      * Wait until a resource is available or an associated waiter returns true
      *
      * @param string $waiter Name of the waiter
-     * @param array  $input  Values used as input for the underlying operation and to control the waiter
+     * @param array $input Values used as input for the underlying operation and to control the waiter
      *
      * @return self
      */
@@ -103,7 +102,7 @@ interface AwsClientInterface extends ClientInterface
      * Get a named waiter object
      *
      * @param string $waiter Name of the waiter
-     * @param array  $input  Values used as input for the underlying operation and to control the waiter
+     * @param array $input Values used as input for the underlying operation and to control the waiter
      *
      * @return WaiterInterface
      */

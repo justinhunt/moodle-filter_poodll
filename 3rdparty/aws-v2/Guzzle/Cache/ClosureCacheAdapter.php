@@ -5,8 +5,7 @@ namespace Guzzle\Cache;
 /**
  * Cache adapter that defers to closures for implementation
  */
-class ClosureCacheAdapter implements CacheAdapterInterface
-{
+class ClosureCacheAdapter implements CacheAdapterInterface {
     /**
      * @var array Mapping of method names to callables
      */
@@ -23,8 +22,7 @@ class ClosureCacheAdapter implements CacheAdapterInterface
      *
      * @throws \InvalidArgumentException if the callable is not callable
      */
-    public function __construct(array $callables)
-    {
+    public function __construct(array $callables) {
         // Validate each key to ensure it exists and is callable
         foreach (array('contains', 'delete', 'fetch', 'save') as $key) {
             if (!array_key_exists($key, $callables) || !is_callable($callables[$key])) {
@@ -35,23 +33,19 @@ class ClosureCacheAdapter implements CacheAdapterInterface
         $this->callables = $callables;
     }
 
-    public function contains($id, array $options = null)
-    {
+    public function contains($id, array $options = null) {
         return call_user_func($this->callables['contains'], $id, $options);
     }
 
-    public function delete($id, array $options = null)
-    {
+    public function delete($id, array $options = null) {
         return call_user_func($this->callables['delete'], $id, $options);
     }
 
-    public function fetch($id, array $options = null)
-    {
+    public function fetch($id, array $options = null) {
         return call_user_func($this->callables['fetch'], $id, $options);
     }
 
-    public function save($id, $data, $lifeTime = false, array $options = null)
-    {
+    public function save($id, $data, $lifeTime = false, array $options = null) {
         return call_user_func($this->callables['save'], $id, $data, $lifeTime, $options);
     }
 }

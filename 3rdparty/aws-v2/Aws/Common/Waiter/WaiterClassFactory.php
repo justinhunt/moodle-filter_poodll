@@ -25,8 +25,7 @@ use Guzzle\Inflection\InflectorInterface;
  * storing waiter classes in the Waiter folder of a client class namespace using
  * a snake_case to CamelCase conversion (e.g. camel_case => CamelCase).
  */
-class WaiterClassFactory implements WaiterFactoryInterface
-{
+class WaiterClassFactory implements WaiterFactoryInterface {
     /**
      * @var array List of namespaces used to look for classes
      */
@@ -38,11 +37,10 @@ class WaiterClassFactory implements WaiterFactoryInterface
     protected $inflector;
 
     /**
-     * @param array|string       $namespaces Namespaces of waiter objects
-     * @param InflectorInterface $inflector  Inflector used to resolve class names
+     * @param array|string $namespaces Namespaces of waiter objects
+     * @param InflectorInterface $inflector Inflector used to resolve class names
      */
-    public function __construct($namespaces = array(), InflectorInterface $inflector = null)
-    {
+    public function __construct($namespaces = array(), InflectorInterface $inflector = null) {
         $this->namespaces = (array) $namespaces;
         $this->inflector = $inflector ?: Inflector::getDefault();
     }
@@ -54,8 +52,7 @@ class WaiterClassFactory implements WaiterFactoryInterface
      *
      * @return self
      */
-    public function registerNamespace($namespace)
-    {
+    public function registerNamespace($namespace) {
         array_unshift($this->namespaces, $namespace);
 
         return $this;
@@ -64,8 +61,7 @@ class WaiterClassFactory implements WaiterFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function build($waiter)
-    {
+    public function build($waiter) {
         if (!($className = $this->getClassName($waiter))) {
             throw new InvalidArgumentException("Waiter was not found matching {$waiter}.");
         }
@@ -76,8 +72,7 @@ class WaiterClassFactory implements WaiterFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function canBuild($waiter)
-    {
+    public function canBuild($waiter) {
         return $this->getClassName($waiter) !== null;
     }
 
@@ -88,8 +83,7 @@ class WaiterClassFactory implements WaiterFactoryInterface
      *
      * @return string|null
      */
-    protected function getClassName($waiter)
-    {
+    protected function getClassName($waiter) {
         $waiterName = $this->inflector->camel($waiter);
 
         // Determine the name of the class to load

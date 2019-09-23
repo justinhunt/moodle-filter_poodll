@@ -18,8 +18,7 @@ use Monolog\Formatter\WildfireFormatter;
  *
  * @author Eric Clemmons (@ericclemmons) <eric@uxdriven.com>
  */
-class FirePHPHandler extends AbstractProcessingHandler
-{
+class FirePHPHandler extends AbstractProcessingHandler {
     /**
      * WildFire JSON header message format
      */
@@ -47,6 +46,7 @@ class FirePHPHandler extends AbstractProcessingHandler
 
     /**
      * Shared static message index between potentially multiple handlers
+     *
      * @var int
      */
     protected static $messageIndex = 1;
@@ -56,12 +56,11 @@ class FirePHPHandler extends AbstractProcessingHandler
     /**
      * Base header creation function used by init headers & record headers
      *
-     * @param  array  $meta    Wildfire Plugin, Protocol & Structure Indexes
+     * @param  array $meta Wildfire Plugin, Protocol & Structure Indexes
      * @param  string $message Log message
      * @return array  Complete header string ready for the client as key and message as value
      */
-    protected function createHeader(array $meta, $message)
-    {
+    protected function createHeader(array $meta, $message) {
         $header = sprintf('%s-%s', self::HEADER_PREFIX, join('-', $meta));
 
         return array($header => $message);
@@ -71,24 +70,22 @@ class FirePHPHandler extends AbstractProcessingHandler
      * Creates message header from record
      *
      * @see createHeader()
-     * @param  array  $record
+     * @param  array $record
      * @return string
      */
-    protected function createRecordHeader(array $record)
-    {
+    protected function createRecordHeader(array $record) {
         // Wildfire is extensible to support multiple protocols & plugins in a single request,
         // but we're not taking advantage of that (yet), so we're using "1" for simplicity's sake.
         return $this->createHeader(
-            array(1, 1, 1, self::$messageIndex++),
-            $record['formatted']
+                array(1, 1, 1, self::$messageIndex++),
+                $record['formatted']
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function getDefaultFormatter()
-    {
+    protected function getDefaultFormatter() {
         return new WildfireFormatter();
     }
 
@@ -99,13 +96,12 @@ class FirePHPHandler extends AbstractProcessingHandler
      * @see sendHeader()
      * @return array
      */
-    protected function getInitHeaders()
-    {
+    protected function getInitHeaders() {
         // Initial payload consists of required headers for Wildfire
         return array_merge(
-            $this->createHeader(array('Protocol', 1), self::PROTOCOL_URI),
-            $this->createHeader(array(1, 'Structure', 1), self::STRUCTURE_URI),
-            $this->createHeader(array(1, 'Plugin', 1), self::PLUGIN_URI)
+                $this->createHeader(array('Protocol', 1), self::PROTOCOL_URI),
+                $this->createHeader(array(1, 'Structure', 1), self::STRUCTURE_URI),
+                $this->createHeader(array(1, 'Plugin', 1), self::PLUGIN_URI)
         );
     }
 
@@ -115,8 +111,7 @@ class FirePHPHandler extends AbstractProcessingHandler
      * @param string $header
      * @param string $content
      */
-    protected function sendHeader($header, $content)
-    {
+    protected function sendHeader($header, $content) {
         if (!headers_sent() && self::$sendHeaders) {
             header(sprintf('%s: %s', $header, $content));
         }
@@ -129,8 +124,7 @@ class FirePHPHandler extends AbstractProcessingHandler
      * @see sendInitHeaders()
      * @param array $record
      */
-    protected function write(array $record)
-    {
+    protected function write(array $record) {
         if (!self::$sendHeaders) {
             return;
         }
@@ -160,8 +154,7 @@ class FirePHPHandler extends AbstractProcessingHandler
      *
      * @return Boolean
      */
-    protected function headersAccepted()
-    {
+    protected function headersAccepted() {
         if (!empty($_SERVER['HTTP_USER_AGENT']) && preg_match('{\bFirePHP/\d+\.\d+\b}', $_SERVER['HTTP_USER_AGENT'])) {
             return true;
         }
@@ -172,10 +165,9 @@ class FirePHPHandler extends AbstractProcessingHandler
     /**
      * BC getter for the sendHeaders property that has been made static
      */
-    public function __get($property)
-    {
+    public function __get($property) {
         if ('sendHeaders' !== $property) {
-            throw new \InvalidArgumentException('Undefined property '.$property);
+            throw new \InvalidArgumentException('Undefined property ' . $property);
         }
 
         return static::$sendHeaders;
@@ -184,10 +176,9 @@ class FirePHPHandler extends AbstractProcessingHandler
     /**
      * BC setter for the sendHeaders property that has been made static
      */
-    public function __set($property, $value)
-    {
+    public function __set($property, $value) {
         if ('sendHeaders' !== $property) {
-            throw new \InvalidArgumentException('Undefined property '.$property);
+            throw new \InvalidArgumentException('Undefined property ' . $property);
         }
 
         static::$sendHeaders = $value;

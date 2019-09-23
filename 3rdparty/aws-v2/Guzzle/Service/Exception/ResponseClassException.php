@@ -4,6 +4,5 @@ namespace Guzzle\Service\Exception;
 
 use Guzzle\Common\Exception\RuntimeException;
 
-class ResponseClassException extends RuntimeException
-{
+class ResponseClassException extends RuntimeException {
 }

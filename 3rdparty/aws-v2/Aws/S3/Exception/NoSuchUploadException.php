@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified multipart upload does not exist.
  */
-class NoSuchUploadException extends S3Exception {}
+class NoSuchUploadException extends S3Exception {
+}

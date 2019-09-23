@@ -13,8 +13,7 @@ use Guzzle\Http\Url;
 /**
  * Immutable wrapper for a cURL handle
  */
-class CurlHandle
-{
+class CurlHandle {
     const BODY_AS_STRING = 'body_as_string';
     const PROGRESS = 'progress';
     const DEBUG = 'debug';
@@ -40,8 +39,7 @@ class CurlHandle
      * @return CurlHandle
      * @throws RuntimeException
      */
-    public static function factory(RequestInterface $request)
-    {
+    public static function factory(RequestInterface $request) {
         $requestCurlOptions = $request->getCurlOptions();
         $mediator = new RequestMediator($request, $requestCurlOptions->get('emit_io'));
         $tempContentLength = null;
@@ -49,28 +47,28 @@ class CurlHandle
         $bodyAsString = $requestCurlOptions->get(self::BODY_AS_STRING);
 
         // Prepare url
-        $url = (string)$request->getUrl();
-        if(($pos = strpos($url, '#')) !== false ){
+        $url = (string) $request->getUrl();
+        if (($pos = strpos($url, '#')) !== false) {
             // strip fragment from url
             $url = substr($url, 0, $pos);
         }
 
         // Array of default cURL options.
         $curlOptions = array(
-            CURLOPT_URL            => $url,
-            CURLOPT_CONNECTTIMEOUT => 150,
-            CURLOPT_RETURNTRANSFER => false,
-            CURLOPT_HEADER         => false,
-            CURLOPT_PORT           => $request->getPort(),
-            CURLOPT_HTTPHEADER     => array(),
-            CURLOPT_WRITEFUNCTION  => array($mediator, 'writeResponseBody'),
-            CURLOPT_HEADERFUNCTION => array($mediator, 'receiveResponseHeader'),
-            CURLOPT_HTTP_VERSION   => $request->getProtocolVersion() === '1.0'
-                ? CURL_HTTP_VERSION_1_0 : CURL_HTTP_VERSION_1_1,
+                CURLOPT_URL => $url,
+                CURLOPT_CONNECTTIMEOUT => 150,
+                CURLOPT_RETURNTRANSFER => false,
+                CURLOPT_HEADER => false,
+                CURLOPT_PORT => $request->getPort(),
+                CURLOPT_HTTPHEADER => array(),
+                CURLOPT_WRITEFUNCTION => array($mediator, 'writeResponseBody'),
+                CURLOPT_HEADERFUNCTION => array($mediator, 'receiveResponseHeader'),
+                CURLOPT_HTTP_VERSION => $request->getProtocolVersion() === '1.0'
+                        ? CURL_HTTP_VERSION_1_0 : CURL_HTTP_VERSION_1_1,
             // Verifies the authenticity of the peer's certificate
-            CURLOPT_SSL_VERIFYPEER => 1,
+                CURLOPT_SSL_VERIFYPEER => 1,
             // Certificate must indicate that the server is the server to which you meant to connect
-            CURLOPT_SSL_VERIFYHOST => 2
+                CURLOPT_SSL_VERIFYHOST => 2
         );
 
         if (defined('CURLOPT_PROTOCOLS')) {
@@ -99,11 +97,11 @@ class CurlHandle
         // Specify settings according to the HTTP method
         if ($method == 'GET') {
             $curlOptions[CURLOPT_HTTPGET] = true;
-        } elseif ($method == 'HEAD') {
+        } else if ($method == 'HEAD') {
             $curlOptions[CURLOPT_NOBODY] = true;
             // HEAD requests do not use a write function
             unset($curlOptions[CURLOPT_WRITEFUNCTION]);
-        } elseif (!($request instanceof EntityEnclosingRequest)) {
+        } else if (!($request instanceof EntityEnclosingRequest)) {
             $curlOptions[CURLOPT_CUSTOMREQUEST] = $method;
         } else {
 
@@ -150,7 +148,7 @@ class CurlHandle
                             $postFields[$fieldKey] = $file->getCurlValue();
                         }
                     }
-                } elseif (count($request->getPostFields())) {
+                } else if (count($request->getPostFields())) {
                     $postFields = (string) $request->getPostFields()->useUrlEncoding(true);
                 }
 
@@ -204,7 +202,7 @@ class CurlHandle
         if ($requestCurlOptions->get('progress')) {
             // Wrap the function in a function that provides the curl handle to the mediator's progress function
             // Using this rather than injecting the handle into the mediator prevents a circular reference
-            $curlOptions[CURLOPT_PROGRESSFUNCTION] = function () use ($mediator, $handle) {
+            $curlOptions[CURLOPT_PROGRESSFUNCTION] = function() use ($mediator, $handle) {
                 $args = func_get_args();
                 $args[] = $handle;
 
@@ -226,19 +224,18 @@ class CurlHandle
     /**
      * Construct a new CurlHandle object that wraps a cURL handle
      *
-     * @param resource         $handle  Configured cURL handle resource
+     * @param resource $handle Configured cURL handle resource
      * @param Collection|array $options Curl options to use with the handle
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($handle, $options)
-    {
+    public function __construct($handle, $options) {
         if (!is_resource($handle)) {
             throw new InvalidArgumentException('Invalid handle provided');
         }
         if (is_array($options)) {
             $this->options = new Collection($options);
-        } elseif ($options instanceof Collection) {
+        } else if ($options instanceof Collection) {
             $this->options = $options;
         } else {
             throw new InvalidArgumentException('Expected array or Collection');
@@ -249,16 +246,14 @@ class CurlHandle
     /**
      * Destructor
      */
-    public function __destruct()
-    {
+    public function __destruct() {
         $this->close();
     }
 
     /**
      * Close the curl handle
      */
-    public function close()
-    {
+    public function close() {
         if (is_resource($this->handle)) {
             curl_close($this->handle);
         }
@@ -270,8 +265,7 @@ class CurlHandle
      *
      * @return bool
      */
-    public function isAvailable()
-    {
+    public function isAvailable() {
         return is_resource($this->handle);
     }
 
@@ -280,8 +274,7 @@ class CurlHandle
      *
      * @return string
      */
-    public function getError()
-    {
+    public function getError() {
         return $this->isAvailable() ? curl_error($this->handle) : '';
     }
 
@@ -290,8 +283,7 @@ class CurlHandle
      *
      * @return int
      */
-    public function getErrorNo()
-    {
+    public function getErrorNo() {
         if ($this->errorNo) {
             return $this->errorNo;
         }
@@ -306,8 +298,7 @@ class CurlHandle
      *
      * @return CurlHandle
      */
-    public function setErrorNo($error)
-    {
+    public function setErrorNo($error) {
         $this->errorNo = $error;
 
         return $this;
@@ -320,8 +311,7 @@ class CurlHandle
      *
      * @return array|mixed
      */
-    public function getInfo($option = null)
-    {
+    public function getInfo($option = null) {
         if (!is_resource($this->handle)) {
             return null;
         }
@@ -340,8 +330,7 @@ class CurlHandle
      *
      * @return string|resource|null
      */
-    public function getStderr($asResource = false)
-    {
+    public function getStderr($asResource = false) {
         $stderr = $this->getOptions()->get(CURLOPT_STDERR);
         if (!$stderr) {
             return null;
@@ -363,8 +352,7 @@ class CurlHandle
      *
      * @return Url
      */
-    public function getUrl()
-    {
+    public function getUrl() {
         return Url::factory($this->options->get(CURLOPT_URL));
     }
 
@@ -373,8 +361,7 @@ class CurlHandle
      *
      * @return resource|null Returns the cURL handle or null if it was closed
      */
-    public function getHandle()
-    {
+    public function getHandle() {
         return $this->isAvailable() ? $this->handle : null;
     }
 
@@ -384,8 +371,7 @@ class CurlHandle
      *
      * @return Collection
      */
-    public function getOptions()
-    {
+    public function getOptions() {
         return $this->options;
     }
 
@@ -394,8 +380,7 @@ class CurlHandle
      *
      * @param RequestInterface $request Request to update
      */
-    public function updateRequestFromTransfer(RequestInterface $request)
-    {
+    public function updateRequestFromTransfer(RequestInterface $request) {
         if (!$request->getResponse()) {
             return;
         }
@@ -445,8 +430,7 @@ class CurlHandle
      *
      * @return array
      */
-    public static function parseCurlConfig($config)
-    {
+    public static function parseCurlConfig($config) {
         $curlOptions = array();
         foreach ($config as $key => $value) {
             if (is_string($key) && defined($key)) {

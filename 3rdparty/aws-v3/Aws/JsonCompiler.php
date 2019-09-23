@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 /**
@@ -7,8 +8,7 @@ namespace Aws;
  * @internal Please use json_decode instead.
  * @deprecated
  */
-class JsonCompiler
-{
+class JsonCompiler {
     const CACHE_ENV = 'AWS_PHP_CACHE_DIR';
 
     /**
@@ -18,8 +18,7 @@ class JsonCompiler
      *
      * @return mixed
      */
-    public function load($path)
-    {
+    public function load($path) {
         return load_compiled_json($path);
     }
 }

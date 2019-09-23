@@ -26,8 +26,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * Prepares the body parameter of a command such that the parameter is more flexible (e.g. accepts file handles) with
  * the value it accepts but converts it to the correct format for the command. Also looks for a "Filename" parameter.
  */
-class UploadBodyListener implements EventSubscriberInterface
-{
+class UploadBodyListener implements EventSubscriberInterface {
     /**
      * @var array The names of the commands of which to modify the body parameter
      */
@@ -44,12 +43,11 @@ class UploadBodyListener implements EventSubscriberInterface
     protected $sourceParameter;
 
     /**
-     * @param array  $commands        The commands to modify
-     * @param string $bodyParameter   The key for the body parameter
+     * @param array $commands The commands to modify
+     * @param string $bodyParameter The key for the body parameter
      * @param string $sourceParameter The key for the source file parameter
      */
-    public function __construct(array $commands, $bodyParameter = 'Body', $sourceParameter = 'SourceFile')
-    {
+    public function __construct(array $commands, $bodyParameter = 'Body', $sourceParameter = 'SourceFile') {
         $this->commands = $commands;
         $this->bodyParameter = (string) $bodyParameter;
         $this->sourceParameter = (string) $sourceParameter;
@@ -58,8 +56,7 @@ class UploadBodyListener implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array('command.before_prepare' => array('onCommandBeforePrepare'));
     }
 
@@ -69,8 +66,7 @@ class UploadBodyListener implements EventSubscriberInterface
      * @param Event $event Event emitted
      * @throws InvalidArgumentException
      */
-    public function onCommandBeforePrepare(Event $event)
-    {
+    public function onCommandBeforePrepare(Event $event) {
         /** @var Command $command */
         $command = $event['command'];
         if (in_array($command->getName(), $this->commands)) {

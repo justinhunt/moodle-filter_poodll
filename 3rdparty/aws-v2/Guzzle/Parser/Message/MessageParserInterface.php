@@ -5,8 +5,7 @@ namespace Guzzle\Parser\Message;
 /**
  * HTTP message parser interface used to parse HTTP messages into an array
  */
-interface MessageParserInterface
-{
+interface MessageParserInterface {
     /**
      * Parse an HTTP request message into an associative array of parts.
      *

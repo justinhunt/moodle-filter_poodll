@@ -10,12 +10,11 @@ use Guzzle\Service\Exception\ServiceNotFoundException;
  * supplied and accessed from a service builder. Arbitrary data and other clients can be referenced by name in client
  * configuration arrays to make them input for building other clients (e.g. "{key}").
  */
-interface ServiceBuilderInterface
-{
+interface ServiceBuilderInterface {
     /**
      * Get a ClientInterface object or arbitrary data from the service builder
      *
-     * @param string     $name      Name of the registered service or data to retrieve
+     * @param string $name Name of the registered service or data to retrieve
      * @param bool|array $throwAway Only pertains to retrieving client objects built using a configuration array.
      *                              Set to TRUE to not store the client for later retrieval from the ServiceBuilder.
      *                              If an array is specified, that data will overwrite the configured params of the
@@ -30,8 +29,8 @@ interface ServiceBuilderInterface
     /**
      * Register a service or arbitrary data by name with the service builder
      *
-     * @param string $key     Name of the client or data to register
-     * @param mixed  $service Client configuration array or arbitrary data to register. The client configuration array
+     * @param string $key Name of the client or data to register
+     * @param mixed $service Client configuration array or arbitrary data to register. The client configuration array
      *                        must include a 'class' (string) and 'params' (array) key.
      *
      * @return ServiceBuilderInterface

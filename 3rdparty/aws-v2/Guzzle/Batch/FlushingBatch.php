@@ -5,8 +5,7 @@ namespace Guzzle\Batch;
 /**
  * BatchInterface decorator used to add automatic flushing of the queue when the size of the queue reaches a threshold.
  */
-class FlushingBatch extends AbstractBatchDecorator
-{
+class FlushingBatch extends AbstractBatchDecorator {
     /** @var int The threshold for which to automatically flush */
     protected $threshold;
 
@@ -14,11 +13,10 @@ class FlushingBatch extends AbstractBatchDecorator
     protected $currentTotal = 0;
 
     /**
-     * @param BatchInterface $decoratedBatch  BatchInterface that is being decorated
-     * @param int            $threshold       Flush when the number in queue matches the threshold
+     * @param BatchInterface $decoratedBatch BatchInterface that is being decorated
+     * @param int $threshold Flush when the number in queue matches the threshold
      */
-    public function __construct(BatchInterface $decoratedBatch, $threshold)
-    {
+    public function __construct(BatchInterface $decoratedBatch, $threshold) {
         $this->threshold = $threshold;
         parent::__construct($decoratedBatch);
     }
@@ -30,8 +28,7 @@ class FlushingBatch extends AbstractBatchDecorator
      *
      * @return FlushingBatch
      */
-    public function setThreshold($threshold)
-    {
+    public function setThreshold($threshold) {
         $this->threshold = $threshold;
 
         return $this;
@@ -42,13 +39,11 @@ class FlushingBatch extends AbstractBatchDecorator
      *
      * @return int
      */
-    public function getThreshold()
-    {
+    public function getThreshold() {
         return $this->threshold;
     }
 
-    public function add($item)
-    {
+    public function add($item) {
         $this->decoratedBatch->add($item);
         if (++$this->currentTotal >= $this->threshold) {
             $this->currentTotal = 0;

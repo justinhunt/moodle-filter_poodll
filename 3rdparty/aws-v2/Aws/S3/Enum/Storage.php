@@ -21,9 +21,8 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable Amazon S3 storage options
  */
-class Storage extends Enum
-{
+class Storage extends Enum {
     const STANDARD = 'STANDARD';
-    const REDUCED  = 'REDUCED_REDUNDANCY';
+    const REDUCED = 'REDUCED_REDUNDANCY';
     const GLACIER = 'GLACIER';
 }

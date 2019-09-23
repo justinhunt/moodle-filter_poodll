@@ -21,8 +21,7 @@ use Aws\Common\Exception\RuntimeException;
 /**
  * Exception thrown when an error occurs with instance profile credentials
  */
-class InstanceProfileCredentialsException extends RuntimeException
-{
+class InstanceProfileCredentialsException extends RuntimeException {
     /**
      * @var string
      */
@@ -33,8 +32,7 @@ class InstanceProfileCredentialsException extends RuntimeException
      *
      * @param string $code Response code
      */
-    public function setStatusCode($code)
-    {
+    public function setStatusCode($code) {
         $this->statusCode = $code;
     }
 
@@ -43,8 +41,7 @@ class InstanceProfileCredentialsException extends RuntimeException
      *
      * @return string|null
      */
-    public function getStatusCode()
-    {
+    public function getStatusCode() {
         return $this->statusCode;
     }
 }

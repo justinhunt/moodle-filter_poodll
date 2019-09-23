@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * A SOAP attachment was expected, but none were found.
  */
-class MissingAttachmentException extends S3Exception {}
+class MissingAttachmentException extends S3Exception {
+}

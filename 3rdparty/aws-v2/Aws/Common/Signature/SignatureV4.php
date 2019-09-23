@@ -28,10 +28,10 @@ use Guzzle\Stream\Stream;
 
 /**
  * Signature Version 4
+ *
  * @link http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
  */
-class SignatureV4 extends AbstractSignature implements EndpointSignatureInterface
-{
+class SignatureV4 extends AbstractSignature implements EndpointSignatureInterface {
     /** @var string Cache of the default empty entity-body payload */
     const DEFAULT_PAYLOAD = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855';
 
@@ -52,10 +52,9 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
 
     /**
      * @param string $serviceName Bind the signing to a particular service name
-     * @param string $regionName  Bind the signing to a particular region name
+     * @param string $regionName Bind the signing to a particular region name
      */
-    public function __construct($serviceName = null, $regionName = null)
-    {
+    public function __construct($serviceName = null, $regionName = null) {
         $this->serviceName = $serviceName;
         $this->regionName = $regionName;
     }
@@ -67,8 +66,7 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      *
      * @return self
      */
-    public function setServiceName($service)
-    {
+    public function setServiceName($service) {
         $this->serviceName = $service;
 
         return $this;
@@ -81,8 +79,7 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      *
      * @return self
      */
-    public function setRegionName($region)
-    {
+    public function setRegionName($region) {
         $this->regionName = $region;
 
         return $this;
@@ -95,15 +92,13 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      *
      * @return self
      */
-    public function setMaxCacheSize($maxCacheSize)
-    {
+    public function setMaxCacheSize($maxCacheSize) {
         $this->maxCacheSize = $maxCacheSize;
 
         return $this;
     }
 
-    public function signRequest(RequestInterface $request, CredentialsInterface $credentials)
-    {
+    public function signRequest(RequestInterface $request, CredentialsInterface $credentials) {
         $timestamp = $this->getTimestamp();
         $longDate = gmdate(DateFormat::ISO8601, $timestamp);
         $shortDate = substr($longDate, 0, 8);
@@ -136,9 +131,9 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
         $payload = $this->getPayload($request);
         $signingContext = $this->createSigningContext($request, $payload);
         $signingContext['string_to_sign'] = $this->createStringToSign(
-            $longDate,
-            $credentialScope,
-            $signingContext['canonical_request']
+                $longDate,
+                $credentialScope,
+                $signingContext['canonical_request']
         );
 
         // Calculate the signing key using a series of derived keys
@@ -146,40 +141,40 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
         $signature = hash_hmac('sha256', $signingContext['string_to_sign'], $signingKey);
 
         $request->setHeader('Authorization', "AWS4-HMAC-SHA256 "
-            . "Credential={$credentials->getAccessKeyId()}/{$credentialScope}, "
-            . "SignedHeaders={$signingContext['signed_headers']}, Signature={$signature}");
+                . "Credential={$credentials->getAccessKeyId()}/{$credentialScope}, "
+                . "SignedHeaders={$signingContext['signed_headers']}, Signature={$signature}");
 
         // Add debug information to the request
         $request->getParams()->set('aws.signature', $signingContext);
     }
 
     public function createPresignedUrl(
-        RequestInterface $request,
-        CredentialsInterface $credentials,
-        $expires
+            RequestInterface $request,
+            CredentialsInterface $credentials,
+            $expires
     ) {
         $request = $this->createPresignedRequest($request, $credentials);
         $query = $request->getQuery();
         $httpDate = gmdate(DateFormat::ISO8601, $this->getTimestamp());
         $shortDate = substr($httpDate, 0, 8);
         $scope = $this->createScope(
-            $shortDate,
-            $this->regionName,
-            $this->serviceName
+                $shortDate,
+                $this->regionName,
+                $this->serviceName
         );
         $this->addQueryValues($scope, $request, $credentials, $expires);
         $payload = $this->getPresignedPayload($request);
         $context = $this->createSigningContext($request, $payload);
         $stringToSign = $this->createStringToSign(
-            $httpDate,
-            $scope,
-            $context['canonical_request']
+                $httpDate,
+                $scope,
+                $context['canonical_request']
         );
         $key = $this->getSigningKey(
-            $shortDate,
-            $this->regionName,
-            $this->serviceName,
-            $credentials->getSecretKey()
+                $shortDate,
+                $this->regionName,
+                $this->serviceName,
+                $credentials->getSecretKey()
         );
         $query['X-Amz-Signature'] = hash_hmac('sha256', $stringToSign, $key);
 
@@ -197,15 +192,14 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      * @return RequestInterface
      * @throws \InvalidArgumentException if the method is not POST
      */
-    public static function convertPostToGet(EntityEnclosingRequestInterface $request)
-    {
+    public static function convertPostToGet(EntityEnclosingRequestInterface $request) {
         if ($request->getMethod() !== 'POST') {
             throw new \InvalidArgumentException('Expected a POST request but '
-                . 'received a ' . $request->getMethod() . ' request.');
+                    . 'received a ' . $request->getMethod() . ' request.');
         }
 
         $cloned = RequestFactory::getInstance()
-            ->cloneRequestWithMethod($request, 'GET');
+                ->cloneRequestWithMethod($request, 'GET');
 
         // Move POST fields to the query if they are present
         foreach ($request->getPostFields() as $name => $value) {
@@ -222,8 +216,7 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      *
      * @return string
      */
-    protected function getPayload(RequestInterface $request)
-    {
+    protected function getPayload(RequestInterface $request) {
         // Calculate the request signature payload
         if ($request->hasHeader('x-amz-content-sha256')) {
             // Handle streaming operations (e.g. Glacier.UploadArchive)
@@ -233,7 +226,7 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
         if ($request instanceof EntityEnclosingRequestInterface) {
             if ($request->getMethod() == 'POST' && count($request->getPostFields())) {
                 return hash('sha256', (string) $request->getPostFields());
-            } elseif ($body = $request->getBody()) {
+            } else if ($body = $request->getBody()) {
                 return Stream::getHash($request->getBody(), 'sha256');
             }
         }
@@ -248,36 +241,33 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      *
      * @return string
      */
-    protected function getPresignedPayload(RequestInterface $request)
-    {
+    protected function getPresignedPayload(RequestInterface $request) {
         return $this->getPayload($request);
     }
 
-    protected function createCanonicalizedPath(RequestInterface $request)
-    {
+    protected function createCanonicalizedPath(RequestInterface $request) {
         $doubleEncoded = rawurlencode(ltrim($request->getPath(), '/'));
 
         return '/' . str_replace('%2F', '/', $doubleEncoded);
     }
 
-    private function createStringToSign($longDate, $credentialScope, $creq)
-    {
+    private function createStringToSign($longDate, $credentialScope, $creq) {
         return "AWS4-HMAC-SHA256\n{$longDate}\n{$credentialScope}\n"
-            . hash('sha256', $creq);
+                . hash('sha256', $creq);
     }
 
     private function createPresignedRequest(
-        RequestInterface $request,
-        CredentialsInterface $credentials
+            RequestInterface $request,
+            CredentialsInterface $credentials
     ) {
         // POST requests can be sent as GET requests instead by moving the
         // POST fields into the query string.
         if ($request instanceof EntityEnclosingRequestInterface
-            && $request->getMethod() === 'POST'
-            && strpos($request->getHeader('Content-Type'), 'application/x-www-form-urlencoded') === 0
+                && $request->getMethod() === 'POST'
+                && strpos($request->getHeader('Content-Type'), 'application/x-www-form-urlencoded') === 0
         ) {
             $sr = RequestFactory::getInstance()
-                ->cloneRequestWithMethod($request, 'GET');
+                    ->cloneRequestWithMethod($request, 'GET');
             // Move POST fields to the query if they are present
             foreach ($request->getPostFields() as $name => $value) {
                 $sr->getQuery()->set($name, $value);
@@ -301,25 +291,24 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      * Create the canonical representation of a request
      *
      * @param RequestInterface $request Request to canonicalize
-     * @param string           $payload Request payload (typically the value
+     * @param string $payload Request payload (typically the value
      *                                  of the x-amz-content-sha256 header.
      *
      * @return array Returns an array of context information including:
      *               - canonical_request
      *               - signed_headers
      */
-    private function createSigningContext(RequestInterface $request, $payload)
-    {
+    private function createSigningContext(RequestInterface $request, $payload) {
         $signable = array(
-            'host'        => true,
-            'date'        => true,
-            'content-md5' => true
+                'host' => true,
+                'date' => true,
+                'content-md5' => true
         );
 
         // Normalize the path as required by SigV4 and ensure it's absolute
         $canon = $request->getMethod() . "\n"
-            . $this->createCanonicalizedPath($request) . "\n"
-            . $this->getCanonicalizedQueryString($request) . "\n";
+                . $this->createCanonicalizedPath($request) . "\n"
+                . $this->getCanonicalizedQueryString($request) . "\n";
 
         $canonHeaders = array();
 
@@ -340,12 +329,12 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
         ksort($canonHeaders);
         $signedHeadersString = implode(';', array_keys($canonHeaders));
         $canon .= implode("\n", $canonHeaders) . "\n\n"
-            . $signedHeadersString . "\n"
-            . $payload;
+                . $signedHeadersString . "\n"
+                . $payload;
 
         return array(
-            'canonical_request' => $canon,
-            'signed_headers'    => $signedHeadersString
+                'canonical_request' => $canon,
+                'signed_headers' => $signedHeadersString
         );
     }
 
@@ -354,14 +343,13 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      * cached, return it
      *
      * @param string $shortDate Short date
-     * @param string $region    Region name
-     * @param string $service   Service name
+     * @param string $region Region name
+     * @param string $service Service name
      * @param string $secretKey Secret Access Key
      *
      * @return string
      */
-    private function getSigningKey($shortDate, $region, $service, $secretKey)
-    {
+    private function getSigningKey($shortDate, $region, $service, $secretKey) {
         $cacheKey = $shortDate . '_' . $region . '_' . $service . '_' . $secretKey;
 
         // Retrieve the hash form the cache or create it and add it to the cache
@@ -386,8 +374,7 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
      * @param  RequestInterface $request
      * @return string
      */
-    private function getCanonicalizedQueryString(RequestInterface $request)
-    {
+    private function getCanonicalizedQueryString(RequestInterface $request) {
         $queryParams = $request->getQuery()->getAll();
         unset($queryParams['X-Amz-Signature']);
         if (empty($queryParams)) {
@@ -399,9 +386,9 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
         foreach ($queryParams as $key => $values) {
             if (is_array($values)) {
                 sort($values);
-            } elseif ($values === 0) {
+            } else if ($values === 0) {
                 $values = array('0');
-            } elseif (!$values) {
+            } else if (!$values) {
                 $values = array('');
             }
 
@@ -416,11 +403,10 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
         return substr($qs, 0, -1);
     }
 
-    private function convertExpires($expires)
-    {
+    private function convertExpires($expires) {
         if ($expires instanceof \DateTime) {
             $expires = $expires->getTimestamp();
-        } elseif (!is_numeric($expires)) {
+        } else if (!is_numeric($expires)) {
             $expires = strtotime($expires);
         }
 
@@ -429,40 +415,38 @@ class SignatureV4 extends AbstractSignature implements EndpointSignatureInterfac
         // Ensure that the duration of the signature is not longer than a week
         if ($duration > 604800) {
             throw new \InvalidArgumentException('The expiration date of a '
-                . 'signature version 4 presigned URL must be less than one '
-                . 'week');
+                    . 'signature version 4 presigned URL must be less than one '
+                    . 'week');
         }
 
         return $duration;
     }
 
-    private function createScope($shortDate, $region, $service)
-    {
+    private function createScope($shortDate, $region, $service) {
         return $shortDate
-            . '/' . $region
-            . '/' . $service
-            . '/aws4_request';
+                . '/' . $region
+                . '/' . $service
+                . '/aws4_request';
     }
 
     private function addQueryValues(
-        $scope,
-        RequestInterface $request,
-        CredentialsInterface $credentials,
-        $expires
+            $scope,
+            RequestInterface $request,
+            CredentialsInterface $credentials,
+            $expires
     ) {
         $credential = $credentials->getAccessKeyId() . '/' . $scope;
 
         // Set query params required for pre-signed URLs
         $request->getQuery()
-            ->set('X-Amz-Algorithm', 'AWS4-HMAC-SHA256')
-            ->set('X-Amz-Credential', $credential)
-            ->set('X-Amz-Date', gmdate('Ymd\THis\Z', $this->getTimestamp()))
-            ->set('X-Amz-SignedHeaders', 'Host')
-            ->set('X-Amz-Expires', $this->convertExpires($expires));
+                ->set('X-Amz-Algorithm', 'AWS4-HMAC-SHA256')
+                ->set('X-Amz-Credential', $credential)
+                ->set('X-Amz-Date', gmdate('Ymd\THis\Z', $this->getTimestamp()))
+                ->set('X-Amz-SignedHeaders', 'Host')
+                ->set('X-Amz-Expires', $this->convertExpires($expires));
     }
 
-    private function moveHeadersToQuery(RequestInterface $request)
-    {
+    private function moveHeadersToQuery(RequestInterface $request) {
         $query = $request->getQuery();
 
         foreach ($request->getHeaders() as $name => $header) {

@@ -8,8 +8,7 @@ use Guzzle\Common\ToArrayInterface;
 /**
  * Iterates over a paginated resource using subsequent requests in order to retrieve the entire matching result set
  */
-interface ResourceIteratorInterface extends ToArrayInterface, HasDispatcherInterface, \Iterator, \Countable
-{
+interface ResourceIteratorInterface extends ToArrayInterface, HasDispatcherInterface, \Iterator, \Countable {
     /**
      * Retrieve the NextToken that can be used in other iterators.
      *
@@ -52,8 +51,8 @@ interface ResourceIteratorInterface extends ToArrayInterface, HasDispatcherInter
     /**
      * Set a data option on the iterator
      *
-     * @param string $key   Key of the option to set
-     * @param mixed  $value Value to set for the option
+     * @param string $key Key of the option to set
+     * @param mixed $value Value to set for the option
      *
      * @return ResourceIteratorInterface
      */

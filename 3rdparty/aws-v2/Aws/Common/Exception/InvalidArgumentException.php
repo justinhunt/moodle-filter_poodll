@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL InvalidArgumentException.
  */
-class InvalidArgumentException extends \InvalidArgumentException implements AwsExceptionInterface {}
+class InvalidArgumentException extends \InvalidArgumentException implements AwsExceptionInterface {
+}

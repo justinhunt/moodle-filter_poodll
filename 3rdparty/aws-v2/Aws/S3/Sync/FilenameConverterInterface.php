@@ -19,8 +19,7 @@ namespace Aws\S3\Sync;
 /**
  * Converts filenames from one system to another (e.g. local to Amazon S3)
  */
-interface FilenameConverterInterface
-{
+interface FilenameConverterInterface {
     /**
      * Convert a filename
      *

@@ -22,13 +22,11 @@ use Guzzle\Http\Curl\CurlHandle;
 /**
  * Adds AWS JSON body functionality to dynamically generated HTTP requests
  */
-class JsonCommand extends OperationCommand
-{
+class JsonCommand extends OperationCommand {
     /**
      * {@inheritdoc}
      */
-    protected function build()
-    {
+    protected function build() {
         parent::build();
 
         // Ensure that the body of the request ALWAYS includes some JSON. By default, this is an empty object.

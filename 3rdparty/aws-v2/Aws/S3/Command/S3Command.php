@@ -25,8 +25,7 @@ use Guzzle\Common\Event;
  * - Adds the PutObject URL to a response
  * - Allows creating a Pre-signed URL from any command
  */
-class S3Command extends OperationCommand
-{
+class S3Command extends OperationCommand {
     /**
      * Create a pre-signed URL for the operation
      *
@@ -34,24 +33,22 @@ class S3Command extends OperationCommand
      *
      * @return string
      */
-    public function createPresignedUrl($expires)
-    {
+    public function createPresignedUrl($expires) {
         return $this->client->createPresignedUrl($this->prepare(), $expires);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function process()
-    {
+    protected function process() {
         $request = $this->getRequest();
         $response = $this->getResponse();
 
         // Dispatch an error if a 301 redirect occurred
         if ($response->getStatusCode() == 301) {
             $this->getClient()->getEventDispatcher()->dispatch('request.error', new Event(array(
-                'request'  => $this->getRequest(),
-                'response' => $response
+                    'request' => $this->getRequest(),
+                    'response' => $response
             )));
         }
 

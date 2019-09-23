@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Bucket POST must be of the enclosure-type multipart/form-data.
  */
-class RequestIsNotMultiPartContentException extends S3Exception {}
+class RequestIsNotMultiPartContentException extends S3Exception {
+}

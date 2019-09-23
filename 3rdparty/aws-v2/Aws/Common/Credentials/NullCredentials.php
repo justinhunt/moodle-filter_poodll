@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Common\Credentials;
 
 /**
@@ -9,60 +10,48 @@ namespace Aws\Common\Credentials;
  *
  * @codeCoverageIgnore
  */
-class NullCredentials implements CredentialsInterface
-{
-    public function getAccessKeyId()
-    {
+class NullCredentials implements CredentialsInterface {
+    public function getAccessKeyId() {
         return '';
     }
 
-    public function getSecretKey()
-    {
+    public function getSecretKey() {
         return '';
     }
 
-    public function getSecurityToken()
-    {
+    public function getSecurityToken() {
         return null;
     }
 
-    public function getExpiration()
-    {
+    public function getExpiration() {
         return null;
     }
 
-    public function isExpired()
-    {
+    public function isExpired() {
         return false;
     }
 
-    public function serialize()
-    {
+    public function serialize() {
         return 'N;';
     }
 
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         // Nothing to do here.
     }
 
-    public function setAccessKeyId($key)
-    {
+    public function setAccessKeyId($key) {
         // Nothing to do here.
     }
 
-    public function setSecretKey($secret)
-    {
+    public function setSecretKey($secret) {
         // Nothing to do here.
     }
 
-    public function setSecurityToken($token)
-    {
+    public function setSecurityToken($token) {
         // Nothing to do here.
     }
 
-    public function setExpiration($timestamp)
-    {
+    public function setExpiration($timestamp) {
         // Nothing to do here.
     }
 }

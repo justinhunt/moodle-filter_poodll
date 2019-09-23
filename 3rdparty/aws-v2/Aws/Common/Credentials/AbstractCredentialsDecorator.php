@@ -19,8 +19,7 @@ namespace Aws\Common\Credentials;
 /**
  * Abstract credentials decorator
  */
-class AbstractCredentialsDecorator implements CredentialsInterface
-{
+class AbstractCredentialsDecorator implements CredentialsInterface {
     /**
      * @var CredentialsInterface Wrapped credentials object
      */
@@ -32,24 +31,21 @@ class AbstractCredentialsDecorator implements CredentialsInterface
      *
      * @param CredentialsInterface $credentials
      */
-    public function __construct(CredentialsInterface $credentials)
-    {
+    public function __construct(CredentialsInterface $credentials) {
         $this->credentials = $credentials;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
-    {
+    public function serialize() {
         return $this->credentials->serialize();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         $this->credentials = new Credentials('', '');
         $this->credentials->unserialize($serialized);
     }
@@ -57,48 +53,42 @@ class AbstractCredentialsDecorator implements CredentialsInterface
     /**
      * {@inheritdoc}
      */
-    public function getAccessKeyId()
-    {
+    public function getAccessKeyId() {
         return $this->credentials->getAccessKeyId();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSecretKey()
-    {
+    public function getSecretKey() {
         return $this->credentials->getSecretKey();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getSecurityToken()
-    {
+    public function getSecurityToken() {
         return $this->credentials->getSecurityToken();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getExpiration()
-    {
+    public function getExpiration() {
         return $this->credentials->getExpiration();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function isExpired()
-    {
+    public function isExpired() {
         return $this->credentials->isExpired();
     }
 
     /**
      * {@inheritdoc}
      */
-    public function setAccessKeyId($key)
-    {
+    public function setAccessKeyId($key) {
         $this->credentials->setAccessKeyId($key);
 
         return $this;
@@ -107,8 +97,7 @@ class AbstractCredentialsDecorator implements CredentialsInterface
     /**
      * {@inheritdoc}
      */
-    public function setSecretKey($secret)
-    {
+    public function setSecretKey($secret) {
         $this->credentials->setSecretKey($secret);
 
         return $this;
@@ -117,8 +106,7 @@ class AbstractCredentialsDecorator implements CredentialsInterface
     /**
      * {@inheritdoc}
      */
-    public function setSecurityToken($token)
-    {
+    public function setSecurityToken($token) {
         $this->credentials->setSecurityToken($token);
 
         return $this;
@@ -127,8 +115,7 @@ class AbstractCredentialsDecorator implements CredentialsInterface
     /**
      * {@inheritdoc}
      */
-    public function setExpiration($timestamp)
-    {
+    public function setExpiration($timestamp) {
         $this->credentials->setExpiration($timestamp);
 
         return $this;

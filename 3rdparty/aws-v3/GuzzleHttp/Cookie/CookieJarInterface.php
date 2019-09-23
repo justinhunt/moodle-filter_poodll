@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Cookie;
 
 use Psr\Http\Message\RequestInterface;
@@ -14,8 +15,7 @@ use Psr\Http\Message\ResponseInterface;
  *
  * @link http://docs.python.org/2/library/cookielib.html Inspiration
  */
-interface CookieJarInterface extends \Countable, \IteratorAggregate
-{
+interface CookieJarInterface extends \Countable, \IteratorAggregate {
     /**
      * Create a request with added cookie headers.
      *
@@ -31,12 +31,12 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
     /**
      * Extract cookies from an HTTP response and store them in the CookieJar.
      *
-     * @param RequestInterface  $request  Request that was sent
+     * @param RequestInterface $request Request that was sent
      * @param ResponseInterface $response Response that was received
      */
     public function extractCookies(
-        RequestInterface $request,
-        ResponseInterface $response
+            RequestInterface $request,
+            ResponseInterface $response
     );
 
     /**
@@ -59,8 +59,8 @@ interface CookieJarInterface extends \Countable, \IteratorAggregate
      * removed.
      *
      * @param string $domain Clears cookies matching a domain
-     * @param string $path   Clears cookies matching a domain and path
-     * @param string $name   Clears cookies matching a domain, path, and name
+     * @param string $path Clears cookies matching a domain and path
+     * @param string $name Clears cookies matching a domain, path, and name
      *
      * @return CookieJarInterface
      */

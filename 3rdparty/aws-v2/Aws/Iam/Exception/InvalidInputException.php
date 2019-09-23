@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * Exception that occurs when a InvalidInputException error is encountered
  */
-class InvalidInputException extends IamException {}
+class InvalidInputException extends IamException {
+}

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 /**
@@ -8,8 +9,7 @@ namespace Aws;
  * Using the toArray() method will return the input parameters of the command
  * as an associative array.
  */
-interface CommandInterface extends \ArrayAccess, \Countable, \IteratorAggregate
-{
+interface CommandInterface extends \ArrayAccess, \Countable, \IteratorAggregate {
     /**
      * Converts the command parameters to an array
      *

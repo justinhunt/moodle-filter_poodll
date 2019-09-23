@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * This request does not support content.
  */
-class UnexpectedContentException extends S3Exception {}
+class UnexpectedContentException extends S3Exception {
+}

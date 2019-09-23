@@ -21,8 +21,7 @@ use Aws\Common\Exception\InvalidArgumentException;
 /**
  * An object that encapsulates the data for an upload part
  */
-abstract class AbstractUploadPart implements UploadPartInterface
-{
+abstract class AbstractUploadPart implements UploadPartInterface {
     /**
      * @var array A map of external array keys to internal property names
      */
@@ -36,8 +35,7 @@ abstract class AbstractUploadPart implements UploadPartInterface
     /**
      * {@inheritdoc}
      */
-    public static function fromArray($data)
-    {
+    public static function fromArray($data) {
         $part = new static();
         $part->loadData($data);
 
@@ -47,16 +45,14 @@ abstract class AbstractUploadPart implements UploadPartInterface
     /**
      * {@inheritdoc}
      */
-    public function getPartNumber()
-    {
+    public function getPartNumber() {
         return $this->partNumber;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function toArray()
-    {
+    public function toArray() {
         $array = array();
         foreach (static::$keyMap as $key => $property) {
             $array[$key] = $this->{$property};
@@ -68,16 +64,14 @@ abstract class AbstractUploadPart implements UploadPartInterface
     /**
      * {@inheritdoc}
      */
-    public function serialize()
-    {
+    public function serialize() {
         return serialize($this->toArray());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         $this->loadData(unserialize($serialized));
     }
 
@@ -88,8 +82,7 @@ abstract class AbstractUploadPart implements UploadPartInterface
      *
      * @throws InvalidArgumentException if a required key is missing
      */
-    protected function loadData($data)
-    {
+    protected function loadData($data) {
         foreach (static::$keyMap as $key => $property) {
             if (isset($data[$key])) {
                 $this->{$property} = $data[$key];

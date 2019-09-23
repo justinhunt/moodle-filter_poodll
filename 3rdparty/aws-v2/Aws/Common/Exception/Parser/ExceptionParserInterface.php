@@ -22,8 +22,7 @@ use Guzzle\Http\Message\Response;
 /**
  * Interface used to parse exceptions into an associative array of data
  */
-interface ExceptionParserInterface
-{
+interface ExceptionParserInterface {
     /**
      * Parses an exception into an array of data containing at minimum the
      * following array keys:
@@ -34,7 +33,7 @@ interface ExceptionParserInterface
      * - parsed:     The parsed representation of the data (array, SimpleXMLElement, etc)
      *
      * @param RequestInterface $request
-     * @param Response         $response Unsuccessful response
+     * @param Response $response Unsuccessful response
      *
      * @return array
      */

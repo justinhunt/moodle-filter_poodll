@@ -24,32 +24,31 @@ defined('MOODLE_INTERNAL') || die();
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class diagnosticstools {
-	
-	private $ds = null;
+
+    private $ds = null;
 
     /**
-	*
+     *
      */
     public function __construct() {
-		$this->ds = new \stdClass();
-		$this->ds->properties = $this->compile_properties();
-		$this->ds->logs = $this->compile_logs();
+        $this->ds = new \stdClass();
+        $this->ds->properties = $this->compile_properties();
+        $this->ds->logs = $this->compile_logs();
     }
-	
-	public function fetch_props(){
-		return $this->ds->properties;
-	}
-	
-	public function fetch_logs(){
-		return $this->ds->logs;
-	}
-	
-	public function compile_logs(){
-		return new \stdClass();
-	}
-	
-	public function compile_properties()
-    {
+
+    public function fetch_props() {
+        return $this->ds->properties;
+    }
+
+    public function fetch_logs() {
+        return $this->ds->logs;
+    }
+
+    public function compile_logs() {
+        return new \stdClass();
+    }
+
+    public function compile_properties() {
         global $CFG, $DB;
 
         $ds = Array();
@@ -63,7 +62,6 @@ class diagnosticstools {
         $timestamp = time();
         $server_time = date("d-m-Y (D) H:i:s", $timestamp);
         $ds['server_time'] = $server_time . ' (translated to JAPAN STANDARD TIME)';
-
 
         //poodll version info
         $ds['poodll_filter_version'] = get_config('filter_poodll', 'version');
@@ -90,25 +88,24 @@ class diagnosticstools {
         $ds['license_details'] = $display_license_details;
 
         //API credentials info
-        $apiuser=get_config('filter_poodll','cpapiuser');
-        $apisecret=get_config('filter_poodll','cpapisecret');
+        $apiuser = get_config('filter_poodll', 'cpapiuser');
+        $apisecret = get_config('filter_poodll', 'cpapisecret');
         $ds['apiuser'] = $apiuser ? $apiuser : '';
         $ds['apisecret'] = $apisecret ? $apisecret : '';
-        if($apiuser && $apisecret) {
-            $ds['api_details'] = $lm->fetch_token_for_display($apiuser,$apisecret);
+        if ($apiuser && $apisecret) {
+            $ds['api_details'] = $lm->fetch_token_for_display($apiuser, $apisecret);
         }
-
 
         //get active users
         $oneyearago = strtotime('-1 year');
-        try{
-        	$rec = $DB->get_record_sql('SELECT count(*) as activeusers FROM {user} WHERE lastaccess > ?', array($oneyearago));
-        }catch(Exception $e){
-        	$rec=false;
+        try {
+            $rec = $DB->get_record_sql('SELECT count(*) as activeusers FROM {user} WHERE lastaccess > ?', array($oneyearago));
+        } catch (Exception $e) {
+            $rec = false;
         }
         if ($rec) {
             $ds['activeusers'] = $rec->activeusers;
-        }else{
+        } else {
             $ds['activeusers'] = 'unknown';
         }
 
@@ -127,95 +124,95 @@ class diagnosticstools {
         }
 	*/
         //site info
-		$ds['wwwroot'] = $CFG->wwwroot;
-		$ds['dirroot'] = $CFG->dirroot;
+        $ds['wwwroot'] = $CFG->wwwroot;
+        $ds['dirroot'] = $CFG->dirroot;
         $ds['dataroot'] = $CFG->dataroot;
-		$ds['maxupload'] = $CFG->maxbytes;
-		$ds['cronclionly'] = $CFG->cronclionly;
-		$ds['suhosin'] = extension_loaded('suhosin'); //this is not working what "name"?
-		$ds['pfl_permissions'] = decoct(fileperms($CFG->dirroot . '/filter/poodll/poodllfilelib.php') & 0777);
+        $ds['maxupload'] = $CFG->maxbytes;
+        $ds['cronclionly'] = $CFG->cronclionly;
+        $ds['suhosin'] = extension_loaded('suhosin'); //this is not working what "name"?
+        $ds['pfl_permissions'] = decoct(fileperms($CFG->dirroot . '/filter/poodll/poodllfilelib.php') & 0777);
         $ds['datadir_permissions'] = decoct(fileperms($CFG->dataroot) & 0777);
         //disk space
         $fd = disk_free_space($CFG->dataroot);
-        if($fd > 0){$fd = round($fd / 1024 / 1024);}
-        $ds['free_disk']=$fd . ' MB';
+        if ($fd > 0) {
+            $fd = round($fd / 1024 / 1024);
+        }
+        $ds['free_disk'] = $fd . ' MB';
 
         //active users Moodle
 
         //site setting info
-		$ds['currenttheme']= \core_useragent::get_device_type_theme('default');
-		$ds['cachejs']= $CFG->cachejs;
-		$ds['debug']= $CFG->debug;
-		
-		//cron info
-		$lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
-		$now = time(); 
-		$minutessincecron = "--";
-		$secondssincecron = "--";
-		if($lastcron > 0){
-			$minutessincecron = round(($now - $lastcron)  / 60,0); //on a plane, using round, what is PHP for flat()
-			$secondssincecron = ($now - $lastcron)  % 60;
-		}
-		$ds['lastcron']= $lastcron;
-		$ds['timesincecron']= $minutessincecron . ' mins ' . $secondssincecron . ' secs';
-		
-		
-		//poodll setting info		
-		$ds['cloudrecording']=$CFG->filter_poodll_cloudrecording;
-        $ds['cloudnotifications']=$CFG->filter_poodll_cloudnotifications;
-        $ds['awsregion']=$CFG->filter_poodll_aws_region;
+        $ds['currenttheme'] = \core_useragent::get_device_type_theme('default');
+        $ds['cachejs'] = $CFG->cachejs;
+        $ds['debug'] = $CFG->debug;
+
+        //cron info
+        $lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
+        $now = time();
+        $minutessincecron = "--";
+        $secondssincecron = "--";
+        if ($lastcron > 0) {
+            $minutessincecron = round(($now - $lastcron) / 60, 0); //on a plane, using round, what is PHP for flat()
+            $secondssincecron = ($now - $lastcron) % 60;
+        }
+        $ds['lastcron'] = $lastcron;
+        $ds['timesincecron'] = $minutessincecron . ' mins ' . $secondssincecron . ' secs';
+
+        //poodll setting info
+        $ds['cloudrecording'] = $CFG->filter_poodll_cloudrecording;
+        $ds['cloudnotifications'] = $CFG->filter_poodll_cloudnotifications;
+        $ds['awsregion'] = $CFG->filter_poodll_aws_region;
         $ds['filter_poodll_recorderorder_audio'] = $CFG->filter_poodll_recorderorder_audio;
         $ds['filter_poodll_recorderorder_video'] = $CFG->filter_poodll_recorderorder_video;
         $ds['filter_poodll_recorderorder_whiteboard'] = $CFG->filter_poodll_recorderorder_whiteboard;
         $ds['filter_poodll_recorderorder_snapshot'] = $CFG->filter_poodll_recorderorder_snapshot;
 
-		$ds['filter_poodll_mp3recorder_nocloud']=$CFG->filter_poodll_mp3recorder_nocloud;
-		$ds['filter_poodll_videotranscode']=$CFG->filter_poodll_videotranscode;
-		$ds['filter_poodll_audiotranscode']=$CFG->filter_poodll_audiotranscode;
-		$ds['filter_poodll_ffmpeg']=$CFG->filter_poodll_ffmpeg;
-		$ds['filter_poodll_bgtranscode_video']=$CFG->filter_poodll_bgtranscode_video;
-		$ds['filter_poodll_bgtranscode_audio']=$CFG->filter_poodll_bgtranscode_audio;
-		$ds['filter_poodll_html5recorder_skin_audio']=get_config('filter_poodll','html5recorder_skin_audio');
-        $ds['filter_poodll_html5recorder_skin_video']=get_config('filter_poodll','html5recorder_skin_video');
-		$ds['extensions']=get_config('filter_poodll','extensions');
-		$ds['handlemp3']=get_config('filter_poodll','handlemp3');
-		$ds['handlemp4']=get_config('filter_poodll','handlemp4');
-		$ds['handlewebm']=get_config('filter_poodll','handlewebm');
-		$ds['handleyoutube']=get_config('filter_poodll','handleyoutube');
-		$ds['useplayermp3']=get_config('filter_poodll','useplayermp3');
-		$ds['useplayermp4']=get_config('filter_poodll','useplayermp4');
-		$ds['useplayerwebm']=get_config('filter_poodll','useplayerwebm');
-		$ds['useplayertube']=get_config('filter_poodll','useplayeryoutube');
-        $ds['flashonandroid']=$CFG->filter_poodll_flash_on_android;
-		
-		//PHP settings
-		$ds['maxexecutiontime']=ini_get('max_execution_time'); 
-		$ds['postmaxsize']=ini_get('post_max_size'); 
-		$ds['uploadmaxfilesize']=ini_get('upload_max_filesize'); 
-		$ds['memorylimit']=ini_get('memory_limit'); 
-		
-		//filter setting info	
-		/*
-		foreach (\core_component::get_plugin_list('filter') as $plugin => $unused) {
+        $ds['filter_poodll_mp3recorder_nocloud'] = $CFG->filter_poodll_mp3recorder_nocloud;
+        $ds['filter_poodll_videotranscode'] = $CFG->filter_poodll_videotranscode;
+        $ds['filter_poodll_audiotranscode'] = $CFG->filter_poodll_audiotranscode;
+        $ds['filter_poodll_ffmpeg'] = $CFG->filter_poodll_ffmpeg;
+        $ds['filter_poodll_bgtranscode_video'] = $CFG->filter_poodll_bgtranscode_video;
+        $ds['filter_poodll_bgtranscode_audio'] = $CFG->filter_poodll_bgtranscode_audio;
+        $ds['filter_poodll_html5recorder_skin_audio'] = get_config('filter_poodll', 'html5recorder_skin_audio');
+        $ds['filter_poodll_html5recorder_skin_video'] = get_config('filter_poodll', 'html5recorder_skin_video');
+        $ds['extensions'] = get_config('filter_poodll', 'extensions');
+        $ds['handlemp3'] = get_config('filter_poodll', 'handlemp3');
+        $ds['handlemp4'] = get_config('filter_poodll', 'handlemp4');
+        $ds['handlewebm'] = get_config('filter_poodll', 'handlewebm');
+        $ds['handleyoutube'] = get_config('filter_poodll', 'handleyoutube');
+        $ds['useplayermp3'] = get_config('filter_poodll', 'useplayermp3');
+        $ds['useplayermp4'] = get_config('filter_poodll', 'useplayermp4');
+        $ds['useplayerwebm'] = get_config('filter_poodll', 'useplayerwebm');
+        $ds['useplayertube'] = get_config('filter_poodll', 'useplayeryoutube');
+        $ds['flashonandroid'] = $CFG->filter_poodll_flash_on_android;
+
+        //PHP settings
+        $ds['maxexecutiontime'] = ini_get('max_execution_time');
+        $ds['postmaxsize'] = ini_get('post_max_size');
+        $ds['uploadmaxfilesize'] = ini_get('upload_max_filesize');
+        $ds['memorylimit'] = ini_get('memory_limit');
+
+        //filter setting info
+        /*
+        foreach (\core_component::get_plugin_list('filter') as $plugin => $unused) {
             $ds['installed_filter_' . $plugin] = filter_get_name($plugin);
         }
         */
         //filters
-         $filters = $DB->get_records('filter_active',array('contextid'=>1));
-         foreach ($filters as $filter) {
+        $filters = $DB->get_records('filter_active', array('contextid' => 1));
+        foreach ($filters as $filter) {
             $ds['filter_active_' . $filter->filter] = $filter->active;
             $ds['filter_sortorder_' . $filter->filter] = $filter->sortorder;
         }
 
         //red5 settings
-        $ds['filter_poodll_servername']=$CFG->filter_poodll_servername;
-        $ds['filter_poodll_serverid']=$CFG->filter_poodll_serverid;
-        $ds['filter_poodll_serverport']=$CFG->filter_poodll_serverport;
-        $ds['filter_poodll_serverhttpport']=$CFG->filter_poodll_serverhttpport;
-        $ds['filter_poodll_autotryports']=$CFG->filter_poodll_autotryports;
+        $ds['filter_poodll_servername'] = $CFG->filter_poodll_servername;
+        $ds['filter_poodll_serverid'] = $CFG->filter_poodll_serverid;
+        $ds['filter_poodll_serverport'] = $CFG->filter_poodll_serverport;
+        $ds['filter_poodll_serverhttpport'] = $CFG->filter_poodll_serverhttpport;
+        $ds['filter_poodll_autotryports'] = $CFG->filter_poodll_autotryports;
 
+        return $ds;
+    }
 
-		return $ds;
-	}
-	
 }//end of class

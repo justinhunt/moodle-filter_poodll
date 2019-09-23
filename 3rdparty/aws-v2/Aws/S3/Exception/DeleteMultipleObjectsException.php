@@ -19,8 +19,7 @@ namespace Aws\S3\Exception;
 /**
  * Exception thrown when errors occur in a DeleteMultipleObjects request
  */
-class DeleteMultipleObjectsException extends S3Exception
-{
+class DeleteMultipleObjectsException extends S3Exception {
     /**
      * @var array Array of errors
      */
@@ -29,8 +28,7 @@ class DeleteMultipleObjectsException extends S3Exception
     /**
      * @param array $errors Array of errors
      */
-    public function __construct(array $errors = array())
-    {
+    public function __construct(array $errors = array()) {
         parent::__construct('Unable to delete certain keys when executing a DeleteMultipleObjects request');
         $this->errors = $errors;
     }
@@ -41,8 +39,7 @@ class DeleteMultipleObjectsException extends S3Exception
      * @return array Returns an array of associative arrays, each containing
      *               a 'Code', 'Message', and 'Key' key.
      */
-    public function getErrors()
-    {
+    public function getErrors() {
         return $this->errors;
     }
 }

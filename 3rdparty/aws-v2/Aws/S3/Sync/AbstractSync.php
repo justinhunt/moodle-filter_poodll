@@ -22,8 +22,7 @@ use Guzzle\Common\Collection;
 use Guzzle\Iterator\ChunkedIterator;
 use Guzzle\Service\Command\CommandInterface;
 
-abstract class AbstractSync extends AbstractHasDispatcher
-{
+abstract class AbstractSync extends AbstractHasDispatcher {
     const BEFORE_TRANSFER = 's3.sync.before_transfer';
     const AFTER_TRANSFER = 's3.sync.after_transfer';
 
@@ -38,26 +37,23 @@ abstract class AbstractSync extends AbstractHasDispatcher
      *     - source_converter: (FilenameConverterInterface) Converter used to convert filenames
      *     - *: Any other options required by subclasses
      */
-    public function __construct(array $options)
-    {
+    public function __construct(array $options) {
         $this->options = Collection::fromConfig(
-            $options,
-            array('concurrency' => 10),
-            array('client', 'bucket', 'iterator', 'source_converter')
+                $options,
+                array('concurrency' => 10),
+                array('client', 'bucket', 'iterator', 'source_converter')
         );
         $this->init();
     }
 
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array(self::BEFORE_TRANSFER, self::AFTER_TRANSFER);
     }
 
     /**
      * Begin transferring files
      */
-    public function transfer()
-    {
+    public function transfer() {
         // Pull out chunks of uploads to upload in parallel
         $iterator = new ChunkedIterator($this->options['iterator'], $this->options['concurrency']);
         foreach ($iterator as $files) {
@@ -76,17 +72,18 @@ abstract class AbstractSync extends AbstractHasDispatcher
 
     /**
      * Hook to initialize subclasses
+     *
      * @codeCoverageIgnore
      */
-    protected function init() {}
+    protected function init() {
+    }
 
     /**
      * Process and transfer a group of files
      *
      * @param array $files Files to transfer
      */
-    protected function transferFiles(array $files)
-    {
+    protected function transferFiles(array $files) {
         // Create the base event data object
         $event = array('sync' => $this, 'client' => $this->options['client']);
 
@@ -97,7 +94,7 @@ abstract class AbstractSync extends AbstractHasDispatcher
                 $this->dispatch(self::BEFORE_TRANSFER, $event);
                 if ($action instanceof CommandInterface) {
                     $commands[] = $action;
-                } elseif (is_callable($action)) {
+                } else if (is_callable($action)) {
                     $action();
                     $this->dispatch(self::AFTER_TRANSFER, $event);
                 }
@@ -112,8 +109,7 @@ abstract class AbstractSync extends AbstractHasDispatcher
      *
      * @param array $commands Commands to transfer
      */
-    protected function transferCommands(array $commands)
-    {
+    protected function transferCommands(array $commands) {
         if ($commands) {
             $this->options['client']->execute($commands);
             // Notify listeners that each command finished

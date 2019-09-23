@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The provided security credentials are not valid.
  */
-class InvalidSecurityException extends S3Exception {}
+class InvalidSecurityException extends S3Exception {
+}

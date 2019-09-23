@@ -1,12 +1,12 @@
 <?php
+
 namespace Aws\S3\Exception;
 
 use Aws\CommandInterface;
 use Aws\Exception\AwsException;
 use Aws\Multipart\UploadState;
 
-class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
-{
+class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException {
     /** @var string Bucket of the transfer object */
     private $bucket;
     /** @var string Key of the transfer object */
@@ -15,8 +15,8 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
     private $filename;
 
     /**
-     * @param UploadState      $state Upload state at time of the exception.
-     * @param \Exception|array $prev  Exception being thrown. Could be an array of
+     * @param UploadState $state Upload state at time of the exception.
+     * @param \Exception|array $prev Exception being thrown. Could be an array of
      *                                AwsExceptions being thrown when uploading parts
      *                                for one object, or an instance of AwsException
      *                                for a specific Multipart error being thrown in
@@ -25,7 +25,7 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
     public function __construct(UploadState $state, $prev = null) {
         if (is_array($prev) && $error = $prev[key($prev)]) {
             $this->collectPathInfo($error->getCommand());
-        } elseif ($prev instanceof AwsException) {
+        } else if ($prev instanceof AwsException) {
             $this->collectPathInfo($prev->getCommand());
         }
         parent::__construct($state, $prev);
@@ -37,8 +37,7 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      * @return string|null Returns null when 'Bucket' information
      *                     is unavailable.
      */
-    public function getBucket()
-    {
+    public function getBucket() {
         return $this->bucket;
     }
 
@@ -48,8 +47,7 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      * @return string|null Returns null when 'Key' information
      *                     is unavailable.
      */
-    public function getKey()
-    {
+    public function getKey() {
         return $this->key;
     }
 
@@ -59,8 +57,7 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      * @return string|null Returns null when metadata of the stream
      *                     wrapped in 'Body' parameter is unavailable.
      */
-    public function getSourceFileName()
-    {
+    public function getSourceFileName() {
         return $this->filename;
     }
 
@@ -69,8 +66,7 @@ class S3MultipartUploadException extends \Aws\Exception\MultipartUploadException
      *
      * @param CommandInterface $cmd
      */
-    private function collectPathInfo(CommandInterface $cmd)
-    {
+    private function collectPathInfo(CommandInterface $cmd) {
         if (empty($this->bucket) && isset($cmd['Bucket'])) {
             $this->bucket = $cmd['Bucket'];
         }

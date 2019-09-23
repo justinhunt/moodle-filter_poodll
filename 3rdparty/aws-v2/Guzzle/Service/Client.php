@@ -22,8 +22,7 @@ use Guzzle\Service\Description\ServiceDescriptionInterface;
 /**
  * Client object for executing commands on a web service.
  */
-class Client extends HttpClient implements ClientInterface
-{
+class Client extends HttpClient implements ClientInterface {
     const COMMAND_PARAMS = 'command.params';
 
     /** @var ServiceDescriptionInterface Description of the service and possible commands */
@@ -45,20 +44,18 @@ class Client extends HttpClient implements ClientInterface
      *
      * @return Client
      */
-    public static function factory($config = array())
-    {
+    public static function factory($config = array()) {
         return new static(isset($config['base_url']) ? $config['base_url'] : null, $config);
     }
 
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array_merge(HttpClient::getAllEvents(), array(
-            'client.command.create',
-            'command.before_prepare',
-            'command.after_prepare',
-            'command.before_send',
-            'command.after_send',
-            'command.parse_response'
+                'client.command.create',
+                'command.before_prepare',
+                'command.after_prepare',
+                'command.before_send',
+                'command.after_send',
+                'command.parse_response'
         ));
     }
 
@@ -66,18 +63,16 @@ class Client extends HttpClient implements ClientInterface
      * Magic method used to retrieve a command
      *
      * @param string $method Name of the command object to instantiate
-     * @param array  $args   Arguments to pass to the command
+     * @param array $args Arguments to pass to the command
      *
      * @return mixed Returns the result of the command
      * @throws BadMethodCallException when a command is not found
      */
-    public function __call($method, $args)
-    {
+    public function __call($method, $args) {
         return $this->getCommand($method, isset($args[0]) ? $args[0] : array())->getResult();
     }
 
-    public function getCommand($name, array $args = array())
-    {
+    public function getCommand($name, array $args = array()) {
         // Add global client options to the command
         if ($options = $this->getConfig(self::COMMAND_PARAMS)) {
             $args += $options;
@@ -100,8 +95,7 @@ class Client extends HttpClient implements ClientInterface
      *
      * @return self
      */
-    public function setCommandFactory(CommandFactoryInterface $factory)
-    {
+    public function setCommandFactory(CommandFactoryInterface $factory) {
         $this->commandFactory = $factory;
 
         return $this;
@@ -114,15 +108,13 @@ class Client extends HttpClient implements ClientInterface
      *
      * @return self
      */
-    public function setResourceIteratorFactory(ResourceIteratorFactoryInterface $factory)
-    {
+    public function setResourceIteratorFactory(ResourceIteratorFactoryInterface $factory) {
         $this->resourceIteratorFactory = $factory;
 
         return $this;
     }
 
-    public function getIterator($command, array $commandOptions = null, array $iteratorOptions = array())
-    {
+    public function getIterator($command, array $commandOptions = null, array $iteratorOptions = array()) {
         if (!($command instanceof CommandInterface)) {
             $command = $this->getCommand($command, $commandOptions ?: array());
         }
@@ -130,21 +122,19 @@ class Client extends HttpClient implements ClientInterface
         return $this->getResourceIteratorFactory()->build($command, $iteratorOptions);
     }
 
-    public function execute($command)
-    {
+    public function execute($command) {
         if ($command instanceof CommandInterface) {
             $this->send($this->prepareCommand($command));
             $this->dispatch('command.after_send', array('command' => $command));
             return $command->getResult();
-        } elseif (is_array($command) || $command instanceof \Traversable) {
+        } else if (is_array($command) || $command instanceof \Traversable) {
             return $this->executeMultiple($command);
         } else {
             throw new InvalidArgumentException('Command must be a command or array of commands');
         }
     }
 
-    public function setDescription(ServiceDescriptionInterface $service)
-    {
+    public function setDescription(ServiceDescriptionInterface $service) {
         $this->serviceDescription = $service;
 
         if ($this->getCommandFactory() && $this->getCommandFactory() instanceof CompositeFactory) {
@@ -159,8 +149,7 @@ class Client extends HttpClient implements ClientInterface
         return $this;
     }
 
-    public function getDescription()
-    {
+    public function getDescription() {
         return $this->serviceDescription;
     }
 
@@ -171,8 +160,7 @@ class Client extends HttpClient implements ClientInterface
      *
      * @return self
      */
-    public function setInflector(InflectorInterface $inflector)
-    {
+    public function setInflector(InflectorInterface $inflector) {
         $this->inflector = $inflector;
 
         return $this;
@@ -183,8 +171,7 @@ class Client extends HttpClient implements ClientInterface
      *
      * @return self
      */
-    public function getInflector()
-    {
+    public function getInflector() {
         if (!$this->inflector) {
             $this->inflector = Inflector::getDefault();
         }
@@ -199,8 +186,7 @@ class Client extends HttpClient implements ClientInterface
      *
      * @return RequestInterface
      */
-    protected function prepareCommand(CommandInterface $command)
-    {
+    protected function prepareCommand(CommandInterface $command) {
         // Set the client and prepare the command
         $request = $command->setClient($this)->prepare();
         // Set the state to new if the command was previously executed
@@ -218,8 +204,7 @@ class Client extends HttpClient implements ClientInterface
      * @return array Returns an array of the executed commands
      * @throws Exception\CommandTransferException
      */
-    protected function executeMultiple($commands)
-    {
+    protected function executeMultiple($commands) {
         $requests = array();
         $commandRequests = new \SplObjectStorage();
 
@@ -257,15 +242,14 @@ class Client extends HttpClient implements ClientInterface
         }
     }
 
-    protected function getResourceIteratorFactory()
-    {
+    protected function getResourceIteratorFactory() {
         if (!$this->resourceIteratorFactory) {
             // Build the default resource iterator factory if one is not set
             $clientClass = get_class($this);
             $prefix = substr($clientClass, 0, strrpos($clientClass, '\\'));
             $this->resourceIteratorFactory = new ResourceIteratorClassFactory(array(
-                "{$prefix}\\Iterator",
-                "{$prefix}\\Model"
+                    "{$prefix}\\Iterator",
+                    "{$prefix}\\Model"
             ));
         }
 
@@ -277,8 +261,7 @@ class Client extends HttpClient implements ClientInterface
      *
      * @return CommandFactoryInterface
      */
-    protected function getCommandFactory()
-    {
+    protected function getCommandFactory() {
         if (!$this->commandFactory) {
             $this->commandFactory = CompositeFactory::getDefaultChain($this);
         }
@@ -290,8 +273,7 @@ class Client extends HttpClient implements ClientInterface
      * @deprecated
      * @codeCoverageIgnore
      */
-    public function enableMagicMethods($isEnabled)
-    {
+    public function enableMagicMethods($isEnabled) {
         Version::warn(__METHOD__ . ' is deprecated');
     }
 }

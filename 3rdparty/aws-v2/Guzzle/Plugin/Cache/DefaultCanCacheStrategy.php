@@ -8,10 +8,8 @@ use Guzzle\Http\Message\Response;
 /**
  * Default strategy used to determine of an HTTP request can be cached
  */
-class DefaultCanCacheStrategy implements CanCacheStrategyInterface
-{
-    public function canCacheRequest(RequestInterface $request)
-    {
+class DefaultCanCacheStrategy implements CanCacheStrategyInterface {
+    public function canCacheRequest(RequestInterface $request) {
         // Only GET and HEAD requests can be cached
         if ($request->getMethod() != RequestInterface::GET && $request->getMethod() != RequestInterface::HEAD) {
             return false;
@@ -25,8 +23,7 @@ class DefaultCanCacheStrategy implements CanCacheStrategyInterface
         return true;
     }
 
-    public function canCacheResponse(Response $response)
-    {
+    public function canCacheResponse(Response $response) {
         return $response->isSuccessful() && $response->canCache();
     }
 }

@@ -12,8 +12,7 @@ use Zend\Cache\Storage\StorageInterface;
 /**
  * Generates cache adapters from any number of known cache implementations
  */
-class CacheAdapterFactory implements FromConfigInterface
-{
+class CacheAdapterFactory implements FromConfigInterface {
     /**
      * Create a Guzzle cache adapter based on an array of options
      *
@@ -22,17 +21,16 @@ class CacheAdapterFactory implements FromConfigInterface
      * @return CacheAdapterInterface
      * @throws InvalidArgumentException
      */
-    public static function fromCache($cache)
-    {
+    public static function fromCache($cache) {
         if (!is_object($cache)) {
             throw new InvalidArgumentException('Cache must be one of the known cache objects');
         }
 
         if ($cache instanceof CacheAdapterInterface) {
             return $cache;
-        } elseif ($cache instanceof Cache) {
+        } else if ($cache instanceof Cache) {
             return new DoctrineCacheAdapter($cache);
-        } elseif ($cache instanceof StorageInterface) {
+        } else if ($cache instanceof StorageInterface) {
             return new Zf2CacheAdapter($cache);
         } else {
             throw new InvalidArgumentException('Unknown cache type: ' . get_class($cache));
@@ -49,8 +47,7 @@ class CacheAdapterFactory implements FromConfigInterface
      * @deprecated This will be removed in a future version
      * @codeCoverageIgnore
      */
-    public static function factory($config = array())
-    {
+    public static function factory($config = array()) {
         Version::warn(__METHOD__ . ' is deprecated');
         if (!is_array($config)) {
             throw new InvalidArgumentException('$config must be an array');
@@ -94,15 +91,14 @@ class CacheAdapterFactory implements FromConfigInterface
      * Create a class using an array of constructor arguments
      *
      * @param string $className Class name
-     * @param array  $args      Arguments for the class constructor
+     * @param array $args Arguments for the class constructor
      *
      * @return mixed
      * @throws RuntimeException
      * @deprecated
      * @codeCoverageIgnore
      */
-    private static function createObject($className, array $args = null)
-    {
+    private static function createObject($className, array $args = null) {
         try {
             if (!$args) {
                 return new $className;

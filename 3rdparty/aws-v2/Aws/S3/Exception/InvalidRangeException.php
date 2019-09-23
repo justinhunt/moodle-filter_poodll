@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The requested range cannot be satisfied.
  */
-class InvalidRangeException extends S3Exception {}
+class InvalidRangeException extends S3Exception {
+}

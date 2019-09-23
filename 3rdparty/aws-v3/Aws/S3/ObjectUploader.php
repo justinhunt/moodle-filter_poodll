@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use GuzzleHttp\Promise\PromisorInterface;
@@ -9,8 +10,7 @@ use Psr\Http\Message\StreamInterface;
  * Uploads an object to S3, using a PutObject command or a multipart upload as
  * appropriate.
  */
-class ObjectUploader implements PromisorInterface
-{
+class ObjectUploader implements PromisorInterface {
     const DEFAULT_MULTIPART_THRESHOLD = 16777216;
 
     private $client;
@@ -20,36 +20,36 @@ class ObjectUploader implements PromisorInterface
     private $acl;
     private $options;
     private static $defaults = [
-        'before_upload' => null,
-        'concurrency'   => 3,
-        'mup_threshold' => self::DEFAULT_MULTIPART_THRESHOLD,
-        'params'        => [],
-        'part_size'     => null,
+            'before_upload' => null,
+            'concurrency' => 3,
+            'mup_threshold' => self::DEFAULT_MULTIPART_THRESHOLD,
+            'params' => [],
+            'part_size' => null,
     ];
 
     /**
-     * @param S3ClientInterface $client         The S3 Client used to execute
+     * @param S3ClientInterface $client The S3 Client used to execute
      *                                          the upload command(s).
-     * @param string            $bucket         Bucket to upload the object.
-     * @param string            $key            Key of the object.
-     * @param mixed             $body           Object data to upload. Can be a
+     * @param string $bucket Bucket to upload the object.
+     * @param string $key Key of the object.
+     * @param mixed $body Object data to upload. Can be a
      *                                          StreamInterface, PHP stream
      *                                          resource, or a string of data to
      *                                          upload.
-     * @param string            $acl            ACL to apply to the copy
+     * @param string $acl ACL to apply to the copy
      *                                          (default: private).
-     * @param array             $options        Options used to configure the
+     * @param array $options Options used to configure the
      *                                          copy process. Options passed in
      *                                          through 'params' are added to
      *                                          the sub command(s).
      */
     public function __construct(
-        S3ClientInterface $client,
-        $bucket,
-        $key,
-        $body,
-        $acl = 'private',
-        array $options = []
+            S3ClientInterface $client,
+            $bucket,
+            $key,
+            $body,
+            $acl = 'private',
+            array $options = []
     ) {
         $this->client = $client;
         $this->bucket = $bucket;
@@ -59,34 +59,32 @@ class ObjectUploader implements PromisorInterface
         $this->options = $options + self::$defaults;
     }
 
-    public function promise()
-    {
+    public function promise() {
         /** @var int $mup_threshold */
         $mup_threshold = $this->options['mup_threshold'];
         if ($this->requiresMultipart($this->body, $mup_threshold)) {
             // Perform a multipart upload.
             return (new MultipartUploader($this->client, $this->body, [
-                    'bucket' => $this->bucket,
-                    'key'    => $this->key,
-                    'acl'    => $this->acl
-                ] + $this->options))->promise();
+                            'bucket' => $this->bucket,
+                            'key' => $this->key,
+                            'acl' => $this->acl
+                    ] + $this->options))->promise();
         }
 
         // Perform a regular PutObject operation.
         $command = $this->client->getCommand('PutObject', [
-                'Bucket' => $this->bucket,
-                'Key'    => $this->key,
-                'Body'   => $this->body,
-                'ACL'    => $this->acl,
-            ] + $this->options['params']);
+                        'Bucket' => $this->bucket,
+                        'Key' => $this->key,
+                        'Body' => $this->body,
+                        'ACL' => $this->acl,
+                ] + $this->options['params']);
         if (is_callable($this->options['before_upload'])) {
             $this->options['before_upload']($command);
         }
         return $this->client->executeAsync($command);
     }
 
-    public function upload()
-    {
+    public function upload() {
         return $this->promise()->wait();
     }
 
@@ -95,13 +93,12 @@ class ObjectUploader implements PromisorInterface
      * Multipart Upload System. It also modifies the passed-in $body as needed
      * to support the upload.
      *
-     * @param StreamInterface $body      Stream representing the body.
-     * @param integer             $threshold Minimum bytes before using Multipart.
+     * @param StreamInterface $body Stream representing the body.
+     * @param integer $threshold Minimum bytes before using Multipart.
      *
      * @return bool
      */
-    private function requiresMultipart(StreamInterface &$body, $threshold)
-    {
+    private function requiresMultipart(StreamInterface &$body, $threshold) {
         // If body size known, compare to threshold to determine if Multipart.
         if ($body->getSize() !== null) {
             return $body->getSize() >= $threshold;
@@ -110,6 +107,7 @@ class ObjectUploader implements PromisorInterface
         /**
          * Handle the situation where the body size is unknown.
          * Read up to 5MB into a buffer to determine how to upload the body.
+         *
          * @var StreamInterface $buffer
          */
         $buffer = Psr7\stream_for();

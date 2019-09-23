@@ -8,8 +8,7 @@ use Guzzle\Http\Message\Response;
 /**
  * Strategy used to determine if a request can be cached
  */
-interface CanCacheStrategyInterface
-{
+interface CanCacheStrategyInterface {
     /**
      * Determine if a request can be cached
      *

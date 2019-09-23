@@ -19,8 +19,7 @@ namespace Aws\Common\Waiter;
 /**
  * Waiter factory used to create waiter objects by short names
  */
-interface WaiterFactoryInterface
-{
+interface WaiterFactoryInterface {
     /**
      * Create a waiter by name
      *

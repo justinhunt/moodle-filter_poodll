@@ -29,23 +29,21 @@ use Guzzle\Batch\AbstractBatchDecorator;
  * or an array of [Key => %s, VersionId => %s] and call flush when the objects
  * should be deleted.
  */
-class DeleteObjectsBatch extends AbstractBatchDecorator
-{
+class DeleteObjectsBatch extends AbstractBatchDecorator {
     /**
      * Factory for creating a DeleteObjectsBatch
      *
      * @param AwsClientInterface $client Client used to transfer requests
-     * @param string             $bucket Bucket that contains the objects to delete
-     * @param string             $mfa    MFA token to use with the request
+     * @param string $bucket Bucket that contains the objects to delete
+     * @param string $mfa MFA token to use with the request
      *
      * @return static
      */
-    public static function factory(AwsClientInterface $client, $bucket, $mfa = null)
-    {
+    public static function factory(AwsClientInterface $client, $bucket, $mfa = null) {
         $batch = BatchBuilder::factory()
-            ->createBatchesWith(new BatchSizeDivisor(1000))
-            ->transferWith(new DeleteObjectsTransfer($client, $bucket, $mfa))
-            ->build();
+                ->createBatchesWith(new BatchSizeDivisor(1000))
+                ->transferWith(new DeleteObjectsTransfer($client, $bucket, $mfa))
+                ->build();
 
         return new static($batch);
     }
@@ -53,28 +51,26 @@ class DeleteObjectsBatch extends AbstractBatchDecorator
     /**
      * Add an object to be deleted
      *
-     * @param string $key       Key of the object
+     * @param string $key Key of the object
      * @param string $versionId VersionID of the object
      *
      * @return $this
      */
-    public function addKey($key, $versionId = null)
-    {
+    public function addKey($key, $versionId = null) {
         return $this->add(array(
-            'Key'       => $key,
-            'VersionId' => $versionId
+                'Key' => $key,
+                'VersionId' => $versionId
         ));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function add($item)
-    {
+    public function add($item) {
         if ($item instanceof AbstractCommand && $item->getName() == 'DeleteObject') {
             $item = array(
-                'Key'       => $item['Key'],
-                'VersionId' => $item['VersionId']
+                    'Key' => $item['Key'],
+                    'VersionId' => $item['VersionId']
             );
         }
 

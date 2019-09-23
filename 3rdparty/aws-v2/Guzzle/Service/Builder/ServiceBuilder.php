@@ -13,8 +13,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  *
  * Clients and data can be set, retrieved, and removed by accessing the service builder like an associative array.
  */
-class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInterface, \ArrayAccess, \Serializable
-{
+class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInterface, \ArrayAccess, \Serializable {
     /** @var array Service builder configuration data */
     protected $builderConfig = array();
 
@@ -31,15 +30,14 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
      * Create a new ServiceBuilder using configuration data sourced from an
      * array, .js|.json or .php file.
      *
-     * @param array|string $config           The full path to an .json|.js or .php file, or an associative array
-     * @param array        $globalParameters Array of global parameters to pass to every service as it is instantiated.
+     * @param array|string $config The full path to an .json|.js or .php file, or an associative array
+     * @param array $globalParameters Array of global parameters to pass to every service as it is instantiated.
      *
      * @return ServiceBuilderInterface
      * @throws ServiceBuilderException if a file cannot be opened
      * @throws ServiceNotFoundException when trying to extend a missing client
      */
-    public static function factory($config = null, array $globalParameters = array())
-    {
+    public static function factory($config = null, array $globalParameters = array()) {
         // @codeCoverageIgnoreStart
         if (!static::$cachedFactory) {
             static::$cachedFactory = new ServiceBuilderLoader();
@@ -55,23 +53,19 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
      *     - class: Client class to instantiate using a factory method
      *     - params: array of key value pair configuration settings for the builder
      */
-    public function __construct(array $serviceBuilderConfig = array())
-    {
+    public function __construct(array $serviceBuilderConfig = array()) {
         $this->builderConfig = $serviceBuilderConfig;
     }
 
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array('service_builder.create_client');
     }
 
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         $this->builderConfig = json_decode($serialized, true);
     }
 
-    public function serialize()
-    {
+    public function serialize() {
         return json_encode($this->builderConfig);
     }
 
@@ -82,8 +76,7 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
      *
      * @return self
      */
-    public function addGlobalPlugin(EventSubscriberInterface $plugin)
-    {
+    public function addGlobalPlugin(EventSubscriberInterface $plugin) {
         $this->plugins[] = $plugin;
 
         return $this;
@@ -96,13 +89,11 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
      *
      * @return array|null
      */
-    public function getData($name)
-    {
+    public function getData($name) {
         return isset($this->builderConfig[$name]) ? $this->builderConfig[$name] : null;
     }
 
-    public function get($name, $throwAway = false)
-    {
+    public function get($name, $throwAway = false) {
         if (!isset($this->builderConfig[$name])) {
 
             // Check to see if arbitrary data is being referenced
@@ -155,8 +146,7 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
         return $client;
     }
 
-    public function set($key, $service)
-    {
+    public function set($key, $service) {
         if (is_array($service) && isset($service['class']) && isset($service['params'])) {
             $this->builderConfig[$key] = $service;
         } else {
@@ -166,24 +156,20 @@ class ServiceBuilder extends AbstractHasDispatcher implements ServiceBuilderInte
         return $this;
     }
 
-    public function offsetSet($offset, $value)
-    {
+    public function offsetSet($offset, $value) {
         $this->set($offset, $value);
     }
 
-    public function offsetUnset($offset)
-    {
+    public function offsetUnset($offset) {
         unset($this->builderConfig[$offset]);
         unset($this->clients[$offset]);
     }
 
-    public function offsetExists($offset)
-    {
+    public function offsetExists($offset) {
         return isset($this->builderConfig[$offset]) || isset($this->clients[$offset]);
     }
 
-    public function offsetGet($offset)
-    {
+    public function offsetGet($offset) {
         return $this->get($offset);
     }
 }

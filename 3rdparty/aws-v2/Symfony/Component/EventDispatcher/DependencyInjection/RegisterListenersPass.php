@@ -17,8 +17,7 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 /**
  * Compiler pass to register tagged services for an event dispatcher.
  */
-class RegisterListenersPass implements CompilerPassInterface
-{
+class RegisterListenersPass implements CompilerPassInterface {
     /**
      * @var string
      */
@@ -38,18 +37,17 @@ class RegisterListenersPass implements CompilerPassInterface
      * Constructor.
      *
      * @param string $dispatcherService Service name of the event dispatcher in processed container
-     * @param string $listenerTag       Tag name used for listener
-     * @param string $subscriberTag     Tag name used for subscribers
+     * @param string $listenerTag Tag name used for listener
+     * @param string $subscriberTag Tag name used for subscribers
      */
-    public function __construct($dispatcherService = 'event_dispatcher', $listenerTag = 'kernel.event_listener', $subscriberTag = 'kernel.event_subscriber')
-    {
+    public function __construct($dispatcherService = 'event_dispatcher', $listenerTag = 'kernel.event_listener',
+            $subscriberTag = 'kernel.event_subscriber') {
         $this->dispatcherService = $dispatcherService;
         $this->listenerTag = $listenerTag;
         $this->subscriberTag = $subscriberTag;
     }
 
-    public function process(ContainerBuilder $container)
-    {
+    public function process(ContainerBuilder $container) {
         if (!$container->hasDefinition($this->dispatcherService) && !$container->hasAlias($this->dispatcherService)) {
             return;
         }
@@ -59,25 +57,30 @@ class RegisterListenersPass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds($this->listenerTag) as $id => $events) {
             $def = $container->getDefinition($id);
             if (!$def->isPublic()) {
-                throw new \InvalidArgumentException(sprintf('The service "%s" must be public as event listeners are lazy-loaded.', $id));
+                throw new \InvalidArgumentException(sprintf('The service "%s" must be public as event listeners are lazy-loaded.',
+                        $id));
             }
 
             if ($def->isAbstract()) {
-                throw new \InvalidArgumentException(sprintf('The service "%s" must not be abstract as event listeners are lazy-loaded.', $id));
+                throw new \InvalidArgumentException(sprintf('The service "%s" must not be abstract as event listeners are lazy-loaded.',
+                        $id));
             }
 
             foreach ($events as $event) {
                 $priority = isset($event['priority']) ? $event['priority'] : 0;
 
                 if (!isset($event['event'])) {
-                    throw new \InvalidArgumentException(sprintf('Service "%s" must define the "event" attribute on "%s" tags.', $id, $this->listenerTag));
+                    throw new \InvalidArgumentException(sprintf('Service "%s" must define the "event" attribute on "%s" tags.', $id,
+                            $this->listenerTag));
                 }
 
                 if (!isset($event['method'])) {
-                    $event['method'] = 'on'.preg_replace_callback(array(
-                        '/(?<=\b)[a-z]/i',
-                        '/[^a-z0-9]/i',
-                    ), function ($matches) { return strtoupper($matches[0]); }, $event['event']);
+                    $event['method'] = 'on' . preg_replace_callback(array(
+                                    '/(?<=\b)[a-z]/i',
+                                    '/[^a-z0-9]/i',
+                            ), function($matches) {
+                                return strtoupper($matches[0]);
+                            }, $event['event']);
                     $event['method'] = preg_replace('/[^a-z0-9]/i', '', $event['method']);
                 }
 
@@ -88,11 +91,13 @@ class RegisterListenersPass implements CompilerPassInterface
         foreach ($container->findTaggedServiceIds($this->subscriberTag) as $id => $attributes) {
             $def = $container->getDefinition($id);
             if (!$def->isPublic()) {
-                throw new \InvalidArgumentException(sprintf('The service "%s" must be public as event subscribers are lazy-loaded.', $id));
+                throw new \InvalidArgumentException(sprintf('The service "%s" must be public as event subscribers are lazy-loaded.',
+                        $id));
             }
 
             if ($def->isAbstract()) {
-                throw new \InvalidArgumentException(sprintf('The service "%s" must not be abstract as event subscribers are lazy-loaded.', $id));
+                throw new \InvalidArgumentException(sprintf('The service "%s" must not be abstract as event subscribers are lazy-loaded.',
+                        $id));
             }
 
             // We must assume that the class value has been correctly filled, even if the service is created by a factory

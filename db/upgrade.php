@@ -23,7 +23,6 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-
 defined('MOODLE_INTERNAL') || die();
 
 use \filter_poodll\constants;
@@ -36,32 +35,32 @@ function xmldb_filter_poodll_upgrade($oldversion) {
 
     if ($oldversion < 2016071604) {
 
-		$presets = \filter_poodll\poodllpresets::fetch_presets();
-		$forinstall = array('fff','stopwatch','audiojs');
-		$templateindex=0;
-		foreach($presets as $preset){			
-			if(in_array($preset['key'],$forinstall)){
-				$templateindex++;
-				//set the config
-				\filter_poodll\poodllpresets::set_preset_to_config($preset,$templateindex);
-			}
-		}//end of for each presets	
-	
+        $presets = \filter_poodll\poodllpresets::fetch_presets();
+        $forinstall = array('fff', 'stopwatch', 'audiojs');
+        $templateindex = 0;
+        foreach ($presets as $preset) {
+            if (in_array($preset['key'], $forinstall)) {
+                $templateindex++;
+                //set the config
+                \filter_poodll\poodllpresets::set_preset_to_config($preset, $templateindex);
+            }
+        }//end of for each presets	
+
         // poodllrecording savepoint reached
         upgrade_plugin_savepoint(true, 2016071604, 'filter', 'poodll');
     }
 
     if ($oldversion < 2017051301) {
-        set_config('filter_poodll_recorderorder_audio',$CFG->filter_poodll_recorderorder);
-        set_config('filter_poodll_recorderorder_video',$CFG->filter_poodll_recorderorder);
-        set_config('filter_poodll_recorderorder_whiteboard',$CFG->filter_poodll_recorderorder);
-        set_config('filter_poodll_recorderorder_snapshot',$CFG->filter_poodll_recorderorder);
+        set_config('filter_poodll_recorderorder_audio', $CFG->filter_poodll_recorderorder);
+        set_config('filter_poodll_recorderorder_video', $CFG->filter_poodll_recorderorder);
+        set_config('filter_poodll_recorderorder_whiteboard', $CFG->filter_poodll_recorderorder);
+        set_config('filter_poodll_recorderorder_snapshot', $CFG->filter_poodll_recorderorder);
 
         //  savepoint reached
         upgrade_plugin_savepoint(true, 2017051301, 'filter', 'poodll');
     }
 
-    if($oldversion < 2017082601) {
+    if ($oldversion < 2017082601) {
         if (property_exists($CFG, 'filter_poodll_html5recorder_skin')) {
             $currentskin = $CFG->filter_poodll_html5recorder_skin;
             set_config('html5recorder_skin_audio', $currentskin, 'filter_poodll');
@@ -76,25 +75,25 @@ function xmldb_filter_poodll_upgrade($oldversion) {
             set_config('skinstylevideo', $currentskin, 'filter_poodll');
         }
     }
-    if($oldversion < 2017092402) {
-     	if (property_exists($CFG, 'filter_poodll_recorderorder_audio')) {
+    if ($oldversion < 2017092402) {
+        if (property_exists($CFG, 'filter_poodll_recorderorder_audio')) {
             $currentaudio = $CFG->filter_poodll_recorderorder_audio;
-            set_config('filter_poodll_recorderorder_audio', str_replace('mobile,media,','media,mobile,',$currentaudio));
-             $currentvideo = $CFG->filter_poodll_recorderorder_video;
-            set_config('filter_poodll_recorderorder_video', str_replace('mobile,media,','media,mobile,',$currentvideo));
-    	}
+            set_config('filter_poodll_recorderorder_audio', str_replace('mobile,media,', 'media,mobile,', $currentaudio));
+            $currentvideo = $CFG->filter_poodll_recorderorder_video;
+            set_config('filter_poodll_recorderorder_video', str_replace('mobile,media,', 'media,mobile,', $currentvideo));
+        }
     }
 
-    if($oldversion < 2018041002 && version_compare(phpversion(), '5.5.0', '>=')) {
+    if ($oldversion < 2018041002 && version_compare(phpversion(), '5.5.0', '>=')) {
         if (property_exists($CFG, 'filter_poodll_aws_sdk')) {
             set_config('filter_poodll_aws_sdk', '3.x');
         }
     }
 
-    if($oldversion < 2018120500) {
+    if ($oldversion < 2018120500) {
         if (property_exists($CFG, 'filter_poodll_aws_sdk')) {
-            $currentvalue=get_config('filter_poodll_aws_sdk');
-            switch($currentvalue){
+            $currentvalue = get_config('filter_poodll_aws_sdk');
+            switch ($currentvalue) {
                 case constants::AWS_NONE:
                 case constants::AWS_V2:
                     //lets just leave it like that.

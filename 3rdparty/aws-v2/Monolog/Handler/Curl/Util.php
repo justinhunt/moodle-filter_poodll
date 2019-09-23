@@ -11,26 +11,24 @@
 
 namespace Monolog\Handler\Curl;
 
-class Util
-{
+class Util {
     private static $retriableErrorCodes = array(
-        CURLE_COULDNT_RESOLVE_HOST,
-        CURLE_COULDNT_CONNECT,
-        CURLE_HTTP_NOT_FOUND,
-        CURLE_READ_ERROR,
-        CURLE_OPERATION_TIMEOUTED,
-        CURLE_HTTP_POST_ERROR,
-        CURLE_SSL_CONNECT_ERROR,
+            CURLE_COULDNT_RESOLVE_HOST,
+            CURLE_COULDNT_CONNECT,
+            CURLE_HTTP_NOT_FOUND,
+            CURLE_READ_ERROR,
+            CURLE_OPERATION_TIMEOUTED,
+            CURLE_HTTP_POST_ERROR,
+            CURLE_SSL_CONNECT_ERROR,
     );
 
     /**
      * Executes a CURL request with optional retries and exception on failure
      *
-     * @param  resource          $ch curl handler
+     * @param  resource $ch curl handler
      * @throws \RuntimeException
      */
-    public static function execute($ch, $retries = 5, $closeAfterDone = true)
-    {
+    public static function execute($ch, $retries = 5, $closeAfterDone = true) {
         while ($retries--) {
             if (curl_exec($ch) === false) {
                 $curlErrno = curl_errno($ch);

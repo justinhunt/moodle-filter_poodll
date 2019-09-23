@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * POST requires exactly one file upload per request.
  */
-class IncorrectNumberOfFilesInPostRequestException extends S3Exception {}
+class IncorrectNumberOfFilesInPostRequestException extends S3Exception {
+}

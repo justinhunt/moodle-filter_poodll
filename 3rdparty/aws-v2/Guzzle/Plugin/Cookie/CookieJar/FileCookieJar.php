@@ -7,8 +7,7 @@ use Guzzle\Common\Exception\RuntimeException;
 /**
  * Persists non-session cookies using a JSON formatted file
  */
-class FileCookieJar extends ArrayCookieJar
-{
+class FileCookieJar extends ArrayCookieJar {
     /** @var string filename */
     protected $filename;
 
@@ -19,8 +18,7 @@ class FileCookieJar extends ArrayCookieJar
      *
      * @throws RuntimeException if the file cannot be found or created
      */
-    public function __construct($cookieFile)
-    {
+    public function __construct($cookieFile) {
         $this->filename = $cookieFile;
         $this->load();
     }
@@ -28,8 +26,7 @@ class FileCookieJar extends ArrayCookieJar
     /**
      * Saves the file when shutting down
      */
-    public function __destruct()
-    {
+    public function __destruct() {
         $this->persist();
     }
 
@@ -38,8 +35,7 @@ class FileCookieJar extends ArrayCookieJar
      *
      * @throws RuntimeException if the file cannot be found or created
      */
-    protected function persist()
-    {
+    protected function persist() {
         //JUSTIN unused and a Moodle Sin
         /*
         if (false === file_put_contents($this->filename, $this->serialize())) {
@@ -53,8 +49,7 @@ class FileCookieJar extends ArrayCookieJar
     /**
      * Load the contents of the json formatted file into the data array and discard any unsaved state
      */
-    protected function load()
-    {
+    protected function load() {
         $json = file_get_contents($this->filename);
         if (false === $json) {
             // @codeCoverageIgnoreStart

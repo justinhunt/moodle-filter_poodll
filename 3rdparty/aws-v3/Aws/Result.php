@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use JmesPath\Env as JmesPath;
@@ -6,32 +7,26 @@ use JmesPath\Env as JmesPath;
 /**
  * AWS result.
  */
-class Result implements ResultInterface
-{
+class Result implements ResultInterface {
     use HasDataTrait;
 
-    public function __construct(array $data = [])
-    {
+    public function __construct(array $data = []) {
         $this->data = $data;
     }
 
-    public function hasKey($name)
-    {
+    public function hasKey($name) {
         return isset($this->data[$name]);
     }
 
-    public function get($key)
-    {
+    public function get($key) {
         return $this[$key];
     }
 
-    public function search($expression)
-    {
+    public function search($expression) {
         return JmesPath::search($expression, $this->toArray());
     }
 
-    public function __toString()
-    {
+    public function __toString() {
         $jsonData = json_encode($this->toArray(), JSON_PRETTY_PRINT);
         return <<<EOT
 Model Data
@@ -49,8 +44,7 @@ EOT;
     /**
      * @deprecated
      */
-    public function getPath($path)
-    {
+    public function getPath($path) {
         return $this->search(str_replace('/', '.', $path));
     }
 }

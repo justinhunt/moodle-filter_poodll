@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable Payer values
  */
-class Payer extends Enum
-{
+class Payer extends Enum {
     const REQUESTER = 'Requester';
     const BUCKET_OWNER = 'BucketOwner';
 }

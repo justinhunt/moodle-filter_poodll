@@ -22,8 +22,7 @@ use Aws\Common\Exception\RuntimeException;
 /**
  * Abstract waiter implementation used to wait on resources
  */
-abstract class AbstractResourceWaiter extends AbstractWaiter implements ResourceWaiterInterface
-{
+abstract class AbstractResourceWaiter extends AbstractWaiter implements ResourceWaiterInterface {
     /**
      * @var AwsClientInterface
      */
@@ -32,8 +31,7 @@ abstract class AbstractResourceWaiter extends AbstractWaiter implements Resource
     /**
      * {@inheritdoc}
      */
-    public function setClient(AwsClientInterface $client)
-    {
+    public function setClient(AwsClientInterface $client) {
         $this->client = $client;
 
         return $this;
@@ -42,8 +40,7 @@ abstract class AbstractResourceWaiter extends AbstractWaiter implements Resource
     /**
      * {@inheritdoc}
      */
-    public function wait()
-    {
+    public function wait() {
         if (!$this->client) {
             throw new RuntimeException('No client has been specified on the waiter');
         }

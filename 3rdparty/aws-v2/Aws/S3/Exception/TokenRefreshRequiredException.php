@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The provided token must be refreshed.
  */
-class TokenRefreshRequiredException extends S3Exception {}
+class TokenRefreshRequiredException extends S3Exception {
+}

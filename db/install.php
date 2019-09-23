@@ -29,25 +29,26 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_filter_poodll_install() {
     $presets = \filter_poodll\poodllpresets::fetch_presets();
-	$forinstall = array('fff','flowplayer','mediaelementvideo','videojs','nativevideo','audiojs_shim','mediaelementaudio','nativeaudio','youtubeplayer','youtube','tabs','tabitem','accordian','accordianitem');
-	$templateindex=0;
-	foreach($presets as $preset){			
-		if(in_array($preset['key'],$forinstall)){
-			$templateindex++;
-			//set the config
-			\filter_poodll\poodllpresets::set_preset_to_config($preset,$templateindex);
-		}
-	}//end of for each presets	
-	
-	//Set the handlers
-	set_config('handlemp4', 1, 'filter_poodll');
-	set_config('handlemp3', 1, 'filter_poodll');
+    $forinstall = array('fff', 'flowplayer', 'mediaelementvideo', 'videojs', 'nativevideo', 'audiojs_shim', 'mediaelementaudio',
+            'nativeaudio', 'youtubeplayer', 'youtube', 'tabs', 'tabitem', 'accordian', 'accordianitem');
+    $templateindex = 0;
+    foreach ($presets as $preset) {
+        if (in_array($preset['key'], $forinstall)) {
+            $templateindex++;
+            //set the config
+            \filter_poodll\poodllpresets::set_preset_to_config($preset, $templateindex);
+        }
+    }//end of for each presets	
+
+    //Set the handlers
+    set_config('handlemp4', 1, 'filter_poodll');
+    set_config('handlemp3', 1, 'filter_poodll');
     set_config('handleyoutube', 1, 'filter_poodll');
-	set_config('useplayermp4','fff','filter_poodll');
-	set_config('useplayermp3','mediaelementaudio','filter_poodll');
-    set_config('useplayeryoutube','youtubeplayer','filter_poodll');
-    set_config('useplayerwebm','nativevideo','filter_poodll');
-    set_config('useplayerflv','fff','filter_poodll');
-    set_config('useplayerogv','nativevideo','filter_poodll');
-    set_config('useplayerogg','nativeaudio','filter_poodll');
+    set_config('useplayermp4', 'fff', 'filter_poodll');
+    set_config('useplayermp3', 'mediaelementaudio', 'filter_poodll');
+    set_config('useplayeryoutube', 'youtubeplayer', 'filter_poodll');
+    set_config('useplayerwebm', 'nativevideo', 'filter_poodll');
+    set_config('useplayerflv', 'fff', 'filter_poodll');
+    set_config('useplayerogv', 'nativevideo', 'filter_poodll');
+    set_config('useplayerogg', 'nativeaudio', 'filter_poodll');
 }

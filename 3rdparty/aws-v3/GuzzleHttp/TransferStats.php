@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 use Psr\Http\Message\RequestInterface;
@@ -9,8 +10,7 @@ use Psr\Http\Message\UriInterface;
  * Represents data at the point after it was transferred either successfully
  * or after a network error.
  */
-final class TransferStats
-{
+final class TransferStats {
     private $request;
     private $response;
     private $transferTime;
@@ -18,18 +18,18 @@ final class TransferStats
     private $handlerErrorData;
 
     /**
-     * @param RequestInterface  $request          Request that was sent.
-     * @param ResponseInterface $response         Response received (if any)
-     * @param null              $transferTime     Total handler transfer time.
-     * @param mixed             $handlerErrorData Handler error data.
-     * @param array             $handlerStats     Handler specific stats.
+     * @param RequestInterface $request Request that was sent.
+     * @param ResponseInterface $response Response received (if any)
+     * @param null $transferTime Total handler transfer time.
+     * @param mixed $handlerErrorData Handler error data.
+     * @param array $handlerStats Handler specific stats.
      */
     public function __construct(
-        RequestInterface $request,
-        ResponseInterface $response = null,
-        $transferTime = null,
-        $handlerErrorData = null,
-        $handlerStats = []
+            RequestInterface $request,
+            ResponseInterface $response = null,
+            $transferTime = null,
+            $handlerErrorData = null,
+            $handlerStats = []
     ) {
         $this->request = $request;
         $this->response = $response;
@@ -41,8 +41,7 @@ final class TransferStats
     /**
      * @return RequestInterface
      */
-    public function getRequest()
-    {
+    public function getRequest() {
         return $this->request;
     }
 
@@ -51,8 +50,7 @@ final class TransferStats
      *
      * @return ResponseInterface|null
      */
-    public function getResponse()
-    {
+    public function getResponse() {
         return $this->response;
     }
 
@@ -61,8 +59,7 @@ final class TransferStats
      *
      * @return bool
      */
-    public function hasResponse()
-    {
+    public function hasResponse() {
         return $this->response !== null;
     }
 
@@ -75,8 +72,7 @@ final class TransferStats
      *
      * @return mixed
      */
-    public function getHandlerErrorData()
-    {
+    public function getHandlerErrorData() {
         return $this->handlerErrorData;
     }
 
@@ -85,8 +81,7 @@ final class TransferStats
      *
      * @return UriInterface
      */
-    public function getEffectiveUri()
-    {
+    public function getEffectiveUri() {
         return $this->request->getUri();
     }
 
@@ -95,8 +90,7 @@ final class TransferStats
      *
      * @return float Time in seconds.
      */
-    public function getTransferTime()
-    {
+    public function getTransferTime() {
         return $this->transferTime;
     }
 
@@ -105,8 +99,7 @@ final class TransferStats
      *
      * @return array
      */
-    public function getHandlerStats()
-    {
+    public function getHandlerStats() {
         return $this->handlerStats;
     }
 
@@ -117,10 +110,9 @@ final class TransferStats
      *
      * @return mixed|null
      */
-    public function getHandlerStat($stat)
-    {
+    public function getHandlerStat($stat) {
         return isset($this->handlerStats[$stat])
-            ? $this->handlerStats[$stat]
-            : null;
+                ? $this->handlerStats[$stat]
+                : null;
     }
 }

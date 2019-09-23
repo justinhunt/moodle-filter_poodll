@@ -47,8 +47,7 @@ use Guzzle\Plugin\Backoff\BackoffLogger;
 /**
  * Builder for creating AWS service clients
  */
-class ClientBuilder
-{
+class ClientBuilder {
     /**
      * @var array Default client config
      */
@@ -102,8 +101,7 @@ class ClientBuilder
      *
      * @return ClientBuilder
      */
-    public static function factory($namespace = null)
-    {
+    public static function factory($namespace = null) {
         return new static($namespace);
     }
 
@@ -112,8 +110,7 @@ class ClientBuilder
      *
      * @param string $namespace The namespace of the client
      */
-    public function __construct($namespace = null)
-    {
+    public function __construct($namespace = null) {
         $this->clientNamespace = $namespace;
 
         // Determine service and class name
@@ -132,8 +129,7 @@ class ClientBuilder
      *
      * @return ClientBuilder
      */
-    public function setConfig($config)
-    {
+    public function setConfig($config) {
         $this->config = $this->processArray($config);
 
         return $this;
@@ -146,8 +142,7 @@ class ClientBuilder
      *
      * @return ClientBuilder
      */
-    public function setConfigDefaults($defaults)
-    {
+    public function setConfigDefaults($defaults) {
         $this->configDefaults = $this->processArray($defaults);
 
         return $this;
@@ -160,8 +155,7 @@ class ClientBuilder
      *
      * @return ClientBuilder
      */
-    public function setConfigRequirements($required)
-    {
+    public function setConfigRequirements($required) {
         $this->configRequirements = $this->processArray($required);
 
         return $this;
@@ -175,8 +169,7 @@ class ClientBuilder
      *
      * @return ClientBuilder
      */
-    public function setExceptionParser(ExceptionParserInterface $parser)
-    {
+    public function setExceptionParser(ExceptionParserInterface $parser) {
         $this->exceptionParser = $parser;
 
         return $this;
@@ -189,8 +182,7 @@ class ClientBuilder
      *
      * @return ClientBuilder
      */
-    public function setIteratorsConfig(array $config)
-    {
+    public function setIteratorsConfig(array $config) {
         $this->iteratorsConfig = $config;
 
         return $this;
@@ -204,13 +196,12 @@ class ClientBuilder
      * @return AwsClientInterface
      * @throws InvalidArgumentException
      */
-    public function build()
-    {
+    public function build() {
         // Resolve configuration
         $config = Collection::fromConfig(
-            $this->config,
-            array_merge(self::$commonConfigDefaults, $this->configDefaults),
-            (self::$commonConfigRequirements + $this->configRequirements)
+                $this->config,
+                array_merge(self::$commonConfigDefaults, $this->configDefaults),
+                (self::$commonConfigRequirements + $this->configRequirements)
         );
 
         if ($config[Options::VERSION] === 'latest') {
@@ -251,9 +242,9 @@ class ClientBuilder
         // Add exception marshaling so that more descriptive exception are thrown
         if ($this->clientNamespace) {
             $exceptionFactory = new NamespaceExceptionFactory(
-                $this->exceptionParser,
-                "{$this->clientNamespace}\\Exception",
-                "{$this->clientNamespace}\\Exception\\{$this->serviceName}Exception"
+                    $this->exceptionParser,
+                    "{$this->clientNamespace}\\Exception",
+                    "{$this->clientNamespace}\\Exception\\{$this->serviceName}Exception"
             );
             $client->addSubscriber(new ExceptionListener($exceptionFactory));
         }
@@ -263,14 +254,14 @@ class ClientBuilder
 
         // Filters used for the cache plugin
         $client->getConfig()->set(
-            'params.cache.key_filter',
-            'header=date,x-amz-date,x-amz-security-token,x-amzn-authorization'
+                'params.cache.key_filter',
+                'header=date,x-amz-date,x-amz-security-token,x-amzn-authorization'
         );
 
         // Set the iterator resource factory based on the provided iterators config
         $client->setResourceIteratorFactory(new AwsResourceIteratorFactory(
-            $this->iteratorsConfig,
-            new ResourceIteratorClassFactory($this->clientNamespace . '\\Iterator')
+                $this->iteratorsConfig,
+                new ResourceIteratorClassFactory($this->clientNamespace . '\\Iterator')
         ));
 
         // Disable parameter validation if needed
@@ -287,22 +278,21 @@ class ClientBuilder
      * Add backoff logging to the backoff plugin if needed
      *
      * @param BackoffPlugin $plugin Backoff plugin
-     * @param Collection    $config Configuration settings
+     * @param Collection $config Configuration settings
      *
      * @throws InvalidArgumentException
      */
-    protected function addBackoffLogger(BackoffPlugin $plugin, Collection $config)
-    {
+    protected function addBackoffLogger(BackoffPlugin $plugin, Collection $config) {
         // The log option can be set to `debug` or an instance of a LogAdapterInterface
         if ($logger = $config->get(Options::BACKOFF_LOGGER)) {
             $format = $config->get(Options::BACKOFF_LOGGER_TEMPLATE);
             if ($logger === 'debug') {
-                $logger = new ClosureLogAdapter(function ($message) {
+                $logger = new ClosureLogAdapter(function($message) {
                     trigger_error($message . "\n");
                 });
-            } elseif (!($logger instanceof LogAdapterInterface)) {
+            } else if (!($logger instanceof LogAdapterInterface)) {
                 throw new InvalidArgumentException(
-                    Options::BACKOFF_LOGGER . ' must be set to `debug` or an instance of '
+                        Options::BACKOFF_LOGGER . ' must be set to `debug` or an instance of '
                         . 'Guzzle\\Common\\Log\\LogAdapterInterface'
                 );
             }
@@ -324,8 +314,7 @@ class ClientBuilder
      * @return array
      * @throws InvalidArgumentException if the arg is not an array or Collection
      */
-    protected function processArray($array)
-    {
+    protected function processArray($array) {
         if ($array instanceof Collection) {
             $array = $array->getAll();
         }
@@ -345,8 +334,7 @@ class ClientBuilder
      * @return ServiceDescription
      * @throws InvalidArgumentException
      */
-    protected function updateConfigFromDescription(Collection $config)
-    {
+    protected function updateConfigFromDescription(Collection $config) {
         $description = $config->get(Options::SERVICE_DESCRIPTION);
         if (!($description instanceof ServiceDescription)) {
             // Inject the version into the sprintf template if it is a string
@@ -378,13 +366,12 @@ class ClientBuilder
      * version identifier string or an instance of Aws\Common\Signature\SignatureInterface.
      *
      * @param ServiceDescription $description Description that holds a signature option
-     * @param Collection         $config      Configuration options
+     * @param Collection $config Configuration options
      *
      * @return SignatureInterface
      * @throws InvalidArgumentException
      */
-    protected function getSignature(ServiceDescription $description, Collection $config)
-    {
+    protected function getSignature(ServiceDescription $description, Collection $config) {
         // If a custom signature has not been provided, then use the default
         // signature setting specified in the service description.
         $signature = $config->get(Options::SIGNATURE) ?: $description->getData('signatureVersion');
@@ -392,17 +379,17 @@ class ClientBuilder
         if (is_string($signature)) {
             if ($signature == 'v4') {
                 $signature = new SignatureV4();
-            } elseif ($signature == 'v2') {
+            } else if ($signature == 'v2') {
                 $signature = new SignatureV2();
-            } elseif ($signature == 'v3https') {
+            } else if ($signature == 'v3https') {
                 $signature = new SignatureV3Https();
             } else {
                 throw new InvalidArgumentException("Invalid signature type: {$signature}");
             }
-        } elseif (!($signature instanceof SignatureInterface)) {
+        } else if (!($signature instanceof SignatureInterface)) {
             throw new InvalidArgumentException('The provided signature is not '
-                . 'a signature version string or an instance of '
-                . 'Aws\\Common\\Signature\\SignatureInterface');
+                    . 'a signature version string or an instance of '
+                    . 'Aws\\Common\\Signature\\SignatureInterface');
         }
 
         // Allow a custom service name or region value to be provided
@@ -410,8 +397,8 @@ class ClientBuilder
 
             // Determine the service name to use when signing
             $signature->setServiceName($config->get(Options::SIGNATURE_SERVICE)
-                ?: $description->getData('signingName')
-                ?: $description->getData('endpointPrefix'));
+                    ?: $description->getData('signingName')
+                            ?: $description->getData('endpointPrefix'));
 
             // Determine the region to use when signing requests
             $signature->setRegionName($config->get(Options::SIGNATURE_REGION) ?: $config->get(Options::REGION));
@@ -420,23 +407,21 @@ class ClientBuilder
         return $signature;
     }
 
-    protected function getCredentials(Collection $config)
-    {
+    protected function getCredentials(Collection $config) {
         $credentials = $config->get(Options::CREDENTIALS);
 
         if (is_array($credentials)) {
             $credentials = Credentials::factory($credentials);
-        } elseif ($credentials === false) {
+        } else if ($credentials === false) {
             $credentials = new NullCredentials();
-        } elseif (!$credentials instanceof CredentialsInterface) {
+        } else if (!$credentials instanceof CredentialsInterface) {
             $credentials = Credentials::factory($config);
         }
 
         return $credentials;
     }
 
-    private function handleRegion(Collection $config)
-    {
+    private function handleRegion(Collection $config) {
         // Make sure a valid region is set
         $region = $config[Options::REGION];
         $description = $config[Options::SERVICE_DESCRIPTION];
@@ -444,15 +429,14 @@ class ClientBuilder
 
         if (!$global && !$region) {
             throw new InvalidArgumentException(
-                'A region is required when using ' . $description->getData('serviceFullName')
+                    'A region is required when using ' . $description->getData('serviceFullName')
             );
-        } elseif ($global && !$region) {
+        } else if ($global && !$region) {
             $config[Options::REGION] = 'us-east-1';
         }
     }
 
-    private function handleEndpoint(Collection $config)
-    {
+    private function handleEndpoint(Collection $config) {
         // Alias "endpoint" with "base_url" for forwards compatibility.
         if ($config['endpoint']) {
             $config[Options::BASE_URL] = $config['endpoint'];
@@ -464,19 +448,19 @@ class ClientBuilder
         }
 
         $endpoint = call_user_func(
-            $config['endpoint_provider'],
-            array(
-                'scheme'  => $config[Options::SCHEME],
-                'region'  => $config[Options::REGION],
-                'service' => $config[Options::SERVICE]
-            )
+                $config['endpoint_provider'],
+                array(
+                        'scheme' => $config[Options::SCHEME],
+                        'region' => $config[Options::REGION],
+                        'service' => $config[Options::SERVICE]
+                )
         );
 
         $config[Options::BASE_URL] = $endpoint['endpoint'];
 
         // Set a signature if one was not explicitly provided.
         if (!$config->hasKey(Options::SIGNATURE)
-            && isset($endpoint['signatureVersion'])
+                && isset($endpoint['signatureVersion'])
         ) {
             $config->set(Options::SIGNATURE, $endpoint['signatureVersion']);
         }
@@ -490,30 +474,28 @@ class ClientBuilder
         }
     }
 
-    private function createDefaultBackoff($retries = 3)
-    {
+    private function createDefaultBackoff($retries = 3) {
         return new BackoffPlugin(
-            // Retry failed requests up to 3 times if it is determined that the request can be retried
-            new TruncatedBackoffStrategy($retries,
-                // Retry failed requests with 400-level responses due to throttling
-                new ThrottlingErrorChecker($this->exceptionParser,
-                    // Retry failed requests due to transient network or cURL problems
-                    new CurlBackoffStrategy(null,
-                        // Retry failed requests with 500-level responses
-                        new HttpBackoffStrategy(array(500, 503, 509),
-                            // Retry requests that failed due to expired credentials
-                            new ExpiredCredentialsChecker($this->exceptionParser,
-                                new ExponentialBackoffStrategy()
-                            )
+        // Retry failed requests up to 3 times if it is determined that the request can be retried
+                new TruncatedBackoffStrategy($retries,
+                        // Retry failed requests with 400-level responses due to throttling
+                        new ThrottlingErrorChecker($this->exceptionParser,
+                                // Retry failed requests due to transient network or cURL problems
+                                new CurlBackoffStrategy(null,
+                                        // Retry failed requests with 500-level responses
+                                        new HttpBackoffStrategy(array(500, 503, 509),
+                                                // Retry requests that failed due to expired credentials
+                                                new ExpiredCredentialsChecker($this->exceptionParser,
+                                                        new ExponentialBackoffStrategy()
+                                                )
+                                        )
+                                )
                         )
-                    )
                 )
-            )
         );
     }
 
-    private function extractHttpConfig(Collection $config)
-    {
+    private function extractHttpConfig(Collection $config) {
         $http = $config['http'];
 
         if (!is_array($http)) {

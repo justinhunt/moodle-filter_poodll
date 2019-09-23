@@ -5,8 +5,7 @@ namespace Guzzle\Parser;
 /**
  * Registry of parsers used by the application
  */
-class ParserRegistry
-{
+class ParserRegistry {
     /** @var ParserRegistry Singleton instance */
     protected static $instance;
 
@@ -15,18 +14,17 @@ class ParserRegistry
 
     /** @var array Mapping of parser name to default class */
     protected $mapping = array(
-        'message'      => 'Guzzle\\Parser\\Message\\MessageParser',
-        'cookie'       => 'Guzzle\\Parser\\Cookie\\CookieParser',
-        'url'          => 'Guzzle\\Parser\\Url\\UrlParser',
-        'uri_template' => 'Guzzle\\Parser\\UriTemplate\\UriTemplate',
+            'message' => 'Guzzle\\Parser\\Message\\MessageParser',
+            'cookie' => 'Guzzle\\Parser\\Cookie\\CookieParser',
+            'url' => 'Guzzle\\Parser\\Url\\UrlParser',
+            'uri_template' => 'Guzzle\\Parser\\UriTemplate\\UriTemplate',
     );
 
     /**
      * @return self
      * @codeCoverageIgnore
      */
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (!self::$instance) {
             self::$instance = new static;
         }
@@ -34,8 +32,7 @@ class ParserRegistry
         return self::$instance;
     }
 
-    public function __construct()
-    {
+    public function __construct() {
         // Use the PECL URI template parser if available
         if (extension_loaded('uri_template')) {
             $this->mapping['uri_template'] = 'Guzzle\\Parser\\UriTemplate\\PeclUriTemplate';
@@ -49,8 +46,7 @@ class ParserRegistry
      *
      * @return mixed|null
      */
-    public function getParser($name)
-    {
+    public function getParser($name) {
         if (!isset($this->instances[$name])) {
             if (!isset($this->mapping[$name])) {
                 return null;
@@ -65,11 +61,10 @@ class ParserRegistry
     /**
      * Register a custom parser by name with the register
      *
-     * @param string $name   Name or handle of the parser to register
-     * @param mixed  $parser Instantiated parser to register
+     * @param string $name Name or handle of the parser to register
+     * @param mixed $parser Instantiated parser to register
      */
-    public function registerParser($name, $parser)
-    {
+    public function registerParser($name, $parser) {
         $this->instances[$name] = $parser;
     }
 }

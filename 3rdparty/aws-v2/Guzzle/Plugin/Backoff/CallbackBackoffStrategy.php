@@ -10,8 +10,7 @@ use Guzzle\Http\Exception\HttpException;
 /**
  * Strategy that will invoke a closure to determine whether or not to retry with a delay
  */
-class CallbackBackoffStrategy extends AbstractBackoffStrategy
-{
+class CallbackBackoffStrategy extends AbstractBackoffStrategy {
     /** @var \Closure|array|mixed Callable method to invoke */
     protected $callback;
 
@@ -19,14 +18,13 @@ class CallbackBackoffStrategy extends AbstractBackoffStrategy
     protected $decision;
 
     /**
-     * @param \Closure|array|mixed     $callback Callable method to invoke
-     * @param bool                     $decision Set to true if this strategy makes a backoff decision
-     * @param BackoffStrategyInterface $next     The optional next strategy
+     * @param \Closure|array|mixed $callback Callable method to invoke
+     * @param bool $decision Set to true if this strategy makes a backoff decision
+     * @param BackoffStrategyInterface $next The optional next strategy
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($callback, $decision, BackoffStrategyInterface $next = null)
-    {
+    public function __construct($callback, $decision, BackoffStrategyInterface $next = null) {
         if (!is_callable($callback)) {
             throw new InvalidArgumentException('The callback must be callable');
         }
@@ -35,13 +33,11 @@ class CallbackBackoffStrategy extends AbstractBackoffStrategy
         $this->next = $next;
     }
 
-    public function makesDecision()
-    {
+    public function makesDecision() {
         return $this->decision;
     }
 
-    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null)
-    {
+    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null) {
         return call_user_func($this->callback, $retries, $request, $response, $e);
     }
 }

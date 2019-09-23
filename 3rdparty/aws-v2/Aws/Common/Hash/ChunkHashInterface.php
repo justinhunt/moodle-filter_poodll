@@ -19,8 +19,7 @@ namespace Aws\Common\Hash;
 /**
  * Interface for objects that encapsulate the creation of a hash from streamed chunks of data
  */
-interface ChunkHashInterface
-{
+interface ChunkHashInterface {
     const DEFAULT_ALGORITHM = 'sha256';
 
     /**

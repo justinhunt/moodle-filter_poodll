@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -11,7 +11,7 @@ define(['jquery','core/log'], function($, log) {
     return {
 
         allowedURL: '',
-        id:  '',
+        id: '',
         iframeembed: false,
         enabled: false,
 
@@ -21,34 +21,36 @@ define(['jquery','core/log'], function($, log) {
         },
 
         //init
-        init: function (id,allowedURL,iframeembed) {
+        init: function (id, allowedURL, iframeembed) {
             //the id tag is passed in initially passed in as $config->id from poodlltools::fetchAMDRecorderCode
             //or from data-id in cloudpodll iframe. This allows the receiving code to know which recorder generated event
             this.allowedURL = allowedURL;
             this.id = id;
-            this.iframeembed=iframeembed;
+            this.iframeembed = iframeembed;
             this.enabled = true;
         },
 
-        disable: function(){
+        disable: function () {
             this.enabled = false;
         },
 
-        enable: function(){
+        enable: function () {
             this.enabled = true;
         },
 
-      postMessage: function(messageObject) {
-            if(!this.enabled){return;}
+        postMessage: function (messageObject) {
+            if (!this.enabled) {
+                return;
+            }
 
-          if(!messageObject.hasOwnProperty('type')){
-              log.debug('All message objects must have at least the "type" property');
-              return;
-          }
-          if (this.iframeembed) {
-             messageObject.id = this.id;
-            window.parent.postMessage(messageObject, this.allowedURL);
-          }
-      }
+            if (!messageObject.hasOwnProperty('type')) {
+                log.debug('All message objects must have at least the "type" property');
+                return;
+            }
+            if (this.iframeembed) {
+                messageObject.id = this.id;
+                window.parent.postMessage(messageObject, this.allowedURL);
+            }
+        }
     };//end of returned object
 });//total end

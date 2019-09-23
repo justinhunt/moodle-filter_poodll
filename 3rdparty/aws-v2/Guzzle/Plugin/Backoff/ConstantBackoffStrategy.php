@@ -11,24 +11,20 @@ use Guzzle\Http\Exception\HttpException;
  *
  * Warning: If no decision making strategies precede this strategy in the the chain, then all requests will be retried
  */
-class ConstantBackoffStrategy extends AbstractBackoffStrategy
-{
+class ConstantBackoffStrategy extends AbstractBackoffStrategy {
     /** @var int Amount of time for each delay */
     protected $delay;
 
     /** @param int $delay Amount of time to delay between each additional backoff */
-    public function __construct($delay)
-    {
+    public function __construct($delay) {
         $this->delay = $delay;
     }
 
-    public function makesDecision()
-    {
+    public function makesDecision() {
         return false;
     }
 
-    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null)
-    {
+    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null) {
         return $this->delay;
     }
 }

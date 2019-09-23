@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified bucket does not exist.
  */
-class NoSuchBucketException extends S3Exception {}
+class NoSuchBucketException extends S3Exception {
+}

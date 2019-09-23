@@ -21,8 +21,7 @@ use Guzzle\Cache\CacheAdapterInterface;
 /**
  * Credentials decorator used to implement caching credentials
  */
-class CacheableCredentials extends AbstractRefreshableCredentials
-{
+class CacheableCredentials extends AbstractRefreshableCredentials {
     /**
      * @var CacheAdapterInterface Cache adapter used to store credentials
      */
@@ -36,12 +35,11 @@ class CacheableCredentials extends AbstractRefreshableCredentials
     /**
      * CacheableCredentials is a decorator that decorates other credentials
      *
-     * @param CredentialsInterface  $credentials Credentials to adapt
-     * @param CacheAdapterInterface $cache       Cache to use to store credentials
-     * @param string                $cacheKey    Cache key of the credentials
+     * @param CredentialsInterface $credentials Credentials to adapt
+     * @param CacheAdapterInterface $cache Cache to use to store credentials
+     * @param string $cacheKey Cache key of the credentials
      */
-    public function __construct(CredentialsInterface $credentials, CacheAdapterInterface $cache, $cacheKey)
-    {
+    public function __construct(CredentialsInterface $credentials, CacheAdapterInterface $cache, $cacheKey) {
         $this->cache = $cache;
         $this->cacheKey = $cacheKey;
 
@@ -51,8 +49,7 @@ class CacheableCredentials extends AbstractRefreshableCredentials
     /**
      * Attempt to get new credentials from cache or from the adapted object
      */
-    protected function refresh()
-    {
+    protected function refresh() {
         if (!$cache = $this->cache->fetch($this->cacheKey)) {
             // The credentials were not found, so try again and cache if new
             $this->credentials->getAccessKeyId();

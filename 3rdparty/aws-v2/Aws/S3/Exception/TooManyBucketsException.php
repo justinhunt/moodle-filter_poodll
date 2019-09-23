@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * You have attempted to create more buckets than allowed.
  */
-class TooManyBucketsException extends S3Exception {}
+class TooManyBucketsException extends S3Exception {
+}

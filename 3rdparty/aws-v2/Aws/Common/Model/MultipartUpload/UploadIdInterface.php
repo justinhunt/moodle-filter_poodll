@@ -19,8 +19,7 @@ namespace Aws\Common\Model\MultipartUpload;
 /**
  * An object that encapsulates the data identifying an upload
  */
-interface UploadIdInterface extends \Serializable
-{
+interface UploadIdInterface extends \Serializable {
     /**
      * Create an UploadId from an array
      *

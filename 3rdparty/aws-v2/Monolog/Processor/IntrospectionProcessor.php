@@ -24,8 +24,7 @@ use Monolog\Logger;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-class IntrospectionProcessor
-{
+class IntrospectionProcessor {
     private $level;
 
     private $skipClassesPartials;
@@ -33,12 +32,11 @@ class IntrospectionProcessor
     private $skipStackFramesCount;
 
     private $skipFunctions = array(
-        'call_user_func',
-        'call_user_func_array',
+            'call_user_func',
+            'call_user_func_array',
     );
 
-    public function __construct($level = Logger::DEBUG, array $skipClassesPartials = array(), $skipStackFramesCount = 0)
-    {
+    public function __construct($level = Logger::DEBUG, array $skipClassesPartials = array(), $skipStackFramesCount = 0) {
         $this->level = Logger::toMonologLevel($level);
         $this->skipClassesPartials = array_merge(array('Monolog\\'), $skipClassesPartials);
         $this->skipStackFramesCount = $skipStackFramesCount;
@@ -48,8 +46,7 @@ class IntrospectionProcessor
      * @param  array $record
      * @return array
      */
-    public function __invoke(array $record)
-    {
+    public function __invoke(array $record) {
         // return if the level is not high enough
         if ($record['level'] < $this->level) {
             return $record;
@@ -72,7 +69,7 @@ class IntrospectionProcessor
                         continue 2;
                     }
                 }
-            } elseif (in_array($trace[$i]['function'], $this->skipFunctions)) {
+            } else if (in_array($trace[$i]['function'], $this->skipFunctions)) {
                 $i++;
                 continue;
             }
@@ -84,20 +81,19 @@ class IntrospectionProcessor
 
         // we should have the call source now
         $record['extra'] = array_merge(
-            $record['extra'],
-            array(
-                'file'      => isset($trace[$i - 1]['file']) ? $trace[$i - 1]['file'] : null,
-                'line'      => isset($trace[$i - 1]['line']) ? $trace[$i - 1]['line'] : null,
-                'class'     => isset($trace[$i]['class']) ? $trace[$i]['class'] : null,
-                'function'  => isset($trace[$i]['function']) ? $trace[$i]['function'] : null,
-            )
+                $record['extra'],
+                array(
+                        'file' => isset($trace[$i - 1]['file']) ? $trace[$i - 1]['file'] : null,
+                        'line' => isset($trace[$i - 1]['line']) ? $trace[$i - 1]['line'] : null,
+                        'class' => isset($trace[$i]['class']) ? $trace[$i]['class'] : null,
+                        'function' => isset($trace[$i]['function']) ? $trace[$i]['function'] : null,
+                )
         );
 
         return $record;
     }
 
-    private function isTraceClassOrSkippedFunction(array $trace, $index)
-    {
+    private function isTraceClassOrSkippedFunction(array $trace, $index) {
         if (!isset($trace[$index])) {
             return false;
         }

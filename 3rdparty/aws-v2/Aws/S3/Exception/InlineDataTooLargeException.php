@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Inline data exceeds the maximum allowed size.
  */
-class InlineDataTooLargeException extends S3Exception {}
+class InlineDataTooLargeException extends S3Exception {
+}

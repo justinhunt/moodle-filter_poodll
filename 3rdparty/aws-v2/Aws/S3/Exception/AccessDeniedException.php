@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Access Denied
  */
-class AccessDeniedException extends S3Exception {}
+class AccessDeniedException extends S3Exception {
+}

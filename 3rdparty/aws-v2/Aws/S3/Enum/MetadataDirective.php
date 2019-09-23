@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable MetadataDirective values
  */
-class MetadataDirective extends Enum
-{
+class MetadataDirective extends Enum {
     const COPY = 'COPY';
     const REPLACE = 'REPLACE';
 }

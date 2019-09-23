@@ -1,26 +1,24 @@
 <?php
+
 namespace Aws\Endpoint;
 
-class PartitionEndpointProvider
-{
+class PartitionEndpointProvider {
     /** @var Partition[] */
     private $partitions;
     /** @var string */
     private $defaultPartition;
 
-    public function __construct(array $partitions, $defaultPartition = 'aws')
-    {
-        $this->partitions = array_map(function (array $definition) {
+    public function __construct(array $partitions, $defaultPartition = 'aws') {
+        $this->partitions = array_map(function(array $definition) {
             return new Partition($definition);
         }, array_values($partitions));
         $this->defaultPartition = $defaultPartition;
     }
 
-    public function __invoke(array $args = [])
-    {
+    public function __invoke(array $args = []) {
         $partition = $this->getPartition(
-            isset($args['region']) ? $args['region'] : '',
-            isset($args['service']) ? $args['service'] : ''
+                isset($args['region']) ? $args['region'] : '',
+                isset($args['service']) ? $args['service'] : ''
         );
 
         return $partition($args);
@@ -35,8 +33,7 @@ class PartitionEndpointProvider
      *
      * @return Partition
      */
-    public function getPartition($region, $service)
-    {
+    public function getPartition($region, $service) {
         foreach ($this->partitions as $partition) {
             if ($partition->isRegionMatch($region, $service)) {
                 return $partition;
@@ -51,11 +48,10 @@ class PartitionEndpointProvider
      * the provided name can be found.
      *
      * @param string $name
-     * 
+     *
      * @return Partition|null
      */
-    public function getPartitionByName($name)
-    {
+    public function getPartitionByName($name) {
         foreach ($this->partitions as $partition) {
             if ($name === $partition->getName()) {
                 return $partition;
@@ -68,8 +64,7 @@ class PartitionEndpointProvider
      *
      * @return PartitionEndpointProvider
      */
-    public static function defaultProvider()
-    {
+    public static function defaultProvider() {
         $data = \Aws\load_compiled_json(__DIR__ . '/../data/endpoints.json');
 
         return new self($data['partitions']);

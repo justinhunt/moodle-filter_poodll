@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Credentials;
 
 use Aws\Exception\CredentialsException;
@@ -10,8 +11,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Credential provider that provides credentials from the EC2 metadata server.
  */
-class InstanceProfileProvider
-{
+class InstanceProfileProvider {
     const SERVER_URI = 'http://169.254.169.254/latest/';
     const CRED_PATH = 'meta-data/iam/security-credentials/';
 
@@ -31,13 +31,12 @@ class InstanceProfileProvider
      *
      * @param array $config Configuration options.
      */
-    public function __construct(array $config = [])
-    {
+    public function __construct(array $config = []) {
         $this->timeout = isset($config['timeout']) ? $config['timeout'] : 1.0;
         $this->profile = isset($config['profile']) ? $config['profile'] : null;
         $this->client = isset($config['client'])
-            ? $config['client'] // internal use only
-            : \Aws\default_http_handler();
+                ? $config['client'] // internal use only
+                : \Aws\default_http_handler();
     }
 
     /**
@@ -45,19 +44,18 @@ class InstanceProfileProvider
      *
      * @return PromiseInterface
      */
-    public function __invoke()
-    {
-        return Promise\coroutine(function () {
+    public function __invoke() {
+        return Promise\coroutine(function() {
             if (!$this->profile) {
                 $this->profile = (yield $this->request(self::CRED_PATH));
             }
             $json = (yield $this->request(self::CRED_PATH . $this->profile));
             $result = $this->decodeResult($json);
             yield new Credentials(
-                $result['AccessKeyId'],
-                $result['SecretAccessKey'],
-                $result['Token'],
-                strtotime($result['Expiration'])
+                    $result['AccessKeyId'],
+                    $result['SecretAccessKey'],
+                    $result['Token'],
+                    strtotime($result['Expiration'])
             );
         });
     }
@@ -67,12 +65,11 @@ class InstanceProfileProvider
      * @return PromiseInterface Returns a promise that is fulfilled with the
      *                          body of the response as a string.
      */
-    private function request($url)
-    {
+    private function request($url) {
         $disabled = getenv(self::ENV_DISABLE) ?: false;
         if (strcasecmp($disabled, 'true') === 0) {
             throw new CredentialsException(
-                $this->createErrorMessage('EC2 metadata server access disabled')
+                    $this->createErrorMessage('EC2 metadata server access disabled')
             );
         }
 
@@ -80,30 +77,28 @@ class InstanceProfileProvider
         $request = new Request('GET', self::SERVER_URI . $url);
 
         return $fn($request, ['timeout' => $this->timeout])
-            ->then(function (ResponseInterface $response) {
-                return (string) $response->getBody();
-            })->otherwise(function (array $reason) {
-                $reason = $reason['exception'];
-                $msg = $reason->getMessage();
-                throw new CredentialsException(
-                    $this->createErrorMessage($msg)
-                );
-            });
+                ->then(function(ResponseInterface $response) {
+                    return (string) $response->getBody();
+                })->otherwise(function(array $reason) {
+                    $reason = $reason['exception'];
+                    $msg = $reason->getMessage();
+                    throw new CredentialsException(
+                            $this->createErrorMessage($msg)
+                    );
+                });
     }
 
-    private function createErrorMessage($previous)
-    {
+    private function createErrorMessage($previous) {
         return "Error retrieving credentials from the instance profile "
-            . "metadata server. ({$previous})";
+                . "metadata server. ({$previous})";
     }
 
-    private function decodeResult($response)
-    {
+    private function decodeResult($response) {
         $result = json_decode($response, true);
 
         if ($result['Code'] !== 'Success') {
             throw new CredentialsException('Unexpected instance profile '
-                .  'response code: ' . $result['Code']);
+                    . 'response code: ' . $result['Code']);
         }
 
         return $result;

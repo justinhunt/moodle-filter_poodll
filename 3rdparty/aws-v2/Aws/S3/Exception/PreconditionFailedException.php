@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * At least one of the preconditions you specified did not hold.
  */
-class PreconditionFailedException extends S3Exception {}
+class PreconditionFailedException extends S3Exception {
+}

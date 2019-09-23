@@ -25,8 +25,7 @@ use Guzzle\Common\HasDispatcherInterface;
 use Guzzle\Iterator\FilterIterator;
 use Guzzle\Service\Command\CommandInterface;
 
-abstract class AbstractSyncBuilder
-{
+abstract class AbstractSyncBuilder {
     /** @var \Iterator Iterator that returns SplFileInfo objects to upload */
     protected $sourceIterator;
 
@@ -66,8 +65,7 @@ abstract class AbstractSyncBuilder
     /**
      * @return static
      */
-    public static function getInstance()
-    {
+    public static function getInstance() {
         return new static();
     }
 
@@ -78,8 +76,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setBucket($bucket)
-    {
+    public function setBucket($bucket) {
         $this->bucket = $bucket;
 
         return $this;
@@ -92,8 +89,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setClient(S3Client $client)
-    {
+    public function setClient(S3Client $client) {
         $this->client = $client;
 
         return $this;
@@ -106,8 +102,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setSourceIterator(\Iterator $iterator)
-    {
+    public function setSourceIterator(\Iterator $iterator) {
         $this->sourceIterator = $iterator;
 
         return $this;
@@ -120,8 +115,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setSourceFilenameConverter(FilenameConverterInterface $converter)
-    {
+    public function setSourceFilenameConverter(FilenameConverterInterface $converter) {
         $this->sourceConverter = $converter;
 
         return $this;
@@ -134,8 +128,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setTargetFilenameConverter(FilenameConverterInterface $converter)
-    {
+    public function setTargetFilenameConverter(FilenameConverterInterface $converter) {
         $this->targetConverter = $converter;
 
         return $this;
@@ -149,8 +142,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setBaseDir($baseDir)
-    {
+    public function setBaseDir($baseDir) {
         $this->baseDir = $baseDir;
 
         return $this;
@@ -165,8 +157,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setKeyPrefix($keyPrefix)
-    {
+    public function setKeyPrefix($keyPrefix) {
         // Removing leading slash
         $this->keyPrefix = ltrim($keyPrefix, '/');
 
@@ -180,8 +171,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setDelimiter($delimiter)
-    {
+    public function setDelimiter($delimiter) {
         $this->delimiter = $delimiter;
 
         return $this;
@@ -194,8 +184,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setOperationParams(array $params)
-    {
+    public function setOperationParams(array $params) {
         $this->params = $params;
 
         return $this;
@@ -208,8 +197,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setConcurrency($concurrency)
-    {
+    public function setConcurrency($concurrency) {
         $this->concurrency = $concurrency;
 
         return $this;
@@ -222,8 +210,7 @@ abstract class AbstractSyncBuilder
      *
      * @return $this
      */
-    public function force($force = false)
-    {
+    public function force($force = false) {
         $this->forcing = (bool) $force;
 
         return $this;
@@ -236,8 +223,7 @@ abstract class AbstractSyncBuilder
      *                                         fopen resource to write to instead of writing to standard out.
      * @return $this
      */
-    public function enableDebugOutput($enabledOrResource = true)
-    {
+    public function enableDebugOutput($enabledOrResource = true) {
         $this->debug = $enabledOrResource;
 
         return $this;
@@ -250,10 +236,9 @@ abstract class AbstractSyncBuilder
      *                       will not be transferred.
      * @return $this
      */
-    public function addRegexFilter($search)
-    {
+    public function addRegexFilter($search) {
         $this->assertFileIteratorSet();
-        $this->sourceIterator = new FilterIterator($this->sourceIterator, function ($i) use ($search) {
+        $this->sourceIterator = new FilterIterator($this->sourceIterator, function($i) use ($search) {
             return !preg_match($search, (string) $i);
         });
         $this->sourceIterator->rewind();
@@ -266,8 +251,7 @@ abstract class AbstractSyncBuilder
      *
      * @return AbstractSync
      */
-    public function build()
-    {
+    public function build() {
         $this->validateRequirements();
         $this->sourceConverter = $this->sourceConverter ?: $this->getDefaultSourceConverter();
         $this->targetConverter = $this->targetConverter ?: $this->getDefaultTargetConverter();
@@ -276,10 +260,10 @@ abstract class AbstractSyncBuilder
         if (!$this->forcing) {
             $this->sourceIterator->rewind();
             $this->sourceIterator = new ChangedFilesIterator(
-                new \NoRewindIterator($this->sourceIterator),
-                $this->getTargetIterator(),
-                $this->sourceConverter,
-                $this->targetConverter
+                    new \NoRewindIterator($this->sourceIterator),
+                    $this->getTargetIterator(),
+                    $this->sourceConverter,
+                    $this->targetConverter
             );
             $this->sourceIterator->rewind();
         }
@@ -322,8 +306,8 @@ abstract class AbstractSyncBuilder
     /**
      * Add a listener to the sync object to output debug information while transferring
      *
-     * @param AbstractSync $sync     Sync object to listen to
-     * @param resource     $resource Where to write debug messages
+     * @param AbstractSync $sync Sync object to listen to
+     * @param resource $resource Where to write debug messages
      */
     abstract protected function addDebugListener(AbstractSync $sync, $resource);
 
@@ -332,8 +316,7 @@ abstract class AbstractSyncBuilder
      *
      * @throws RuntimeException if the builder is not configured completely
      */
-    protected function validateRequirements()
-    {
+    protected function validateRequirements() {
         if (!$this->client) {
             throw new RuntimeException('No client was provided');
         }
@@ -348,8 +331,7 @@ abstract class AbstractSyncBuilder
      *
      * @throws RuntimeException
      */
-    protected function assertFileIteratorSet()
-    {
+    protected function assertFileIteratorSet() {
         // Interesting... Need to use isset because: Object of class GlobIterator could not be converted to boolean
         if (!isset($this->sourceIterator)) {
             throw new RuntimeException('A source file iterator must be specified');
@@ -364,9 +346,8 @@ abstract class AbstractSyncBuilder
      * @return \Iterator
      * @throws UnexpectedValueException
      */
-    protected function filterIterator(\Iterator $iterator)
-    {
-        $f = new FilterIterator($iterator, function ($i) {
+    protected function filterIterator(\Iterator $iterator) {
+        $f = new FilterIterator($iterator, function($i) {
             if (!$i instanceof \SplFileInfo) {
                 throw new UnexpectedValueException('All iterators for UploadSync must return SplFileInfo objects');
             }
@@ -383,16 +364,15 @@ abstract class AbstractSyncBuilder
      *
      * @param HasDispatcherInterface $sync
      */
-    protected function addCustomParamListener(HasDispatcherInterface $sync)
-    {
+    protected function addCustomParamListener(HasDispatcherInterface $sync) {
         $params = $this->params;
         $sync->getEventDispatcher()->addListener(
-            UploadSync::BEFORE_TRANSFER,
-            function (Event $e) use ($params) {
-                if ($e['command'] instanceof CommandInterface) {
-                    $e['command']->overwriteWith($params);
+                UploadSync::BEFORE_TRANSFER,
+                function(Event $e) use ($params) {
+                    if ($e['command'] instanceof CommandInterface) {
+                        $e['command']->overwriteWith($params);
+                    }
                 }
-            }
         );
     }
 
@@ -401,8 +381,7 @@ abstract class AbstractSyncBuilder
      *
      * @return OpendirIterator
      */
-    protected function createS3Iterator()
-    {
+    protected function createS3Iterator() {
         // Ensure that the stream wrapper is registered
         $this->client->registerStreamWrapper();
 
@@ -414,14 +393,14 @@ abstract class AbstractSyncBuilder
 
         // Use opendir so that we can pass stream context to the iterator
         $dh = opendir($dir, stream_context_create(array(
-            's3' => array(
-                'delimiter'  => '',
-                'listFilter' => function ($obj) {
-                    // Ensure that we do not try to download a glacier object.
-                    return !isset($obj['StorageClass']) ||
-                        $obj['StorageClass'] != 'GLACIER';
-                }
-            )
+                's3' => array(
+                        'delimiter' => '',
+                        'listFilter' => function($obj) {
+                            // Ensure that we do not try to download a glacier object.
+                            return !isset($obj['StorageClass']) ||
+                                    $obj['StorageClass'] != 'GLACIER';
+                        }
+                )
         )));
 
         // Add the trailing slash for the OpendirIterator concatenation

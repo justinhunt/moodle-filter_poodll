@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The Content-MD5 you specified did not match what we received.
  */
-class BadDigestException extends S3Exception {}
+class BadDigestException extends S3Exception {
+}

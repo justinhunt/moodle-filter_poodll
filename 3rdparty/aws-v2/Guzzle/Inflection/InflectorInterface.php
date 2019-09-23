@@ -5,8 +5,7 @@ namespace Guzzle\Inflection;
 /**
  * Inflector interface used to convert the casing of words
  */
-interface InflectorInterface
-{
+interface InflectorInterface {
     /**
      * Converts strings from camel case to snake case (e.g. CamelCase camel_case).
      *

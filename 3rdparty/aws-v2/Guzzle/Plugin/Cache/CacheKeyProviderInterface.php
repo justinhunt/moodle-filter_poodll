@@ -8,4 +8,5 @@ namespace Guzzle\Plugin\Cache;
  * @deprecated This is no longer used
  * @codeCoverageIgnore
  */
-interface CacheKeyProviderInterface {}
+interface CacheKeyProviderInterface {
+}

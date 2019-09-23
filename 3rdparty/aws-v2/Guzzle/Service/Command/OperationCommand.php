@@ -7,8 +7,7 @@ namespace Guzzle\Service\Command;
  * matching operation uses a service description model in the responseClass attribute, then this command will marshal
  * the response into an associative array based on the JSON schema of the model.
  */
-class OperationCommand extends AbstractCommand
-{
+class OperationCommand extends AbstractCommand {
     /** @var RequestSerializerInterface */
     protected $requestSerializer;
 
@@ -22,8 +21,7 @@ class OperationCommand extends AbstractCommand
      *
      * @return self
      */
-    public function setResponseParser(ResponseParserInterface $parser)
-    {
+    public function setResponseParser(ResponseParserInterface $parser) {
         $this->responseParser = $parser;
 
         return $this;
@@ -36,8 +34,7 @@ class OperationCommand extends AbstractCommand
      *
      * @return self
      */
-    public function setRequestSerializer(RequestSerializerInterface $serializer)
-    {
+    public function setRequestSerializer(RequestSerializerInterface $serializer) {
         $this->requestSerializer = $serializer;
 
         return $this;
@@ -48,8 +45,7 @@ class OperationCommand extends AbstractCommand
      *
      * @return RequestSerializerInterface
      */
-    public function getRequestSerializer()
-    {
+    public function getRequestSerializer() {
         if (!$this->requestSerializer) {
             // Use the default request serializer if none was found
             $this->requestSerializer = DefaultRequestSerializer::getInstance();
@@ -63,8 +59,7 @@ class OperationCommand extends AbstractCommand
      *
      * @return ResponseParserInterface
      */
-    public function getResponseParser()
-    {
+    public function getResponseParser() {
         if (!$this->responseParser) {
             // Use the default response parser if none was found
             $this->responseParser = OperationResponseParser::getInstance();
@@ -73,17 +68,15 @@ class OperationCommand extends AbstractCommand
         return $this->responseParser;
     }
 
-    protected function build()
-    {
+    protected function build() {
         // Prepare and serialize the request
         $this->request = $this->getRequestSerializer()->prepare($this);
     }
 
-    protected function process()
-    {
+    protected function process() {
         // Do not process the response if 'command.response_processing' is set to 'raw'
         $this->result = $this[self::RESPONSE_PROCESSING] == self::TYPE_RAW
-            ? $this->request->getResponse()
-            : $this->getResponseParser()->parse($this);
+                ? $this->request->getResponse()
+                : $this->getResponseParser()->parse($this);
     }
 }

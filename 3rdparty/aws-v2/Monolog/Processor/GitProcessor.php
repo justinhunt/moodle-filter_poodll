@@ -19,13 +19,11 @@ use Monolog\Logger;
  * @author Nick Otter
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-class GitProcessor
-{
+class GitProcessor {
     private $level;
     private static $cache;
 
-    public function __construct($level = Logger::DEBUG)
-    {
+    public function __construct($level = Logger::DEBUG) {
         $this->level = Logger::toMonologLevel($level);
     }
 
@@ -33,8 +31,7 @@ class GitProcessor
      * @param  array $record
      * @return array
      */
-    public function __invoke(array $record)
-    {
+    public function __invoke(array $record) {
         // return if the level is not high enough
         if ($record['level'] < $this->level) {
             return $record;
@@ -45,8 +42,7 @@ class GitProcessor
         return $record;
     }
 
-    private static function getGitInfo()
-    {
+    private static function getGitInfo() {
         if (self::$cache) {
             return self::$cache;
         }
@@ -54,8 +50,8 @@ class GitProcessor
         $branches = `git branch -v --no-abbrev`;
         if (preg_match('{^\* (.+?)\s+([a-f0-9]{40})(?:\s|$)}m', $branches, $matches)) {
             return self::$cache = array(
-                'branch' => $matches[1],
-                'commit' => $matches[2],
+                    'branch' => $matches[1],
+                    'commit' => $matches[2],
             );
         }
 

@@ -1,11 +1,11 @@
 <?php
+
 namespace Aws\S3\Crypto;
 
 use \Aws\Crypto\MetadataStrategyInterface;
 use \Aws\Crypto\MetadataEnvelope;
 
-class HeadersMetadataStrategy implements MetadataStrategyInterface
-{
+class HeadersMetadataStrategy implements MetadataStrategyInterface {
     /**
      * Places the information in the MetadataEnvelope in to the Meatadata for
      * the PutObject request of the encrypted object.
@@ -17,9 +17,8 @@ class HeadersMetadataStrategy implements MetadataStrategyInterface
      *
      * @return array Updated arguments for PutObject.
      */
-    public function save(MetadataEnvelope $envelope, array $args)
-    {
-        foreach ($envelope as $header=>$value) {
+    public function save(MetadataEnvelope $envelope, array $args) {
+        foreach ($envelope as $header => $value) {
             $args['Metadata'][$header] = $value;
         }
 
@@ -36,8 +35,7 @@ class HeadersMetadataStrategy implements MetadataStrategyInterface
      *
      * @return MetadataEnvelope
      */
-    public function load(array $args)
-    {
+    public function load(array $args) {
         $envelope = new MetadataEnvelope();
         $constantValues = MetadataEnvelope::getConstantValues();
 

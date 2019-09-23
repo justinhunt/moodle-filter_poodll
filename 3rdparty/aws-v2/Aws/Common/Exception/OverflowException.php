@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL OverflowException.
  */
-class OverflowException extends \OverflowException implements AwsExceptionInterface {}
+class OverflowException extends \OverflowException implements AwsExceptionInterface {
+}

@@ -38,8 +38,7 @@ use Guzzle\Service\Description\ServiceDescriptionInterface;
 /**
  * Abstract AWS client
  */
-abstract class AbstractClient extends Client implements AwsClientInterface
-{
+abstract class AbstractClient extends Client implements AwsClientInterface {
     /** @var CredentialsInterface AWS credentials */
     protected $credentials;
 
@@ -49,29 +48,27 @@ abstract class AbstractClient extends Client implements AwsClientInterface
     /** @var WaiterFactoryInterface Factory used to create waiter classes */
     protected $waiterFactory;
 
-    /** @var DuplicateAggregator Cached query aggregator*/
+    /** @var DuplicateAggregator Cached query aggregator */
     protected $aggregator;
 
     /**
      * {@inheritdoc}
      */
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array_merge(Client::getAllEvents(), array(
-            'client.region_changed',
-            'client.credentials_changed',
+                'client.region_changed',
+                'client.credentials_changed',
         ));
     }
 
     /**
      * @param CredentialsInterface $credentials AWS credentials
-     * @param SignatureInterface   $signature   Signature implementation
-     * @param Collection           $config      Configuration options
+     * @param SignatureInterface $signature Signature implementation
+     * @param Collection $config Configuration options
      *
      * @throws InvalidArgumentException if an endpoint provider isn't provided
      */
-    public function __construct(CredentialsInterface $credentials, SignatureInterface $signature, Collection $config)
-    {
+    public function __construct(CredentialsInterface $credentials, SignatureInterface $signature, Collection $config) {
         // Bootstrap with Guzzle
         parent::__construct($config->get(Options::BASE_URL), $config);
         $this->credentials = $credentials;
@@ -90,16 +87,15 @@ abstract class AbstractClient extends Client implements AwsClientInterface
         }
     }
 
-    public function __call($method, $args)
-    {
+    public function __call($method, $args) {
         if (substr($method, 0, 3) === 'get' && substr($method, -8) === 'Iterator') {
             // Allow magic method calls for iterators (e.g. $client->get<CommandName>Iterator($params))
             $commandOptions = isset($args[0]) ? $args[0] : null;
             $iteratorOptions = isset($args[1]) ? $args[1] : array();
             return $this->getIterator(substr($method, 3, -8), $commandOptions, $iteratorOptions);
-        } elseif (substr($method, 0, 9) == 'waitUntil') {
+        } else if (substr($method, 0, 9) == 'waitUntil') {
             // Allow magic method calls for waiters (e.g. $client->waitUntil<WaiterName>($params))
-            return $this->waitUntil(substr($method, 9), isset($args[0]) ? $args[0]: array());
+            return $this->waitUntil(substr($method, 9), isset($args[0]) ? $args[0] : array());
         } else {
             return parent::__call(ucfirst($method), $args);
         }
@@ -107,17 +103,17 @@ abstract class AbstractClient extends Client implements AwsClientInterface
 
     /**
      * Get an endpoint for a specific region from a service description
+     *
      * @deprecated This function will no longer be updated to work with new regions.
      */
-    public static function getEndpoint(ServiceDescriptionInterface $description, $region, $scheme)
-    {
+    public static function getEndpoint(ServiceDescriptionInterface $description, $region, $scheme) {
         try {
             $service = $description->getData('endpointPrefix');
             $provider = RulesEndpointProvider::fromDefaults();
             $result = $provider(array(
-                'service' => $service,
-                'region'  => $region,
-                'scheme'  => $scheme
+                    'service' => $service,
+                    'region' => $region,
+                    'scheme' => $scheme
             ));
             return $result['endpoint'];
         } catch (\InvalidArgumentException $e) {
@@ -125,42 +121,36 @@ abstract class AbstractClient extends Client implements AwsClientInterface
         }
     }
 
-    public function getCredentials()
-    {
+    public function getCredentials() {
         return $this->credentials;
     }
 
-    public function setCredentials(CredentialsInterface $credentials)
-    {
+    public function setCredentials(CredentialsInterface $credentials) {
         $formerCredentials = $this->credentials;
         $this->credentials = $credentials;
 
         // Dispatch an event that the credentials have been changed
         $this->dispatch('client.credentials_changed', array(
-            'credentials'        => $credentials,
-            'former_credentials' => $formerCredentials,
+                'credentials' => $credentials,
+                'former_credentials' => $formerCredentials,
         ));
 
         return $this;
     }
 
-    public function getSignature()
-    {
+    public function getSignature() {
         return $this->signature;
     }
 
-    public function getRegions()
-    {
+    public function getRegions() {
         return $this->serviceDescription->getData('regions');
     }
 
-    public function getRegion()
-    {
+    public function getRegion() {
         return $this->getConfig(Options::REGION);
     }
 
-    public function setRegion($region)
-    {
+    public function setRegion($region) {
         $config = $this->getConfig();
         $formerRegion = $config->get(Options::REGION);
         $global = $this->serviceDescription->getData('globalEndpoint');
@@ -174,12 +164,12 @@ abstract class AbstractClient extends Client implements AwsClientInterface
         if (!$global || $this->serviceDescription->getData('namespace') === 'S3') {
 
             $endpoint = call_user_func(
-                $provider,
-                array(
-                    'scheme'  => $config->get(Options::SCHEME),
-                    'region'  => $region,
-                    'service' => $config->get(Options::SERVICE)
-                )
+                    $provider,
+                    array(
+                            'scheme' => $config->get(Options::SCHEME),
+                            'region' => $region,
+                            'service' => $config->get(Options::SERVICE)
+                    )
             );
 
             $this->setBaseUrl($endpoint['endpoint']);
@@ -195,42 +185,38 @@ abstract class AbstractClient extends Client implements AwsClientInterface
 
             // Dispatch an event that the region has been changed
             $this->dispatch('client.region_changed', array(
-                'region'        => $region,
-                'former_region' => $formerRegion,
+                    'region' => $region,
+                    'former_region' => $formerRegion,
             ));
         }
 
         return $this;
     }
 
-    public function waitUntil($waiter, array $input = array())
-    {
+    public function waitUntil($waiter, array $input = array()) {
         $this->getWaiter($waiter, $input)->wait();
 
         return $this;
     }
 
-    public function getWaiter($waiter, array $input = array())
-    {
+    public function getWaiter($waiter, array $input = array()) {
         return $this->getWaiterFactory()->build($waiter)
-            ->setClient($this)
-            ->setConfig($input);
+                ->setClient($this)
+                ->setConfig($input);
     }
 
-    public function setWaiterFactory(WaiterFactoryInterface $waiterFactory)
-    {
+    public function setWaiterFactory(WaiterFactoryInterface $waiterFactory) {
         $this->waiterFactory = $waiterFactory;
 
         return $this;
     }
 
-    public function getWaiterFactory()
-    {
+    public function getWaiterFactory() {
         if (!$this->waiterFactory) {
             $clientClass = get_class($this);
             // Use a composite factory that checks for classes first, then config waiters
             $this->waiterFactory = new CompositeWaiterFactory(array(
-                new WaiterClassFactory(substr($clientClass, 0, strrpos($clientClass, '\\')) . '\\Waiter')
+                    new WaiterClassFactory(substr($clientClass, 0, strrpos($clientClass, '\\')) . '\\Waiter')
             ));
             if ($this->getDescription()) {
                 $waiterConfig = $this->getDescription()->getData('waiters') ?: array();
@@ -241,8 +227,7 @@ abstract class AbstractClient extends Client implements AwsClientInterface
         return $this->waiterFactory;
     }
 
-    public function getApiVersion()
-    {
+    public function getApiVersion() {
         return $this->serviceDescription->getApiVersion();
     }
 
@@ -250,16 +235,15 @@ abstract class AbstractClient extends Client implements AwsClientInterface
      * {@inheritdoc}
      * @throws \Aws\Common\Exception\TransferException
      */
-    public function send($requests)
-    {
+    public function send($requests) {
         try {
             return parent::send($requests);
         } catch (CurlException $e) {
             $wrapped = new TransferException($e->getMessage(), null, $e);
             $wrapped->setCurlHandle($e->getCurlHandle())
-                ->setCurlInfo($e->getCurlInfo())
-                ->setError($e->getError(), $e->getErrorNo())
-                ->setRequest($e->getRequest());
+                    ->setCurlInfo($e->getCurlInfo())
+                    ->setError($e->getError(), $e->getErrorNo())
+                    ->setRequest($e->getRequest());
             throw $wrapped;
         }
     }
@@ -270,11 +254,11 @@ abstract class AbstractClient extends Client implements AwsClientInterface
      * {@inheritdoc}
      */
     public function createRequest(
-        $method = 'GET',
-        $uri = null,
-        $headers = null,
-        $body = null,
-        array $options = array()
+            $method = 'GET',
+            $uri = null,
+            $headers = null,
+            $body = null,
+            array $options = array()
     ) {
         $request = parent::createRequest($method, $uri, $headers, $body, $options);
         $request->getQuery()->setAggregator($this->aggregator);

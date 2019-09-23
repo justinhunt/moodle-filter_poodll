@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -15,37 +15,43 @@ define(['jquery','core/log'], function($, log) {
         enabled: false,
 
         //for making multiple instances
-        clone: function(){
-            return $.extend(true,{},this);
+        clone: function () {
+            return $.extend(true, {}, this);
         },
 
-        init: function(initseconds,callback){
+        init: function (initseconds, callback) {
             this.initseconds = parseInt(initseconds);
             this.seconds = parseInt(initseconds);
             this.callback = callback;
             this.enabled = true;
         },
 
-        start: function(){
-            if(!this.enabled){return;}
+        start: function () {
+            if (!this.enabled) {
+                return;
+            }
 
             var self = this;
-            this.finalseconds=0;
-            if(this.initseconds > 0){this.increment=-1;}else{this.increment = 1;}
-            this.intervalhandle = this.customSetInterval(function(){
-                    self.seconds = self.seconds + self.increment;
-                    self.finalseconds=self.finalseconds+1;
-                    self.callback();
-            },1000);
+            this.finalseconds = 0;
+            if (this.initseconds > 0) {
+                this.increment = -1;
+            } else {
+                this.increment = 1;
+            }
+            this.intervalhandle = this.customSetInterval(function () {
+                self.seconds = self.seconds + self.increment;
+                self.finalseconds = self.finalseconds + 1;
+                self.callback();
+            }, 1000);
         },
 
         //we use a custom set interval which self adjusts for inaccuracies.
-        customSetInterval: function(func, time){
+        customSetInterval: function (func, time) {
             var lastTime = Date.now(),
-            lastDelay = time,
-            outp = {};
+                lastDelay = time,
+                outp = {};
 
-            function tick(){
+            function tick() {
                 var now = Date.now(),
                     dTime = now - lastTime;
 
@@ -55,43 +61,50 @@ define(['jquery','core/log'], function($, log) {
                 func();
 
             }
+
             outp.id = setTimeout(tick, time);
             return outp;
         },
 
-        disable: function(){
+        disable: function () {
             this.enabled = false;
         },
 
-        enable: function(){
+        enable: function () {
             this.enabled = true;
         },
 
-        fetch_display_time: function(someseconds){
-            if(!someseconds){someseconds=this.seconds;}
-            var theHours = '00' + parseInt(someseconds/3600);
-            theHours = theHours.substr(theHours.length -2,2);
-            var theMinutes = '00' + parseInt(someseconds/60);
-            theMinutes = theMinutes.substr(theMinutes.length -2,2);
-            var theSeconds = '00' + parseInt(someseconds%60);
-            theSeconds = theSeconds.substr(theSeconds.length -2,2);
-            var display_time= theHours + ':' + theMinutes + ':' + theSeconds ;
+        fetch_display_time: function (someseconds) {
+            if (!someseconds) {
+                someseconds = this.seconds;
+            }
+            var theHours = '00' + parseInt(someseconds / 3600);
+            theHours = theHours.substr(theHours.length - 2, 2);
+            var theMinutes = '00' + parseInt(someseconds / 60);
+            theMinutes = theMinutes.substr(theMinutes.length - 2, 2);
+            var theSeconds = '00' + parseInt(someseconds % 60);
+            theSeconds = theSeconds.substr(theSeconds.length - 2, 2);
+            var display_time = theHours + ':' + theMinutes + ':' + theSeconds;
             return display_time;
         },
 
-        stop: function(){
+        stop: function () {
             clearTimeout(this.intervalhandle.id);
         },
 
-        reset: function(){
+        reset: function () {
             this.seconds = this.initseconds;
         },
 
-        pause: function(){
+        pause: function () {
             this.increment = 0;
         },
-        resume: function(){
-            if(this.initseconds > 0){this.increment=-1;}else{this.increment = 1;}
+        resume: function () {
+            if (this.initseconds > 0) {
+                this.increment = -1;
+            } else {
+                this.increment = 1;
+            }
         }
 
     };//end of returned object

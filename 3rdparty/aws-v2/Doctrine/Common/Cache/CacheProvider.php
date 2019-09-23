@@ -29,8 +29,7 @@ namespace Doctrine\Common\Cache;
  * @author Roman Borschel <roman@code-factory.org>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  */
-abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, MultiGetCache, MultiPutCache
-{
+abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, MultiGetCache, MultiPutCache {
     const DOCTRINE_NAMESPACE_CACHEKEY = 'DoctrineNamespaceCacheKey[%s]';
 
     /**
@@ -54,9 +53,8 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @return void
      */
-    public function setNamespace($namespace)
-    {
-        $this->namespace        = (string) $namespace;
+    public function setNamespace($namespace) {
+        $this->namespace = (string) $namespace;
         $this->namespaceVersion = null;
     }
 
@@ -65,32 +63,29 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @return string
      */
-    public function getNamespace()
-    {
+    public function getNamespace() {
         return $this->namespace;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetch($id)
-    {
+    public function fetch($id) {
         return $this->doFetch($this->getNamespacedId($id));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function fetchMultiple(array $keys)
-    {
+    public function fetchMultiple(array $keys) {
         if (empty($keys)) {
             return array();
         }
-        
+
         // note: the array_combine() is in place to keep an association between our $keys and the $namespacedKeys
         $namespacedKeys = array_combine($keys, array_map(array($this, 'getNamespacedId'), $keys));
-        $items          = $this->doFetchMultiple($namespacedKeys);
-        $foundItems     = array();
+        $items = $this->doFetchMultiple($namespacedKeys);
+        $foundItems = array();
 
         // no internal array function supports this sort of mapping: needs to be iterative
         // this filters and combines keys in one pass
@@ -106,8 +101,7 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     /**
      * {@inheritdoc}
      */
-    public function saveMultiple(array $keysAndValues, $lifetime = 0)
-    {
+    public function saveMultiple(array $keysAndValues, $lifetime = 0) {
         $namespacedKeysAndValues = array();
         foreach ($keysAndValues as $key => $value) {
             $namespacedKeysAndValues[$this->getNamespacedId($key)] = $value;
@@ -119,50 +113,44 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     /**
      * {@inheritdoc}
      */
-    public function contains($id)
-    {
+    public function contains($id) {
         return $this->doContains($this->getNamespacedId($id));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function save($id, $data, $lifeTime = 0)
-    {
+    public function save($id, $data, $lifeTime = 0) {
         return $this->doSave($this->getNamespacedId($id), $data, $lifeTime);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete($id)
-    {
+    public function delete($id) {
         return $this->doDelete($this->getNamespacedId($id));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getStats()
-    {
+    public function getStats() {
         return $this->doGetStats();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function flushAll()
-    {
+    public function flushAll() {
         return $this->doFlush();
     }
 
     /**
      * {@inheritDoc}
      */
-    public function deleteAll()
-    {
+    public function deleteAll() {
         $namespaceCacheKey = $this->getNamespaceCacheKey();
-        $namespaceVersion  = $this->getNamespaceVersion() + 1;
+        $namespaceVersion = $this->getNamespaceVersion() + 1;
 
         if ($this->doSave($namespaceCacheKey, $namespaceVersion)) {
             $this->namespaceVersion = $namespaceVersion;
@@ -180,9 +168,8 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @return string The namespaced id.
      */
-    private function getNamespacedId($id)
-    {
-        $namespaceVersion  = $this->getNamespaceVersion();
+    private function getNamespacedId($id) {
+        $namespaceVersion = $this->getNamespaceVersion();
 
         return sprintf('%s[%s][%s]', $this->namespace, $id, $namespaceVersion);
     }
@@ -192,8 +179,7 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @return string
      */
-    private function getNamespaceCacheKey()
-    {
+    private function getNamespaceCacheKey() {
         return sprintf(self::DOCTRINE_NAMESPACE_CACHEKEY, $this->namespace);
     }
 
@@ -202,8 +188,7 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      *
      * @return integer
      */
-    private function getNamespaceVersion()
-    {
+    private function getNamespaceVersion() {
         if (null !== $this->namespaceVersion) {
             return $this->namespaceVersion;
         }
@@ -220,8 +205,7 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
      * @param array $keys Array of keys to retrieve from cache
      * @return array Array of values retrieved for the given keys.
      */
-    protected function doFetchMultiple(array $keys)
-    {
+    protected function doFetchMultiple(array $keys) {
         $returnValues = array();
 
         foreach ($keys as $key) {
@@ -254,14 +238,13 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     /**
      * Default implementation of doSaveMultiple. Each driver that supports multi-put should override it.
      *
-     * @param array $keysAndValues  Array of keys and values to save in cache
-     * @param int   $lifetime       The lifetime. If != 0, sets a specific lifetime for these
+     * @param array $keysAndValues Array of keys and values to save in cache
+     * @param int $lifetime The lifetime. If != 0, sets a specific lifetime for these
      *                              cache entries (0 => infinite lifeTime).
      *
      * @return bool TRUE if the operation was successful, FALSE if it wasn't.
      */
-    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
-    {
+    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0) {
         $success = true;
 
         foreach ($keysAndValues as $key => $value) {
@@ -276,9 +259,9 @@ abstract class CacheProvider implements Cache, FlushableCache, ClearableCache, M
     /**
      * Puts data into the cache.
      *
-     * @param string $id       The cache id.
-     * @param string $data     The cache entry/data.
-     * @param int    $lifeTime The lifetime. If != 0, sets a specific lifetime for this
+     * @param string $id The cache id.
+     * @param string $data The cache entry/data.
+     * @param int $lifeTime The lifetime. If != 0, sets a specific lifetime for this
      *                           cache entry (0 => infinite lifeTime).
      *
      * @return bool TRUE if the entry was successfully stored in the cache, FALSE otherwise.

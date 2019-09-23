@@ -5,8 +5,7 @@ namespace Guzzle\Plugin\Backoff;
 /**
  * Strategy used to retry when certain error codes are encountered
  */
-abstract class AbstractErrorCodeBackoffStrategy extends AbstractBackoffStrategy
-{
+abstract class AbstractErrorCodeBackoffStrategy extends AbstractBackoffStrategy {
     /** @var array Default cURL errors to retry */
     protected static $defaultErrorCodes = array();
 
@@ -14,11 +13,10 @@ abstract class AbstractErrorCodeBackoffStrategy extends AbstractBackoffStrategy
     protected $errorCodes;
 
     /**
-     * @param array                    $codes Array of codes that should be retried
-     * @param BackoffStrategyInterface $next  The optional next strategy
+     * @param array $codes Array of codes that should be retried
+     * @param BackoffStrategyInterface $next The optional next strategy
      */
-    public function __construct(array $codes = null, BackoffStrategyInterface $next = null)
-    {
+    public function __construct(array $codes = null, BackoffStrategyInterface $next = null) {
         $this->errorCodes = array_fill_keys($codes ?: static::$defaultErrorCodes, 1);
         $this->next = $next;
     }
@@ -28,13 +26,11 @@ abstract class AbstractErrorCodeBackoffStrategy extends AbstractBackoffStrategy
      *
      * @return array
      */
-    public static function getDefaultFailureCodes()
-    {
+    public static function getDefaultFailureCodes() {
         return static::$defaultErrorCodes;
     }
 
-    public function makesDecision()
-    {
+    public function makesDecision() {
         return true;
     }
 }

@@ -19,32 +19,29 @@ namespace Aws\Common\Credentials;
 /**
  * Abstract decorator to provide a foundation for refreshable credentials
  */
-abstract class AbstractRefreshableCredentials extends AbstractCredentialsDecorator
-{
+abstract class AbstractRefreshableCredentials extends AbstractCredentialsDecorator {
     /**
      * Get the underlying credentials, refreshing if necessary.
      *
      * @return Credentials
      */
-    public function getCredentials()
-    {
+    public function getCredentials() {
         if ($this->credentials->isExpired()) {
             $this->refresh();
         }
 
         return new Credentials(
-            $this->credentials->getAccessKeyId(),
-            $this->credentials->getSecretKey(),
-            $this->credentials->getSecurityToken(),
-            $this->credentials->getExpiration()
+                $this->credentials->getAccessKeyId(),
+                $this->credentials->getSecretKey(),
+                $this->credentials->getSecurityToken(),
+                $this->credentials->getExpiration()
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAccessKeyId()
-    {
+    public function getAccessKeyId() {
         if ($this->credentials->isExpired()) {
             $this->refresh();
         }
@@ -55,8 +52,7 @@ abstract class AbstractRefreshableCredentials extends AbstractCredentialsDecorat
     /**
      * {@inheritdoc}
      */
-    public function getSecretKey()
-    {
+    public function getSecretKey() {
         if ($this->credentials->isExpired()) {
             $this->refresh();
         }
@@ -67,8 +63,7 @@ abstract class AbstractRefreshableCredentials extends AbstractCredentialsDecorat
     /**
      * {@inheritdoc}
      */
-    public function getSecurityToken()
-    {
+    public function getSecurityToken() {
         if ($this->credentials->isExpired()) {
             $this->refresh();
         }
@@ -79,8 +74,7 @@ abstract class AbstractRefreshableCredentials extends AbstractCredentialsDecorat
     /**
      * {@inheritdoc}
      */
-    public function serialize()
-    {
+    public function serialize() {
         if ($this->credentials->isExpired()) {
             $this->refresh();
         }

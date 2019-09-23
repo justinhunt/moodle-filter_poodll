@@ -23,8 +23,7 @@ use Guzzle\Inflection\InflectorInterface;
 /**
  * Factory for creating {@see WaiterInterface} objects using a configuration DSL.
  */
-class WaiterConfigFactory implements WaiterFactoryInterface
-{
+class WaiterConfigFactory implements WaiterFactoryInterface {
     /**
      * @var array Configuration directives
      */
@@ -36,12 +35,12 @@ class WaiterConfigFactory implements WaiterFactoryInterface
     protected $inflector;
 
     /**
-     * @param array              $config    Array of configuration directives
+     * @param array $config Array of configuration directives
      * @param InflectorInterface $inflector Inflector used to resolve class names
      */
     public function __construct(
-        array $config,
-        InflectorInterface $inflector = null
+            array $config,
+            InflectorInterface $inflector = null
     ) {
         $this->config = $config;
         $this->inflector = $inflector ?: Inflector::getDefault();
@@ -50,16 +49,14 @@ class WaiterConfigFactory implements WaiterFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function build($waiter)
-    {
+    public function build($waiter) {
         return new ConfigResourceWaiter($this->getWaiterConfig($waiter));
     }
 
     /**
      * {@inheritdoc}
      */
-    public function canBuild($waiter)
-    {
+    public function canBuild($waiter) {
         return isset($this->config[$waiter]) || isset($this->config[$this->inflector->camel($waiter)]);
     }
 
@@ -71,8 +68,7 @@ class WaiterConfigFactory implements WaiterFactoryInterface
      * @return WaiterConfig
      * @throws InvalidArgumentException
      */
-    protected function getWaiterConfig($name)
-    {
+    protected function getWaiterConfig($name) {
         if (!$this->canBuild($name)) {
             throw new InvalidArgumentException('No waiter found matching "' . $name . '"');
         }

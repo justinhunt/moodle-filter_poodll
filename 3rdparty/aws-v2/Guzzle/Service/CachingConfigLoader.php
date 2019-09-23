@@ -7,8 +7,7 @@ use Guzzle\Cache\CacheAdapterInterface;
 /**
  * Decorator that adds caching to a service description loader
  */
-class CachingConfigLoader implements ConfigLoaderInterface
-{
+class CachingConfigLoader implements ConfigLoaderInterface {
     /** @var ConfigLoaderInterface */
     protected $loader;
 
@@ -17,16 +16,14 @@ class CachingConfigLoader implements ConfigLoaderInterface
 
     /**
      * @param ConfigLoaderInterface $loader Loader used to load the config when there is a cache miss
-     * @param CacheAdapterInterface $cache  Object used to cache the loaded result
+     * @param CacheAdapterInterface $cache Object used to cache the loaded result
      */
-    public function __construct(ConfigLoaderInterface $loader, CacheAdapterInterface $cache)
-    {
+    public function __construct(ConfigLoaderInterface $loader, CacheAdapterInterface $cache) {
         $this->loader = $loader;
         $this->cache = $cache;
     }
 
-    public function load($config, array $options = array())
-    {
+    public function load($config, array $options = array()) {
         if (!is_string($config)) {
             $key = false;
         } else {

@@ -34,8 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2017 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class adhoc_registered extends  \core\event\base  {
-
+class adhoc_registered extends \core\event\base {
 
     /**
      * Create instance of event.
@@ -48,22 +47,22 @@ class adhoc_registered extends  \core\event\base  {
      */
     public static function create_from_task(array $taskdata) {
         //($taskdata->mediatype,$taskdata->infilename, $taskdata->outfilename, $taskdata->filename,$taskdata->filerecord);
-        $filerecord= $taskdata['filerecord'];
+        $filerecord = $taskdata['filerecord'];
         $taskdata['filerecord'] = get_object_vars($taskdata['filerecord']);
-        $contextid=$filerecord->contextid;
-        $userid=$filerecord->userid;
+        $contextid = $filerecord->contextid;
+        $userid = $filerecord->userid;
         $context = \context::instance_by_id($contextid);
 
         $data = array(
-            'context' => $context,
-            'objectid' => $filerecord->id,
-            'userid' => $userid,
-            'relateduserid' => $userid,
-            'other' =>$taskdata
+                'context' => $context,
+                'objectid' => $filerecord->id,
+                'userid' => $userid,
+                'relateduserid' => $userid,
+                'other' => $taskdata
         );
         /** @var extension_granted $event */
         $event = self::create($data);
-       //the data is file record is not sufficient for files ... for now we just comment this
+        //the data is file record is not sufficient for files ... for now we just comment this
         // $event->add_record_snapshot('files', $filerecord);
 
         return $event;

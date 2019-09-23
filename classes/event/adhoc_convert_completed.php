@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2017 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class adhoc_convert_completed extends  adhoc_completed  {
+class adhoc_convert_completed extends adhoc_completed {
 
     /**
      * Returns description of what happened.
@@ -42,13 +42,14 @@ class adhoc_convert_completed extends  adhoc_completed  {
      * @return string
      */
     public function get_description() {
-        $other=$this->data['other'];
-        if(gettype($other)=='object'){
-            $other=get_object_vars($other);
+        $other = $this->data['other'];
+        if (gettype($other) == 'object') {
+            $other = get_object_vars($other);
         }
-        return "An ad_hoc task to convert file to: '" . $other['outfilename']  .
-            "', owned by userid: " . $this->data['userid'] . ", has been completed.";
+        return "An ad_hoc task to convert file to: '" . $other['outfilename'] .
+                "', owned by userid: " . $this->data['userid'] . ", has been completed.";
     }
+
     /**
      * Return localised event name.
      *

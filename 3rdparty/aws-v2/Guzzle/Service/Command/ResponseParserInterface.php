@@ -5,8 +5,7 @@ namespace Guzzle\Service\Command;
 /**
  * Parses the HTTP response of a command and sets the appropriate result on a command object
  */
-interface ResponseParserInterface
-{
+interface ResponseParserInterface {
     /**
      * Parse the HTTP response received by the command and update the command's result contents
      *

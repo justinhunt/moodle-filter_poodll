@@ -21,8 +21,7 @@ use Aws\S3\Enum\GranteeType;
 /**
  * Builder for creating Access Control Policies
  */
-class AcpBuilder
-{
+class AcpBuilder {
     /**
      * @var Grantee The owner for the ACL
      */
@@ -38,21 +37,19 @@ class AcpBuilder
      *
      * @return static
      */
-    public static function newInstance()
-    {
+    public static function newInstance() {
         return new static;
     }
 
     /**
      * Sets the owner to be set on the ACL
      *
-     * @param string $id          Owner identifier
+     * @param string $id Owner identifier
      * @param string $displayName Owner display name
      *
      * @return $this
      */
-    public function setOwner($id, $displayName = null)
-    {
+    public function setOwner($id, $displayName = null) {
         $this->owner = new Grantee($id, $displayName ?: $id, GranteeType::USER);
 
         return $this;
@@ -61,14 +58,13 @@ class AcpBuilder
     /**
      * Create and store a Grant with a CanonicalUser Grantee for the ACL
      *
-     * @param string $permission  Permission for the Grant
-     * @param string $id          Grantee identifier
+     * @param string $permission Permission for the Grant
+     * @param string $id Grantee identifier
      * @param string $displayName Grantee display name
      *
      * @return $this
      */
-    public function addGrantForUser($permission, $id, $displayName = null)
-    {
+    public function addGrantForUser($permission, $id, $displayName = null) {
         $grantee = new Grantee($id, $displayName ?: $id, GranteeType::USER);
         $this->addGrant($permission, $grantee);
 
@@ -79,12 +75,11 @@ class AcpBuilder
      * Create and store a Grant with a AmazonCustomerByEmail Grantee for the ACL
      *
      * @param string $permission Permission for the Grant
-     * @param string $email      Grantee email address
+     * @param string $email Grantee email address
      *
      * @return $this
      */
-    public function addGrantForEmail($permission, $email)
-    {
+    public function addGrantForEmail($permission, $email) {
         $grantee = new Grantee($email, null, GranteeType::EMAIL);
         $this->addGrant($permission, $grantee);
 
@@ -95,12 +90,11 @@ class AcpBuilder
      * Create and store a Grant with a Group Grantee for the ACL
      *
      * @param string $permission Permission for the Grant
-     * @param string $group      Grantee group
+     * @param string $group Grantee group
      *
      * @return $this
      */
-    public function addGrantForGroup($permission, $group)
-    {
+    public function addGrantForGroup($permission, $group) {
         $grantee = new Grantee($group, null, GranteeType::GROUP);
         $this->addGrant($permission, $grantee);
 
@@ -110,13 +104,12 @@ class AcpBuilder
     /**
      * Create and store a Grant for the ACL
      *
-     * @param string  $permission Permission for the Grant
-     * @param Grantee $grantee    The Grantee for the Grant
+     * @param string $permission Permission for the Grant
+     * @param Grantee $grantee The Grantee for the Grant
      *
      * @return $this
      */
-    public function addGrant($permission, Grantee $grantee)
-    {
+    public function addGrant($permission, Grantee $grantee) {
         $this->grants[] = new Grant($grantee, $permission);
 
         return $this;
@@ -127,8 +120,7 @@ class AcpBuilder
      *
      * @return Acp
      */
-    public function build()
-    {
+    public function build() {
         return new Acp($this->owner, $this->grants);
     }
 }

@@ -22,8 +22,7 @@ namespace Symfony\Component\EventDispatcher;
  * @author Roman Borschel <roman@code-factory.org>
  * @author Bernhard Schussek <bschussek@gmail.com>
  */
-interface EventSubscriberInterface
-{
+interface EventSubscriberInterface {
     /**
      * Returns an array of event names this subscriber wants to listen to.
      *

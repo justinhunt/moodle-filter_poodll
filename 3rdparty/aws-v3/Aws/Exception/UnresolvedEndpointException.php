@@ -1,4 +1,6 @@
 <?php
+
 namespace Aws\Exception;
 
-class UnresolvedEndpointException extends \RuntimeException {}
+class UnresolvedEndpointException extends \RuntimeException {
+}

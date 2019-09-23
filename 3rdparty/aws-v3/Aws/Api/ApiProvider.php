@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api;
 
 use Aws\Exception\UnresolvedApiException;
@@ -35,14 +36,13 @@ use Aws\Exception\UnresolvedApiException;
  *     $data = $c('api', 's3', '2006-03-01');          // $b handles this.
  *     $data = $c('api', 'invalid', '2014-12-15');     // Neither handles this.
  */
-class ApiProvider
-{
+class ApiProvider {
     /** @var array A map of public API type names to their file suffix. */
     private static $typeMap = [
-        'api'       => 'api-2',
-        'paginator' => 'paginators-1',
-        'waiter'    => 'waiters-2',
-        'docs'      => 'docs-2',
+            'api' => 'api-2',
+            'paginator' => 'paginators-1',
+            'waiter' => 'waiters-2',
+            'docs' => 'docs-2',
     ];
 
     /** @var array API manifest */
@@ -55,15 +55,14 @@ class ApiProvider
      * Resolves an API provider and ensures a non-null return value.
      *
      * @param callable $provider Provider function to invoke.
-     * @param string   $type     Type of data ('api', 'waiter', 'paginator').
-     * @param string   $service  Service name.
-     * @param string   $version  API version.
+     * @param string $type Type of data ('api', 'waiter', 'paginator').
+     * @param string $service Service name.
+     * @param string $version API version.
      *
      * @return array
      * @throws UnresolvedApiException
      */
-    public static function resolve(callable $provider, $type, $service, $version)
-    {
+    public static function resolve(callable $provider, $type, $service, $version) {
         // Execute the provider and return the result, if there is one.
         $result = $provider($type, $service, $version);
         if (is_array($result)) {
@@ -76,7 +75,7 @@ class ApiProvider
         // Throw an exception with a message depending on the inputs.
         if (!isset(self::$typeMap[$type])) {
             $msg = "The type must be one of: " . implode(', ', self::$typeMap);
-        } elseif ($service) {
+        } else if ($service) {
             $msg = "The {$service} service does not have version: {$version}.";
         } else {
             $msg = "You must specify a service name to retrieve its API data.";
@@ -92,8 +91,7 @@ class ApiProvider
      *
      * @return self
      */
-    public static function defaultProvider()
-    {
+    public static function defaultProvider() {
         return new self(__DIR__ . '/../data', \Aws\manifest());
     }
 
@@ -118,13 +116,12 @@ class ApiProvider
      *   ...
      * ]
      *
-     * @param string $dir      Directory containing service models.
-     * @param array  $manifest The API version manifest data.
+     * @param string $dir Directory containing service models.
+     * @param array $manifest The API version manifest data.
      *
      * @return self
      */
-    public static function manifest($dir, array $manifest)
-    {
+    public static function manifest($dir, array $manifest) {
         return new self($dir, $manifest);
     }
 
@@ -139,8 +136,7 @@ class ApiProvider
      * @return self
      * @throws \InvalidArgumentException if the provided `$dir` is invalid.
      */
-    public static function filesystem($dir)
-    {
+    public static function filesystem($dir) {
         return new self($dir);
     }
 
@@ -151,8 +147,7 @@ class ApiProvider
      *
      * @return array
      */
-    public function getVersions($service)
-    {
+    public function getVersions($service) {
         if (!isset($this->manifest)) {
             $this->buildVersionsList($service);
         }
@@ -167,14 +162,13 @@ class ApiProvider
     /**
      * Execute the the provider.
      *
-     * @param string $type    Type of data ('api', 'waiter', 'paginator').
+     * @param string $type Type of data ('api', 'waiter', 'paginator').
      * @param string $service Service name.
      * @param string $version API version.
      *
      * @return array|null
      */
-    public function __invoke($type, $service, $version)
-    {
+    public function __invoke($type, $service, $version) {
         // Resolve the type or return null.
         if (isset(self::$typeMap[$type])) {
             $type = self::$typeMap[$type];
@@ -203,15 +197,14 @@ class ApiProvider
 
     /**
      * @param string $modelsDir Directory containing service models.
-     * @param array  $manifest  The API version manifest data.
+     * @param array $manifest The API version manifest data.
      */
-    private function __construct($modelsDir, array $manifest = null)
-    {
+    private function __construct($modelsDir, array $manifest = null) {
         $this->manifest = $manifest;
         $this->modelsDir = rtrim($modelsDir, '/');
         if (!is_dir($this->modelsDir)) {
             throw new \InvalidArgumentException(
-                "The specified models directory, {$modelsDir}, was not found."
+                    "The specified models directory, {$modelsDir}, was not found."
             );
         }
     }
@@ -219,8 +212,7 @@ class ApiProvider
     /**
      * Build the versions list for the specified service by globbing the dir.
      */
-    private function buildVersionsList($service)
-    {
+    private function buildVersionsList($service) {
         $dir = "{$this->modelsDir}/{$service}/";
 
         if (!is_dir($dir)) {
@@ -234,9 +226,9 @@ class ApiProvider
             $this->manifest[$service] = ['versions' => []];
         } else {
             $this->manifest[$service] = [
-                'versions' => [
-                    'latest' => $results[0]
-                ]
+                    'versions' => [
+                            'latest' => $results[0]
+                    ]
             ];
             $this->manifest[$service]['versions'] += array_combine($results, $results);
         }

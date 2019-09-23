@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * The request was rejected because the authentication code was not recognized. The error message describes the specific error.
  */
-class InvalidAuthenticationCodeException extends IamException {}
+class InvalidAuthenticationCodeException extends IamException {
+}

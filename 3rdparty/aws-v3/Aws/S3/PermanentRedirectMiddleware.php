@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use Aws\CommandInterface;
@@ -12,9 +13,8 @@ use Psr\Http\Message\RequestInterface;
  *
  * @internal
  */
-class PermanentRedirectMiddleware
-{
-    /** @var callable  */
+class PermanentRedirectMiddleware {
+    /** @var callable */
     private $nextHandler;
 
     /**
@@ -22,9 +22,8 @@ class PermanentRedirectMiddleware
      *
      * @return callable
      */
-    public static function wrap()
-    {
-        return function (callable $handler) {
+    public static function wrap() {
+        return function(callable $handler) {
             return new self($handler);
         };
     }
@@ -32,31 +31,29 @@ class PermanentRedirectMiddleware
     /**
      * @param callable $nextHandler Next handler to invoke.
      */
-    public function __construct(callable $nextHandler)
-    {
+    public function __construct(callable $nextHandler) {
         $this->nextHandler = $nextHandler;
     }
 
-    public function __invoke(CommandInterface $command, RequestInterface $request = null)
-    {
+    public function __invoke(CommandInterface $command, RequestInterface $request = null) {
         $next = $this->nextHandler;
         return $next($command, $request)->then(
-            function (ResultInterface $result) use ($command) {
-                $status = isset($result['@metadata']['statusCode'])
-                    ? $result['@metadata']['statusCode']
-                    : null;
-                if ($status == 301) {
-                    throw new PermanentRedirectException(
-                        'Encountered a permanent redirect while requesting '
-                        . $result->search('"@metadata".effectiveUri') . '. '
-                        . 'Are you sure you are using the correct region for '
-                        . 'this bucket?',
-                        $command,
-                        ['result' => $result]
-                    );
+                function(ResultInterface $result) use ($command) {
+                    $status = isset($result['@metadata']['statusCode'])
+                            ? $result['@metadata']['statusCode']
+                            : null;
+                    if ($status == 301) {
+                        throw new PermanentRedirectException(
+                                'Encountered a permanent redirect while requesting '
+                                . $result->search('"@metadata".effectiveUri') . '. '
+                                . 'Are you sure you are using the correct region for '
+                                . 'this bucket?',
+                                $command,
+                                ['result' => $result]
+                        );
+                    }
+                    return $result;
                 }
-                return $result;
-            }
         );
     }
 }

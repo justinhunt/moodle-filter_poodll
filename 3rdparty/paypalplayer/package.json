@@ -1,5 +1,5 @@
 {
-  "company":"PayPal",
+  "company": "PayPal",
   "name": "accessible-html5-video-player",
   "version": "1.0.3 ",
   "description": "A lightweight HTML5 video player which includes support for captions and screen reader accessibility.",

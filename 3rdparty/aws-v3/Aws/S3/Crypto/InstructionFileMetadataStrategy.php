@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3\Crypto;
 
 use \Aws\Crypto\MetadataStrategyInterface;
@@ -17,8 +18,7 @@ use \Aws\S3\S3Client;
  * If there is a failure after an instruction file has been uploaded, it will
  * not be automatically deleted.
  */
-class InstructionFileMetadataStrategy implements MetadataStrategyInterface
-{
+class InstructionFileMetadataStrategy implements MetadataStrategyInterface {
     const DEFAULT_FILE_SUFFIX = '.instruction';
 
     private $client;
@@ -29,11 +29,10 @@ class InstructionFileMetadataStrategy implements MetadataStrategyInterface
      * @param string|null $suffix Optional override suffix for instruction file
      *                            object keys.
      */
-    public function __construct(S3Client $client, $suffix = null)
-    {
+    public function __construct(S3Client $client, $suffix = null) {
         $this->suffix = empty($suffix)
-            ? self::DEFAULT_FILE_SUFFIX
-            : $suffix;
+                ? self::DEFAULT_FILE_SUFFIX
+                : $suffix;
         $this->client = $client;
     }
 
@@ -47,12 +46,11 @@ class InstructionFileMetadataStrategy implements MetadataStrategyInterface
      *
      * @return array Updated arguments for PutObject.
      */
-    public function save(MetadataEnvelope $envelope, array $args)
-    {
+    public function save(MetadataEnvelope $envelope, array $args) {
         $this->client->putObject([
-            'Bucket' => $args['Bucket'],
-            'Key' => $args['Key'] . $this->suffix,
-            'Body' => json_encode($envelope)
+                'Bucket' => $args['Bucket'],
+                'Key' => $args['Key'] . $this->suffix,
+                'Body' => json_encode($envelope)
         ]);
 
         return $args;
@@ -68,11 +66,10 @@ class InstructionFileMetadataStrategy implements MetadataStrategyInterface
      *
      * @return MetadataEnvelope
      */
-    public function load(array $args)
-    {
+    public function load(array $args) {
         $result = $this->client->getObject([
-            'Bucket' => $args['Bucket'],
-            'Key' => $args['Key'] . $this->suffix
+                'Bucket' => $args['Bucket'],
+                'Key' => $args['Key'] . $this->suffix
         ]);
 
         $metadataHeaders = json_decode($result['Body'], true);

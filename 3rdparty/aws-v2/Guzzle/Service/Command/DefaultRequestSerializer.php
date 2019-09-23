@@ -11,8 +11,7 @@ use Guzzle\Service\Description\Parameter;
 /**
  * Default request serializer that transforms command options and operation parameters into a request
  */
-class DefaultRequestSerializer implements RequestSerializerInterface
-{
+class DefaultRequestSerializer implements RequestSerializerInterface {
     /** @var VisitorFlyweight $factory Visitor factory */
     protected $factory;
 
@@ -23,8 +22,7 @@ class DefaultRequestSerializer implements RequestSerializerInterface
      * @return self
      * @codeCoverageIgnore
      */
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (!self::$instance) {
             self::$instance = new self(VisitorFlyweight::getInstance());
         }
@@ -35,28 +33,25 @@ class DefaultRequestSerializer implements RequestSerializerInterface
     /**
      * @param VisitorFlyweight $factory Factory to use when creating visitors
      */
-    public function __construct(VisitorFlyweight $factory)
-    {
+    public function __construct(VisitorFlyweight $factory) {
         $this->factory = $factory;
     }
 
     /**
      * Add a location visitor to the serializer
      *
-     * @param string                   $location Location to associate with the visitor
-     * @param RequestVisitorInterface  $visitor  Visitor to attach
+     * @param string $location Location to associate with the visitor
+     * @param RequestVisitorInterface $visitor Visitor to attach
      *
      * @return self
      */
-    public function addVisitor($location, RequestVisitorInterface $visitor)
-    {
+    public function addVisitor($location, RequestVisitorInterface $visitor) {
         $this->factory->addRequestVisitor($location, $visitor);
 
         return $this;
     }
 
-    public function prepare(CommandInterface $command)
-    {
+    public function prepare(CommandInterface $command) {
         $request = $this->createRequest($command);
         // Keep an array of visitors found in the operation
         $foundVisitors = array();
@@ -99,18 +94,18 @@ class DefaultRequestSerializer implements RequestSerializerInterface
     /**
      * Serialize additional parameters
      *
-     * @param OperationInterface $operation  Operation that owns the command
-     * @param CommandInterface   $command    Command to prepare
-     * @param RequestInterface   $request    Request to serialize
-     * @param Parameter          $additional Additional parameters
+     * @param OperationInterface $operation Operation that owns the command
+     * @param CommandInterface $command Command to prepare
+     * @param RequestInterface $request Request to serialize
+     * @param Parameter $additional Additional parameters
      *
      * @return null|RequestVisitorInterface
      */
     protected function prepareAdditionalParameters(
-        OperationInterface $operation,
-        CommandInterface $command,
-        RequestInterface $request,
-        Parameter $additional
+            OperationInterface $operation,
+            CommandInterface $command,
+            RequestInterface $request,
+            Parameter $additional
     ) {
         if (!($location = $additional->getLocation())) {
             return;
@@ -122,8 +117,8 @@ class DefaultRequestSerializer implements RequestSerializerInterface
         foreach ($command->toArray() as $key => $value) {
             // Ignore values that are null or built-in command options
             if ($value !== null
-                && !in_array($key, $hidden)
-                && !$operation->hasParam($key)
+                    && !in_array($key, $hidden)
+                    && !$operation->hasParam($key)
             ) {
                 $additional->setName($key);
                 $visitor->visit($command, $request, $additional, $value);
@@ -140,8 +135,7 @@ class DefaultRequestSerializer implements RequestSerializerInterface
      *
      * @return RequestInterface
      */
-    protected function createRequest(CommandInterface $command)
-    {
+    protected function createRequest(CommandInterface $command) {
         $operation = $command->getOperation();
         $client = $command->getClient();
         $options = $command[AbstractCommand::REQUEST_OPTIONS] ?: array();

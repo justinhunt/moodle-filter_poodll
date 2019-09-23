@@ -27,7 +27,6 @@ require_once($CFG->libdir . '/adminlib.php');
  */
 class admin_setting_info extends \admin_setting {
 
-
     /**
      * Calls parent::__construct with specific arguments
      */
@@ -65,9 +64,10 @@ class admin_setting_info extends \admin_setting {
 
     /**
      * Outputs the html for this setting.
+     *
      * @return string Returns an XHTML string
      */
-    public function output_html($data, $query='') {
+    public function output_html($data, $query = '') {
         global $OUTPUT;
         return format_admin_setting($this, $this->visiblename, $this->description);
     }

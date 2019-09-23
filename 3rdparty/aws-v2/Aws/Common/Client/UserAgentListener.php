@@ -23,8 +23,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * Listener used to append strings to the User-Agent header of a request based
  * on the `ua.append` option. `ua.append` can contain a string or array of values.
  */
-class UserAgentListener implements EventSubscriberInterface
-{
+class UserAgentListener implements EventSubscriberInterface {
     /**
      * @var string Option used to store User-Agent modifiers
      */
@@ -33,8 +32,7 @@ class UserAgentListener implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array('command.before_send' => 'onBeforeSend');
     }
 
@@ -43,8 +41,7 @@ class UserAgentListener implements EventSubscriberInterface
      *
      * @param Event $event Event emitted
      */
-    public function onBeforeSend(Event $event)
-    {
+    public function onBeforeSend(Event $event) {
         $command = $event['command'];
         if ($userAgentAppends = $command->get(self::OPTION)) {
             $request = $command->getRequest();

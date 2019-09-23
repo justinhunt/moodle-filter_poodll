@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The difference between the request time and the server's time is too large.
  */
-class RequestTimeTooSkewedException extends S3Exception {}
+class RequestTimeTooSkewedException extends S3Exception {
+}

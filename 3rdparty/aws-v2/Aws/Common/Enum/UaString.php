@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * User-Agent header strings for various high level operations
  */
-class UaString extends Enum
-{
+class UaString extends Enum {
     /**
      * @var string Name of the option used to add to the UA string
      */

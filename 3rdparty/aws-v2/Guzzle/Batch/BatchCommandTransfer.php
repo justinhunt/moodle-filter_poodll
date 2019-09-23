@@ -12,16 +12,14 @@ use Guzzle\Service\Exception\InconsistentClientTransferException;
  * Efficiently transfers multiple commands in parallel per client
  * This class is to be used with {@see Guzzle\Batch\BatchInterface}
  */
-class BatchCommandTransfer implements BatchTransferInterface, BatchDivisorInterface
-{
+class BatchCommandTransfer implements BatchTransferInterface, BatchDivisorInterface {
     /** @var int Size of each command batch */
     protected $batchSize;
 
     /**
      * @param int $batchSize Size of each batch
      */
-    public function __construct($batchSize = 50)
-    {
+    public function __construct($batchSize = 50) {
         $this->batchSize = $batchSize;
     }
 
@@ -29,8 +27,7 @@ class BatchCommandTransfer implements BatchTransferInterface, BatchDivisorInterf
      * Creates batches by grouping commands by their associated client
      * {@inheritdoc}
      */
-    public function createBatches(\SplQueue $queue)
-    {
+    public function createBatches(\SplQueue $queue) {
         $groups = new \SplObjectStorage();
         foreach ($queue as $item) {
             if (!$item instanceof CommandInterface) {
@@ -52,8 +49,7 @@ class BatchCommandTransfer implements BatchTransferInterface, BatchDivisorInterf
         return $batches;
     }
 
-    public function transfer(array $batch)
-    {
+    public function transfer(array $batch) {
         if (empty($batch)) {
             return;
         }
@@ -62,7 +58,7 @@ class BatchCommandTransfer implements BatchTransferInterface, BatchDivisorInterf
         $client = reset($batch)->getClient();
 
         // Keep a list of all commands with invalid clients
-        $invalid = array_filter($batch, function ($command) use ($client) {
+        $invalid = array_filter($batch, function($command) use ($client) {
             return $command->getClient() !== $client;
         });
 

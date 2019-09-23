@@ -17,13 +17,11 @@ namespace Monolog\Formatter;
  *
  * @author Andrew Lawson <adlawson@gmail.com>
  */
-class ScalarFormatter extends NormalizerFormatter
-{
+class ScalarFormatter extends NormalizerFormatter {
     /**
      * {@inheritdoc}
      */
-    public function format(array $record)
-    {
+    public function format(array $record) {
         foreach ($record as $key => $value) {
             $record[$key] = $this->normalizeValue($value);
         }
@@ -35,8 +33,7 @@ class ScalarFormatter extends NormalizerFormatter
      * @param  mixed $value
      * @return mixed
      */
-    protected function normalizeValue($value)
-    {
+    protected function normalizeValue($value) {
         $normalized = $this->normalize($value);
 
         if (is_array($normalized) || is_object($normalized)) {

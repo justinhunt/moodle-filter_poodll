@@ -20,8 +20,7 @@ namespace Aws\S3\Iterator;
  * Provides an iterator around an opendir resource. This is useful when you need to provide context to an opendir so
  * you can't use RecursiveDirectoryIterator
  */
-class OpendirIterator implements \Iterator
-{
+class OpendirIterator implements \Iterator {
     /** @var resource */
     protected $dirHandle;
 
@@ -35,36 +34,31 @@ class OpendirIterator implements \Iterator
     protected $filePrefix;
 
     /**
-     * @param resource $dirHandle  Opened directory handled returned from opendir
-     * @param string   $filePrefix Prefix to add to each filename
+     * @param resource $dirHandle Opened directory handled returned from opendir
+     * @param string $filePrefix Prefix to add to each filename
      */
-    public function __construct($dirHandle, $filePrefix = '')
-    {
+    public function __construct($dirHandle, $filePrefix = '') {
         $this->filePrefix = $filePrefix;
         $this->dirHandle = $dirHandle;
         $this->next();
     }
 
-    public function __destruct()
-    {
+    public function __destruct() {
         if ($this->dirHandle) {
             closedir($this->dirHandle);
         }
     }
 
-    public function rewind()
-    {
+    public function rewind() {
         $this->key = 0;
         rewinddir($this->dirHandle);
     }
 
-    public function current()
-    {
+    public function current() {
         return $this->currentFile;
     }
 
-    public function next()
-    {
+    public function next() {
         if ($file = readdir($this->dirHandle)) {
             $this->currentFile = new \SplFileInfo($this->filePrefix . $file);
         } else {
@@ -74,13 +68,11 @@ class OpendirIterator implements \Iterator
         $this->key++;
     }
 
-    public function key()
-    {
+    public function key() {
         return $this->key;
     }
 
-    public function valid()
-    {
+    public function valid() {
         return $this->currentFile !== false;
     }
 }

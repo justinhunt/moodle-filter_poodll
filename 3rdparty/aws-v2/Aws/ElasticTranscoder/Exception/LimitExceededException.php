@@ -19,4 +19,5 @@ namespace Aws\ElasticTranscoder\Exception;
 /**
  * Too many operations for a given AWS account. For example, the number of pipelines exceeds the maximum allowed.
  */
-class LimitExceededException extends ElasticTranscoderException {}
+class LimitExceededException extends ElasticTranscoderException {
+}

@@ -11,13 +11,11 @@ use Guzzle\Http\Exception\HttpException;
  *
  * Retries 500 and 503 error by default.
  */
-class HttpBackoffStrategy extends AbstractErrorCodeBackoffStrategy
-{
+class HttpBackoffStrategy extends AbstractErrorCodeBackoffStrategy {
     /** @var array Default cURL errors to retry */
     protected static $defaultErrorCodes = array(500, 503);
 
-    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null)
-    {
+    protected function getDelay($retries, RequestInterface $request, Response $response = null, HttpException $e = null) {
         if ($response) {
             //Short circuit the rest of the checks if it was successful
             if ($response->isSuccessful()) {

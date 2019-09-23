@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The storage class you specified is not valid.
  */
-class InvalidStorageClassException extends S3Exception {}
+class InvalidStorageClassException extends S3Exception {
+}

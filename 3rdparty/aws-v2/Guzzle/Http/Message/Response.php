@@ -14,70 +14,69 @@ use Guzzle\Parser\ParserRegistry;
 /**
  * Guzzle HTTP response object
  */
-class Response extends AbstractMessage implements \Serializable
-{
+class Response extends AbstractMessage implements \Serializable {
     /**
      * @var array Array of reason phrases and their corresponding status codes
      */
     private static $statusTexts = array(
-        100 => 'Continue',
-        101 => 'Switching Protocols',
-        102 => 'Processing',
-        200 => 'OK',
-        201 => 'Created',
-        202 => 'Accepted',
-        203 => 'Non-Authoritative Information',
-        204 => 'No Content',
-        205 => 'Reset Content',
-        206 => 'Partial Content',
-        207 => 'Multi-Status',
-        208 => 'Already Reported',
-        226 => 'IM Used',
-        300 => 'Multiple Choices',
-        301 => 'Moved Permanently',
-        302 => 'Found',
-        303 => 'See Other',
-        304 => 'Not Modified',
-        305 => 'Use Proxy',
-        307 => 'Temporary Redirect',
-        308 => 'Permanent Redirect',
-        400 => 'Bad Request',
-        401 => 'Unauthorized',
-        402 => 'Payment Required',
-        403 => 'Forbidden',
-        404 => 'Not Found',
-        405 => 'Method Not Allowed',
-        406 => 'Not Acceptable',
-        407 => 'Proxy Authentication Required',
-        408 => 'Request Timeout',
-        409 => 'Conflict',
-        410 => 'Gone',
-        411 => 'Length Required',
-        412 => 'Precondition Failed',
-        413 => 'Request Entity Too Large',
-        414 => 'Request-URI Too Long',
-        415 => 'Unsupported Media Type',
-        416 => 'Requested Range Not Satisfiable',
-        417 => 'Expectation Failed',
-        422 => 'Unprocessable Entity',
-        423 => 'Locked',
-        424 => 'Failed Dependency',
-        425 => 'Reserved for WebDAV advanced collections expired proposal',
-        426 => 'Upgrade required',
-        428 => 'Precondition Required',
-        429 => 'Too Many Requests',
-        431 => 'Request Header Fields Too Large',
-        500 => 'Internal Server Error',
-        501 => 'Not Implemented',
-        502 => 'Bad Gateway',
-        503 => 'Service Unavailable',
-        504 => 'Gateway Timeout',
-        505 => 'HTTP Version Not Supported',
-        506 => 'Variant Also Negotiates (Experimental)',
-        507 => 'Insufficient Storage',
-        508 => 'Loop Detected',
-        510 => 'Not Extended',
-        511 => 'Network Authentication Required',
+            100 => 'Continue',
+            101 => 'Switching Protocols',
+            102 => 'Processing',
+            200 => 'OK',
+            201 => 'Created',
+            202 => 'Accepted',
+            203 => 'Non-Authoritative Information',
+            204 => 'No Content',
+            205 => 'Reset Content',
+            206 => 'Partial Content',
+            207 => 'Multi-Status',
+            208 => 'Already Reported',
+            226 => 'IM Used',
+            300 => 'Multiple Choices',
+            301 => 'Moved Permanently',
+            302 => 'Found',
+            303 => 'See Other',
+            304 => 'Not Modified',
+            305 => 'Use Proxy',
+            307 => 'Temporary Redirect',
+            308 => 'Permanent Redirect',
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            402 => 'Payment Required',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            406 => 'Not Acceptable',
+            407 => 'Proxy Authentication Required',
+            408 => 'Request Timeout',
+            409 => 'Conflict',
+            410 => 'Gone',
+            411 => 'Length Required',
+            412 => 'Precondition Failed',
+            413 => 'Request Entity Too Large',
+            414 => 'Request-URI Too Long',
+            415 => 'Unsupported Media Type',
+            416 => 'Requested Range Not Satisfiable',
+            417 => 'Expectation Failed',
+            422 => 'Unprocessable Entity',
+            423 => 'Locked',
+            424 => 'Failed Dependency',
+            425 => 'Reserved for WebDAV advanced collections expired proposal',
+            426 => 'Upgrade required',
+            428 => 'Precondition Required',
+            429 => 'Too Many Requests',
+            431 => 'Request Header Fields Too Large',
+            500 => 'Internal Server Error',
+            501 => 'Not Implemented',
+            502 => 'Bad Gateway',
+            503 => 'Service Unavailable',
+            504 => 'Gateway Timeout',
+            505 => 'HTTP Version Not Supported',
+            506 => 'Variant Also Negotiates (Experimental)',
+            507 => 'Insufficient Storage',
+            508 => 'Loop Detected',
+            510 => 'Not Extended',
+            511 => 'Network Authentication Required',
     );
 
     /** @var EntityBodyInterface The response body */
@@ -105,8 +104,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return self|bool Returns false on error
      */
-    public static function fromMessage($message)
-    {
+    public static function fromMessage($message) {
         $data = ParserRegistry::getInstance()->getParser('message')->parseResponse($message);
         if (!$data) {
             return false;
@@ -114,7 +112,7 @@ class Response extends AbstractMessage implements \Serializable
 
         $response = new static($data['code'], $data['headers'], $data['body']);
         $response->setProtocol($data['protocol'], $data['version'])
-                 ->setStatus($data['code'], $data['reason_phrase']);
+                ->setStatus($data['code'], $data['reason_phrase']);
 
         // Set the appropriate Content-Length if the one set is inaccurate (e.g. setting to X)
         $contentLength = (string) $response->getHeader('Content-Length');
@@ -129,14 +127,13 @@ class Response extends AbstractMessage implements \Serializable
     /**
      * Construct the response
      *
-     * @param string                              $statusCode The response status code (e.g. 200, 404, etc)
-     * @param ToArrayInterface|array              $headers    The response headers
-     * @param string|resource|EntityBodyInterface $body       The body of the response
+     * @param string $statusCode The response status code (e.g. 200, 404, etc)
+     * @param ToArrayInterface|array $headers The response headers
+     * @param string|resource|EntityBodyInterface $body The body of the response
      *
      * @throws BadResponseException if an invalid response code is given
      */
-    public function __construct($statusCode, $headers = null, $body = null)
-    {
+    public function __construct($statusCode, $headers = null, $body = null) {
         parent::__construct();
         $this->setStatus($statusCode);
         $this->body = EntityBody::factory($body !== null ? $body : '');
@@ -144,7 +141,7 @@ class Response extends AbstractMessage implements \Serializable
         if ($headers) {
             if (is_array($headers)) {
                 $this->setHeaders($headers);
-            } elseif ($headers instanceof ToArrayInterface) {
+            } else if ($headers instanceof ToArrayInterface) {
                 $this->setHeaders($headers->toArray());
             } else {
                 throw new BadResponseException('Invalid headers argument received');
@@ -155,22 +152,19 @@ class Response extends AbstractMessage implements \Serializable
     /**
      * @return string
      */
-    public function __toString()
-    {
+    public function __toString() {
         return $this->getMessage();
     }
 
-    public function serialize()
-    {
+    public function serialize() {
         return json_encode(array(
-            'status'  => $this->statusCode,
-            'body'    => (string) $this->body,
-            'headers' => $this->headers->toArray()
+                'status' => $this->statusCode,
+                'body' => (string) $this->body,
+                'headers' => $this->headers->toArray()
         ));
     }
 
-    public function unserialize($serialize)
-    {
+    public function unserialize($serialize) {
         $data = json_decode($serialize, true);
         $this->__construct($data['status'], $data['headers'], $data['body']);
     }
@@ -182,8 +176,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return EntityBodyInterface|string
      */
-    public function getBody($asString = false)
-    {
+    public function getBody($asString = false) {
         return $asString ? (string) $this->body : $this->body;
     }
 
@@ -194,8 +187,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return self
      */
-    public function setBody($body)
-    {
+    public function setBody($body) {
         $this->body = EntityBody::factory($body);
 
         return $this;
@@ -205,12 +197,11 @@ class Response extends AbstractMessage implements \Serializable
      * Set the protocol and protocol version of the response
      *
      * @param string $protocol Response protocol
-     * @param string $version  Protocol version
+     * @param string $version Protocol version
      *
      * @return self
      */
-    public function setProtocol($protocol, $version)
-    {
+    public function setProtocol($protocol, $version) {
         $this->protocol = $protocol;
         $this->protocolVersion = $version;
 
@@ -222,8 +213,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getProtocol()
-    {
+    public function getProtocol() {
         return $this->protocol;
     }
 
@@ -232,8 +222,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getProtocolVersion()
-    {
+    public function getProtocolVersion() {
         return $this->protocolVersion;
     }
 
@@ -246,11 +235,10 @@ class Response extends AbstractMessage implements \Serializable
      *                           is set and not found
      * @link http://www.php.net/manual/en/function.curl-getinfo.php
      */
-    public function getInfo($key = null)
-    {
+    public function getInfo($key = null) {
         if ($key === null) {
             return $this->info;
-        } elseif (array_key_exists($key, $this->info)) {
+        } else if (array_key_exists($key, $this->info)) {
             return $this->info[$key];
         } else {
             return null;
@@ -264,8 +252,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return self
      */
-    public function setInfo(array $info)
-    {
+    public function setInfo(array $info) {
         $this->info = $info;
 
         return $this;
@@ -274,14 +261,13 @@ class Response extends AbstractMessage implements \Serializable
     /**
      * Set the response status
      *
-     * @param int    $statusCode   Response status code to set
+     * @param int $statusCode Response status code to set
      * @param string $reasonPhrase Response reason phrase
      *
      * @return self
      * @throws BadResponseException when an invalid response code is received
      */
-    public function setStatus($statusCode, $reasonPhrase = '')
-    {
+    public function setStatus($statusCode, $reasonPhrase = '') {
         $this->statusCode = (int) $statusCode;
 
         if (!$reasonPhrase && isset(self::$statusTexts[$this->statusCode])) {
@@ -298,8 +284,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return integer
      */
-    public function getStatusCode()
-    {
+    public function getStatusCode() {
         return $this->statusCode;
     }
 
@@ -308,8 +293,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getMessage()
-    {
+    public function getMessage() {
         $message = $this->getRawHeaders();
 
         // Only include the body in the message if the size is < 2MB
@@ -326,8 +310,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getRawHeaders()
-    {
+    public function getRawHeaders() {
         $headers = 'HTTP/1.1 ' . $this->statusCode . ' ' . $this->reasonPhrase . "\r\n";
         $lines = $this->getHeaderLines();
         if (!empty($lines)) {
@@ -343,8 +326,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getReasonPhrase()
-    {
+    public function getReasonPhrase() {
         return $this->reasonPhrase;
     }
 
@@ -353,8 +335,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string Returns what partial content range types this server supports.
      */
-    public function getAcceptRanges()
-    {
+    public function getAcceptRanges() {
         return (string) $this->getHeader('Accept-Ranges');
     }
 
@@ -363,8 +344,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return integer
      */
-    public function calculateAge()
-    {
+    public function calculateAge() {
         $age = $this->getHeader('Age');
 
         if ($age === null && $this->getDate()) {
@@ -379,8 +359,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return integer|null Returns the age the object has been in a proxy cache in seconds.
      */
-    public function getAge()
-    {
+    public function getAge() {
         return (string) $this->getHeader('Age');
     }
 
@@ -389,8 +368,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns valid actions for a specified resource. To be used for a 405 Method not allowed.
      */
-    public function getAllow()
-    {
+    public function getAllow() {
         return (string) $this->getHeader('Allow');
     }
 
@@ -401,8 +379,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function isMethodAllowed($method)
-    {
+    public function isMethodAllowed($method) {
         $allow = $this->getHeader('Allow');
         if ($allow) {
             foreach (explode(',', $allow) as $allowable) {
@@ -420,8 +397,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getCacheControl()
-    {
+    public function getCacheControl() {
         return (string) $this->getHeader('Cache-Control');
     }
 
@@ -430,8 +406,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getConnection()
-    {
+    public function getConnection() {
         return (string) $this->getHeader('Connection');
     }
 
@@ -440,8 +415,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null
      */
-    public function getContentEncoding()
-    {
+    public function getContentEncoding() {
         return (string) $this->getHeader('Content-Encoding');
     }
 
@@ -450,8 +424,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns the language the content is in.
      */
-    public function getContentLanguage()
-    {
+    public function getContentLanguage() {
         return (string) $this->getHeader('Content-Language');
     }
 
@@ -460,8 +433,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return integer Returns the length of the response body in bytes
      */
-    public function getContentLength()
-    {
+    public function getContentLength() {
         return (int) (string) $this->getHeader('Content-Length');
     }
 
@@ -470,8 +442,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns an alternate location for the returned data (e.g /index.htm)
      */
-    public function getContentLocation()
-    {
+    public function getContentLocation() {
         return (string) $this->getHeader('Content-Location');
     }
 
@@ -480,8 +451,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns the Content-Disposition header
      */
-    public function getContentDisposition()
-    {
+    public function getContentDisposition() {
         return (string) $this->getHeader('Content-Disposition');
     }
 
@@ -490,8 +460,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns a Base64-encoded binary MD5 sum of the content of the response.
      */
-    public function getContentMd5()
-    {
+    public function getContentMd5() {
         return (string) $this->getHeader('Content-MD5');
     }
 
@@ -500,8 +469,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string Returns where in a full body message this partial message belongs (e.g. bytes 21010-47021/47022).
      */
-    public function getContentRange()
-    {
+    public function getContentRange() {
         return (string) $this->getHeader('Content-Range');
     }
 
@@ -510,8 +478,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string Returns the mime type of this content.
      */
-    public function getContentType()
-    {
+    public function getContentType() {
         return (string) $this->getHeader('Content-Type');
     }
 
@@ -524,8 +491,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function isContentType($type)
-    {
+    public function isContentType($type) {
         return stripos($this->getHeader('Content-Type'), $type) !== false;
     }
 
@@ -534,8 +500,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns the date and time that the message was sent.
      */
-    public function getDate()
-    {
+    public function getDate() {
         return (string) $this->getHeader('Date');
     }
 
@@ -544,8 +509,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns an identifier for a specific version of a resource, often a Message digest.
      */
-    public function getEtag()
-    {
+    public function getEtag() {
         return (string) $this->getHeader('ETag');
     }
 
@@ -554,8 +518,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Returns the date/time after which the response is considered stale.
      */
-    public function getExpires()
-    {
+    public function getExpires() {
         return (string) $this->getHeader('Expires');
     }
 
@@ -565,8 +528,7 @@ class Response extends AbstractMessage implements \Serializable
      * @return string|null Returns the last modified date for the requested object, in RFC 2822 format
      *                     (e.g. Tue, 15 Nov 1994 12:45:26 GMT)
      */
-    public function getLastModified()
-    {
+    public function getLastModified() {
         return (string) $this->getHeader('Last-Modified');
     }
 
@@ -575,8 +537,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Used in redirection, or when a new resource has been created.
      */
-    public function getLocation()
-    {
+    public function getLocation() {
         return (string) $this->getHeader('Location');
     }
 
@@ -586,8 +547,7 @@ class Response extends AbstractMessage implements \Serializable
      * @return Header|null Returns the implementation-specific headers that may have various effects anywhere along
      *                     the request-response chain.
      */
-    public function getPragma()
-    {
+    public function getPragma() {
         return (string) $this->getHeader('Pragma');
     }
 
@@ -596,8 +556,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Authentication to access the proxy (e.g. Basic)
      */
-    public function getProxyAuthenticate()
-    {
+    public function getProxyAuthenticate() {
         return (string) $this->getHeader('Proxy-Authenticate');
     }
 
@@ -607,8 +566,7 @@ class Response extends AbstractMessage implements \Serializable
      * @return int|null If an entity is temporarily unavailable, this instructs the client to try again after a
      *                  specified period of time.
      */
-    public function getRetryAfter()
-    {
+    public function getRetryAfter() {
         return (string) $this->getHeader('Retry-After');
     }
 
@@ -617,9 +575,8 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null A name for the server
      */
-    public function getServer()
-    {
-        return (string)  $this->getHeader('Server');
+    public function getServer() {
+        return (string) $this->getHeader('Server');
     }
 
     /**
@@ -627,8 +584,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null An HTTP cookie.
      */
-    public function getSetCookie()
-    {
+    public function getSetCookie() {
         return (string) $this->getHeader('Set-Cookie');
     }
 
@@ -638,8 +594,7 @@ class Response extends AbstractMessage implements \Serializable
      * @return string|null The Trailer general field value indicates that the given set of header fields is present in
      *                     the trailer of a message encoded with chunked transfer-coding.
      */
-    public function getTrailer()
-    {
+    public function getTrailer() {
         return (string) $this->getHeader('Trailer');
     }
 
@@ -648,8 +603,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null The form of encoding used to safely transfer the entity to the user
      */
-    public function getTransferEncoding()
-    {
+    public function getTransferEncoding() {
         return (string) $this->getHeader('Transfer-Encoding');
     }
 
@@ -659,8 +613,7 @@ class Response extends AbstractMessage implements \Serializable
      * @return string|null Tells downstream proxies how to match future request headers to decide whether the cached
      *                     response can be used rather than requesting a fresh one from the origin server.
      */
-    public function getVary()
-    {
+    public function getVary() {
         return (string) $this->getHeader('Vary');
     }
 
@@ -669,8 +622,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Informs the client of proxies through which the response was sent.
      */
-    public function getVia()
-    {
+    public function getVia() {
         return (string) $this->getHeader('Via');
     }
 
@@ -679,8 +631,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null A general warning about possible problems with the entity body
      */
-    public function getWarning()
-    {
+    public function getWarning() {
         return (string) $this->getHeader('Warning');
     }
 
@@ -689,8 +640,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string|null Indicates the authentication scheme that should be used to access the requested entity
      */
-    public function getWwwAuthenticate()
-    {
+    public function getWwwAuthenticate() {
         return (string) $this->getHeader('WWW-Authenticate');
     }
 
@@ -699,8 +649,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function isClientError()
-    {
+    public function isClientError() {
         return $this->statusCode >= 400 && $this->statusCode < 500;
     }
 
@@ -709,8 +658,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return boolean
      */
-    public function isError()
-    {
+    public function isError() {
         return $this->isClientError() || $this->isServerError();
     }
 
@@ -719,8 +667,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function isInformational()
-    {
+    public function isInformational() {
         return $this->statusCode < 200;
     }
 
@@ -729,8 +676,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function isRedirect()
-    {
+    public function isRedirect() {
         return $this->statusCode >= 300 && $this->statusCode < 400;
     }
 
@@ -739,8 +685,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function isServerError()
-    {
+    public function isServerError() {
         return $this->statusCode >= 500 && $this->statusCode < 600;
     }
 
@@ -749,8 +694,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function isSuccessful()
-    {
+    public function isSuccessful() {
         return ($this->statusCode >= 200 && $this->statusCode < 300) || $this->statusCode == 304;
     }
 
@@ -759,8 +703,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool Returns TRUE if the response can be cached or false if not
      */
-    public function canCache()
-    {
+    public function canCache() {
         // Check if the response is cacheable based on the code
         if (!in_array((int) $this->getStatusCode(), self::$cacheResponseCodes)) {
             return false;
@@ -768,7 +711,7 @@ class Response extends AbstractMessage implements \Serializable
 
         // Make sure a valid body was returned and can be cached
         if ((!$this->getBody()->isReadable() || !$this->getBody()->isSeekable())
-            && ($this->getContentLength() > 0 || $this->getTransferEncoding() == 'chunked')) {
+                && ($this->getContentLength() > 0 || $this->getTransferEncoding() == 'chunked')) {
             return false;
         }
 
@@ -786,8 +729,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return int|null Returns the number of seconds
      */
-    public function getMaxAge()
-    {
+    public function getMaxAge() {
         if ($header = $this->getHeader('Cache-Control')) {
             // s-max-age, then max-age, then Expires
             if ($age = $header->getDirective('s-maxage')) {
@@ -813,8 +755,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool|null
      */
-    public function isFresh()
-    {
+    public function isFresh() {
         $fresh = $this->getFreshness();
 
         return $fresh === null ? null : $fresh >= 0;
@@ -825,8 +766,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return bool
      */
-    public function canValidate()
-    {
+    public function canValidate() {
         return $this->getEtag() || $this->getLastModified();
     }
 
@@ -840,8 +780,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return int
      */
-    public function getFreshness()
-    {
+    public function getFreshness() {
         $maxAge = $this->getMaxAge();
         $age = $this->calculateAge();
 
@@ -854,8 +793,7 @@ class Response extends AbstractMessage implements \Serializable
      * @return array|string|int|bool|float
      * @throws RuntimeException if the response body is not in JSON format
      */
-    public function json()
-    {
+    public function json() {
         $data = json_decode((string) $this->body, true);
         if (JSON_ERROR_NONE !== json_last_error()) {
             throw new RuntimeException('Unable to parse response body into JSON: ' . json_last_error());
@@ -875,8 +813,7 @@ class Response extends AbstractMessage implements \Serializable
      * @throws RuntimeException if the response body is not in XML format
      * @link http://websec.io/2012/08/27/Preventing-XXE-in-PHP.html
      */
-    public function xml()
-    {
+    public function xml() {
         $errorMessage = null;
         $internalErrors = libxml_use_internal_errors(true);
         $disableEntities = libxml_disable_entity_loader(true);
@@ -907,8 +844,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return int
      */
-    public function getRedirectCount()
-    {
+    public function getRedirectCount() {
         return (int) $this->params->get(RedirectPlugin::REDIRECT_COUNT);
     }
 
@@ -919,8 +855,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return self
      */
-    public function setEffectiveUrl($url)
-    {
+    public function setEffectiveUrl($url) {
         $this->effectiveUrl = $url;
 
         return $this;
@@ -931,8 +866,7 @@ class Response extends AbstractMessage implements \Serializable
      *
      * @return string
      */
-    public function getEffectiveUrl()
-    {
+    public function getEffectiveUrl() {
         return $this->effectiveUrl;
     }
 
@@ -940,8 +874,7 @@ class Response extends AbstractMessage implements \Serializable
      * @deprecated
      * @codeCoverageIgnore
      */
-    public function getPreviousResponse()
-    {
+    public function getPreviousResponse() {
         Version::warn(__METHOD__ . ' is deprecated. Use the HistoryPlugin.');
         return null;
     }
@@ -950,8 +883,7 @@ class Response extends AbstractMessage implements \Serializable
      * @deprecated
      * @codeCoverageIgnore
      */
-    public function setRequest($request)
-    {
+    public function setRequest($request) {
         Version::warn(__METHOD__ . ' is deprecated');
         return $this;
     }
@@ -960,8 +892,7 @@ class Response extends AbstractMessage implements \Serializable
      * @deprecated
      * @codeCoverageIgnore
      */
-    public function getRequest()
-    {
+    public function getRequest() {
         Version::warn(__METHOD__ . ' is deprecated');
         return null;
     }

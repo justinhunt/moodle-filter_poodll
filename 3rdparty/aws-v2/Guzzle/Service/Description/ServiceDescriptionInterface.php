@@ -5,8 +5,7 @@ namespace Guzzle\Service\Description;
 /**
  * A ServiceDescription stores service information based on a service document
  */
-interface ServiceDescriptionInterface extends \Serializable
-{
+interface ServiceDescriptionInterface extends \Serializable {
     /**
      * Get the basePath/baseUrl of the description
      *
@@ -97,8 +96,8 @@ interface ServiceDescriptionInterface extends \Serializable
     /**
      * Set arbitrary data on the service description
      *
-     * @param string $key   Data key to set
-     * @param mixed  $value Value to set
+     * @param string $key Data key to set
+     * @param mixed $value Value to set
      *
      * @return self
      */

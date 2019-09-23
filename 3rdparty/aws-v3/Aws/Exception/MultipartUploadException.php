@@ -1,16 +1,16 @@
 <?php
+
 namespace Aws\Exception;
 
 use Aws\Multipart\UploadState;
 
-class MultipartUploadException extends \RuntimeException
-{
+class MultipartUploadException extends \RuntimeException {
     /** @var UploadState State of the erroneous transfer */
     private $state;
 
     /**
-     * @param UploadState      $state Upload state at time of the exception.
-     * @param \Exception|array $prev  Exception being thrown.
+     * @param UploadState $state Upload state at time of the exception.
+     * @param \Exception|array $prev Exception being thrown.
      */
     public function __construct(UploadState $state, $prev = null) {
         $msg = 'An exception occurred while performing a multipart upload';
@@ -20,9 +20,9 @@ class MultipartUploadException extends \RuntimeException
             $msg .= ". The following parts had errors:\n";
             /** @var $error AwsException */
             foreach ($prev as $part => $error) {
-                $msg .= "- Part {$part}: " . $error->getMessage(). "\n";
+                $msg .= "- Part {$part}: " . $error->getMessage() . "\n";
             }
-        } elseif ($prev instanceof AwsException) {
+        } else if ($prev instanceof AwsException) {
             switch ($prev->getCommand()->getName()) {
                 case 'CreateMultipartUpload':
                 case 'InitiateMultipartUpload':
@@ -51,8 +51,7 @@ class MultipartUploadException extends \RuntimeException
      *
      * @return UploadState
      */
-    public function getState()
-    {
+    public function getState() {
         return $this->state;
     }
 }

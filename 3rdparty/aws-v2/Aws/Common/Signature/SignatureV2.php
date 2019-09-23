@@ -21,12 +21,11 @@ use Guzzle\Http\Message\RequestInterface;
 
 /**
  * Implementation of Signature Version 2
+ *
  * @link http://aws.amazon.com/articles/1928
  */
-class SignatureV2 extends AbstractSignature
-{
-    public function signRequest(RequestInterface $request, CredentialsInterface $credentials)
-    {
+class SignatureV2 extends AbstractSignature {
+    public function signRequest(RequestInterface $request, CredentialsInterface $credentials) {
         // refresh the cached timestamp
         $timestamp = $this->getTimestamp(true);
 
@@ -45,20 +44,20 @@ class SignatureV2 extends AbstractSignature
 
         // build string to sign
         $sign = $request->getMethod() . "\n"
-            . $request->getHost() . "\n"
-            . $path . "\n"
-            . $this->getCanonicalizedParameterString($request);
+                . $request->getHost() . "\n"
+                . $path . "\n"
+                . $this->getCanonicalizedParameterString($request);
 
         // Add the string to sign to the request for debugging purposes
         $request->getParams()->set('aws.string_to_sign', $sign);
 
         $signature = base64_encode(
-            hash_hmac(
-                'sha256',
-                $sign,
-                $credentials->getSecretKey(),
-                true
-            )
+                hash_hmac(
+                        'sha256',
+                        $sign,
+                        $credentials->getSecretKey(),
+                        true
+                )
         );
 
         $this->addParameter($request, 'Signature', $signature);
@@ -68,11 +67,10 @@ class SignatureV2 extends AbstractSignature
      * Add a parameter key and value to the request according to type
      *
      * @param RequestInterface $request The request
-     * @param string           $key     The name of the parameter
-     * @param string           $value   The value of the parameter
+     * @param string $key The name of the parameter
+     * @param string $value The value of the parameter
      */
-    public function addParameter(RequestInterface $request, $key, $value)
-    {
+    public function addParameter(RequestInterface $request, $key, $value) {
         if ($request->getMethod() == 'POST') {
             $request->setPostField($key, $value);
         } else {
@@ -87,8 +85,7 @@ class SignatureV2 extends AbstractSignature
      *
      * @return string
      */
-    private function getCanonicalizedParameterString(RequestInterface $request)
-    {
+    private function getCanonicalizedParameterString(RequestInterface $request) {
         if ($request->getMethod() == 'POST') {
             $params = $request->getPostFields()->toArray();
         } else {

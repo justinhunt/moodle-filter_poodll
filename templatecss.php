@@ -24,13 +24,13 @@
  */
 
 //define('AJAX_SCRIPT', true);
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-$tindex = required_param('t',PARAM_TEXT);
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+$tindex = required_param('t', PARAM_TEXT);
 
 $conf = get_config('filter_poodll');
 
 //get presets
-$thestyle=$conf->{'templatestyle_' . $tindex};
+$thestyle = $conf->{'templatestyle_' . $tindex};
 
 header('Content-Type: text/css');
 echo $thestyle;

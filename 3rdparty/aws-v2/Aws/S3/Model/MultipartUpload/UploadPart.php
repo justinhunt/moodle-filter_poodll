@@ -21,16 +21,15 @@ use Aws\Common\Model\MultipartUpload\AbstractUploadPart;
 /**
  * An object that encapsulates the data for a Glacier upload operation
  */
-class UploadPart extends AbstractUploadPart
-{
+class UploadPart extends AbstractUploadPart {
     /**
      * {@inheritdoc}
      */
     protected static $keyMap = array(
-        'PartNumber'   => 'partNumber',
-        'ETag'         => 'eTag',
-        'LastModified' => 'lastModified',
-        'Size'         => 'size'
+            'PartNumber' => 'partNumber',
+            'ETag' => 'eTag',
+            'LastModified' => 'lastModified',
+            'Size' => 'size'
     );
 
     /**
@@ -51,24 +50,21 @@ class UploadPart extends AbstractUploadPart
     /**
      * @return string
      */
-    public function getETag()
-    {
+    public function getETag() {
         return $this->eTag;
     }
 
     /**
      * @return string
      */
-    public function getLastModified()
-    {
+    public function getLastModified() {
         return $this->lastModified;
     }
 
     /**
      * @return int
      */
-    public function getSize()
-    {
+    public function getSize() {
         return $this->size;
     }
 }

@@ -19,4 +19,5 @@ namespace Aws\ElasticTranscoder\Exception;
 /**
  * Elastic Transcoder encountered an unexpected exception while trying to fulfill the request.
  */
-class InternalServiceException extends ElasticTranscoderException {}
+class InternalServiceException extends ElasticTranscoderException {
+}

@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable AssignmentStatusType values
  */
-class AssignmentStatusType extends Enum
-{
+class AssignmentStatusType extends Enum {
     const ASSIGNED = 'Assigned';
     const UNASSIGNED = 'Unassigned';
     const ANY = 'Any';

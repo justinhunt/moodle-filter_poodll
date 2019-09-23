@@ -21,13 +21,11 @@ use Guzzle\Http\Message\Response;
 /**
  * Parses JSON encoded exception responses from query services
  */
-class JsonQueryExceptionParser extends AbstractJsonExceptionParser
-{
+class JsonQueryExceptionParser extends AbstractJsonExceptionParser {
     /**
      * {@inheritdoc}
      */
-    protected function doParse(array $data, Response $response)
-    {
+    protected function doParse(array $data, Response $response) {
         if ($json = $data['parsed']) {
             if (isset($json['__type'])) {
                 $parts = explode('#', $json['__type']);

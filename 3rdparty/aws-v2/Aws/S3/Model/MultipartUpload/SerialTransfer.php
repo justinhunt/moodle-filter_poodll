@@ -25,13 +25,11 @@ use Guzzle\Http\ReadLimitEntityBody;
 /**
  * Transfers multipart upload parts serially
  */
-class SerialTransfer extends AbstractTransfer
-{
+class SerialTransfer extends AbstractTransfer {
     /**
      * {@inheritdoc}
      */
-    protected function transfer()
-    {
+    protected function transfer() {
         while (!$this->stopped && !$this->source->isConsumed()) {
 
             if ($this->source->getContentLength() && $this->source->isSeekable()) {
@@ -41,9 +39,11 @@ class SerialTransfer extends AbstractTransfer
                 // We need to read the data source into a temporary buffer before streaming
                 $body = EntityBody::factory();
                 while ($body->getContentLength() < $this->partSize
-                    && $body->write(
-                        $this->source->read(max(1, min(10 * Size::KB, $this->partSize - $body->getContentLength())))
-                    ));
+                        && $body->write(
+                                $this->source->read(max(1, min(10 * Size::KB, $this->partSize - $body->getContentLength())))
+                        )) {
+                    ;
+                }
             }
 
             // @codeCoverageIgnoreStart
@@ -54,10 +54,10 @@ class SerialTransfer extends AbstractTransfer
 
             $params = $this->state->getUploadId()->toParams();
             $command = $this->client->getCommand('UploadPart', array_replace($params, array(
-                'PartNumber' => count($this->state) + 1,
-                'Body'       => $body,
-                'ContentMD5' => (bool) $this->options['part_md5'],
-                Ua::OPTION   => Ua::MULTIPART_UPLOAD
+                    'PartNumber' => count($this->state) + 1,
+                    'Body' => $body,
+                    'ContentMD5' => (bool) $this->options['part_md5'],
+                    Ua::OPTION => Ua::MULTIPART_UPLOAD
             )));
 
             // Notify observers that the part is about to be uploaded
@@ -73,10 +73,10 @@ class SerialTransfer extends AbstractTransfer
             $response = $command->getResponse();
 
             $this->state->addPart(UploadPart::fromArray(array(
-                'PartNumber'   => $command['PartNumber'],
-                'ETag'         => $response->getEtag(),
-                'Size'         => $body->getContentLength(),
-                'LastModified' => gmdate(DateFormat::RFC2822)
+                    'PartNumber' => $command['PartNumber'],
+                    'ETag' => $response->getEtag(),
+                    'Size' => $body->getContentLength(),
+                    'LastModified' => gmdate(DateFormat::RFC2822)
             )));
 
             // Notify observers that the part was uploaded

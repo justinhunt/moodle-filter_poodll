@@ -21,8 +21,7 @@ use Aws\Common\Client\AwsClientInterface;
 /**
  * Interface used in conjunction with clients to wait on a resource
  */
-interface ResourceWaiterInterface extends WaiterInterface
-{
+interface ResourceWaiterInterface extends WaiterInterface {
     /**
      * Set the client associated with the waiter
      *

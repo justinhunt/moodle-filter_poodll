@@ -22,8 +22,7 @@ use Guzzle\Common\Event;
 use Guzzle\Http\EntityBodyInterface;
 use Guzzle\Service\Command\CommandInterface;
 
-class DownloadSyncBuilder extends AbstractSyncBuilder
-{
+class DownloadSyncBuilder extends AbstractSyncBuilder {
     /** @var bool */
     protected $resumable = false;
 
@@ -40,8 +39,7 @@ class DownloadSyncBuilder extends AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setDirectory($directory)
-    {
+    public function setDirectory($directory) {
         $this->directory = $directory;
 
         return $this;
@@ -52,31 +50,28 @@ class DownloadSyncBuilder extends AbstractSyncBuilder
      *
      * @return self
      */
-    public function allowResumableDownloads()
-    {
+    public function allowResumableDownloads() {
         $this->resumable = true;
 
         return $this;
     }
 
-    protected function specificBuild()
-    {
+    protected function specificBuild() {
         $sync = new DownloadSync(array(
-            'client'           => $this->client,
-            'bucket'           => $this->bucket,
-            'iterator'         => $this->sourceIterator,
-            'source_converter' => $this->sourceConverter,
-            'target_converter' => $this->targetConverter,
-            'concurrency'      => $this->concurrency,
-            'resumable'        => $this->resumable,
-            'directory'        => $this->directory
+                'client' => $this->client,
+                'bucket' => $this->bucket,
+                'iterator' => $this->sourceIterator,
+                'source_converter' => $this->sourceConverter,
+                'target_converter' => $this->targetConverter,
+                'concurrency' => $this->concurrency,
+                'resumable' => $this->resumable,
+                'directory' => $this->directory
         ));
 
         return $sync;
     }
 
-    protected function getTargetIterator()
-    {
+    protected function getTargetIterator() {
         if (!$this->directory) {
             throw new RuntimeException('A directory is required');
         }
@@ -88,38 +83,34 @@ class DownloadSyncBuilder extends AbstractSyncBuilder
         }
 
         return $this->filterIterator(
-            new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->directory))
+                new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($this->directory))
         );
     }
 
-    protected function getDefaultSourceConverter()
-    {
+    protected function getDefaultSourceConverter() {
         return new KeyConverter(
-            "s3://{$this->bucket}/{$this->baseDir}",
-            $this->directory . DIRECTORY_SEPARATOR, $this->delimiter
+                "s3://{$this->bucket}/{$this->baseDir}",
+                $this->directory . DIRECTORY_SEPARATOR, $this->delimiter
         );
     }
 
-    protected function getDefaultTargetConverter()
-    {
+    protected function getDefaultTargetConverter() {
         return new KeyConverter("s3://{$this->bucket}/{$this->baseDir}", '', $this->delimiter);
     }
 
-    protected function assertFileIteratorSet()
-    {
+    protected function assertFileIteratorSet() {
         $this->sourceIterator = $this->sourceIterator ?: $this->createS3Iterator();
     }
 
-    protected function addDebugListener(AbstractSync $sync, $resource)
-    {
-        $sync->getEventDispatcher()->addListener(UploadSync::BEFORE_TRANSFER, function (Event $e) use ($resource) {
+    protected function addDebugListener(AbstractSync $sync, $resource) {
+        $sync->getEventDispatcher()->addListener(UploadSync::BEFORE_TRANSFER, function(Event $e) use ($resource) {
             if ($e['command'] instanceof CommandInterface) {
                 $from = $e['command']['Bucket'] . '/' . $e['command']['Key'];
                 $to = $e['command']['SaveAs'] instanceof EntityBodyInterface
-                    ? $e['command']['SaveAs']->getUri()
-                    : $e['command']['SaveAs'];
+                        ? $e['command']['SaveAs']->getUri()
+                        : $e['command']['SaveAs'];
                 fwrite($resource, "Downloading {$from} -> {$to}\n");
-            } elseif ($e['command'] instanceof ResumableDownload) {
+            } else if ($e['command'] instanceof ResumableDownload) {
                 $from = $e['command']->getBucket() . '/' . $e['command']->getKey();
                 $to = $e['command']->getFilename();
                 fwrite($resource, "Resuming {$from} -> {$to}\n");

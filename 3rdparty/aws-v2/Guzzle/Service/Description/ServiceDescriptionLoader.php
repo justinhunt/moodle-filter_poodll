@@ -8,10 +8,8 @@ use Guzzle\Service\Exception\DescriptionBuilderException;
 /**
  * Loader for service descriptions
  */
-class ServiceDescriptionLoader extends AbstractConfigLoader
-{
-    protected function build($config, array $options)
-    {
+class ServiceDescriptionLoader extends AbstractConfigLoader {
+    protected function build($config, array $options) {
         $operations = array();
         if (!empty($config['operations'])) {
             foreach ($config['operations'] as $name => $op) {
@@ -26,24 +24,23 @@ class ServiceDescriptionLoader extends AbstractConfigLoader
         }
 
         return new ServiceDescription(array(
-            'apiVersion'  => isset($config['apiVersion']) ? $config['apiVersion'] : null,
-            'baseUrl'     => isset($config['baseUrl']) ? $config['baseUrl'] : null,
-            'description' => isset($config['description']) ? $config['description'] : null,
-            'operations'  => $operations,
-            'models'      => isset($config['models']) ? $config['models'] : null
-        ) + $config);
+                        'apiVersion' => isset($config['apiVersion']) ? $config['apiVersion'] : null,
+                        'baseUrl' => isset($config['baseUrl']) ? $config['baseUrl'] : null,
+                        'description' => isset($config['description']) ? $config['description'] : null,
+                        'operations' => $operations,
+                        'models' => isset($config['models']) ? $config['models'] : null
+                ) + $config);
     }
 
     /**
-     * @param string $name       Name of the operation
-     * @param array  $op         Operation value array
-     * @param array  $operations Currently loaded operations
+     * @param string $name Name of the operation
+     * @param array $op Operation value array
+     * @param array $operations Currently loaded operations
      * @throws DescriptionBuilderException when extending a non-existent operation
      */
-    protected function resolveExtension($name, array &$op, array &$operations)
-    {
+    protected function resolveExtension($name, array &$op, array &$operations) {
         $resolved = array();
-        $original = empty($op['parameters']) ? false: $op['parameters'];
+        $original = empty($op['parameters']) ? false : $op['parameters'];
         $hasClass = !empty($op['class']);
         foreach ((array) $op['extends'] as $extendedCommand) {
             if (empty($operations[$extendedCommand])) {
@@ -51,8 +48,8 @@ class ServiceDescriptionLoader extends AbstractConfigLoader
             }
             $toArray = $operations[$extendedCommand];
             $resolved = empty($resolved)
-                ? $toArray['parameters']
-                : array_merge($resolved, $toArray['parameters']);
+                    ? $toArray['parameters']
+                    : array_merge($resolved, $toArray['parameters']);
 
             $op = $op + $toArray;
             if (!$hasClass && isset($toArray['class'])) {

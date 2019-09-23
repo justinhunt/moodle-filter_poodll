@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The e-mail address you provided does not match any account on record.
  */
-class UnresolvableGrantByEmailAddressException extends S3Exception {}
+class UnresolvableGrantByEmailAddressException extends S3Exception {
+}

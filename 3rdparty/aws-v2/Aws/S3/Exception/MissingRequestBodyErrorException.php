@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * This happens when the user sends an empty xml document as a request. The error message is, "Request body is empty."
  */
-class MissingRequestBodyErrorException extends S3Exception {}
+class MissingRequestBodyErrorException extends S3Exception {
+}

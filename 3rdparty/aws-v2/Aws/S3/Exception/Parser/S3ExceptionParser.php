@@ -23,13 +23,11 @@ use Guzzle\Http\Message\Response;
 /**
  * Parses S3 exception responses
  */
-class S3ExceptionParser extends DefaultXmlExceptionParser
-{
+class S3ExceptionParser extends DefaultXmlExceptionParser {
     /**
      * {@inheritdoc}
      */
-    public function parse(RequestInterface $request, Response $response)
-    {
+    public function parse(RequestInterface $request, Response $response) {
         $data = parent::parse($request, $response);
 
         if ($response->getStatusCode() === 301) {
@@ -45,26 +43,25 @@ class S3ExceptionParser extends DefaultXmlExceptionParser
     /**
      * {@inheritdoc}
      */
-    protected function parseHeaders(RequestInterface $request, Response $response, array &$data)
-    {
+    protected function parseHeaders(RequestInterface $request, Response $response, array &$data) {
         parent::parseHeaders($request, $response, $data);
 
         // Get the request
-        $status  = $response->getStatusCode();
-        $method  = $request->getMethod();
+        $status = $response->getStatusCode();
+        $method = $request->getMethod();
 
         // Attempt to determine code for 403s and 404s
         if ($status === 403) {
             $data['code'] = 'AccessDenied';
-        } elseif ($method === 'HEAD' && $status === 404) {
-            $path   = explode('/', trim($request->getPath(), '/'));
-            $host   = explode('.', $request->getHost());
+        } else if ($method === 'HEAD' && $status === 404) {
+            $path = explode('/', trim($request->getPath(), '/'));
+            $host = explode('.', $request->getHost());
             $bucket = (count($host) === 4) ? $host[0] : array_shift($path);
             $object = array_shift($path);
 
             if ($bucket && $object) {
                 $data['code'] = 'NoSuchKey';
-            } elseif ($bucket) {
+            } else if ($bucket) {
                 $data['code'] = 'NoSuchBucket';
             }
         }

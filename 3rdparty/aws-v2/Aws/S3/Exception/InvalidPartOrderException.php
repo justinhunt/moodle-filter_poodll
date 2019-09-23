@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The list of parts was not in ascending order.Parts list must specified in order by part number.
  */
-class InvalidPartOrderException extends S3Exception {}
+class InvalidPartOrderException extends S3Exception {
+}

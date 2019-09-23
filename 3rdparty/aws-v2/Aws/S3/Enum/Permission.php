@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable Permission values
  */
-class Permission extends Enum
-{
+class Permission extends Enum {
     const FULL_CONTROL = 'FULL_CONTROL';
     const WRITE = 'WRITE';
     const WRITE_ACP = 'WRITE_ACP';

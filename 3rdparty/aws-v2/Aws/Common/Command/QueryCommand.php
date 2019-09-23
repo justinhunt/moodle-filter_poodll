@@ -21,8 +21,7 @@ use Guzzle\Service\Command\OperationCommand;
 /**
  * Adds AWS Query service serialization
  */
-class QueryCommand extends OperationCommand
-{
+class QueryCommand extends OperationCommand {
     /**
      * @var AwsQueryVisitor
      */
@@ -36,8 +35,7 @@ class QueryCommand extends OperationCommand
     /**
      * Register the aws.query visitor
      */
-    protected function init()
-    {
+    protected function init() {
         // @codeCoverageIgnoreStart
         if (!self::$queryVisitor) {
             self::$queryVisitor = new AwsQueryVisitor();

@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\MessageInterface;
@@ -15,19 +16,18 @@ use Psr\Http\Message\UriInterface;
  *
  * @return string
  */
-function str(MessageInterface $message)
-{
+function str(MessageInterface $message) {
     if ($message instanceof RequestInterface) {
         $msg = trim($message->getMethod() . ' '
-                . $message->getRequestTarget())
-            . ' HTTP/' . $message->getProtocolVersion();
+                        . $message->getRequestTarget())
+                . ' HTTP/' . $message->getProtocolVersion();
         if (!$message->hasHeader('host')) {
             $msg .= "\r\nHost: " . $message->getUri()->getHost();
         }
-    } elseif ($message instanceof ResponseInterface) {
+    } else if ($message instanceof ResponseInterface) {
         $msg = 'HTTP/' . $message->getProtocolVersion() . ' '
-            . $message->getStatusCode() . ' '
-            . $message->getReasonPhrase();
+                . $message->getStatusCode() . ' '
+                . $message->getReasonPhrase();
     } else {
         throw new \InvalidArgumentException('Unknown message type');
     }
@@ -51,11 +51,10 @@ function str(MessageInterface $message)
  * @return UriInterface
  * @throws \InvalidArgumentException
  */
-function uri_for($uri)
-{
+function uri_for($uri) {
     if ($uri instanceof UriInterface) {
         return $uri;
-    } elseif (is_string($uri)) {
+    } else if (is_string($uri)) {
         return new Uri($uri);
     }
 
@@ -70,13 +69,12 @@ function uri_for($uri)
  * - size: Size of the stream.
  *
  * @param resource|string|null|int|float|bool|StreamInterface|callable $resource Entity body data
- * @param array                                                        $options  Additional options
+ * @param array $options Additional options
  *
  * @return Stream
  * @throws \InvalidArgumentException if the $resource arg is not valid.
  */
-function stream_for($resource = '', array $options = [])
-{
+function stream_for($resource = '', array $options = []) {
     if (is_scalar($resource)) {
         $stream = fopen('php://temp', 'r+');
         if ($resource !== '') {
@@ -92,8 +90,8 @@ function stream_for($resource = '', array $options = [])
         case 'object':
             if ($resource instanceof StreamInterface) {
                 return $resource;
-            } elseif ($resource instanceof \Iterator) {
-                return new PumpStream(function () use ($resource) {
+            } else if ($resource instanceof \Iterator) {
+                return new PumpStream(function() use ($resource) {
                     if (!$resource->valid()) {
                         return false;
                     }
@@ -101,7 +99,7 @@ function stream_for($resource = '', array $options = [])
                     $resource->next();
                     return $result;
                 }, $options);
-            } elseif (method_exists($resource, '__toString')) {
+            } else if (method_exists($resource, '__toString')) {
                 return stream_for((string) $resource, $options);
             }
             break;
@@ -126,8 +124,7 @@ function stream_for($resource = '', array $options = [])
  *
  * @return array Returns the parsed header values.
  */
-function parse_header($header)
-{
+function parse_header($header) {
     static $trimmed = "\"'  \n\t\r";
     $params = $matches = [];
 
@@ -159,8 +156,7 @@ function parse_header($header)
  *
  * @return array Returns the normalized header field values.
  */
-function normalize_header($header)
-{
+function normalize_header($header) {
     if (!is_array($header)) {
         return array_map('trim', explode(',', $header));
     }
@@ -194,12 +190,11 @@ function normalize_header($header)
  * - version: (string) Set the protocol version.
  *
  * @param RequestInterface $request Request to clone and modify.
- * @param array            $changes Changes to apply.
+ * @param array $changes Changes to apply.
  *
  * @return RequestInterface
  */
-function modify_request(RequestInterface $request, array $changes)
-{
+function modify_request(RequestInterface $request, array $changes) {
     if (!$changes) {
         return $request;
     }
@@ -217,7 +212,7 @@ function modify_request(RequestInterface $request, array $changes)
                 $standardPorts = ['http' => 80, 'https' => 443];
                 $scheme = $changes['uri']->getScheme();
                 if (isset($standardPorts[$scheme]) && $port != $standardPorts[$scheme]) {
-                    $changes['set_headers']['Host'] .= ':'.$port;
+                    $changes['set_headers']['Host'] .= ':' . $port;
                 }
             }
         }
@@ -239,25 +234,25 @@ function modify_request(RequestInterface $request, array $changes)
 
     if ($request instanceof ServerRequestInterface) {
         return new ServerRequest(
+                isset($changes['method']) ? $changes['method'] : $request->getMethod(),
+                $uri,
+                $headers,
+                isset($changes['body']) ? $changes['body'] : $request->getBody(),
+                isset($changes['version'])
+                        ? $changes['version']
+                        : $request->getProtocolVersion(),
+                $request->getServerParams()
+        );
+    }
+
+    return new Request(
             isset($changes['method']) ? $changes['method'] : $request->getMethod(),
             $uri,
             $headers,
             isset($changes['body']) ? $changes['body'] : $request->getBody(),
             isset($changes['version'])
-                ? $changes['version']
-                : $request->getProtocolVersion(),
-            $request->getServerParams()
-        );
-    }
-
-    return new Request(
-        isset($changes['method']) ? $changes['method'] : $request->getMethod(),
-        $uri,
-        $headers,
-        isset($changes['body']) ? $changes['body'] : $request->getBody(),
-        isset($changes['version'])
-            ? $changes['version']
-            : $request->getProtocolVersion()
+                    ? $changes['version']
+                    : $request->getProtocolVersion()
     );
 }
 
@@ -271,8 +266,7 @@ function modify_request(RequestInterface $request, array $changes)
  *
  * @throws \RuntimeException
  */
-function rewind_body(MessageInterface $message)
-{
+function rewind_body(MessageInterface $message) {
     $body = $message->getBody();
 
     if ($body->tell()) {
@@ -287,20 +281,19 @@ function rewind_body(MessageInterface $message)
  * error handler that checks for errors and throws an exception instead.
  *
  * @param string $filename File to open
- * @param string $mode     Mode used to open the file
+ * @param string $mode Mode used to open the file
  *
  * @return resource
  * @throws \RuntimeException if the file cannot be opened
  */
-function try_fopen($filename, $mode)
-{
+function try_fopen($filename, $mode) {
     $ex = null;
-    set_error_handler(function () use ($filename, $mode, &$ex) {
+    set_error_handler(function() use ($filename, $mode, &$ex) {
         $ex = new \RuntimeException(sprintf(
-            'Unable to open %s using mode %s: %s',
-            $filename,
-            $mode,
-            func_get_args()[1]
+                'Unable to open %s using mode %s: %s',
+                $filename,
+                $mode,
+                func_get_args()[1]
         ));
     });
 
@@ -320,13 +313,12 @@ function try_fopen($filename, $mode)
  * bytes have been read.
  *
  * @param StreamInterface $stream Stream to read
- * @param int             $maxLen Maximum number of bytes to read. Pass -1
+ * @param int $maxLen Maximum number of bytes to read. Pass -1
  *                                to read the entire stream.
  * @return string
  * @throws \RuntimeException on error.
  */
-function copy_to_string(StreamInterface $stream, $maxLen = -1)
-{
+function copy_to_string(StreamInterface $stream, $maxLen = -1) {
     $buffer = '';
 
     if ($maxLen === -1) {
@@ -360,16 +352,16 @@ function copy_to_string(StreamInterface $stream, $maxLen = -1)
  * of bytes have been read.
  *
  * @param StreamInterface $source Stream to read from
- * @param StreamInterface $dest   Stream to write to
- * @param int             $maxLen Maximum number of bytes to read. Pass -1
+ * @param StreamInterface $dest Stream to write to
+ * @param int $maxLen Maximum number of bytes to read. Pass -1
  *                                to read the entire stream.
  *
  * @throws \RuntimeException on error.
  */
 function copy_to_stream(
-    StreamInterface $source,
-    StreamInterface $dest,
-    $maxLen = -1
+        StreamInterface $source,
+        StreamInterface $dest,
+        $maxLen = -1
 ) {
     $bufferSize = 8192;
 
@@ -396,17 +388,17 @@ function copy_to_stream(
 /**
  * Calculate a hash of a Stream
  *
- * @param StreamInterface $stream    Stream to calculate the hash for
- * @param string          $algo      Hash algorithm (e.g. md5, crc32, etc)
- * @param bool            $rawOutput Whether or not to use raw output
+ * @param StreamInterface $stream Stream to calculate the hash for
+ * @param string $algo Hash algorithm (e.g. md5, crc32, etc)
+ * @param bool $rawOutput Whether or not to use raw output
  *
  * @return string Returns the hash of the stream
  * @throws \RuntimeException on error.
  */
 function hash(
-    StreamInterface $stream,
-    $algo,
-    $rawOutput = false
+        StreamInterface $stream,
+        $algo,
+        $rawOutput = false
 ) {
     $pos = $stream->tell();
 
@@ -428,13 +420,12 @@ function hash(
 /**
  * Read a line from the stream up to the maximum allowed buffer length
  *
- * @param StreamInterface $stream    Stream to read from
- * @param int             $maxLength Maximum buffer length
+ * @param StreamInterface $stream Stream to read from
+ * @param int $maxLength Maximum buffer length
  *
  * @return string|bool
  */
-function readline(StreamInterface $stream, $maxLength = null)
-{
+function readline(StreamInterface $stream, $maxLength = null) {
     $buffer = '';
     $size = 0;
 
@@ -460,8 +451,7 @@ function readline(StreamInterface $stream, $maxLength = null)
  *
  * @return Request
  */
-function parse_request($message)
-{
+function parse_request($message) {
     $data = _parse_message($message);
     $matches = [];
     if (!preg_match('/^[\S]+\s+([a-zA-Z]+:\/\/|\/).*/', $data['start-line'], $matches)) {
@@ -471,11 +461,11 @@ function parse_request($message)
     $version = isset($parts[2]) ? explode('/', $parts[2])[1] : '1.1';
 
     $request = new Request(
-        $parts[0],
-        $matches[1] === '/' ? _parse_request_uri($parts[1], $data['headers']) : $parts[1],
-        $data['headers'],
-        $data['body'],
-        $version
+            $parts[0],
+            $matches[1] === '/' ? _parse_request_uri($parts[1], $data['headers']) : $parts[1],
+            $data['headers'],
+            $data['body'],
+            $version
     );
 
     return $matches[1] === '/' ? $request : $request->withRequestTarget($parts[1]);
@@ -488,8 +478,7 @@ function parse_request($message)
  *
  * @return Response
  */
-function parse_response($message)
-{
+function parse_response($message) {
     $data = _parse_message($message);
     // According to https://tools.ietf.org/html/rfc7230#section-3.1.2 the space
     // between status-code and reason-phrase is required. But browsers accept
@@ -500,11 +489,11 @@ function parse_response($message)
     $parts = explode(' ', $data['start-line'], 3);
 
     return new Response(
-        $parts[1],
-        $data['headers'],
-        $data['body'],
-        explode('/', $parts[0])[1],
-        isset($parts[2]) ? $parts[2] : null
+            $parts[1],
+            $data['headers'],
+            $data['body'],
+            explode('/', $parts[0])[1],
+            isset($parts[2]) ? $parts[2] : null
     );
 }
 
@@ -516,13 +505,12 @@ function parse_response($message)
  * PHP style arrays into an associative array (e.g., foo[a]=1&foo[b]=2 will
  * be parsed into ['foo[a]' => '1', 'foo[b]' => '2']).
  *
- * @param string      $str         Query string to parse
+ * @param string $str Query string to parse
  * @param bool|string $urlEncoding How the query string is encoded
  *
  * @return array
  */
-function parse_query($str, $urlEncoding = true)
-{
+function parse_query($str, $urlEncoding = true) {
     $result = [];
 
     if ($str === '') {
@@ -530,15 +518,17 @@ function parse_query($str, $urlEncoding = true)
     }
 
     if ($urlEncoding === true) {
-        $decoder = function ($value) {
+        $decoder = function($value) {
             return rawurldecode(str_replace('+', ' ', $value));
         };
-    } elseif ($urlEncoding == PHP_QUERY_RFC3986) {
+    } else if ($urlEncoding == PHP_QUERY_RFC3986) {
         $decoder = 'rawurldecode';
-    } elseif ($urlEncoding == PHP_QUERY_RFC1738) {
+    } else if ($urlEncoding == PHP_QUERY_RFC1738) {
         $decoder = 'urldecode';
     } else {
-        $decoder = function ($str) { return $str; };
+        $decoder = function($str) {
+            return $str;
+        };
     }
 
     foreach (explode('&', $str) as $kvp) {
@@ -565,23 +555,24 @@ function parse_query($str, $urlEncoding = true)
  * string. This function does not modify the provided keys when an array is
  * encountered (like http_build_query would).
  *
- * @param array     $params   Query string parameters.
+ * @param array $params Query string parameters.
  * @param int|false $encoding Set to false to not encode, PHP_QUERY_RFC3986
  *                            to encode using RFC3986, or PHP_QUERY_RFC1738
  *                            to encode using RFC1738.
  * @return string
  */
-function build_query(array $params, $encoding = PHP_QUERY_RFC3986)
-{
+function build_query(array $params, $encoding = PHP_QUERY_RFC3986) {
     if (!$params) {
         return '';
     }
 
     if ($encoding === false) {
-        $encoder = function ($str) { return $str; };
-    } elseif ($encoding === PHP_QUERY_RFC3986) {
+        $encoder = function($str) {
+            return $str;
+        };
+    } else if ($encoding === PHP_QUERY_RFC3986) {
         $encoder = 'rawurlencode';
-    } elseif ($encoding === PHP_QUERY_RFC1738) {
+    } else if ($encoding === PHP_QUERY_RFC1738) {
         $encoder = 'urlencode';
     } else {
         throw new \InvalidArgumentException('Invalid type');
@@ -617,8 +608,7 @@ function build_query(array $params, $encoding = PHP_QUERY_RFC3986)
  *
  * @return null|string
  */
-function mimetype_from_filename($filename)
-{
+function mimetype_from_filename($filename) {
     return mimetype_from_extension(pathinfo($filename, PATHINFO_EXTENSION));
 }
 
@@ -630,114 +620,113 @@ function mimetype_from_filename($filename)
  * @return string|null
  * @link http://svn.apache.org/repos/asf/httpd/httpd/branches/1.3.x/conf/mime.types
  */
-function mimetype_from_extension($extension)
-{
+function mimetype_from_extension($extension) {
     static $mimetypes = [
-        '7z' => 'application/x-7z-compressed',
-        'aac' => 'audio/x-aac',
-        'ai' => 'application/postscript',
-        'aif' => 'audio/x-aiff',
-        'asc' => 'text/plain',
-        'asf' => 'video/x-ms-asf',
-        'atom' => 'application/atom+xml',
-        'avi' => 'video/x-msvideo',
-        'bmp' => 'image/bmp',
-        'bz2' => 'application/x-bzip2',
-        'cer' => 'application/pkix-cert',
-        'crl' => 'application/pkix-crl',
-        'crt' => 'application/x-x509-ca-cert',
-        'css' => 'text/css',
-        'csv' => 'text/csv',
-        'cu' => 'application/cu-seeme',
-        'deb' => 'application/x-debian-package',
-        'doc' => 'application/msword',
-        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'dvi' => 'application/x-dvi',
-        'eot' => 'application/vnd.ms-fontobject',
-        'eps' => 'application/postscript',
-        'epub' => 'application/epub+zip',
-        'etx' => 'text/x-setext',
-        'flac' => 'audio/flac',
-        'flv' => 'video/x-flv',
-        'gif' => 'image/gif',
-        'gz' => 'application/gzip',
-        'htm' => 'text/html',
-        'html' => 'text/html',
-        'ico' => 'image/x-icon',
-        'ics' => 'text/calendar',
-        'ini' => 'text/plain',
-        'iso' => 'application/x-iso9660-image',
-        'jar' => 'application/java-archive',
-        'jpe' => 'image/jpeg',
-        'jpeg' => 'image/jpeg',
-        'jpg' => 'image/jpeg',
-        'js' => 'text/javascript',
-        'json' => 'application/json',
-        'latex' => 'application/x-latex',
-        'log' => 'text/plain',
-        'm4a' => 'audio/mp4',
-        'm4v' => 'video/mp4',
-        'mid' => 'audio/midi',
-        'midi' => 'audio/midi',
-        'mov' => 'video/quicktime',
-        'mp3' => 'audio/mpeg',
-        'mp4' => 'video/mp4',
-        'mp4a' => 'audio/mp4',
-        'mp4v' => 'video/mp4',
-        'mpe' => 'video/mpeg',
-        'mpeg' => 'video/mpeg',
-        'mpg' => 'video/mpeg',
-        'mpg4' => 'video/mp4',
-        'oga' => 'audio/ogg',
-        'ogg' => 'audio/ogg',
-        'ogv' => 'video/ogg',
-        'ogx' => 'application/ogg',
-        'pbm' => 'image/x-portable-bitmap',
-        'pdf' => 'application/pdf',
-        'pgm' => 'image/x-portable-graymap',
-        'png' => 'image/png',
-        'pnm' => 'image/x-portable-anymap',
-        'ppm' => 'image/x-portable-pixmap',
-        'ppt' => 'application/vnd.ms-powerpoint',
-        'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-        'ps' => 'application/postscript',
-        'qt' => 'video/quicktime',
-        'rar' => 'application/x-rar-compressed',
-        'ras' => 'image/x-cmu-raster',
-        'rss' => 'application/rss+xml',
-        'rtf' => 'application/rtf',
-        'sgm' => 'text/sgml',
-        'sgml' => 'text/sgml',
-        'svg' => 'image/svg+xml',
-        'swf' => 'application/x-shockwave-flash',
-        'tar' => 'application/x-tar',
-        'tif' => 'image/tiff',
-        'tiff' => 'image/tiff',
-        'torrent' => 'application/x-bittorrent',
-        'ttf' => 'application/x-font-ttf',
-        'txt' => 'text/plain',
-        'wav' => 'audio/x-wav',
-        'webm' => 'video/webm',
-        'wma' => 'audio/x-ms-wma',
-        'wmv' => 'video/x-ms-wmv',
-        'woff' => 'application/x-font-woff',
-        'wsdl' => 'application/wsdl+xml',
-        'xbm' => 'image/x-xbitmap',
-        'xls' => 'application/vnd.ms-excel',
-        'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        'xml' => 'application/xml',
-        'xpm' => 'image/x-xpixmap',
-        'xwd' => 'image/x-xwindowdump',
-        'yaml' => 'text/yaml',
-        'yml' => 'text/yaml',
-        'zip' => 'application/zip',
+            '7z' => 'application/x-7z-compressed',
+            'aac' => 'audio/x-aac',
+            'ai' => 'application/postscript',
+            'aif' => 'audio/x-aiff',
+            'asc' => 'text/plain',
+            'asf' => 'video/x-ms-asf',
+            'atom' => 'application/atom+xml',
+            'avi' => 'video/x-msvideo',
+            'bmp' => 'image/bmp',
+            'bz2' => 'application/x-bzip2',
+            'cer' => 'application/pkix-cert',
+            'crl' => 'application/pkix-crl',
+            'crt' => 'application/x-x509-ca-cert',
+            'css' => 'text/css',
+            'csv' => 'text/csv',
+            'cu' => 'application/cu-seeme',
+            'deb' => 'application/x-debian-package',
+            'doc' => 'application/msword',
+            'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'dvi' => 'application/x-dvi',
+            'eot' => 'application/vnd.ms-fontobject',
+            'eps' => 'application/postscript',
+            'epub' => 'application/epub+zip',
+            'etx' => 'text/x-setext',
+            'flac' => 'audio/flac',
+            'flv' => 'video/x-flv',
+            'gif' => 'image/gif',
+            'gz' => 'application/gzip',
+            'htm' => 'text/html',
+            'html' => 'text/html',
+            'ico' => 'image/x-icon',
+            'ics' => 'text/calendar',
+            'ini' => 'text/plain',
+            'iso' => 'application/x-iso9660-image',
+            'jar' => 'application/java-archive',
+            'jpe' => 'image/jpeg',
+            'jpeg' => 'image/jpeg',
+            'jpg' => 'image/jpeg',
+            'js' => 'text/javascript',
+            'json' => 'application/json',
+            'latex' => 'application/x-latex',
+            'log' => 'text/plain',
+            'm4a' => 'audio/mp4',
+            'm4v' => 'video/mp4',
+            'mid' => 'audio/midi',
+            'midi' => 'audio/midi',
+            'mov' => 'video/quicktime',
+            'mp3' => 'audio/mpeg',
+            'mp4' => 'video/mp4',
+            'mp4a' => 'audio/mp4',
+            'mp4v' => 'video/mp4',
+            'mpe' => 'video/mpeg',
+            'mpeg' => 'video/mpeg',
+            'mpg' => 'video/mpeg',
+            'mpg4' => 'video/mp4',
+            'oga' => 'audio/ogg',
+            'ogg' => 'audio/ogg',
+            'ogv' => 'video/ogg',
+            'ogx' => 'application/ogg',
+            'pbm' => 'image/x-portable-bitmap',
+            'pdf' => 'application/pdf',
+            'pgm' => 'image/x-portable-graymap',
+            'png' => 'image/png',
+            'pnm' => 'image/x-portable-anymap',
+            'ppm' => 'image/x-portable-pixmap',
+            'ppt' => 'application/vnd.ms-powerpoint',
+            'pptx' => 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+            'ps' => 'application/postscript',
+            'qt' => 'video/quicktime',
+            'rar' => 'application/x-rar-compressed',
+            'ras' => 'image/x-cmu-raster',
+            'rss' => 'application/rss+xml',
+            'rtf' => 'application/rtf',
+            'sgm' => 'text/sgml',
+            'sgml' => 'text/sgml',
+            'svg' => 'image/svg+xml',
+            'swf' => 'application/x-shockwave-flash',
+            'tar' => 'application/x-tar',
+            'tif' => 'image/tiff',
+            'tiff' => 'image/tiff',
+            'torrent' => 'application/x-bittorrent',
+            'ttf' => 'application/x-font-ttf',
+            'txt' => 'text/plain',
+            'wav' => 'audio/x-wav',
+            'webm' => 'video/webm',
+            'wma' => 'audio/x-ms-wma',
+            'wmv' => 'video/x-ms-wmv',
+            'woff' => 'application/x-font-woff',
+            'wsdl' => 'application/wsdl+xml',
+            'xbm' => 'image/x-xbitmap',
+            'xls' => 'application/vnd.ms-excel',
+            'xlsx' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'xml' => 'application/xml',
+            'xpm' => 'image/x-xpixmap',
+            'xwd' => 'image/x-xwindowdump',
+            'yaml' => 'text/yaml',
+            'yml' => 'text/yaml',
+            'zip' => 'application/zip',
     ];
 
     $extension = strtolower($extension);
 
     return isset($mimetypes[$extension])
-        ? $mimetypes[$extension]
-        : null;
+            ? $mimetypes[$extension]
+            : null;
 }
 
 /**
@@ -752,8 +741,7 @@ function mimetype_from_extension($extension)
  * @return array
  * @internal
  */
-function _parse_message($message)
-{
+function _parse_message($message) {
     if (!$message) {
         throw new \InvalidArgumentException('Invalid message');
     }
@@ -786,15 +774,14 @@ function _parse_message($message)
 /**
  * Constructs a URI for an HTTP request message.
  *
- * @param string $path    Path from the start-line
- * @param array  $headers Array of headers (each value an array).
+ * @param string $path Path from the start-line
+ * @param array $headers Array of headers (each value an array).
  *
  * @return string
  * @internal
  */
-function _parse_request_uri($path, array $headers)
-{
-    $hostKey = array_filter(array_keys($headers), function ($k) {
+function _parse_request_uri($path, array $headers) {
+    $hostKey = array_filter(array_keys($headers), function($k) {
         return strtolower($k) === 'host';
     });
 
@@ -810,8 +797,7 @@ function _parse_request_uri($path, array $headers)
 }
 
 /** @internal */
-function _caseless_remove($keys, array $data)
-{
+function _caseless_remove($keys, array $data) {
     $result = [];
 
     foreach ($keys as &$key) {

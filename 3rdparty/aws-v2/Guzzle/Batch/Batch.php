@@ -12,8 +12,7 @@ use Guzzle\Batch\Exception\BatchTransferException;
  * batch that failed. After an exception is encountered, you can flush the batch again to attempt to finish transferring
  * any previously created batches or queued items.
  */
-class Batch implements BatchInterface
-{
+class Batch implements BatchInterface {
     /** @var \SplQueue Queue of items in the queue */
     protected $queue;
 
@@ -28,10 +27,9 @@ class Batch implements BatchInterface
 
     /**
      * @param BatchTransferInterface $transferStrategy Strategy used to transfer items
-     * @param BatchDivisorInterface  $divisionStrategy Divisor used to create batches
+     * @param BatchDivisorInterface $divisionStrategy Divisor used to create batches
      */
-    public function __construct(BatchTransferInterface $transferStrategy, BatchDivisorInterface $divisionStrategy)
-    {
+    public function __construct(BatchTransferInterface $transferStrategy, BatchDivisorInterface $divisionStrategy) {
         $this->transferStrategy = $transferStrategy;
         $this->divisionStrategy = $divisionStrategy;
         $this->queue = new \SplQueue();
@@ -39,15 +37,13 @@ class Batch implements BatchInterface
         $this->dividedBatches = array();
     }
 
-    public function add($item)
-    {
+    public function add($item) {
         $this->queue->enqueue($item);
 
         return $this;
     }
 
-    public function flush()
-    {
+    public function flush() {
         $this->createBatches();
 
         $items = array();
@@ -69,16 +65,14 @@ class Batch implements BatchInterface
         return $items;
     }
 
-    public function isEmpty()
-    {
+    public function isEmpty() {
         return count($this->queue) == 0 && count($this->dividedBatches) == 0;
     }
 
     /**
      * Create batches for any queued items
      */
-    protected function createBatches()
-    {
+    protected function createBatches() {
         if (count($this->queue)) {
             if ($batches = $this->divisionStrategy->createBatches($this->queue)) {
                 // Convert arrays into iterators

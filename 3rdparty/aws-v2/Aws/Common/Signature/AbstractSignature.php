@@ -19,15 +19,13 @@ namespace Aws\Common\Signature;
 use Aws\Common\Credentials\CredentialsInterface;
 use Guzzle\Http\Message\RequestInterface;
 
-abstract class AbstractSignature implements SignatureInterface
-{
+abstract class AbstractSignature implements SignatureInterface {
     /**
      * Provides the timestamp used for the class (used for mocking PHP's time() function)
      *
      * @return int
      */
-    protected function getTimestamp()
-    {
+    protected function getTimestamp() {
         return time();
     }
 
@@ -35,9 +33,9 @@ abstract class AbstractSignature implements SignatureInterface
      * @codeCoverageIgnore
      */
     public function createPresignedUrl(
-        RequestInterface $request,
-        CredentialsInterface $credentials,
-        $expires
+            RequestInterface $request,
+            CredentialsInterface $credentials,
+            $expires
     ) {
         throw new \BadMethodCallException(__METHOD__ . ' not implemented');
     }

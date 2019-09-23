@@ -26,13 +26,12 @@ namespace Doctrine\Common\Cache;
  * @since  1.6
  * @author Daniel Gorgan <danut007ro@gmail.com>
  */
-interface MultiPutCache
-{
+interface MultiPutCache {
     /**
      * Returns a boolean value indicating if the operation succeeded.
      *
-     * @param array $keysAndValues  Array of keys and values to save in cache
-     * @param int   $lifetime       The lifetime. If != 0, sets a specific lifetime for these
+     * @param array $keysAndValues Array of keys and values to save in cache
+     * @param int $lifetime The lifetime. If != 0, sets a specific lifetime for these
      *                              cache entries (0 => infinite lifeTime).
      *
      * @return bool TRUE if the operation was successful, FALSE if it wasn't.

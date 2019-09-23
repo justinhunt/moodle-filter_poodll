@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The Content-MD5 you specified was an invalid.
  */
-class InvalidDigestException extends S3Exception {}
+class InvalidDigestException extends S3Exception {
+}

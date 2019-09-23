@@ -31,121 +31,153 @@ defined('MOODLE_INTERNAL') || die();
  */
 class adhoc_s3_move extends \core\task\adhoc_task {
 
-        const LOG_PLACEHOLDER_REPLACE_FAIL = 1;
-        const LOG_FETCH_FILE_FAIL = 2;
-        const LOG_NOT_ON_S3 = 3;
-        const LOG_NOT_CONVERTED = 4;
-        const LOG_PLACEHOLDER_NOT_FOUND = 5;
+    const LOG_PLACEHOLDER_REPLACE_FAIL = 1;
+    const LOG_FETCH_FILE_FAIL = 2;
+    const LOG_NOT_ON_S3 = 3;
+    const LOG_NOT_CONVERTED = 4;
+    const LOG_PLACEHOLDER_NOT_FOUND = 5;
 
-//cd needs filename, filerecord and mediatype and savedatetime and convext
-              
-    public function execute() {   
-    	//NB: seems any exceptions not thrown HERE, kill subsequent tasks
-    	//so wrap some function calls in try catch to prevent that happening
-    	
-    	global $DB,$CFG;
+    //cd needs filename, filerecord and mediatype and savedatetime and convext
 
-    	//get passed in data we need to perform conversion
-    	$cd =  $this->get_custom_data();
-    	$awstools = new \filter_poodll\awstools();
-        
-        try{
-            $ret= $awstools->fetch_s3_converted_file($cd->mediatype,$cd->infilename, $cd->outfilename, $cd->filename,$cd->filerecord);
+    public function execute() {
+        //NB: seems any exceptions not thrown HERE, kill subsequent tasks
+        //so wrap some function calls in try catch to prevent that happening
 
-         }catch (Exception $e) {
-            $giveup =false;
-            $message='could not fetch:' . $cd->filename . ':' . $e->getMessage();
-            $this->handle_s3_error(self::LOG_FETCH_FILE_FAIL,$message,$cd,$giveup);
+        $trace = new \text_progress_trace();
+
+        //get passed in data we need to perform conversion
+        $cd = $this->get_custom_data();
+        $awstools = new \filter_poodll\awstools();
+
+        try {
+            $ret = $awstools->fetch_s3_converted_file($cd->mediatype, $cd->infilename, $cd->outfilename, $cd->filename,
+                    $cd->filerecord);
+
+        } catch (\Exception $e) {
+            $giveup = false;
+            $message = 'could not fetch:' . $cd->filename . ':' . $e->getMessage();
+            $this->handle_s3_error(self::LOG_FETCH_FILE_FAIL, $message, $cd, $giveup, $trace);
             return;
-	    }
-        
-        
-        if($ret===false){
+        }
+
+        if ($ret === false) {
             //this indicates no "in" or "out" file, so we should just snuff this task and not repeat it
             //so we silently return
-            $giveup=true;
-            $message='the files: ' . $cd->infilename . ' | ' . $cd->outfilename . ' were not found anywhere on S3. giving up';
-            $this->handle_s3_error(self::LOG_NOT_ON_S3,$message,$cd,$giveup);
+            $giveup = true;
+            $message = 'the files: ' . $cd->infilename . ' | ' . $cd->outfilename . ' were not found anywhere on S3. giving up';
+            $this->handle_s3_error(self::LOG_NOT_ON_S3, $message, $cd, $giveup, $trace);
             return;
-        }else if($ret===true){
+        } else if ($ret === true) {
             //this indicates we had an "in" file, but no "out" file yet. try again
-           $giveup=false;
-           $message='the file ' . $cd->infilename . ' has not yet been converted.';
-            $this->handle_s3_error(self::LOG_NOT_CONVERTED,$message,$cd,$giveup);
+            $giveup = false;
+            $message = 'the file ' . $cd->infilename . ' has not yet been converted.';
+            $this->handle_s3_error(self::LOG_NOT_CONVERTED, $message, $cd, $giveup, $trace);
             return;
-        }else{
+        } else {
             //this indicates the file was found and saved and the path returned
             $tempfilepath = $ret;
         }
-        
+
         //fetch any file records, that currently hold the placeholder file
         //usually just one, but occasionally there will be two (1 in draft, and 1 in perm)
         $placeholder_file_recs = \filter_poodll\poodlltools::fetch_placeholder_file_record($cd->mediatype, $cd->filename);
         //do the replace, if it succeeds yay. If it fails ... try again. The user may just not have saved yet
-        if(!$placeholder_file_recs){
-			$giveup =false;
-			$message='could not find placeholder file:' . $cd->filename;
-            $this->handle_s3_error(self::LOG_PLACEHOLDER_NOT_FOUND, $message ,$cd,$giveup);
+        if (!$placeholder_file_recs) {
+            $giveup = false;
+            $message = 'could not find placeholder file:' . $cd->filename;
+            $this->handle_s3_error(self::LOG_PLACEHOLDER_NOT_FOUND, $message, $cd, $giveup, $trace);
             return;
-		}
-		
-        try{
-            foreach($placeholder_file_recs as $file_rec) {
+        }
+
+        try {
+            foreach ($placeholder_file_recs as $file_rec) {
                 \filter_poodll\poodlltools::replace_placeholderfile_in_moodle($cd->filerecord, $file_rec, $tempfilepath);
                 //log what we just did
-                $cd->filerecord=$file_rec;
+                $cd->filerecord = $file_rec;
                 \filter_poodll\event\adhoc_move_completed::create_from_task($cd)->trigger();
             }
-        }catch (Exception $e) {
-            $giveup =true;
+        } catch (\Exception $e) {
+            $giveup = true;
             $message = 'could not get replace placeholder with converted::' . $cd->filename . ':' . $e->getMessage();
-            $this->handle_s3_error(self::LOG_PLACEHOLDER_REPLACE_FAIL,$message,$cd,$giveup);
+            $this->handle_s3_error(self::LOG_PLACEHOLDER_REPLACE_FAIL, $message, $cd, $giveup, $trace);
             return;
-		}
+        }
 
     }
 
-	private function handle_s3_error($errorcode, $errorstring,$cd,$giveup){
-            //data for logging
-            $contextid=$cd->filerecord->contextid;
-            $userid=$cd->filerecord->userid;
+    private function handle_s3_error($errorcode, $errorstring, $cd, $giveup, $trace) {
+        //data for logging
+        $contextid = $cd->filerecord->contextid;
+        $userid = $cd->filerecord->userid;
 
-    		//we do not retry indefinitely
-    		//if we are well beyond the timestamp then we just cancel out of here.
-    		$nowdatetime = new \DateTime();
-            $savedatetime = new \DateTime($cd->isodate);
-    		$diffInSeconds = $nowdatetime->getTimestamp() - $savedatetime->getTimestamp();
-    		if($diffInSeconds > (60 * 60 * 2) || $giveup){
-    			//we do not retry after two hours, we just report an error and return quietly
-                $errorstring .= ' :will not retry';
-                mtrace('s3file:' . $errorstring);
-                //send to debug log
-                $this->send_debug_data($errorcode,
-                    $errorstring,$userid,$contextid);
-    		}else{
-                $errorstring .= ' :will retry';
-                mtrace(print_r($cd,true));
-                mtrace('s3file:' . $errorstring);
-                //send to debug log
-                $this->send_debug_data($errorcode,
-                    $errorstring,$userid,$contextid);
+        //we do not retry indefinitely
+        //if we are well beyond the timestamp then we just cancel out of here.
+        $nowdatetime = new \DateTime();
+        $savedatetime = new \DateTime($cd->isodate);
+        $diffInSeconds = $nowdatetime->getTimestamp() - $savedatetime->getTimestamp();
+        if ($diffInSeconds > (60 * 60 * 24) || $giveup) {
+            //we do not retry after twenty four hours, we just report an error and return quietly
+            $errorstring .= ' :will not retry';
+            $trace->output('s3file:' . $errorstring);
 
-                //throw error so task will be retried
-                throw new \file_exception('s3file', $errorstring);
-             }//end of if/else
-	}//end of function handle_S3_error
+            //send to debug log
+            $this->send_debug_data($errorcode,
+                    $errorstring, $userid, $contextid);
 
-    private function send_debug_data($type,$message, $userid=false,$contextid=false){
+            //forever fail this task
+            $this->do_forever_fail($errorstring, $trace);
+
+            //if its greater than 20 mins we let Moodle do its delayed retry thing
+        } else if ($diffInSeconds > (MINSECS * 20)) {
+            $this->do_retry_delayed($errorstring, $trace);
+
+        } else {
+            $errorstring .= ' :will retry';
+
+            //send to debug log
+            $this->send_debug_data($errorcode,
+                    $errorstring, $userid, $contextid);
+
+            //register a retry
+            $this->do_retry_soon($errorstring, $trace, $cd);
+
+            //previously we threw an error to force the retry
+            // throw new \file_exception('s3file', $errorstring);
+
+        }//end of if/else
+    }//end of function handle_S3_error
+
+    protected function do_retry_soon($reason, $trace, $customdata) {
+        $trace->output($reason . ": will try again next cron ");
+        $s3_task = new \filter_poodll\task\adhoc_s3_move();
+        $s3_task->set_component('filter_poodll');
+        $s3_task->set_custom_data($customdata);
+        // queue it
+        \core\task\manager::queue_adhoc_task($s3_task);
+    }
+
+    protected function do_retry_delayed($reason, $trace) {
+        $trace->output($reason . ": will retry after a delay ");
+        throw new \file_exception('retrievefileproblem', 'could not fetch file.');
+    }
+
+    protected function do_forever_fail($reason, $trace) {
+        $trace->output($reason . ": will not retry ");
+    }
+
+    private function send_debug_data($type, $message, $userid = false, $contextid = false) {
         global $CFG;
         //only log if is on in Poodll settings
-        if(!$CFG->filter_poodll_debug){return;}
+        if (!$CFG->filter_poodll_debug) {
+            return;
+        }
 
-	    $debugdata = new \stdClass();
-	    $debugdata->userid=$userid;
-	    $debugdata->contextid=$contextid;
-	    $debugdata->type=$type;
-	    $debugdata->source='adhoc_s3_move.php';
-        $debugdata->message=$message;
+        $debugdata = new \stdClass();
+        $debugdata->userid = $userid;
+        $debugdata->contextid = $contextid;
+        $debugdata->type = $type;
+        $debugdata->source = 'adhoc_s3_move.php';
+        $debugdata->message = $message;
         \filter_poodll\event\debug_log::create_from_data($debugdata)->trigger();
     }
 } //end of class

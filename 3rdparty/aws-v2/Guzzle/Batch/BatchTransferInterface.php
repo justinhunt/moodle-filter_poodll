@@ -5,8 +5,7 @@ namespace Guzzle\Batch;
 /**
  * Interface used for transferring batches of items
  */
-interface BatchTransferInterface
-{
+interface BatchTransferInterface {
     /**
      * Transfer an array of items
      *

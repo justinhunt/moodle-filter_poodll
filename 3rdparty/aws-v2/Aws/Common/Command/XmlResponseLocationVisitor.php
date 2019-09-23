@@ -11,13 +11,11 @@ use Guzzle\Service\Command\LocationVisitor\Response\XmlVisitor;
 /**
  * Class used for custom AWS XML response parsing of query services
  */
-class XmlResponseLocationVisitor extends XmlVisitor
-{
+class XmlResponseLocationVisitor extends XmlVisitor {
     /**
      * {@inheritdoc}
      */
-    public function before(CommandInterface $command, array &$result)
-    {
+    public function before(CommandInterface $command, array &$result) {
         parent::before($command, $result);
 
         // Unwrapped wrapped responses
@@ -36,11 +34,11 @@ class XmlResponseLocationVisitor extends XmlVisitor
      * {@inheritdoc}
      */
     public function visit(
-        CommandInterface $command,
-        Response $response,
-        Parameter $param,
-        &$value,
-        $context =  null
+            CommandInterface $command,
+            Response $response,
+            Parameter $param,
+            &$value,
+            $context = null
     ) {
         parent::visit($command, $response, $param, $value, $context);
 
@@ -55,15 +53,14 @@ class XmlResponseLocationVisitor extends XmlVisitor
     /**
      * Filter used when converting XML maps into associative arrays in service descriptions
      *
-     * @param array  $value     Value to filter
+     * @param array $value Value to filter
      * @param string $entryName Name of each entry
-     * @param string $keyName   Name of each key
+     * @param string $keyName Name of each key
      * @param string $valueName Name of each value
      *
      * @return array Returns the map of the XML data
      */
-    public static function xmlMap($value, $entryName, $keyName, $valueName)
-    {
+    public static function xmlMap($value, $entryName, $keyName, $valueName) {
         $result = array();
         foreach ($value as $entry) {
             $result[$entry[$keyName]] = $entry[$valueName];

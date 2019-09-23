@@ -5,8 +5,7 @@ namespace Guzzle\Cache;
 /**
  * Abstract cache adapter
  */
-abstract class AbstractCacheAdapter implements CacheAdapterInterface
-{
+abstract class AbstractCacheAdapter implements CacheAdapterInterface {
     protected $cache;
 
     /**
@@ -14,8 +13,7 @@ abstract class AbstractCacheAdapter implements CacheAdapterInterface
      *
      * @return mixed
      */
-    public function getCacheObject()
-    {
+    public function getCacheObject() {
         return $this->cache;
     }
 }

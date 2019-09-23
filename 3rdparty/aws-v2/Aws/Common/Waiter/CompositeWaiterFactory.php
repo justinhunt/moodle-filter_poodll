@@ -21,8 +21,7 @@ use Aws\Common\Exception\InvalidArgumentException;
 /**
  * Factory that utilizes multiple factories for creating waiters
  */
-class CompositeWaiterFactory implements WaiterFactoryInterface
-{
+class CompositeWaiterFactory implements WaiterFactoryInterface {
     /**
      * @var array Array of factories
      */
@@ -31,16 +30,14 @@ class CompositeWaiterFactory implements WaiterFactoryInterface
     /**
      * @param array $factories Array of factories used to instantiate waiters
      */
-    public function __construct(array $factories)
-    {
+    public function __construct(array $factories) {
         $this->factories = $factories;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function build($waiter)
-    {
+    public function build($waiter) {
         if (!($factory = $this->getFactory($waiter))) {
             throw new InvalidArgumentException("Waiter was not found matching {$waiter}.");
         }
@@ -51,8 +48,7 @@ class CompositeWaiterFactory implements WaiterFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function canBuild($waiter)
-    {
+    public function canBuild($waiter) {
         return (bool) $this->getFactory($waiter);
     }
 
@@ -63,8 +59,7 @@ class CompositeWaiterFactory implements WaiterFactoryInterface
      *
      * @return self
      */
-    public function addFactory(WaiterFactoryInterface $factory)
-    {
+    public function addFactory(WaiterFactoryInterface $factory) {
         $this->factories[] = $factory;
 
         return $this;
@@ -77,8 +72,7 @@ class CompositeWaiterFactory implements WaiterFactoryInterface
      *
      * @return WaiterFactoryInterface|bool
      */
-    protected function getFactory($waiter)
-    {
+    protected function getFactory($waiter) {
         foreach ($this->factories as $factory) {
             if ($factory->canBuild($waiter)) {
                 return $factory;

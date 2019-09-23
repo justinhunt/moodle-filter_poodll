@@ -5,10 +5,8 @@ namespace Guzzle\Parser\Message;
 /**
  * Pecl HTTP message parser
  */
-class PeclHttpMessageParser extends AbstractMessageParser
-{
-    public function parseRequest($message)
-    {
+class PeclHttpMessageParser extends AbstractMessageParser {
+    public function parseRequest($message) {
         if (!$message) {
             return false;
         }
@@ -16,11 +14,11 @@ class PeclHttpMessageParser extends AbstractMessageParser
         $parts = http_parse_message($message);
 
         $parsed = array(
-            'method'   => $parts->requestMethod,
-            'protocol' => 'HTTP',
-            'version'  => number_format($parts->httpVersion, 1),
-            'headers'  => $parts->headers,
-            'body'     => $parts->body
+                'method' => $parts->requestMethod,
+                'protocol' => 'HTTP',
+                'version' => number_format($parts->httpVersion, 1),
+                'headers' => $parts->headers,
+                'body' => $parts->body
         );
 
         $parsed['request_url'] = $this->getUrlPartsFromMessage($parts->requestUrl, $parsed);
@@ -28,8 +26,7 @@ class PeclHttpMessageParser extends AbstractMessageParser
         return $parsed;
     }
 
-    public function parseResponse($message)
-    {
+    public function parseResponse($message) {
         if (!$message) {
             return false;
         }
@@ -37,12 +34,12 @@ class PeclHttpMessageParser extends AbstractMessageParser
         $parts = http_parse_message($message);
 
         return array(
-            'protocol'      => 'HTTP',
-            'version'       => number_format($parts->httpVersion, 1),
-            'code'          => $parts->responseCode,
-            'reason_phrase' => $parts->responseStatus,
-            'headers'       => $parts->headers,
-            'body'          => $parts->body
+                'protocol' => 'HTTP',
+                'version' => number_format($parts->httpVersion, 1),
+                'code' => $parts->responseCode,
+                'reason_phrase' => $parts->responseStatus,
+                'headers' => $parts->headers,
+                'body' => $parts->body
         );
     }
 }

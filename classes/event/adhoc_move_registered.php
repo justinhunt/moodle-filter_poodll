@@ -24,7 +24,6 @@
 
 namespace filter_poodll\event;
 
-
 defined('MOODLE_INTERNAL') || die();
 
 /**
@@ -35,8 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2017 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class adhoc_move_registered extends adhoc_registered  {
-
+class adhoc_move_registered extends adhoc_registered {
 
     /**
      * Returns description of what happened.
@@ -44,13 +42,13 @@ class adhoc_move_registered extends adhoc_registered  {
      * @return string
      */
     public function get_description() {
-        $other=$this->data['other'];
-        if(gettype($other)=='object'){
-            $other=get_object_vars($other);
+        $other = $this->data['other'];
+        if (gettype($other) == 'object') {
+            $other = get_object_vars($other);
         }
         return "The user with id '" . $this->data['userid'] .
-            "' has registered an ad_hoc task to move file of this name '" . $other['outfilename'] .
-            "' back to Moodle.";
+                "' has registered an ad_hoc task to move file of this name '" . $other['outfilename'] .
+                "' back to Moodle.";
     }
 
     /**

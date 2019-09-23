@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The request is not valid with the current state of the bucket.
  */
-class InvalidBucketStateException extends S3Exception {}
+class InvalidBucketStateException extends S3Exception {
+}

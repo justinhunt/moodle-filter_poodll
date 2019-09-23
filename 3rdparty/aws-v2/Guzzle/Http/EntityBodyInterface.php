@@ -7,8 +7,7 @@ use Guzzle\Stream\StreamInterface;
 /**
  * Entity body used with an HTTP request or response
  */
-interface EntityBodyInterface extends StreamInterface
-{
+interface EntityBodyInterface extends StreamInterface {
     /**
      * Specify a custom callback used to rewind a non-seekable stream. This can be useful entity enclosing requests
      * that are redirected.
@@ -57,7 +56,7 @@ interface EntityBodyInterface extends StreamInterface
     /**
      * Get an MD5 checksum of the stream's contents
      *
-     * @param bool $rawOutput    Whether or not to use raw output
+     * @param bool $rawOutput Whether or not to use raw output
      * @param bool $base64Encode Whether or not to base64 encode raw output (only if raw output is true)
      *
      * @return bool|string Returns an MD5 string on success or FALSE on failure

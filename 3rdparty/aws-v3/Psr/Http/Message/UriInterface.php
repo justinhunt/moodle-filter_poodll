@@ -1,4 +1,5 @@
 <?php
+
 namespace Psr\Http\Message;
 
 /**
@@ -21,8 +22,7 @@ namespace Psr\Http\Message;
  *
  * @link http://tools.ietf.org/html/rfc3986 (the URI specification)
  */
-interface UriInterface
-{
+interface UriInterface {
     /**
      * Retrieve the scheme component of the URI.
      *

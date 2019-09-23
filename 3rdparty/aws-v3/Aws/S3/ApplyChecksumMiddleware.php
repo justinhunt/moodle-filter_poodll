@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3;
 
 use Aws\CommandInterface;
@@ -12,21 +13,20 @@ use Psr\Http\Message\RequestInterface;
  *
  * @internal
  */
-class ApplyChecksumMiddleware
-{
+class ApplyChecksumMiddleware {
     private static $md5 = [
-        'DeleteObjects',
-        'PutBucketCors',
-        'PutBucketLifecycle',
-        'PutBucketLifecycleConfiguration',
-        'PutBucketPolicy',
-        'PutBucketTagging',
-        'PutBucketReplication',
+            'DeleteObjects',
+            'PutBucketCors',
+            'PutBucketLifecycle',
+            'PutBucketLifecycleConfiguration',
+            'PutBucketPolicy',
+            'PutBucketTagging',
+            'PutBucketReplication',
     ];
 
     private static $sha256 = [
-        'PutObject',
-        'UploadPart',
+            'PutObject',
+            'UploadPart',
     ];
 
     private $nextHandler;
@@ -36,21 +36,19 @@ class ApplyChecksumMiddleware
      *
      * @return callable
      */
-    public static function wrap()
-    {
-        return function (callable $handler) {
+    public static function wrap() {
+        return function(callable $handler) {
             return new self($handler);
         };
     }
 
-    public function __construct(callable $nextHandler)
-    {
+    public function __construct(callable $nextHandler) {
         $this->nextHandler = $nextHandler;
     }
 
     public function __invoke(
-        CommandInterface $command,
-        RequestInterface $request
+            CommandInterface $command,
+            RequestInterface $request
     ) {
         $next = $this->nextHandler;
         $name = $command->getName();
@@ -59,14 +57,14 @@ class ApplyChecksumMiddleware
         if (in_array($name, self::$md5) && !$request->hasHeader('Content-MD5')) {
             // Set the content MD5 header for operations that require it.
             $request = $request->withHeader(
-                'Content-MD5',
-                base64_encode(Psr7\hash($body, 'md5', true))
+                    'Content-MD5',
+                    base64_encode(Psr7\hash($body, 'md5', true))
             );
-        } elseif (in_array($name, self::$sha256) && $command['ContentSHA256']) {
+        } else if (in_array($name, self::$sha256) && $command['ContentSHA256']) {
             // Set the content hash header if provided in the parameters.
             $request = $request->withHeader(
-                'X-Amz-Content-Sha256',
-                $command['ContentSHA256']
+                    'X-Amz-Content-Sha256',
+                    $command['ContentSHA256']
             );
         }
 

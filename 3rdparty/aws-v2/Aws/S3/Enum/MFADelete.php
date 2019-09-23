@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable MFADelete values
  */
-class MFADelete extends Enum
-{
+class MFADelete extends Enum {
     const ENABLED = 'Enabled';
     const DISABLED = 'Disabled';
 }

@@ -9,28 +9,27 @@ use Guzzle\Service\Command\LocationVisitor\Response\ResponseVisitorInterface;
 /**
  * Flyweight factory used to instantiate request and response visitors
  */
-class VisitorFlyweight
-{
+class VisitorFlyweight {
     /** @var self Singleton instance of self */
     protected static $instance;
 
     /** @var array Default array of mappings of location names to classes */
     protected static $defaultMappings = array(
-        'request.body'          => 'Guzzle\Service\Command\LocationVisitor\Request\BodyVisitor',
-        'request.header'        => 'Guzzle\Service\Command\LocationVisitor\Request\HeaderVisitor',
-        'request.json'          => 'Guzzle\Service\Command\LocationVisitor\Request\JsonVisitor',
-        'request.postField'     => 'Guzzle\Service\Command\LocationVisitor\Request\PostFieldVisitor',
-        'request.postFile'      => 'Guzzle\Service\Command\LocationVisitor\Request\PostFileVisitor',
-        'request.query'         => 'Guzzle\Service\Command\LocationVisitor\Request\QueryVisitor',
-        'request.response_body' => 'Guzzle\Service\Command\LocationVisitor\Request\ResponseBodyVisitor',
-        'request.responseBody'  => 'Guzzle\Service\Command\LocationVisitor\Request\ResponseBodyVisitor',
-        'request.xml'           => 'Guzzle\Service\Command\LocationVisitor\Request\XmlVisitor',
-        'response.body'         => 'Guzzle\Service\Command\LocationVisitor\Response\BodyVisitor',
-        'response.header'       => 'Guzzle\Service\Command\LocationVisitor\Response\HeaderVisitor',
-        'response.json'         => 'Guzzle\Service\Command\LocationVisitor\Response\JsonVisitor',
-        'response.reasonPhrase' => 'Guzzle\Service\Command\LocationVisitor\Response\ReasonPhraseVisitor',
-        'response.statusCode'   => 'Guzzle\Service\Command\LocationVisitor\Response\StatusCodeVisitor',
-        'response.xml'          => 'Guzzle\Service\Command\LocationVisitor\Response\XmlVisitor'
+            'request.body' => 'Guzzle\Service\Command\LocationVisitor\Request\BodyVisitor',
+            'request.header' => 'Guzzle\Service\Command\LocationVisitor\Request\HeaderVisitor',
+            'request.json' => 'Guzzle\Service\Command\LocationVisitor\Request\JsonVisitor',
+            'request.postField' => 'Guzzle\Service\Command\LocationVisitor\Request\PostFieldVisitor',
+            'request.postFile' => 'Guzzle\Service\Command\LocationVisitor\Request\PostFileVisitor',
+            'request.query' => 'Guzzle\Service\Command\LocationVisitor\Request\QueryVisitor',
+            'request.response_body' => 'Guzzle\Service\Command\LocationVisitor\Request\ResponseBodyVisitor',
+            'request.responseBody' => 'Guzzle\Service\Command\LocationVisitor\Request\ResponseBodyVisitor',
+            'request.xml' => 'Guzzle\Service\Command\LocationVisitor\Request\XmlVisitor',
+            'response.body' => 'Guzzle\Service\Command\LocationVisitor\Response\BodyVisitor',
+            'response.header' => 'Guzzle\Service\Command\LocationVisitor\Response\HeaderVisitor',
+            'response.json' => 'Guzzle\Service\Command\LocationVisitor\Response\JsonVisitor',
+            'response.reasonPhrase' => 'Guzzle\Service\Command\LocationVisitor\Response\ReasonPhraseVisitor',
+            'response.statusCode' => 'Guzzle\Service\Command\LocationVisitor\Response\StatusCodeVisitor',
+            'response.xml' => 'Guzzle\Service\Command\LocationVisitor\Response\XmlVisitor'
     );
 
     /** @var array Array of mappings of location names to classes */
@@ -43,8 +42,7 @@ class VisitorFlyweight
      * @return self
      * @codeCoverageIgnore
      */
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -56,8 +54,7 @@ class VisitorFlyweight
      * @param array $mappings Array mapping request.name and response.name to location visitor classes. Leave null to
      *                        use the default values.
      */
-    public function __construct(array $mappings = null)
-    {
+    public function __construct(array $mappings = null) {
         $this->mappings = $mappings === null ? self::$defaultMappings : $mappings;
     }
 
@@ -68,8 +65,7 @@ class VisitorFlyweight
      *
      * @return RequestVisitorInterface
      */
-    public function getRequestVisitor($visitor)
-    {
+    public function getRequestVisitor($visitor) {
         return $this->getKey('request.' . $visitor);
     }
 
@@ -80,21 +76,19 @@ class VisitorFlyweight
      *
      * @return ResponseVisitorInterface
      */
-    public function getResponseVisitor($visitor)
-    {
+    public function getResponseVisitor($visitor) {
         return $this->getKey('response.' . $visitor);
     }
 
     /**
      * Add a response visitor to the factory by name
      *
-     * @param string                  $name    Name of the visitor
+     * @param string $name Name of the visitor
      * @param RequestVisitorInterface $visitor Visitor to add
      *
      * @return self
      */
-    public function addRequestVisitor($name, RequestVisitorInterface $visitor)
-    {
+    public function addRequestVisitor($name, RequestVisitorInterface $visitor) {
         $this->cache['request.' . $name] = $visitor;
 
         return $this;
@@ -103,13 +97,12 @@ class VisitorFlyweight
     /**
      * Add a response visitor to the factory by name
      *
-     * @param string                   $name    Name of the visitor
+     * @param string $name Name of the visitor
      * @param ResponseVisitorInterface $visitor Visitor to add
      *
      * @return self
      */
-    public function addResponseVisitor($name, ResponseVisitorInterface $visitor)
-    {
+    public function addResponseVisitor($name, ResponseVisitorInterface $visitor) {
         $this->cache['response.' . $name] = $visitor;
 
         return $this;
@@ -123,8 +116,7 @@ class VisitorFlyweight
      * @return mixed
      * @throws InvalidArgumentException
      */
-    private function getKey($key)
-    {
+    private function getKey($key) {
         if (!isset($this->cache[$key])) {
             if (!isset($this->mappings[$key])) {
                 list($type, $name) = explode('.', $key);

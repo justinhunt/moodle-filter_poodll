@@ -26,13 +26,11 @@ use Guzzle\Service\Resource\Model;
  *
  * - return_prefixes: Set to true to receive both prefixes and versions in results
  */
-class ListObjectVersionsIterator extends AwsResourceIterator
-{
+class ListObjectVersionsIterator extends AwsResourceIterator {
     /**
      * {@inheritdoc}
      */
-    protected function handleResults(Model $result)
-    {
+    protected function handleResults(Model $result) {
         // Get the list of object versions
         $versions = $result->get('Versions') ?: array();
         $deleteMarkers = $result->get('DeleteMarkers') ?: array();

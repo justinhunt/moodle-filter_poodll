@@ -21,8 +21,7 @@ namespace Aws\Common\Credentials;
  * access key ID, secret access key, and security token. These credentials are
  * used to securely sign requests to AWS services.
  */
-interface CredentialsInterface extends \Serializable
-{
+interface CredentialsInterface extends \Serializable {
     /**
      * Returns the AWS access key ID for this credentials object.
      *

@@ -27,137 +27,132 @@ require_once($CFG->libdir . '/adminlib.php');
  */
 class templateadmintools {
 
-
     /**
      * Returns an HTML string
+     *
      * @return string Returns an HTML string
      */
     public static function fetch_template_table() {
-        global $OUTPUT,$CFG;
+        global $OUTPUT, $CFG;
         $conf = get_config('filter_poodll');
         $template_details = self::fetch_template_details($conf);
-        $have_updates=false;
-
-
+        $have_updates = false;
 
         $table = new \html_table();
         $table->id = 'filter_poodll_template_list';
         $table->head = array(
-            get_string('name'),
-            get_string('type','filter_poodll'),
-            get_string('version'),
-            get_string('description')
+                get_string('name'),
+                get_string('type', 'filter_poodll'),
+                get_string('version'),
+                get_string('description')
         );
-        $table->headspan = array(1,1,1,1);
+        $table->headspan = array(1, 1, 1, 1);
         $table->colclasses = array(
-            'templatenamecol','templatetypecol', 'templateversioncol' ,'templateinstructionscol'
+                'templatenamecol', 'templatetypecol', 'templateversioncol', 'templateinstructionscol'
         );
 
         //loop through templates and add to table
         foreach ($template_details as $item) {
             $row = new \html_table_row();
 
-            $titlelink = $editlink = \html_writer::link($item->url,$item->title);
+            $titlelink = $editlink = \html_writer::link($item->url, $item->title);
             $titlecell = new \html_table_cell($titlelink);
 
             //version cell
 
             $updateversion = poodllpresets::template_has_update($item->index);
-            if($updateversion) {
-                $button =  new \single_button(
-                    new \moodle_url($CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php',array('updatetemplate'=>$item->index)),
-                    get_string('updatetoversion','filter_poodll',$updateversion));
+            if ($updateversion) {
+                $button = new \single_button(
+                        new \moodle_url($CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php',
+                                array('updatetemplate' => $item->index)),
+                        get_string('updatetoversion', 'filter_poodll', $updateversion));
                 $update_html = $OUTPUT->render($button);
                 $versioncell = new \html_table_cell($item->version . $update_html);
-                $have_updates=true;
-            }else{
+                $have_updates = true;
+            } else {
                 $versioncell = new \html_table_cell($item->version);
             }
 
-
             $instructionscell = new \html_table_cell($item->instructions);
 
-            $typetext='';
-            if($item->player && $item->atto){
-                $typetext=get_string('playertype','filter_poodll') . ' ' . get_string('widgettype','filter_poodll') ;
-            }elseif($item->player){
-                $typetext=get_string('playertype','filter_poodll') ;
-            }elseif($item->atto){
-                $typetext=get_string('widgettype','filter_poodll') ;
+            $typetext = '';
+            if ($item->player && $item->atto) {
+                $typetext = get_string('playertype', 'filter_poodll') . ' ' . get_string('widgettype', 'filter_poodll');
+            } else if ($item->player) {
+                $typetext = get_string('playertype', 'filter_poodll');
+            } else if ($item->atto) {
+                $typetext = get_string('widgettype', 'filter_poodll');
             }
             $typecell = new \html_table_cell($typetext);
 
-        /*
-            $deleteurl = new \moodle_url($actionurl, array('itemid'=>$item->id,'action'=>'confirmdelete'));
-            $deletelink = \html_writer::link($deleteurl, get_string('deleteitem', "local_trigger"));
-            $deletecell = new \html_table_cell($deletelink);
-        */
+            /*
+                $deleteurl = new \moodle_url($actionurl, array('itemid'=>$item->id,'action'=>'confirmdelete'));
+                $deletelink = \html_writer::link($deleteurl, get_string('deleteitem', "local_trigger"));
+                $deletecell = new \html_table_cell($deletelink);
+            */
             $row->cells = array(
-                $titlecell, $typecell,$versioncell, $instructionscell
+                    $titlecell, $typecell, $versioncell, $instructionscell
             );
             $table->data[] = $row;
         }
 
-        $template_table= \html_writer::table($table);
+        $template_table = \html_writer::table($table);
 
         //if have_updates
-        $update_all_html='';
-        if($have_updates){
-            $all_button =  new \single_button(
-                new \moodle_url($CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php',array('updatetemplate'=>-1)),
-                get_string('updateall','filter_poodll'));
+        $update_all_html = '';
+        if ($have_updates) {
+            $all_button = new \single_button(
+                    new \moodle_url($CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php', array('updatetemplate' => -1)),
+                    get_string('updateall', 'filter_poodll'));
             $update_all_html = $OUTPUT->render($all_button);
         }
 
+        return $update_all_html . $template_table;
 
-		return $update_all_html . $template_table;
+    }//end of output html
 
-	}//end of output html
-        
+    public static function fetch_template_details($conf) {
+        global $CFG;
+        $ret = array();
 
+        //Add the template pages
+        if ($conf && property_exists($conf, 'templatecount')) {
+            $templatecount = $conf->templatecount;
+        } else {
+            $templatecount = filtertools::FILTER_POODLL_TEMPLATE_COUNT;
+        }
 
-     public static function fetch_template_details($conf){
-            global $CFG;
-			$ret = array();
+        for ($tindex = 1; $tindex <= $templatecount; $tindex++) {
+            $template_details = new \stdClass();
 
-            //Add the template pages
-            if($conf && property_exists($conf,'templatecount')){
-                $templatecount = $conf->templatecount;
-            }else{
-                $templatecount = filtertools::FILTER_POODLL_TEMPLATE_COUNT;
+            $template_details->index = $tindex;
+
+            $template_details->title = settingstools::fetch_template_title($conf, $tindex, false);
+
+            $template_details->version = "";
+            if (property_exists($conf, 'templateversion_' . $tindex)) {
+                $template_details->version = $conf->{'templateversion_' . $tindex};
             }
 
-            for($tindex=1;$tindex<=$templatecount;$tindex++) {
-                $template_details = new \stdClass();
-
-                $template_details->index = $tindex;
-
-                $template_details->title = settingstools::fetch_template_title($conf, $tindex,false);
-
-                $template_details->version = "";
-                if(property_exists($conf,'templateversion_' . $tindex)){
-                    $template_details->version = $conf->{'templateversion_' . $tindex};
-                }
-
-
-                $template_details->instructions ="";
-                if(property_exists($conf,'templateinstructions_' . $tindex)) {
-                    $template_details->instructions = $conf->{'templateinstructions_' . $tindex};
-                }
-
-                $template_details->player = '';
-                if(property_exists($conf,'template_showplayers_' . $tindex)) {
-                    $template_details->player = $conf->{'template_showplayers_' . $tindex};
-                }
-
-                $template_details->atto = '';
-                if(property_exists($conf,'template_showatto_' . $tindex)) {
-                    $template_details->atto = $conf->{'template_showatto_' . $tindex};
-                }
-
-                $template_details->url = new \moodle_url( '/admin/settings.php', array('section'=> 'filter_poodll_templatepage_' . $tindex));
-                $ret[]=$template_details;
+            $template_details->instructions = "";
+            if (property_exists($conf, 'templateinstructions_' . $tindex)) {
+                $template_details->instructions = $conf->{'templateinstructions_' . $tindex};
             }
-            return $ret;
-		}//end of fetch_templates function
+
+            $template_details->player = '';
+            if (property_exists($conf, 'template_showplayers_' . $tindex)) {
+                $template_details->player = $conf->{'template_showplayers_' . $tindex};
+            }
+
+            $template_details->atto = '';
+            if (property_exists($conf, 'template_showatto_' . $tindex)) {
+                $template_details->atto = $conf->{'template_showatto_' . $tindex};
+            }
+
+            $template_details->url =
+                    new \moodle_url('/admin/settings.php', array('section' => 'filter_poodll_templatepage_' . $tindex));
+            $ret[] = $template_details;
+        }
+        return $ret;
+    }//end of fetch_templates function
 }//end of class

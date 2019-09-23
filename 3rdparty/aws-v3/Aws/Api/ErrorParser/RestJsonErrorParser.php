@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api\ErrorParser;
 
 use Psr\Http\Message\ResponseInterface;
@@ -6,12 +7,10 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Parses JSON-REST errors.
  */
-class RestJsonErrorParser
-{
+class RestJsonErrorParser {
     use JsonParserTrait;
 
-    public function __invoke(ResponseInterface $response)
-    {
+    public function __invoke(ResponseInterface $response) {
         $data = $this->genericHandler($response);
 
         // Merge in error data from the JSON body

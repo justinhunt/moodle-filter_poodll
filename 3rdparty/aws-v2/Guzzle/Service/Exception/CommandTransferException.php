@@ -8,8 +8,7 @@ use Guzzle\Service\Command\CommandInterface;
 /**
  * Exception thrown when transferring commands in parallel
  */
-class CommandTransferException extends MultiTransferException
-{
+class CommandTransferException extends MultiTransferException {
     protected $successfulCommands = array();
     protected $failedCommands = array();
 
@@ -20,8 +19,7 @@ class CommandTransferException extends MultiTransferException
      *
      * @return self
      */
-    public static function fromMultiTransferException(MultiTransferException $e)
-    {
+    public static function fromMultiTransferException(MultiTransferException $e) {
         $ce = new self($e->getMessage(), $e->getCode(), $e->getPrevious());
         $ce->setSuccessfulRequests($e->getSuccessfulRequests());
 
@@ -52,8 +50,7 @@ class CommandTransferException extends MultiTransferException
      *
      * @return array
      */
-    public function getAllCommands()
-    {
+    public function getAllCommands() {
         return array_merge($this->successfulCommands, $this->failedCommands);
     }
 
@@ -64,8 +61,7 @@ class CommandTransferException extends MultiTransferException
      *
      * @return self
      */
-    public function addSuccessfulCommand(CommandInterface $command)
-    {
+    public function addSuccessfulCommand(CommandInterface $command) {
         $this->successfulCommands[] = $command;
 
         return $this;
@@ -78,8 +74,7 @@ class CommandTransferException extends MultiTransferException
      *
      * @return self
      */
-    public function addFailedCommand(CommandInterface $command)
-    {
+    public function addFailedCommand(CommandInterface $command) {
         $this->failedCommands[] = $command;
 
         return $this;
@@ -90,8 +85,7 @@ class CommandTransferException extends MultiTransferException
      *
      * @return array
      */
-    public function getSuccessfulCommands()
-    {
+    public function getSuccessfulCommands() {
         return $this->successfulCommands;
     }
 
@@ -100,8 +94,7 @@ class CommandTransferException extends MultiTransferException
      *
      * @return array
      */
-    public function getFailedCommands()
-    {
+    public function getFailedCommands() {
         return $this->failedCommands;
     }
 
@@ -112,8 +105,7 @@ class CommandTransferException extends MultiTransferException
      *
      * @return \Exception|null
      */
-    public function getExceptionForFailedCommand(CommandInterface $command)
-    {
+    public function getExceptionForFailedCommand(CommandInterface $command) {
         return $this->getExceptionForFailedRequest($command->getRequest());
     }
 }

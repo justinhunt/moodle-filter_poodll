@@ -26,13 +26,11 @@ use Guzzle\Service\Resource\Model;
  *
  * - names_only: Set to true to receive only the object/prefix names
  */
-class ListBucketsIterator extends AwsResourceIterator
-{
+class ListBucketsIterator extends AwsResourceIterator {
     /**
      * {@inheritdoc}
      */
-    protected function handleResults(Model $result)
-    {
+    protected function handleResults(Model $result) {
         // Get the results
         $buckets = $result->get('Buckets') ?: array();
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use Aws\Signature\SignatureV4;
@@ -9,8 +10,7 @@ use Psr\Http\Message\RequestInterface;
 /**
  * @internal Adds computed values to service operations that need presigned url.
  */
-class PresignUrlMiddleware
-{
+class PresignUrlMiddleware {
     private $client;
     private $endpointProvider;
     private $nextHandler;
@@ -24,10 +24,10 @@ class PresignUrlMiddleware
     private $requireDifferentRegion;
 
     public function __construct(
-        array $options,
-        callable $endpointProvider,
-        AwsClientInterface $client,
-        callable $nextHandler
+            array $options,
+            callable $endpointProvider,
+            AwsClientInterface $client,
+            callable $nextHandler
     ) {
         $this->endpointProvider = $endpointProvider;
         $this->client = $client;
@@ -39,25 +39,24 @@ class PresignUrlMiddleware
     }
 
     public static function wrap(
-        AwsClientInterface $client,
-        callable $endpointProvider,
-        array $options = []
+            AwsClientInterface $client,
+            callable $endpointProvider,
+            array $options = []
     ) {
-        return function (callable $handler) use ($endpointProvider, $client, $options) {
+        return function(callable $handler) use ($endpointProvider, $client, $options) {
             $f = new PresignUrlMiddleware($options, $endpointProvider, $client, $handler);
             return $f;
         };
     }
 
-    public function __invoke(CommandInterface $cmd, RequestInterface $request = null)
-    {
+    public function __invoke(CommandInterface $cmd, RequestInterface $request = null) {
         if (in_array($cmd->getName(), $this->commandPool)
-            && (!isset($cmd->{'__skip' . $cmd->getName()}))
+                && (!isset($cmd->{'__skip' . $cmd->getName()}))
         ) {
             $cmd['DestinationRegion'] = $this->client->getRegion();
             if (!$this->requireDifferentRegion
-                || (!empty($cmd['SourceRegion'])
-                    && $cmd['SourceRegion'] !== $cmd['DestinationRegion'])
+                    || (!empty($cmd['SourceRegion'])
+                            && $cmd['SourceRegion'] !== $cmd['DestinationRegion'])
             ) {
                 $cmd[$this->presignParam] = $this->createPresignedUrl($this->client, $cmd);
             }
@@ -68,8 +67,8 @@ class PresignUrlMiddleware
     }
 
     private function createPresignedUrl(
-        AwsClientInterface $client,
-        CommandInterface $cmd
+            AwsClientInterface $client,
+            CommandInterface $cmd
     ) {
         $cmdName = $cmd->getName();
         $newCmd = $client->getCommand($cmdName, $cmd->toArray());
@@ -80,8 +79,8 @@ class PresignUrlMiddleware
         $request = \Aws\serialize($newCmd);
         // Create the new endpoint for the target endpoint.
         $endpoint = EndpointProvider::resolve($this->endpointProvider, [
-            'region'  => $cmd['SourceRegion'],
-            'service' => $this->serviceName,
+                'region' => $cmd['SourceRegion'],
+                'service' => $this->serviceName,
         ])['endpoint'];
 
         // Set the request to hit the target endpoint.
@@ -91,9 +90,9 @@ class PresignUrlMiddleware
         $signer = new SignatureV4($this->serviceName, $cmd['SourceRegion']);
 
         return (string) $signer->presign(
-            SignatureV4::convertPostToGet($request),
-            $client->getCredentials()->wait(),
-            '+1 hour'
+                SignatureV4::convertPostToGet($request),
+                $client->getCredentials()->wait(),
+                '+1 hour'
         )->getUri();
     }
 }

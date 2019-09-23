@@ -26,15 +26,14 @@ use Guzzle\Plugin\Backoff\AbstractBackoffStrategy;
 /**
  * Backoff logic that handles throttling exceptions from services
  */
-class ThrottlingErrorChecker extends AbstractBackoffStrategy
-{
+class ThrottlingErrorChecker extends AbstractBackoffStrategy {
     /** @var array Whitelist of exception codes (as indexes) that indicate throttling */
     protected static $throttlingExceptions = array(
-        'RequestLimitExceeded'                   => true,
-        'Throttling'                             => true,
-        'ThrottlingException'                    => true,
-        'ProvisionedThroughputExceededException' => true,
-        'RequestThrottled'                       => true,
+            'RequestLimitExceeded' => true,
+            'Throttling' => true,
+            'ThrottlingException' => true,
+            'ProvisionedThroughputExceededException' => true,
+            'RequestThrottled' => true,
     );
 
     /**
@@ -42,8 +41,7 @@ class ThrottlingErrorChecker extends AbstractBackoffStrategy
      */
     protected $exceptionParser;
 
-    public function __construct(ExceptionParserInterface $exceptionParser, BackoffStrategyInterface $next = null)
-    {
+    public function __construct(ExceptionParserInterface $exceptionParser, BackoffStrategyInterface $next = null) {
         $this->exceptionParser = $exceptionParser;
         if ($next) {
             $this->setNext($next);
@@ -53,8 +51,7 @@ class ThrottlingErrorChecker extends AbstractBackoffStrategy
     /**
      * {@inheritdoc}
      */
-    public function makesDecision()
-    {
+    public function makesDecision() {
         return true;
     }
 
@@ -62,10 +59,10 @@ class ThrottlingErrorChecker extends AbstractBackoffStrategy
      * {@inheritdoc}
      */
     protected function getDelay(
-        $retries,
-        RequestInterface $request,
-        Response $response = null,
-        HttpException $e = null
+            $retries,
+            RequestInterface $request,
+            Response $response = null,
+            HttpException $e = null
     ) {
         if ($response && $response->isClientError()) {
             $parts = $this->exceptionParser->parse($request, $response);

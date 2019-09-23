@@ -14,8 +14,7 @@ use Guzzle\Common\ToArrayInterface;
 /**
  * A command object that contains parameters that can be modified and accessed like an array and turned into an array
  */
-interface CommandInterface extends \ArrayAccess, ToArrayInterface
-{
+interface CommandInterface extends \ArrayAccess, ToArrayInterface {
     /**
      * Get the short form name of the command
      *

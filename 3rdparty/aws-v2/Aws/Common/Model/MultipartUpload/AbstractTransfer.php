@@ -28,14 +28,13 @@ use Guzzle\Service\Resource\Model;
 /**
  * Abstract class for transfer commonalities
  */
-abstract class AbstractTransfer extends AbstractHasDispatcher implements TransferInterface
-{
-    const BEFORE_UPLOAD      = 'multipart_upload.before_upload';
-    const AFTER_UPLOAD       = 'multipart_upload.after_upload';
+abstract class AbstractTransfer extends AbstractHasDispatcher implements TransferInterface {
+    const BEFORE_UPLOAD = 'multipart_upload.before_upload';
+    const AFTER_UPLOAD = 'multipart_upload.after_upload';
     const BEFORE_PART_UPLOAD = 'multipart_upload.before_part_upload';
-    const AFTER_PART_UPLOAD  = 'multipart_upload.after_part_upload';
-    const AFTER_ABORT        = 'multipart_upload.after_abort';
-    const AFTER_COMPLETE     = 'multipart_upload.after_complete';
+    const AFTER_PART_UPLOAD = 'multipart_upload.after_part_upload';
+    const AFTER_ABORT = 'multipart_upload.after_abort';
+    const AFTER_COMPLETE = 'multipart_upload.after_complete';
 
     /**
      * @var AwsClientInterface Client used for the transfers
@@ -70,20 +69,20 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
     /**
      * Construct a new transfer object
      *
-     * @param AwsClientInterface     $client  Client used for the transfers
-     * @param TransferStateInterface $state   State used to track transfer
-     * @param EntityBody             $source  Data source of the transfer
-     * @param array                  $options Array of options to apply
+     * @param AwsClientInterface $client Client used for the transfers
+     * @param TransferStateInterface $state State used to track transfer
+     * @param EntityBody $source Data source of the transfer
+     * @param array $options Array of options to apply
      */
     public function __construct(
-        AwsClientInterface $client,
-        TransferStateInterface $state,
-        EntityBody $source,
-        array $options = array()
+            AwsClientInterface $client,
+            TransferStateInterface $state,
+            EntityBody $source,
+            array $options = array()
     ) {
-        $this->client  = $client;
-        $this->state   = $state;
-        $this->source  = $source;
+        $this->client = $client;
+        $this->state = $state;
+        $this->source = $source;
         $this->options = $options;
 
         $this->init();
@@ -91,31 +90,28 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
         $this->partSize = $this->calculatePartSize();
     }
 
-    public function __invoke()
-    {
+    public function __invoke() {
         return $this->upload();
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array(
-            self::BEFORE_PART_UPLOAD,
-            self::AFTER_UPLOAD,
-            self::BEFORE_PART_UPLOAD,
-            self::AFTER_PART_UPLOAD,
-            self::AFTER_ABORT,
-            self::AFTER_COMPLETE
+                self::BEFORE_PART_UPLOAD,
+                self::AFTER_UPLOAD,
+                self::BEFORE_PART_UPLOAD,
+                self::AFTER_PART_UPLOAD,
+                self::AFTER_ABORT,
+                self::AFTER_COMPLETE
         );
     }
 
     /**
      * {@inheritdoc}
      */
-    public function abort()
-    {
+    public function abort() {
         $command = $this->getAbortCommand();
         $result = $command->getResult();
 
@@ -129,8 +125,7 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
     /**
      * {@inheritdoc}
      */
-    public function stop()
-    {
+    public function stop() {
         $this->stopped = true;
 
         return $this->state;
@@ -139,8 +134,7 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
     /**
      * {@inheritdoc}
      */
-    public function getState()
-    {
+    public function getState() {
         return $this->state;
     }
 
@@ -149,8 +143,7 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
      *
      * @return array
      */
-    public function getOptions()
-    {
+    public function getOptions() {
         return $this->options;
     }
 
@@ -158,12 +151,11 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
      * Set an option on the transfer
      *
      * @param string $option Name of the option
-     * @param mixed  $value  Value to set
+     * @param mixed $value Value to set
      *
      * @return self
      */
-    public function setOption($option, $value)
-    {
+    public function setOption($option, $value) {
         $this->options[$option] = $value;
 
         return $this;
@@ -174,8 +166,7 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
      *
      * @return EntityBodyInterface
      */
-    public function getSource()
-    {
+    public function getSource() {
         return $this->source;
     }
 
@@ -184,8 +175,7 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
      * @throws MultipartUploadException when an error is encountered. Use getLastException() to get more information.
      * @throws RuntimeException         when attempting to upload an aborted transfer
      */
-    public function upload()
-    {
+    public function upload() {
         if ($this->state->isAborted()) {
             throw new RuntimeException('The transfer has been aborted and cannot be uploaded');
         }
@@ -218,15 +208,14 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
      *
      * @return array
      */
-    protected function getEventData(OperationCommand $command = null)
-    {
+    protected function getEventData(OperationCommand $command = null) {
         $data = array(
-            'transfer'  => $this,
-            'source'    => $this->source,
-            'options'   => $this->options,
-            'client'    => $this->client,
-            'part_size' => $this->partSize,
-            'state'     => $this->state
+                'transfer' => $this,
+                'source' => $this->source,
+                'options' => $this->options,
+                'client' => $this->client,
+                'part_size' => $this->partSize,
+                'state' => $this->state
         );
 
         if ($command) {
@@ -239,7 +228,8 @@ abstract class AbstractTransfer extends AbstractHasDispatcher implements Transfe
     /**
      * Hook to initialize the transfer
      */
-    protected function init() {}
+    protected function init() {
+    }
 
     /**
      * Determine the upload part size based on the size of the source data and

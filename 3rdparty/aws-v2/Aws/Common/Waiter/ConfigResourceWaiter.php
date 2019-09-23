@@ -25,8 +25,7 @@ use Guzzle\Service\Exception\ValidationException;
 /**
  * Resource waiter driven by configuration options
  */
-class ConfigResourceWaiter extends AbstractResourceWaiter
-{
+class ConfigResourceWaiter extends AbstractResourceWaiter {
     /**
      * @var WaiterConfig Waiter configuration
      */
@@ -35,8 +34,7 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
     /**
      * @param WaiterConfig $waiterConfig Waiter configuration
      */
-    public function __construct(WaiterConfig $waiterConfig)
-    {
+    public function __construct(WaiterConfig $waiterConfig) {
         $this->waiterConfig = $waiterConfig;
         $this->setInterval($waiterConfig->get(WaiterConfig::INTERVAL));
         $this->setMaxAttempts($waiterConfig->get(WaiterConfig::MAX_ATTEMPTS));
@@ -45,8 +43,7 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
     /**
      * {@inheritdoc}
      */
-    public function setConfig(array $config)
-    {
+    public function setConfig(array $config) {
         foreach ($config as $key => $value) {
             if (substr($key, 0, 7) == 'waiter.') {
                 $this->waiterConfig->set(substr($key, 7), $value);
@@ -69,16 +66,14 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
      *
      * @return WaiterConfig
      */
-    public function getWaiterConfig()
-    {
+    public function getWaiterConfig() {
         return $this->waiterConfig;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doWait()
-    {
+    protected function doWait() {
         $params = $this->config;
         // remove waiter settings from the operation's input
         foreach (array_keys($params) as $key) {
@@ -93,9 +88,9 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
             return $this->checkResult($this->client->execute($operation));
         } catch (ValidationException $e) {
             throw new InvalidArgumentException(
-                $this->waiterConfig->get(WaiterConfig::WAITER_NAME) . ' waiter validation failed:  ' . $e->getMessage(),
-                $e->getCode(),
-                $e
+                    $this->waiterConfig->get(WaiterConfig::WAITER_NAME) . ' waiter validation failed:  ' . $e->getMessage(),
+                    $e->getCode(),
+                    $e
             );
         } catch (ServiceResponseException $e) {
 
@@ -125,8 +120,7 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
      *
      * @return bool|null Returns true for success, false for failure, and null for no transition
      */
-    protected function checkErrorAcceptor(ServiceResponseException $e)
-    {
+    protected function checkErrorAcceptor(ServiceResponseException $e) {
         if ($this->waiterConfig->get(WaiterConfig::SUCCESS_TYPE) == 'error') {
             if ($e->getExceptionCode() == $this->waiterConfig->get(WaiterConfig::SUCCESS_VALUE)) {
                 // Mark as a success
@@ -146,15 +140,14 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
      * @return bool
      * @throws RuntimeException
      */
-    protected function checkResult(Model $result)
-    {
+    protected function checkResult(Model $result) {
         // Check if the result evaluates to true based on the path and output model
         if ($this->waiterConfig->get(WaiterConfig::SUCCESS_TYPE) == 'output' &&
-            $this->checkPath(
-                $result,
-                $this->waiterConfig->get(WaiterConfig::SUCCESS_PATH),
-                $this->waiterConfig->get(WaiterConfig::SUCCESS_VALUE)
-            )
+                $this->checkPath(
+                        $result,
+                        $this->waiterConfig->get(WaiterConfig::SUCCESS_PATH),
+                        $this->waiterConfig->get(WaiterConfig::SUCCESS_VALUE)
+                )
         ) {
             return true;
         }
@@ -167,14 +160,14 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
                 if ($this->checkPath($result, $key, $failureValue, false)) {
                     // Determine which of the results triggered the failure
                     $triggered = array_intersect(
-                        (array) $this->waiterConfig->get(WaiterConfig::FAILURE_VALUE),
-                        array_unique((array) $result->getPath($key))
+                            (array) $this->waiterConfig->get(WaiterConfig::FAILURE_VALUE),
+                            array_unique((array) $result->getPath($key))
                     );
                     // fast fail because the failure case was satisfied
                     throw new RuntimeException(
-                        'A resource entered into an invalid state of "'
-                        . implode(', ', $triggered) . '" while waiting with the "'
-                        . $this->waiterConfig->get(WaiterConfig::WAITER_NAME) . '" waiter.'
+                            'A resource entered into an invalid state of "'
+                            . implode(', ', $triggered) . '" while waiting with the "'
+                            . $this->waiterConfig->get(WaiterConfig::WAITER_NAME) . '" waiter.'
                     );
                 }
             }
@@ -186,15 +179,14 @@ class ConfigResourceWaiter extends AbstractResourceWaiter
     /**
      * Check to see if the path of the output key is satisfied by the value
      *
-     * @param Model  $model      Result model
-     * @param string $key        Key to check
+     * @param Model $model Result model
+     * @param string $key Key to check
      * @param string $checkValue Compare the key to the value
-     * @param bool   $all        Set to true to ensure all value match or false to only match one
+     * @param bool $all Set to true to ensure all value match or false to only match one
      *
      * @return bool
      */
-    protected function checkPath(Model $model, $key = null, $checkValue = array(), $all = true)
-    {
+    protected function checkPath(Model $model, $key = null, $checkValue = array(), $all = true) {
         // If no key is set, then just assume true because the request succeeded
         if (!$key) {
             return true;

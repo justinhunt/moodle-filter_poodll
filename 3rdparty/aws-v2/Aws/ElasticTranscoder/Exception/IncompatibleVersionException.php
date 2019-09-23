@@ -19,4 +19,5 @@ namespace Aws\ElasticTranscoder\Exception;
 /**
  * Exception that occurs when a IncompatibleVersionException error is encountered
  */
-class IncompatibleVersionException extends ElasticTranscoderException {}
+class IncompatibleVersionException extends ElasticTranscoderException {
+}

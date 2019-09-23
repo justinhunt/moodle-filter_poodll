@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable Protocol values
  */
-class Protocol extends Enum
-{
+class Protocol extends Enum {
     const HTTP = 'http';
     const HTTPS = 'https';
 }

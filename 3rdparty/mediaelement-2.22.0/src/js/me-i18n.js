@@ -36,17 +36,17 @@
  *  - exports - CommonJS, window ..
  *
  */
-;(function(context, exports, undefined) {
+;(function (context, exports, undefined) {
     "use strict";
 
     var i18n = {
         "locale": {
             // Ensure previous values aren't overwritten.
-            "language" : (exports.i18n && exports.i18n.locale.language) || '',
-            "strings" : (exports.i18n && exports.i18n.locale.strings) || {}
+            "language": (exports.i18n && exports.i18n.locale.language) || '',
+            "strings": (exports.i18n && exports.i18n.locale.strings) || {}
         },
-        "ietf_lang_regex" : /^(x\-)?[a-z]{2,}(\-\w{2,})?(\-\w{2,})?$/,
-        "methods" : {}
+        "ietf_lang_regex": /^(x\-)?[a-z]{2,}(\-\w{2,})?(\-\w{2,})?$/,
+        "methods": {}
     };
 // start i18n
 
@@ -66,10 +66,9 @@
     };
 
     // i18n fixes for compatibility with WordPress
-    if ( typeof mejsL10n != 'undefined' ) {
+    if (typeof mejsL10n != 'undefined') {
         i18n.locale.language = mejsL10n.language;
     }
-
 
 
     /**
@@ -77,12 +76,12 @@
      */
     i18n.methods.checkPlain = function (str) {
         var character, regex,
-        replace = {
-            '&': '&amp;',
-            '"': '&quot;',
-            '<': '&lt;',
-            '>': '&gt;'
-        };
+            replace = {
+                '&': '&amp;',
+                '"': '&quot;',
+                '<': '&lt;',
+                '>': '&gt;'
+            };
         str = String(str);
         for (character in replace) {
             if (replace.hasOwnProperty(character)) {
@@ -124,7 +123,7 @@
      * @see i18n.methods.t()
      * @throws InvalidArgumentException
      */
-    i18n.t = function(str, options) {
+    i18n.t = function (str, options) {
 
         if (typeof str === 'string' && str.length > 0) {
 
@@ -133,15 +132,15 @@
             var language = i18n.getLanguage();
 
             options = options || {
-                "context" : language
+                "context": language
             };
 
             return i18n.methods.t(str, options);
         }
         else {
             throw {
-                "name" : 'InvalidArgumentException',
-                "message" : 'First argument is either not a string or empty.'
+                "name": 'InvalidArgumentException',
+                "message": 'First argument is either not a string or empty.'
             };
         }
     };
@@ -151,11 +150,11 @@
 }(document, mejs));
 
 // i18n fixes for compatibility with WordPress
-;(function(exports, undefined) {
+;(function (exports, undefined) {
 
     "use strict";
 
-    if ( typeof mejsL10n != 'undefined' ) {
+    if (typeof mejsL10n != 'undefined') {
         exports[mejsL10n.language] = mejsL10n.strings;
     }
 

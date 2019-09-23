@@ -5,25 +5,23 @@ namespace Guzzle\Parser\Cookie;
 /**
  * Default Guzzle implementation of a Cookie parser
  */
-class CookieParser implements CookieParserInterface
-{
+class CookieParser implements CookieParserInterface {
     /** @var array Cookie part names to snake_case array values */
     protected static $cookieParts = array(
-        'domain'      => 'Domain',
-        'path'        => 'Path',
-        'max_age'     => 'Max-Age',
-        'expires'     => 'Expires',
-        'version'     => 'Version',
-        'secure'      => 'Secure',
-        'port'        => 'Port',
-        'discard'     => 'Discard',
-        'comment'     => 'Comment',
-        'comment_url' => 'Comment-Url',
-        'http_only'   => 'HttpOnly'
+            'domain' => 'Domain',
+            'path' => 'Path',
+            'max_age' => 'Max-Age',
+            'expires' => 'Expires',
+            'version' => 'Version',
+            'secure' => 'Secure',
+            'port' => 'Port',
+            'discard' => 'Discard',
+            'comment' => 'Comment',
+            'comment_url' => 'Comment-Url',
+            'http_only' => 'HttpOnly'
     );
 
-    public function parseCookie($cookie, $host = null, $path = null, $decode = false)
-    {
+    public function parseCookie($cookie, $host = null, $path = null, $decode = false) {
         // Explode the cookie string using a series of semicolons
         $pieces = array_filter(array_map('trim', explode(';', $cookie)));
 
@@ -34,12 +32,12 @@ class CookieParser implements CookieParserInterface
 
         // Create the default return array
         $data = array_merge(array_fill_keys(array_keys(self::$cookieParts), null), array(
-            'cookies'   => array(),
-            'data'      => array(),
-            'path'      => null,
-            'http_only' => false,
-            'discard'   => false,
-            'domain'    => $host
+                'cookies' => array(),
+                'data' => array(),
+                'path' => null,
+                'http_only' => false,
+                'discard' => false,
+                'domain' => $host
         ));
         $foundNonCookies = 0;
 

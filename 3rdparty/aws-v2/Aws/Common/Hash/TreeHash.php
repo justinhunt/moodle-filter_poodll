@@ -24,8 +24,7 @@ use Guzzle\Http\EntityBody;
 /**
  * Encapsulates the creation of a tree hash from streamed chunks of data
  */
-class TreeHash implements ChunkHashInterface
-{
+class TreeHash implements ChunkHashInterface {
     /**
      * @var string The algorithm used for hashing
      */
@@ -49,14 +48,13 @@ class TreeHash implements ChunkHashInterface
     /**
      * Create a tree hash from an array of existing tree hash checksums
      *
-     * @param array  $checksums    Set of checksums
-     * @param bool   $inBinaryForm Whether or not the checksums are already in binary form
-     * @param string $algorithm    A valid hash algorithm name as returned by `hash_algos()`
+     * @param array $checksums Set of checksums
+     * @param bool $inBinaryForm Whether or not the checksums are already in binary form
+     * @param string $algorithm A valid hash algorithm name as returned by `hash_algos()`
      *
      * @return TreeHash
      */
-    public static function fromChecksums(array $checksums, $inBinaryForm = false, $algorithm = self::DEFAULT_ALGORITHM)
-    {
+    public static function fromChecksums(array $checksums, $inBinaryForm = false, $algorithm = self::DEFAULT_ALGORITHM) {
         $treeHash = new self($algorithm);
 
         // Convert checksums to binary form if provided in hex form and add them to the tree hash
@@ -71,13 +69,12 @@ class TreeHash implements ChunkHashInterface
     /**
      * Create a tree hash from a content body
      *
-     * @param string|resource|EntityBody $content   Content to create a tree hash for
-     * @param string                     $algorithm A valid hash algorithm name as returned by `hash_algos()`
+     * @param string|resource|EntityBody $content Content to create a tree hash for
+     * @param string $algorithm A valid hash algorithm name as returned by `hash_algos()`
      *
      * @return TreeHash
      */
-    public static function fromContent($content, $algorithm = self::DEFAULT_ALGORITHM)
-    {
+    public static function fromContent($content, $algorithm = self::DEFAULT_ALGORITHM) {
         $treeHash = new self($algorithm);
 
         // Read the data in 1MB chunks and add to tree hash
@@ -95,14 +92,13 @@ class TreeHash implements ChunkHashInterface
     /**
      * Validates an entity body with a tree hash checksum
      *
-     * @param string|resource|EntityBody $content   Content to create a tree hash for
-     * @param string                     $checksum  The checksum to use for validation
-     * @param string                     $algorithm A valid hash algorithm name as returned by `hash_algos()`
+     * @param string|resource|EntityBody $content Content to create a tree hash for
+     * @param string $checksum The checksum to use for validation
+     * @param string $algorithm A valid hash algorithm name as returned by `hash_algos()`
      *
      * @return bool
      */
-    public static function validateChecksum($content, $checksum, $algorithm = self::DEFAULT_ALGORITHM)
-    {
+    public static function validateChecksum($content, $checksum, $algorithm = self::DEFAULT_ALGORITHM) {
         $treeHash = self::fromContent($content, $algorithm);
 
         return ($checksum === $treeHash->getHash());
@@ -111,8 +107,7 @@ class TreeHash implements ChunkHashInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct($algorithm = self::DEFAULT_ALGORITHM)
-    {
+    public function __construct($algorithm = self::DEFAULT_ALGORITHM) {
         HashUtils::validateAlgorithm($algorithm);
         $this->algorithm = $algorithm;
     }
@@ -122,8 +117,7 @@ class TreeHash implements ChunkHashInterface
      * @throws LogicException           if the root tree hash is already calculated
      * @throws InvalidArgumentException if the data is larger than 1MB
      */
-    public function addData($data)
-    {
+    public function addData($data) {
         // Error if hash is already calculated
         if ($this->hash) {
             throw new LogicException('You may not add more data to a finalized tree hash.');
@@ -143,14 +137,13 @@ class TreeHash implements ChunkHashInterface
     /**
      * Add a checksum to the tree hash directly
      *
-     * @param string $checksum     The checksum to add
-     * @param bool   $inBinaryForm Whether or not the checksum is already in binary form
+     * @param string $checksum The checksum to add
+     * @param bool $inBinaryForm Whether or not the checksum is already in binary form
      *
      * @return self
      * @throws LogicException if the root tree hash is already calculated
      */
-    public function addChecksum($checksum, $inBinaryForm = false)
-    {
+    public function addChecksum($checksum, $inBinaryForm = false) {
         // Error if hash is already calculated
         if ($this->hash) {
             throw new LogicException('You may not add more checksums to a finalized tree hash.');
@@ -165,8 +158,7 @@ class TreeHash implements ChunkHashInterface
     /**
      * {@inheritdoc}
      */
-    public function getHash($returnBinaryForm = false)
-    {
+    public function getHash($returnBinaryForm = false) {
         if (!$this->hash) {
             // Perform hashes up the tree to arrive at the root checksum of the tree hash
             $hashes = $this->checksums;
@@ -188,8 +180,7 @@ class TreeHash implements ChunkHashInterface
     /**
      * @return array Array of raw checksums composing the tree hash
      */
-    public function getChecksums()
-    {
+    public function getChecksums() {
         return $this->checksums;
     }
 }

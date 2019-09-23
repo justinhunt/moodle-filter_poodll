@@ -16,8 +16,7 @@ namespace Monolog\Processor;
  *
  * @author Jordi Boggiano <j.boggiano@seld.be>
  */
-class WebProcessor
-{
+class WebProcessor {
     /**
      * @var array|\ArrayAccess
      */
@@ -31,22 +30,22 @@ class WebProcessor
      * @var array
      */
     protected $extraFields = array(
-        'url'         => 'REQUEST_URI',
-        'ip'          => 'REMOTE_ADDR',
-        'http_method' => 'REQUEST_METHOD',
-        'server'      => 'SERVER_NAME',
-        'referrer'    => 'HTTP_REFERER',
+            'url' => 'REQUEST_URI',
+            'ip' => 'REMOTE_ADDR',
+            'http_method' => 'REQUEST_METHOD',
+            'server' => 'SERVER_NAME',
+            'referrer' => 'HTTP_REFERER',
     );
 
     /**
-     * @param array|\ArrayAccess $serverData  Array or object w/ ArrayAccess that provides access to the $_SERVER data
-     * @param array|null         $extraFields Field names and the related key inside $serverData to be added. If not provided it defaults to: url, ip, http_method, server, referrer
+     * @param array|\ArrayAccess $serverData Array or object w/ ArrayAccess that provides access to the $_SERVER data
+     * @param array|null $extraFields Field names and the related key inside $serverData to be added. If not provided it defaults
+     *         to: url, ip, http_method, server, referrer
      */
-    public function __construct($serverData = null, array $extraFields = null)
-    {
+    public function __construct($serverData = null, array $extraFields = null) {
         if (null === $serverData) {
             $this->serverData = &$_SERVER;
-        } elseif (is_array($serverData) || $serverData instanceof \ArrayAccess) {
+        } else if (is_array($serverData) || $serverData instanceof \ArrayAccess) {
             $this->serverData = $serverData;
         } else {
             throw new \UnexpectedValueException('$serverData must be an array or object implementing ArrayAccess.');
@@ -69,8 +68,7 @@ class WebProcessor
      * @param  array $record
      * @return array
      */
-    public function __invoke(array $record)
-    {
+    public function __invoke(array $record) {
         // skip processing if for some reason request data
         // is not present (CLI or wonky SAPIs)
         if (!isset($this->serverData['REQUEST_URI'])) {
@@ -87,8 +85,7 @@ class WebProcessor
      * @param  string $serverName
      * @return $this
      */
-    public function addExtraField($extraName, $serverName)
-    {
+    public function addExtraField($extraName, $serverName) {
         $this->extraFields[$extraName] = $serverName;
 
         return $this;
@@ -98,8 +95,7 @@ class WebProcessor
      * @param  array $extra
      * @return array
      */
-    private function appendExtraFields(array $extra)
-    {
+    private function appendExtraFields(array $extra) {
         foreach ($this->extraFields as $extraName => $serverName) {
             $extra[$extraName] = isset($this->serverData[$serverName]) ? $this->serverData[$serverName] : null;
         }

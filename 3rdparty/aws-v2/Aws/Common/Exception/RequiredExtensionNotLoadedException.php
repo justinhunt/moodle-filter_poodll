@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * Thrown when a particular PHP extension is required to execute the guarded logic, but the extension is not loaded
  */
-class RequiredExtensionNotLoadedException extends RuntimeException {}
+class RequiredExtensionNotLoadedException extends RuntimeException {
+}

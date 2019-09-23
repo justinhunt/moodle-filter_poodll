@@ -14,8 +14,7 @@ namespace Psr\Http\Message;
  * @link http://www.ietf.org/rfc/rfc7230.txt
  * @link http://www.ietf.org/rfc/rfc7231.txt
  */
-interface MessageInterface
-{
+interface MessageInterface {
     /**
      * Retrieves the HTTP protocol version as a string.
      *

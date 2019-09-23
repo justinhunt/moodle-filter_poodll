@@ -7,8 +7,7 @@ use Guzzle\Http\Curl\CurlHandle;
 /**
  * cURL request exception
  */
-class CurlException extends RequestException
-{
+class CurlException extends RequestException {
     private $curlError;
     private $curlErrorNo;
     private $handle;
@@ -17,13 +16,12 @@ class CurlException extends RequestException
     /**
      * Set the cURL error message
      *
-     * @param string $error  Curl error
-     * @param int    $number Curl error number
+     * @param string $error Curl error
+     * @param int $number Curl error number
      *
      * @return self
      */
-    public function setError($error, $number)
-    {
+    public function setError($error, $number) {
         $this->curlError = $error;
         $this->curlErrorNo = $number;
 
@@ -37,8 +35,7 @@ class CurlException extends RequestException
      *
      * @return self
      */
-    public function setCurlHandle(CurlHandle $handle)
-    {
+    public function setCurlHandle(CurlHandle $handle) {
         $this->handle = $handle;
 
         return $this;
@@ -49,8 +46,7 @@ class CurlException extends RequestException
      *
      * @return CurlHandle|null
      */
-    public function getCurlHandle()
-    {
+    public function getCurlHandle() {
         return $this->handle;
     }
 
@@ -59,8 +55,7 @@ class CurlException extends RequestException
      *
      * @return string|null
      */
-    public function getError()
-    {
+    public function getError() {
         return $this->curlError;
     }
 
@@ -69,8 +64,7 @@ class CurlException extends RequestException
      *
      * @return int|null
      */
-    public function getErrorNo()
-    {
+    public function getErrorNo() {
         return $this->curlErrorNo;
     }
 
@@ -79,8 +73,7 @@ class CurlException extends RequestException
      *
      * @return array
      */
-    public function getCurlInfo()
-    {
+    public function getCurlInfo() {
         return $this->curlInfo;
     }
 
@@ -92,8 +85,7 @@ class CurlException extends RequestException
      * @return self
      * @link http://php.net/manual/en/function.curl-getinfo.php
      */
-    public function setCurlInfo(array $info)
-    {
+    public function setCurlInfo(array $info) {
         $this->curlInfo = $info;
 
         return $this;

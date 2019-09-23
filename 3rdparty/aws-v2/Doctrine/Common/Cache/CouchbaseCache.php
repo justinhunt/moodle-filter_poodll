@@ -28,8 +28,7 @@ use \Couchbase;
  * @since  2.4
  * @author Michael Nitschinger <michael@nitschinger.at>
  */
-class CouchbaseCache extends CacheProvider
-{
+class CouchbaseCache extends CacheProvider {
     /**
      * @var Couchbase|null
      */
@@ -42,8 +41,7 @@ class CouchbaseCache extends CacheProvider
      *
      * @return void
      */
-    public function setCouchbase(Couchbase $couchbase)
-    {
+    public function setCouchbase(Couchbase $couchbase) {
         $this->couchbase = $couchbase;
     }
 
@@ -52,32 +50,28 @@ class CouchbaseCache extends CacheProvider
      *
      * @return Couchbase|null
      */
-    public function getCouchbase()
-    {
+    public function getCouchbase() {
         return $this->couchbase;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doFetch($id)
-    {
+    protected function doFetch($id) {
         return $this->couchbase->get($id) ?: false;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doContains($id)
-    {
+    protected function doContains($id) {
         return (null !== $this->couchbase->get($id));
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
-    {
+    protected function doSave($id, $data, $lifeTime = 0) {
         if ($lifeTime > 30 * 24 * 3600) {
             $lifeTime = time() + $lifeTime;
         }
@@ -87,35 +81,32 @@ class CouchbaseCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
-    {
+    protected function doDelete($id) {
         return $this->couchbase->delete($id);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doFlush()
-    {
+    protected function doFlush() {
         return $this->couchbase->flush();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doGetStats()
-    {
-        $stats   = $this->couchbase->getStats();
+    protected function doGetStats() {
+        $stats = $this->couchbase->getStats();
         $servers = $this->couchbase->getServers();
-        $server  = explode(":", $servers[0]);
-        $key     = $server[0] . ":" . "11210";
-        $stats   = $stats[$key];
+        $server = explode(":", $servers[0]);
+        $key = $server[0] . ":" . "11210";
+        $stats = $stats[$key];
         return array(
-            Cache::STATS_HITS   => $stats['get_hits'],
-            Cache::STATS_MISSES => $stats['get_misses'],
-            Cache::STATS_UPTIME => $stats['uptime'],
-            Cache::STATS_MEMORY_USAGE     => $stats['bytes'],
-            Cache::STATS_MEMORY_AVAILABLE => $stats['limit_maxbytes'],
+                Cache::STATS_HITS => $stats['get_hits'],
+                Cache::STATS_MISSES => $stats['get_misses'],
+                Cache::STATS_UPTIME => $stats['uptime'],
+                Cache::STATS_MEMORY_USAGE => $stats['bytes'],
+                Cache::STATS_MEMORY_AVAILABLE => $stats['limit_maxbytes'],
         );
     }
 }

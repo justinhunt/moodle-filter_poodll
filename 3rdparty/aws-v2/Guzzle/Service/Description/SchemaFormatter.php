@@ -7,8 +7,7 @@ use Guzzle\Common\Exception\InvalidArgumentException;
 /**
  * JSON Schema formatter class
  */
-class SchemaFormatter
-{
+class SchemaFormatter {
     /** @var \DateTimeZone */
     protected static $utcTimeZone;
 
@@ -16,12 +15,11 @@ class SchemaFormatter
      * Format a value by a registered format name
      *
      * @param string $format Registered format used to format the value
-     * @param mixed  $value  Value being formatted
+     * @param mixed $value Value being formatted
      *
      * @return mixed
      */
-    public static function format($format, $value)
-    {
+    public static function format($format, $value) {
         switch ($format) {
             case 'date-time':
                 return self::formatDateTime($value);
@@ -47,8 +45,7 @@ class SchemaFormatter
      *
      * @return string
      */
-    public static function formatDateTime($value)
-    {
+    public static function formatDateTime($value) {
         return self::dateFormatter($value, 'Y-m-d\TH:i:s\Z');
     }
 
@@ -59,8 +56,7 @@ class SchemaFormatter
      *
      * @return string
      */
-    public static function formatDateTimeHttp($value)
-    {
+    public static function formatDateTimeHttp($value) {
         return self::dateFormatter($value, 'D, d M Y H:i:s \G\M\T');
     }
 
@@ -71,8 +67,7 @@ class SchemaFormatter
      *
      * @return string
      */
-    public static function formatDate($value)
-    {
+    public static function formatDate($value) {
         return self::dateFormatter($value, 'Y-m-d');
     }
 
@@ -83,8 +78,7 @@ class SchemaFormatter
      *
      * @return string
      */
-    public static function formatTime($value)
-    {
+    public static function formatTime($value) {
         return self::dateFormatter($value, 'H:i:s');
     }
 
@@ -95,8 +89,7 @@ class SchemaFormatter
      *
      * @return string
      */
-    public static function formatBooleanAsString($value)
-    {
+    public static function formatBooleanAsString($value) {
         return filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 'true' : 'false';
     }
 
@@ -107,8 +100,7 @@ class SchemaFormatter
      *
      * @return int
      */
-    public static function formatTimestamp($value)
-    {
+    public static function formatTimestamp($value) {
         return (int) self::dateFormatter($value, 'U');
     }
 
@@ -117,8 +109,7 @@ class SchemaFormatter
      *
      * @return \DateTimeZone
      */
-    protected static function getUtcTimeZone()
-    {
+    protected static function getUtcTimeZone() {
         // @codeCoverageIgnoreStart
         if (!self::$utcTimeZone) {
             self::$utcTimeZone = new \DateTimeZone('UTC');
@@ -132,13 +123,12 @@ class SchemaFormatter
      * Perform the actual DateTime formatting
      *
      * @param int|string|\DateTime $dateTime Date time value
-     * @param string               $format   Format of the result
+     * @param string $format Format of the result
      *
      * @return string
      * @throws InvalidArgumentException
      */
-    protected static function dateFormatter($dateTime, $format)
-    {
+    protected static function dateFormatter($dateTime, $format) {
         if (is_numeric($dateTime)) {
             return gmdate($format, (int) $dateTime);
         }

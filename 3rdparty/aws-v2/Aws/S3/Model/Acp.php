@@ -24,8 +24,7 @@ use Guzzle\Service\Command\AbstractCommand;
 /**
  * Amazon S3 Access Control Policy (ACP)
  */
-class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
-{
+class Acp implements ToArrayInterface, \IteratorAggregate, \Countable {
     /**
      * @var \SplObjectStorage List of grants on the ACP
      */
@@ -39,11 +38,10 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
     /**
      * Constructs an ACP
      *
-     * @param Grantee            $owner  ACP policy owner
+     * @param Grantee $owner ACP policy owner
      * @param array|\Traversable $grants List of grants for the ACP
      */
-    public function __construct(Grantee $owner, $grants = null)
-    {
+    public function __construct(Grantee $owner, $grants = null) {
         $this->setOwner($owner);
         $this->setGrants($grants);
     }
@@ -56,8 +54,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @return Acp
      */
-    public static function fromArray(array $data)
-    {
+    public static function fromArray(array $data) {
         $builder = new AcpBuilder();
         $builder->setOwner((string) $data['Owner']['ID'], $data['Owner']['DisplayName']);
 
@@ -69,7 +66,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
             if (!isset($grant['Grantee']['Type'])) {
                 if (isset($grant['Grantee']['ID'])) {
                     $grant['Grantee']['Type'] = 'CanonicalUser';
-                } elseif (isset($grant['Grantee']['URI'])) {
+                } else if (isset($grant['Grantee']['URI'])) {
                     $grant['Grantee']['Type'] = 'Group';
                 } else {
                     $grant['Grantee']['Type'] = 'AmazonCustomerByEmail';
@@ -85,9 +82,9 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
                     break;
                 case 'CanonicalUser':
                     $builder->addGrantForUser(
-                        $permission,
-                        $grant['Grantee']['ID'],
-                        $grant['Grantee']['DisplayName']
+                            $permission,
+                            $grant['Grantee']['ID'],
+                            $grant['Grantee']['DisplayName']
                     );
             }
         }
@@ -104,8 +101,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @throws InvalidArgumentException if the grantee does not have an ID set
      */
-    public function setOwner(Grantee $owner)
-    {
+    public function setOwner(Grantee $owner) {
         if (!$owner->isCanonicalUser()) {
             throw new InvalidArgumentException('The owner must have an ID set.');
         }
@@ -120,8 +116,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @return Grantee
      */
-    public function getOwner()
-    {
+    public function getOwner() {
         return $this->owner;
     }
 
@@ -134,8 +129,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @throws InvalidArgumentException
      */
-    public function setGrants($grants = array())
-    {
+    public function setGrants($grants = array()) {
         $this->grants = new \SplObjectStorage();
 
         if ($grants) {
@@ -157,8 +151,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @return \SplObjectStorage
      */
-    public function getGrants()
-    {
+    public function getGrants() {
         return $this->grants;
     }
 
@@ -169,8 +162,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @return $this
      */
-    public function addGrant(Grant $grant)
-    {
+    public function addGrant(Grant $grant) {
         if (count($this->grants) < 100) {
             $this->grants->attach($grant);
         } else {
@@ -185,8 +177,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @return int
      */
-    public function count()
-    {
+    public function count() {
         return count($this->grants);
     }
 
@@ -195,8 +186,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @return \SplObjectStorage
      */
-    public function getIterator()
-    {
+    public function getIterator() {
         return $this->grants;
     }
 
@@ -207,8 +197,7 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
      *
      * @return $this
      */
-    public function updateCommand(AbstractCommand $command)
-    {
+    public function updateCommand(AbstractCommand $command) {
         $parameters = array();
         foreach ($this->grants as $grant) {
             /** @var Grant $grant */
@@ -225,19 +214,18 @@ class Acp implements ToArrayInterface, \IteratorAggregate, \Countable
     /**
      * {@inheritdoc}
      */
-    public function toArray()
-    {
+    public function toArray() {
         $grants = array();
         foreach ($this->grants as $grant) {
             $grants[] = $grant->toArray();
         }
 
         return array(
-            'Owner' => array(
-                'ID'          => $this->owner->getId(),
-                'DisplayName' => $this->owner->getDisplayName()
-            ),
-            'Grants' => $grants
+                'Owner' => array(
+                        'ID' => $this->owner->getId(),
+                        'DisplayName' => $this->owner->getDisplayName()
+                ),
+                'Grants' => $grants
         );
     }
 }

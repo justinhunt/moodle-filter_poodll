@@ -26,15 +26,14 @@ use Guzzle\Common\ToArrayInterface;
 /**
  * Amazon S3 Grantee model
  */
-class Grantee implements ToArrayInterface
-{
+class Grantee implements ToArrayInterface {
     /**
      * @var array A map of grantee types to grant header value prefixes
      */
     protected static $headerMap = array(
-        GranteeType::USER  => 'id',
-        GranteeType::EMAIL => 'emailAddress',
-        GranteeType::GROUP => 'uri'
+            GranteeType::USER => 'id',
+            GranteeType::EMAIL => 'emailAddress',
+            GranteeType::GROUP => 'uri'
     );
 
     /**
@@ -55,12 +54,11 @@ class Grantee implements ToArrayInterface
     /**
      * Constructs a Grantee
      *
-     * @param string $id           Grantee identifier
-     * @param string $displayName  Grantee display name
+     * @param string $id Grantee identifier
+     * @param string $displayName Grantee display name
      * @param string $expectedType The expected type of the grantee
      */
-    public function __construct($id, $displayName = null, $expectedType = null)
-    {
+    public function __construct($id, $displayName = null, $expectedType = null) {
         $this->type = GranteeType::USER;
         $this->setId($id, $expectedType);
         $this->setDisplayName($displayName);
@@ -69,7 +67,7 @@ class Grantee implements ToArrayInterface
     /**
      * Sets the account ID, email, or URL identifying the grantee
      *
-     * @param string $id           Grantee identifier
+     * @param string $id Grantee identifier
      * @param string $expectedType The expected type of the grantee
      *
      * @return Grantee
@@ -78,11 +76,10 @@ class Grantee implements ToArrayInterface
      *     is not of that type after instantiation
      * @throws InvalidArgumentException when the ID provided is not a string
      */
-    public function setId($id, $expectedType = null)
-    {
+    public function setId($id, $expectedType = null) {
         if (in_array($id, Group::values())) {
             $this->type = GranteeType::GROUP;
-        } elseif (!is_string($id)) {
+        } else if (!is_string($id)) {
             throw new InvalidArgumentException('The grantee ID must be provided as a string value.');
         }
 
@@ -92,8 +89,8 @@ class Grantee implements ToArrayInterface
 
         if ($expectedType && $expectedType !== $this->type) {
             throw new UnexpectedValueException('The type of the grantee after '
-                . 'setting the ID did not match the specified, expected type "'
-                . $expectedType . '" but received "' . $this->type . '".');
+                    . 'setting the ID did not match the specified, expected type "'
+                    . $expectedType . '" but received "' . $this->type . '".');
         }
 
         $this->id = $id;
@@ -106,8 +103,7 @@ class Grantee implements ToArrayInterface
      *
      * @return string
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -116,8 +112,7 @@ class Grantee implements ToArrayInterface
      *
      * @return null|string
      */
-    public function getEmailAddress()
-    {
+    public function getEmailAddress() {
         return $this->isAmazonCustomerByEmail() ? $this->id : null;
     }
 
@@ -126,8 +121,7 @@ class Grantee implements ToArrayInterface
      *
      * @return null|string
      */
-    public function getGroupUri()
-    {
+    public function getGroupUri() {
         return $this->isGroup() ? $this->id : null;
     }
 
@@ -140,8 +134,7 @@ class Grantee implements ToArrayInterface
      *
      * @throws LogicException when the grantee type not CanonicalUser
      */
-    public function setDisplayName($displayName)
-    {
+    public function setDisplayName($displayName) {
         if ($this->type === GranteeType::USER) {
             if (empty($displayName) || !is_string($displayName)) {
                 $displayName = $this->id;
@@ -150,7 +143,7 @@ class Grantee implements ToArrayInterface
         } else {
             if ($displayName) {
                 throw new LogicException('The display name can only be set '
-                    . 'for grantees specified by ID.');
+                        . 'for grantees specified by ID.');
             }
         }
 
@@ -162,8 +155,7 @@ class Grantee implements ToArrayInterface
      *
      * @return string
      */
-    public function getDisplayName()
-    {
+    public function getDisplayName() {
         return $this->displayName;
     }
 
@@ -172,8 +164,7 @@ class Grantee implements ToArrayInterface
      *
      * @return string
      */
-    public function getType()
-    {
+    public function getType() {
         return $this->type;
     }
 
@@ -182,8 +173,7 @@ class Grantee implements ToArrayInterface
      *
      * @return bool
      */
-    public function isCanonicalUser()
-    {
+    public function isCanonicalUser() {
         return ($this->type === GranteeType::USER);
     }
 
@@ -192,8 +182,7 @@ class Grantee implements ToArrayInterface
      *
      * @return bool
      */
-    public function isAmazonCustomerByEmail()
-    {
+    public function isAmazonCustomerByEmail() {
         return ($this->type === GranteeType::EMAIL);
     }
 
@@ -202,8 +191,7 @@ class Grantee implements ToArrayInterface
      *
      * @return bool
      */
-    public function isGroup()
-    {
+    public function isGroup() {
         return ($this->type === GranteeType::GROUP);
     }
 
@@ -212,8 +200,7 @@ class Grantee implements ToArrayInterface
      *
      * @return string
      */
-    public function getHeaderValue()
-    {
+    public function getHeaderValue() {
         $key = static::$headerMap[$this->type];
 
         return "{$key}=\"{$this->id}\"";
@@ -222,10 +209,9 @@ class Grantee implements ToArrayInterface
     /**
      * {@inheritdoc}
      */
-    public function toArray()
-    {
+    public function toArray() {
         $result = array(
-            'Type' => $this->type
+                'Type' => $this->type
         );
 
         switch ($this->type) {

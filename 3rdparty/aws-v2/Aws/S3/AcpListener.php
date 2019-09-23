@@ -24,13 +24,11 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Listener used to add an Access Control Policy to a request
  */
-class AcpListener implements EventSubscriberInterface
-{
+class AcpListener implements EventSubscriberInterface {
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array('command.before_prepare' => array('onCommandBeforePrepare', -255));
     }
 
@@ -41,8 +39,7 @@ class AcpListener implements EventSubscriberInterface
      *
      * @throws InvalidArgumentException
      */
-    public function onCommandBeforePrepare(Event $event)
-    {
+    public function onCommandBeforePrepare(Event $event) {
         /** @var \Guzzle\Service\Command\AbstractCommand $command */
         $command = $event['command'];
         $operation = $command->getOperation();
@@ -56,7 +53,7 @@ class AcpListener implements EventSubscriberInterface
                 // Check if the user specified both an ACP and Grants
                 if ($command->hasKey('Grants')) {
                     throw new InvalidArgumentException(
-                        'Use either the ACP parameter or the Grants parameter. Do not use both.'
+                            'Use either the ACP parameter or the Grants parameter. Do not use both.'
                     );
                 }
 

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\S3\Crypto;
 
 use Aws\Crypto\AbstractCryptoClient;
@@ -12,8 +13,7 @@ use GuzzleHttp\Promise;
 /**
  * Encapsulates the execution of a multipart upload of an encrypted object to S3.
  */
-class S3EncryptionMultipartUploader extends MultipartUploader
-{
+class S3EncryptionMultipartUploader extends MultipartUploader {
     use EncryptionTrait, CipherBuilderTrait, CryptoParamsTrait;
 
     /**
@@ -23,8 +23,7 @@ class S3EncryptionMultipartUploader extends MultipartUploader
      *
      * @return bool If the cipher passed is in our supported list.
      */
-    public static function isSupportedCipher($cipherName)
-    {
+    public static function isSupportedCipher($cipherName) {
         return in_array($cipherName, AbstractCryptoClient::$supportedCiphers);
     }
 
@@ -88,13 +87,13 @@ class S3EncryptionMultipartUploader extends MultipartUploader
      *   options are ignored.
      *
      * @param S3ClientInterface $client Client used for the upload.
-     * @param mixed             $source Source of the data to upload.
-     * @param array             $config Configuration used to perform the upload.
+     * @param mixed $source Source of the data to upload.
+     * @param array $config Configuration used to perform the upload.
      */
     public function __construct(
-        S3ClientInterface $client,
-        $source,
-        array $config = []
+            S3ClientInterface $client,
+            $source,
+            array $config = []
     ) {
         $this->client = $client;
         $config['params'] = [];
@@ -111,8 +110,8 @@ class S3EncryptionMultipartUploader extends MultipartUploader
         $this->instructionFileSuffix = $this->getInstructionFileSuffix($config);
         unset($config['@InstructionFileSuffix']);
         $this->strategy = $this->getMetadataStrategy(
-            $config,
-            $this->instructionFileSuffix
+                $config,
+                $this->instructionFileSuffix
         );
         if ($this->strategy === null) {
             $this->strategy = self::getDefaultStrategy();
@@ -124,30 +123,28 @@ class S3EncryptionMultipartUploader extends MultipartUploader
         parent::__construct($client, $source, $config);
     }
 
-    private static function getDefaultStrategy()
-    {
+    private static function getDefaultStrategy() {
         return new HeadersMetadataStrategy();
     }
 
-    private function getEncryptingDataPreparer()
-    {
+    private function getEncryptingDataPreparer() {
         return function() {
             // Defer encryption work until promise is executed
             $envelope = new MetadataEnvelope();
 
             list($this->source, $params) = Promise\promise_for($this->encrypt(
-                $this->source,
-                $this->config['@cipheroptions'] ?: [],
-                $this->provider,
-                $envelope
+                    $this->source,
+                    $this->config['@cipheroptions'] ?: [],
+                    $this->provider,
+                    $envelope
             ))->then(
-                function ($bodyStream) use ($envelope) {
-                    $params = $this->strategy->save(
-                        $envelope,
-                        $this->config['params']
-                    );
-                    return [$bodyStream, $params];
-                }
+                    function($bodyStream) use ($envelope) {
+                        $params = $this->strategy->save(
+                                $envelope,
+                                $this->config['params']
+                        );
+                        return [$bodyStream, $params];
+                    }
             )->wait();
 
             $this->source->rewind();

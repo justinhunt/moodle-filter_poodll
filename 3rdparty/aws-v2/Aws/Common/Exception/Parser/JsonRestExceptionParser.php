@@ -21,13 +21,11 @@ use Guzzle\Http\Message\Response;
 /**
  * Parses JSON encoded exception responses from REST services
  */
-class JsonRestExceptionParser extends AbstractJsonExceptionParser
-{
+class JsonRestExceptionParser extends AbstractJsonExceptionParser {
     /**
      * {@inheritdoc}
      */
-    protected function doParse(array $data, Response $response)
-    {
+    protected function doParse(array $data, Response $response) {
         // Merge in error data from the JSON body
         if ($json = $data['parsed']) {
             $data = array_replace($data, $json);

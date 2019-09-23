@@ -34,9 +34,9 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2017 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class debug_log extends  \core\event\base  {
+class debug_log extends \core\event\base {
 
-    const DEBUG_ZERO_LENGTH_FILE=10;
+    const DEBUG_ZERO_LENGTH_FILE = 10;
 
     /**
      * Create instance of event.
@@ -49,16 +49,16 @@ class debug_log extends  \core\event\base  {
     public static function create_from_data($debugobject) {
         //store debug object
         $json_debugobject = json_encode($debugobject);
-        $data = array('other'=>$json_debugobject);
+        $data = array('other' => $json_debugobject);
         //set context if we have one
-        if($debugobject->contextid !==false){
+        if ($debugobject->contextid !== false) {
             $context = \context::instance_by_id($debugobject->contextid);
-            $data['context']=$context;
+            $data['context'] = $context;
         }
         //set user if we have one
-        if($debugobject->userid !==false){
-            $data['userid']=$debugobject->userid;
-            $data['relateduserid']=$debugobject->userid;
+        if ($debugobject->userid !== false) {
+            $data['userid'] = $debugobject->userid;
+            $data['relateduserid'] = $debugobject->userid;
         }
 
         /** @var debug_log $event */
@@ -71,22 +71,21 @@ class debug_log extends  \core\event\base  {
      *
      * @return string
      */
-    public function get_description()
-    {
-       if (array_key_exists('other', $this->data)) {
-           $other = $this->data['other'];
-           if (gettype($other)!='object') {
-               $other = json_decode($this->data['other']);
-           }
+    public function get_description() {
+        if (array_key_exists('other', $this->data)) {
+            $other = $this->data['other'];
+            if (gettype($other) != 'object') {
+                $other = json_decode($this->data['other']);
+            }
 
-           if(gettype($other)=='object'){
-               return "(Debug) source:" . $other->source . ' message:' . $other->message;
-           }else{
-               return "Debug message: " . $other;
+            if (gettype($other) == 'object') {
+                return "(Debug) source:" . $other->source . ' message:' . $other->message;
+            } else {
+                return "Debug message: " . $other;
 
-           }
+            }
 
-       }
+        }
     }
 
     /**

@@ -30,45 +30,39 @@ namespace Doctrine\Common\Cache;
  * @author Roman Borschel <roman@code-factory.org>
  * @author David Abdemoulaie <dave@hobodave.com>
  */
-class XcacheCache extends CacheProvider
-{
+class XcacheCache extends CacheProvider {
     /**
      * {@inheritdoc}
      */
-    protected function doFetch($id)
-    {
+    protected function doFetch($id) {
         return $this->doContains($id) ? unserialize(xcache_get($id)) : false;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doContains($id)
-    {
+    protected function doContains($id) {
         return xcache_isset($id);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
-    {
+    protected function doSave($id, $data, $lifeTime = 0) {
         return xcache_set($id, serialize($data), (int) $lifeTime);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
-    {
+    protected function doDelete($id) {
         return xcache_unset($id);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doFlush()
-    {
+    protected function doFlush() {
         $this->checkAuthorization();
 
         xcache_clear_cache(XC_TYPE_VAR);
@@ -83,12 +77,11 @@ class XcacheCache extends CacheProvider
      *
      * @throws \BadMethodCallException When xcache.admin.enable_auth is On.
      */
-    protected function checkAuthorization()
-    {
+    protected function checkAuthorization() {
         if (ini_get('xcache.admin.enable_auth')) {
             throw new \BadMethodCallException(
-                'To use all features of \Doctrine\Common\Cache\XcacheCache, '
-                . 'you must set "xcache.admin.enable_auth" to "Off" in your php.ini.'
+                    'To use all features of \Doctrine\Common\Cache\XcacheCache, '
+                    . 'you must set "xcache.admin.enable_auth" to "Off" in your php.ini.'
             );
         }
     }
@@ -96,17 +89,16 @@ class XcacheCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doGetStats()
-    {
+    protected function doGetStats() {
         $this->checkAuthorization();
 
         $info = xcache_info(XC_TYPE_VAR, 0);
         return array(
-            Cache::STATS_HITS   => $info['hits'],
-            Cache::STATS_MISSES => $info['misses'],
-            Cache::STATS_UPTIME => null,
-            Cache::STATS_MEMORY_USAGE      => $info['size'],
-            Cache::STATS_MEMORY_AVAILABLE  => $info['avail'],
+                Cache::STATS_HITS => $info['hits'],
+                Cache::STATS_MISSES => $info['misses'],
+                Cache::STATS_UPTIME => null,
+                Cache::STATS_MEMORY_USAGE => $info['size'],
+                Cache::STATS_MEMORY_AVAILABLE => $info['avail'],
         );
     }
 }

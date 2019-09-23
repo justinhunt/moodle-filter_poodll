@@ -22,10 +22,8 @@ use Aws\S3\ResumableDownload;
 /**
  * Downloads and Amazon S3 bucket to a local directory
  */
-class DownloadSync extends AbstractSync
-{
-    protected function createTransferAction(\SplFileInfo $file)
-    {
+class DownloadSync extends AbstractSync {
+    protected function createTransferAction(\SplFileInfo $file) {
         $sourceFilename = $file->getPathname();
         list($bucket, $key) = explode('/', substr($sourceFilename, 5), 2);
         $filename = $this->options['source_converter']->convert($sourceFilename);
@@ -42,17 +40,16 @@ class DownloadSync extends AbstractSync
         }
 
         return $this->options['client']->getCommand('GetObject', array(
-            'Bucket' => $bucket,
-            'Key'    => $key,
-            'SaveAs' => $filename
+                'Bucket' => $bucket,
+                'Key' => $key,
+                'SaveAs' => $filename
         ));
     }
 
     /**
      * @codeCoverageIgnore
      */
-    protected function createDirectory($filename)
-    {
+    protected function createDirectory($filename) {
         $directory = dirname($filename);
         // Some S3 clients create empty files to denote directories. Remove these so that we can create the directory.
         if (is_file($directory) && filesize($directory) == 0) {
@@ -65,8 +62,7 @@ class DownloadSync extends AbstractSync
         }
     }
 
-    protected function filterCommands(array $commands)
-    {
+    protected function filterCommands(array $commands) {
         // Build a list of all of the directories in each command so that we don't attempt to create an empty dir in
         // the same parallel transfer as attempting to create a file in that dir
         $dirs = array();
@@ -83,13 +79,12 @@ class DownloadSync extends AbstractSync
             }
         }
 
-        return array_filter($commands, function ($command) use ($dirs) {
+        return array_filter($commands, function($command) use ($dirs) {
             return !in_array($command['SaveAs'], $dirs);
         });
     }
 
-    protected function transferCommands(array $commands)
-    {
+    protected function transferCommands(array $commands) {
         parent::transferCommands($this->filterCommands($commands));
     }
 }

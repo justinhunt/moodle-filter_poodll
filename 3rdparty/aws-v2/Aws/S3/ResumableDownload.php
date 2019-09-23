@@ -29,8 +29,7 @@ use Guzzle\Service\Resource\Model;
  * Downloads objects from Amazon S3 in using "Range" downloads. This allows a partially downloaded object to be resumed
  * so that only the remaining portion of the object is downloaded.
  */
-class ResumableDownload
-{
+class ResumableDownload {
     /** @var S3Client The S3 client to use to download objects and issue HEAD requests */
     protected $client;
 
@@ -44,21 +43,20 @@ class ResumableDownload
     protected $target;
 
     /**
-     * @param S3Client                            $client Client to use when executing requests
-     * @param string                              $bucket Bucket that holds the object
-     * @param string                              $key    Key of the object
+     * @param S3Client $client Client to use when executing requests
+     * @param string $bucket Bucket that holds the object
+     * @param string $key Key of the object
      * @param string|resource|EntityBodyInterface $target Where the object should be downloaded to. Pass a string to
      *                                                    save the object to a file, pass a resource returned by
      *                                                    fopen() to save the object to a stream resource, or pass a
      *                                                    Guzzle EntityBody object to save the contents to an
      *                                                    EntityBody.
-     * @param array                               $params Any additional GetObject or HeadObject parameters to use
+     * @param array $params Any additional GetObject or HeadObject parameters to use
      *                                                    with each command issued by the client. (e.g. pass "Version"
      *                                                    to download a specific version of an object)
      * @throws RuntimeException if the target variable points to a file that cannot be opened
      */
-    public function __construct(S3Client $client, $bucket, $key, $target, array $params = array())
-    {
+    public function __construct(S3Client $client, $bucket, $key, $target, array $params = array()) {
         $this->params = $params;
         $this->client = $client;
         $this->params['Bucket'] = $bucket;
@@ -82,8 +80,7 @@ class ResumableDownload
      *
      * @return string
      */
-    public function getBucket()
-    {
+    public function getBucket() {
         return $this->params['Bucket'];
     }
 
@@ -92,8 +89,7 @@ class ResumableDownload
      *
      * @return string
      */
-    public function getKey()
-    {
+    public function getKey() {
         return $this->params['Key'];
     }
 
@@ -102,8 +98,7 @@ class ResumableDownload
      *
      * @return string
      */
-    public function getFilename()
-    {
+    public function getFilename() {
         return $this->target->getUri();
     }
 
@@ -114,8 +109,7 @@ class ResumableDownload
      *
      * @return Model
      */
-    public function __invoke()
-    {
+    public function __invoke() {
         $command = $this->client->getCommand('HeadObject', $this->params);
         $this->meta = $command->execute();
 
@@ -128,9 +122,9 @@ class ResumableDownload
         // Use a ReadLimitEntityBody so that rewinding the stream after an error does not cause the file pointer
         // to enter an inconsistent state with the data being downloaded
         $this->params['SaveAs'] = new ReadLimitEntityBody(
-            $this->target,
-            $this->meta['ContentLength'],
-            $this->target->ftell()
+                $this->target,
+                $this->meta['ContentLength'],
+                $this->target->ftell()
         );
 
         $result = $this->getRemaining();
@@ -144,8 +138,7 @@ class ResumableDownload
      *
      * @return Model
      */
-    protected function getRemaining()
-    {
+    protected function getRemaining() {
         $current = $this->target->ftell();
         $targetByte = $this->meta['ContentLength'] - 1;
         $this->params['Range'] = "bytes={$current}-{$targetByte}";
@@ -162,13 +155,12 @@ class ResumableDownload
      *
      * @throws UnexpectedValueException if the message does not validate
      */
-    protected function checkIntegrity()
-    {
+    protected function checkIntegrity() {
         if ($this->target->isReadable() && $expected = $this->meta['ContentMD5']) {
             $actual = $this->target->getContentMd5();
             if ($actual != $expected) {
                 throw new UnexpectedValueException(
-                    "Message integrity check failed. Expected {$expected} but got {$actual}."
+                        "Message integrity check failed. Expected {$expected} but got {$actual}."
                 );
             }
         }

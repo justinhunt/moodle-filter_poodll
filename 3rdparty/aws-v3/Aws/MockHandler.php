@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use Aws\Exception\AwsException;
@@ -10,8 +11,7 @@ use Psr\Http\Message\RequestInterface;
  * Returns promises that are rejected or fulfilled using a queue of
  * Aws\ResultInterface and Aws\Exception\AwsException objects.
  */
-class MockHandler implements \Countable
-{
+class MockHandler implements \Countable {
     private $queue;
     private $lastCommand;
     private $lastRequest;
@@ -23,14 +23,14 @@ class MockHandler implements \Countable
      * {@see AwsException} objects that acts as a queue of results or
      * exceptions to return each time the handler is invoked.
      *
-     * @param array    $resultOrQueue
+     * @param array $resultOrQueue
      * @param callable $onFulfilled Callback to invoke when the return value is fulfilled.
-     * @param callable $onRejected  Callback to invoke when the return value is rejected.
+     * @param callable $onRejected Callback to invoke when the return value is rejected.
      */
     public function __construct(
-        array $resultOrQueue = [],
-        callable $onFulfilled = null,
-        callable $onRejected = null
+            array $resultOrQueue = [],
+            callable $onFulfilled = null,
+            callable $onRejected = null
     ) {
         $this->onFulfilled = $onFulfilled;
         $this->onRejected = $onRejected;
@@ -44,12 +44,11 @@ class MockHandler implements \Countable
      * Adds one or more variadic ResultInterface or AwsException objects to the
      * queue.
      */
-    public function append()
-    {
+    public function append() {
         foreach (func_get_args() as $value) {
             if ($value instanceof ResultInterface
-                || $value instanceof AwsException
-                || is_callable($value)
+                    || $value instanceof AwsException
+                    || is_callable($value)
             ) {
                 $this->queue[] = $value;
             } else {
@@ -59,15 +58,15 @@ class MockHandler implements \Countable
     }
 
     public function __invoke(
-        CommandInterface $command,
-        RequestInterface $request
+            CommandInterface $command,
+            RequestInterface $request
     ) {
         if (!$this->queue) {
             $last = $this->lastCommand
-                ? ' The last command sent was ' . $this->lastCommand->getName() . '.'
-                : '';
+                    ? ' The last command sent was ' . $this->lastCommand->getName() . '.'
+                    : '';
             throw new \RuntimeException('Mock queue is empty. Trying to send a '
-                . $command->getName() . ' command failed.' . $last);
+                    . $command->getName() . ' command failed.' . $last);
         }
 
         $this->lastCommand = $command;
@@ -104,8 +103,7 @@ class MockHandler implements \Countable
      *
      * @return RequestInterface
      */
-    public function getLastRequest()
-    {
+    public function getLastRequest() {
         return $this->lastRequest;
     }
 
@@ -114,8 +112,7 @@ class MockHandler implements \Countable
      *
      * @return CommandInterface
      */
-    public function getLastCommand()
-    {
+    public function getLastCommand() {
         return $this->lastCommand;
     }
 
@@ -124,8 +121,7 @@ class MockHandler implements \Countable
      *
      * @return int
      */
-    public function count()
-    {
+    public function count() {
         return count($this->queue);
     }
 }

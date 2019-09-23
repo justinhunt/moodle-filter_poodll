@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The e-mail address you provided is associated with more than one account.
  */
-class AmbiguousGrantByEmailAddressException extends S3Exception {}
+class AmbiguousGrantByEmailAddressException extends S3Exception {
+}

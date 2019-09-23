@@ -31,12 +31,11 @@ namespace Doctrine\Common\Cache;
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @author Kévin Dunglas <dunglas@gmail.com>
  */
-interface Cache
-{
-    const STATS_HITS             = 'hits';
-    const STATS_MISSES           = 'misses';
-    const STATS_UPTIME           = 'uptime';
-    const STATS_MEMORY_USAGE     = 'memory_usage';
+interface Cache {
+    const STATS_HITS = 'hits';
+    const STATS_MISSES = 'misses';
+    const STATS_UPTIME = 'uptime';
+    const STATS_MEMORY_USAGE = 'memory_usage';
     const STATS_MEMORY_AVAILABLE = 'memory_available';
     /**
      * Only for backward compatibility (may be removed in next major release)
@@ -68,9 +67,9 @@ interface Cache
      *
      * If a cache entry with the given id already exists, its data will be replaced.
      *
-     * @param string $id       The cache id.
-     * @param mixed  $data     The cache entry/data.
-     * @param int    $lifeTime The lifetime in number of seconds for this cache entry.
+     * @param string $id The cache id.
+     * @param mixed $data The cache entry/data.
+     * @param int $lifeTime The lifetime in number of seconds for this cache entry.
      *                         If zero (the default), the entry never expires (although it may be deleted from the cache
      *                         to make place for other entries).
      *

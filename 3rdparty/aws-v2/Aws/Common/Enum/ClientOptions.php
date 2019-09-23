@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable default factory options that can be passed to a client's factory method
  */
-class ClientOptions extends Enum
-{
+class ClientOptions extends Enum {
     /**
      * AWS Access Key ID
      *

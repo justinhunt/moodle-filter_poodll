@@ -1,26 +1,24 @@
 <?php
+
 namespace JmesPath;
 
 /**
  * Provides CLI debugging information for the AST and Compiler runtimes.
  */
-class DebugRuntime
-{
+class DebugRuntime {
     private $runtime;
     private $out;
     private $lexer;
     private $parser;
 
-    public function __construct(callable $runtime, $output = null)
-    {
+    public function __construct(callable $runtime, $output = null) {
         $this->runtime = $runtime;
         $this->out = $output ?: STDOUT;
         $this->lexer = new Lexer();
         $this->parser = new Parser($this->lexer);
     }
 
-    public function __invoke($expression, $data)
-    {
+    public function __invoke($expression, $data) {
         if ($this->runtime instanceof CompilerRuntime) {
             return $this->debugCompiled($expression, $data);
         }
@@ -28,60 +26,55 @@ class DebugRuntime
         return $this->debugInterpreted($expression, $data);
     }
 
-    private function debugInterpreted($expression, $data)
-    {
+    private function debugInterpreted($expression, $data) {
         return $this->debugCallback(
-            function () use ($expression, $data) {
-                $runtime = $this->runtime;
-                return $runtime($expression, $data);
-            },
-            $expression,
-            $data
+                function() use ($expression, $data) {
+                    $runtime = $this->runtime;
+                    return $runtime($expression, $data);
+                },
+                $expression,
+                $data
         );
     }
 
-    private function debugCompiled($expression, $data)
-    {
+    private function debugCompiled($expression, $data) {
         $result = $this->debugCallback(
-            function () use ($expression, $data) {
-                $runtime = $this->runtime;
-                return $runtime($expression, $data);
-            },
-            $expression,
-            $data
+                function() use ($expression, $data) {
+                    $runtime = $this->runtime;
+                    return $runtime($expression, $data);
+                },
+                $expression,
+                $data
         );
         $this->dumpCompiledCode($expression);
 
         return $result;
     }
 
-    private function dumpTokens($expression)
-    {
+    private function dumpTokens($expression) {
         $lexer = new Lexer();
         fwrite($this->out, "Tokens\n======\n\n");
         $tokens = $lexer->tokenize($expression);
 
         foreach ($tokens as $t) {
             fprintf(
-                $this->out,
-                "%3d  %-13s  %s\n", $t['pos'], $t['type'],
-                json_encode($t['value'])
+                    $this->out,
+                    "%3d  %-13s  %s\n", $t['pos'], $t['type'],
+                    json_encode($t['value'])
             );
         }
 
         fwrite($this->out, "\n");
     }
 
-    private function dumpAst($expression)
-    {
+    private function dumpAst($expression) {
         $parser = new Parser();
         $ast = $parser->parse($expression);
         fwrite($this->out, "AST\n========\n\n");
         fwrite($this->out, json_encode($ast, JSON_PRETTY_PRINT) . "\n");
     }
 
-    private function dumpCompiledCode($expression)
-    {
+    private function dumpCompiledCode($expression) {
         fwrite($this->out, "Code\n========\n\n");
         $dir = sys_get_temp_dir();
         $hash = md5($expression);
@@ -91,8 +84,7 @@ class DebugRuntime
         fprintf($this->out, file_get_contents($filename));
     }
 
-    private function debugCallback(callable $debugFn, $expression, $data)
-    {
+    private function debugCallback(callable $debugFn, $expression, $data) {
         fprintf($this->out, "Expression\n==========\n\n%s\n\n", $expression);
         $this->dumpTokens($expression);
         $this->dumpAst($expression);

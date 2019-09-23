@@ -21,8 +21,7 @@ use Aws\Common\Exception\LogicException;
 /**
  * Encapsulates the creation of a hash from streamed chunks of data
  */
-class ChunkHash implements ChunkHashInterface
-{
+class ChunkHash implements ChunkHashInterface {
     /**
      * @var resource The hash context as created by `hash_init()`
      */
@@ -41,8 +40,7 @@ class ChunkHash implements ChunkHashInterface
     /**
      * {@inheritdoc}
      */
-    public function __construct($algorithm = self::DEFAULT_ALGORITHM)
-    {
+    public function __construct($algorithm = self::DEFAULT_ALGORITHM) {
         HashUtils::validateAlgorithm($algorithm);
         $this->context = hash_init($algorithm);
     }
@@ -50,8 +48,7 @@ class ChunkHash implements ChunkHashInterface
     /**
      * {@inheritdoc}
      */
-    public function addData($data)
-    {
+    public function addData($data) {
         if (!$this->context) {
             throw new LogicException('You may not add more data to a finalized chunk hash.');
         }
@@ -64,8 +61,7 @@ class ChunkHash implements ChunkHashInterface
     /**
      * {@inheritdoc}
      */
-    public function getHash($returnBinaryForm = false)
-    {
+    public function getHash($returnBinaryForm = false) {
         if (!$this->hash) {
             $this->hashRaw = hash_final($this->context, true);
             $this->hash = HashUtils::binToHex($this->hashRaw);
@@ -78,8 +74,7 @@ class ChunkHash implements ChunkHashInterface
     /**
      * {@inheritdoc}
      */
-    public function __clone()
-    {
+    public function __clone() {
         if ($this->context) {
             $this->context = hash_copy($this->context);
         }

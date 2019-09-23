@@ -9,10 +9,8 @@ use Guzzle\Service\Description\Parameter;
 /**
  * Visitor used to change the location in which a response body is saved
  */
-class ResponseBodyVisitor extends AbstractRequestVisitor
-{
-    public function visit(CommandInterface $command, RequestInterface $request, Parameter $param, $value)
-    {
+class ResponseBodyVisitor extends AbstractRequestVisitor {
+    public function visit(CommandInterface $command, RequestInterface $request, Parameter $param, $value) {
         $request->setResponseBody($value);
     }
 }

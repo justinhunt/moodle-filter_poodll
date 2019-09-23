@@ -5,8 +5,7 @@ namespace Guzzle\Batch;
 /**
  * Interface used for dividing a queue of items into an array of batches
  */
-interface BatchDivisorInterface
-{
+interface BatchDivisorInterface {
     /**
      * Divide a queue of items into an array batches
      *

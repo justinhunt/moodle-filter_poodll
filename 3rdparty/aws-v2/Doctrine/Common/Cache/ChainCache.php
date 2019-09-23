@@ -24,8 +24,7 @@ namespace Doctrine\Common\Cache;
  *
  * @author Michaël Gallego <mic.gallego@gmail.com>
  */
-class ChainCache extends CacheProvider
-{
+class ChainCache extends CacheProvider {
     /**
      * @var CacheProvider[]
      */
@@ -36,16 +35,14 @@ class ChainCache extends CacheProvider
      *
      * @param CacheProvider[] $cacheProviders
      */
-    public function __construct($cacheProviders = array())
-    {
+    public function __construct($cacheProviders = array()) {
         $this->cacheProviders = $cacheProviders;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setNamespace($namespace)
-    {
+    public function setNamespace($namespace) {
         parent::setNamespace($namespace);
 
         foreach ($this->cacheProviders as $cacheProvider) {
@@ -56,14 +53,13 @@ class ChainCache extends CacheProvider
     /**
      * {@inheritDoc}
      */
-    protected function doFetch($id)
-    {
+    protected function doFetch($id) {
         foreach ($this->cacheProviders as $key => $cacheProvider) {
             if ($cacheProvider->doContains($id)) {
                 $value = $cacheProvider->doFetch($id);
 
                 // We populate all the previous cache layers (that are assumed to be faster)
-                for ($subKey = $key - 1 ; $subKey >= 0 ; $subKey--) {
+                for ($subKey = $key - 1; $subKey >= 0; $subKey--) {
                     $this->cacheProviders[$subKey]->doSave($id, $value);
                 }
 
@@ -77,8 +73,7 @@ class ChainCache extends CacheProvider
     /**
      * {@inheritDoc}
      */
-    protected function doContains($id)
-    {
+    protected function doContains($id) {
         foreach ($this->cacheProviders as $cacheProvider) {
             if ($cacheProvider->doContains($id)) {
                 return true;
@@ -91,8 +86,7 @@ class ChainCache extends CacheProvider
     /**
      * {@inheritDoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
-    {
+    protected function doSave($id, $data, $lifeTime = 0) {
         $stored = true;
 
         foreach ($this->cacheProviders as $cacheProvider) {
@@ -105,8 +99,7 @@ class ChainCache extends CacheProvider
     /**
      * {@inheritDoc}
      */
-    protected function doDelete($id)
-    {
+    protected function doDelete($id) {
         $deleted = true;
 
         foreach ($this->cacheProviders as $cacheProvider) {
@@ -119,8 +112,7 @@ class ChainCache extends CacheProvider
     /**
      * {@inheritDoc}
      */
-    protected function doFlush()
-    {
+    protected function doFlush() {
         $flushed = true;
 
         foreach ($this->cacheProviders as $cacheProvider) {
@@ -133,8 +125,7 @@ class ChainCache extends CacheProvider
     /**
      * {@inheritDoc}
      */
-    protected function doGetStats()
-    {
+    protected function doGetStats() {
         // We return all the stats from all adapters
         $stats = array();
 

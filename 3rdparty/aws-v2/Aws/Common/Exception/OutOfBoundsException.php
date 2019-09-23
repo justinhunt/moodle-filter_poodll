@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL OverflowException.
  */
-class OutOfBoundsException extends \OutOfBoundsException implements AwsExceptionInterface {}
+class OutOfBoundsException extends \OutOfBoundsException implements AwsExceptionInterface {
+}

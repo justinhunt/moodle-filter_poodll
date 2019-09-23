@@ -5,8 +5,7 @@ namespace Guzzle\Http\Curl;
 /**
  * Class used for querying curl_version data
  */
-class CurlVersion
-{
+class CurlVersion {
     /** @var array curl_version() information */
     protected $version;
 
@@ -19,8 +18,7 @@ class CurlVersion
     /**
      * @return CurlVersion
      */
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -33,8 +31,7 @@ class CurlVersion
      *
      * @return array
      */
-    public function getAll()
-    {
+    public function getAll() {
         if (!$this->version) {
             $this->version = curl_version();
         }
@@ -57,8 +54,7 @@ class CurlVersion
      *
      * @return string|float|bool if the $type is found, and false if not found
      */
-    public function get($type)
-    {
+    public function get($type) {
         $version = $this->getAll();
 
         return isset($version[$type]) ? $version[$type] : false;

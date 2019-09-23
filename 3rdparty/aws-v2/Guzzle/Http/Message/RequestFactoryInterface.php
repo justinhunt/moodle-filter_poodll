@@ -9,8 +9,7 @@ use Guzzle\Http\Url;
 /**
  * Request factory used to create HTTP requests
  */
-interface RequestFactoryInterface
-{
+interface RequestFactoryInterface {
     const OPTIONS_NONE = 0;
     const OPTIONS_AS_DEFAULTS = 1;
 
@@ -36,30 +35,30 @@ interface RequestFactoryInterface
      *     - pass:   e.g. rocks
      *     - path:   e.g. / OR /index.html
      *     - query:  after the question mark ?
-     * @param array|Collection                          $headers         HTTP headers
-     * @param string|resource|array|EntityBodyInterface $body            Body to send in the request
-     * @param string                                    $protocol        Protocol (HTTP, SPYDY, etc)
-     * @param string                                    $protocolVersion 1.0, 1.1, etc
+     * @param array|Collection $headers HTTP headers
+     * @param string|resource|array|EntityBodyInterface $body Body to send in the request
+     * @param string $protocol Protocol (HTTP, SPYDY, etc)
+     * @param string $protocolVersion 1.0, 1.1, etc
      *
      * @return RequestInterface
      */
     public function fromParts(
-        $method,
-        array $urlParts,
-        $headers = null,
-        $body = null,
-        $protocol = 'HTTP',
-        $protocolVersion = '1.1'
+            $method,
+            array $urlParts,
+            $headers = null,
+            $body = null,
+            $protocol = 'HTTP',
+            $protocolVersion = '1.1'
     );
 
     /**
      * Create a new request based on the HTTP method
      *
-     * @param string                                    $method  HTTP method (GET, POST, PUT, PATCH, HEAD, DELETE, ...)
-     * @param string|Url                                $url     HTTP URL to connect to
-     * @param array|Collection                          $headers HTTP headers
-     * @param string|resource|array|EntityBodyInterface $body    Body to send in the request
-     * @param array                                     $options Array of options to apply to the request
+     * @param string $method HTTP method (GET, POST, PUT, PATCH, HEAD, DELETE, ...)
+     * @param string|Url $url HTTP URL to connect to
+     * @param array|Collection $headers HTTP headers
+     * @param string|resource|array|EntityBodyInterface $body Body to send in the request
+     * @param array $options Array of options to apply to the request
      *
      * @return RequestInterface
      */
@@ -69,7 +68,7 @@ interface RequestFactoryInterface
      * Apply an associative array of options to the request
      *
      * @param RequestInterface $request Request to update
-     * @param array            $options Options to use with the request. Available options are:
+     * @param array $options Options to use with the request. Available options are:
      *        "headers": Associative array of headers
      *        "query": Associative array of query string values to add to the request
      *        "body": Body of a request, including an EntityBody, string, or array when sending POST requests.

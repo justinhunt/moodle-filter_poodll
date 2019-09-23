@@ -7,19 +7,16 @@ use Guzzle\Http\Message\Header;
 /**
  * Provides helpful functionality for Cache-Control headers
  */
-class CacheControl extends Header
-{
+class CacheControl extends Header {
     /** @var array */
     protected $directives;
 
-    public function add($value)
-    {
+    public function add($value) {
         parent::add($value);
         $this->directives = null;
     }
 
-    public function removeValue($searchValue)
-    {
+    public function removeValue($searchValue) {
         parent::removeValue($searchValue);
         $this->directives = null;
     }
@@ -31,8 +28,7 @@ class CacheControl extends Header
      *
      * @return bool
      */
-    public function hasDirective($param)
-    {
+    public function hasDirective($param) {
         $directives = $this->getDirectives();
 
         return isset($directives[$param]);
@@ -45,8 +41,7 @@ class CacheControl extends Header
      *
      * @return string|bool|null
      */
-    public function getDirective($param)
-    {
+    public function getDirective($param) {
         $directives = $this->getDirectives();
 
         return isset($directives[$param]) ? $directives[$param] : null;
@@ -60,8 +55,7 @@ class CacheControl extends Header
      *
      * @return self
      */
-    public function addDirective($param, $value)
-    {
+    public function addDirective($param, $value) {
         $directives = $this->getDirectives();
         $directives[$param] = $value;
         $this->updateFromDirectives($directives);
@@ -76,8 +70,7 @@ class CacheControl extends Header
      *
      * @return self
      */
-    public function removeDirective($param)
-    {
+    public function removeDirective($param) {
         $directives = $this->getDirectives();
         unset($directives[$param]);
         $this->updateFromDirectives($directives);
@@ -90,8 +83,7 @@ class CacheControl extends Header
      *
      * @return array
      */
-    public function getDirectives()
-    {
+    public function getDirectives() {
         if ($this->directives === null) {
             $this->directives = array();
             foreach ($this->parseParams() as $collection) {
@@ -109,8 +101,7 @@ class CacheControl extends Header
      *
      * @param array $directives Array of cache control directives
      */
-    protected function updateFromDirectives(array $directives)
-    {
+    protected function updateFromDirectives(array $directives) {
         $this->directives = $directives;
         $this->values = array();
 

@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * This operation is not allowed against this storage tier
  */
-class ObjectAlreadyInActiveTierErrorException extends S3Exception {}
+class ObjectAlreadyInActiveTierErrorException extends S3Exception {
+}

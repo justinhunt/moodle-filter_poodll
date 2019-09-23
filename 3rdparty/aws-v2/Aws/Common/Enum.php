@@ -19,8 +19,7 @@ namespace Aws\Common;
 /**
  * Represents an enumerable set of values
  */
-abstract class Enum
-{
+abstract class Enum {
     /**
      * @var array A cache of all enum values to increase performance
      */
@@ -31,8 +30,7 @@ abstract class Enum
      *
      * @return array
      */
-    public static function keys()
-    {
+    public static function keys() {
         return array_keys(static::values());
     }
 
@@ -41,8 +39,7 @@ abstract class Enum
      *
      * @return array
      */
-    public static function values()
-    {
+    public static function values() {
         $class = get_called_class();
 
         if (!isset(self::$cache[$class])) {

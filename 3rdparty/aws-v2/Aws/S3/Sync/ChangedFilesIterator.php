@@ -20,8 +20,7 @@ namespace Aws\S3\Sync;
  * Iterator used to filter an internal iterator to only yield files that do not exist in the target iterator or files
  * that have changed
  */
-class ChangedFilesIterator extends \FilterIterator
-{
+class ChangedFilesIterator extends \FilterIterator {
     /** @var \Iterator */
     protected $sourceIterator;
 
@@ -38,16 +37,16 @@ class ChangedFilesIterator extends \FilterIterator
     protected $cache = array();
 
     /**
-     * @param \Iterator                  $sourceIterator  Iterator to wrap and filter
-     * @param \Iterator                  $targetIterator  Iterator used to compare against the source iterator
+     * @param \Iterator $sourceIterator Iterator to wrap and filter
+     * @param \Iterator $targetIterator Iterator used to compare against the source iterator
      * @param FilenameConverterInterface $sourceConverter Key converter to convert source to target keys
      * @param FilenameConverterInterface $targetConverter Key converter to convert target to source keys
      */
     public function __construct(
-        \Iterator $sourceIterator,
-        \Iterator $targetIterator,
-        FilenameConverterInterface $sourceConverter,
-        FilenameConverterInterface $targetConverter
+            \Iterator $sourceIterator,
+            \Iterator $targetIterator,
+            FilenameConverterInterface $sourceConverter,
+            FilenameConverterInterface $targetConverter
     ) {
         $this->targetIterator = $targetIterator;
         $this->sourceConverter = $sourceConverter;
@@ -55,8 +54,7 @@ class ChangedFilesIterator extends \FilterIterator
         parent::__construct($sourceIterator);
     }
 
-    public function accept()
-    {
+    public function accept() {
         $current = $this->current();
         $key = $this->sourceConverter->convert($this->normalize($current));
 
@@ -73,8 +71,7 @@ class ChangedFilesIterator extends \FilterIterator
      *
      * @return array
      */
-    public function getUnmatched()
-    {
+    public function getUnmatched() {
         return array_keys($this->cache);
     }
 
@@ -85,8 +82,7 @@ class ChangedFilesIterator extends \FilterIterator
      *
      * @return array|bool Returns an array of data, or false if the key is not in the iterator
      */
-    protected function getTargetData($key)
-    {
+    protected function getTargetData($key) {
         $key = $this->cleanKey($key);
 
         if (isset($this->cache[$key])) {
@@ -114,17 +110,15 @@ class ChangedFilesIterator extends \FilterIterator
         return false;
     }
 
-    private function normalize($current)
-    {
+    private function normalize($current) {
         $asString = (string) $current;
 
         return strpos($asString, 's3://') === 0
-            ? $asString
-            : $current->getRealPath();
+                ? $asString
+                : $current->getRealPath();
     }
 
-    private function cleanKey($key)
-    {
+    private function cleanKey($key) {
         return ltrim($key, '/');
     }
 }

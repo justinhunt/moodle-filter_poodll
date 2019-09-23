@@ -23,13 +23,11 @@ use Aws\Common\Model\MultipartUpload\UploadIdInterface;
 /**
  * State of a multipart upload
  */
-class TransferState extends AbstractTransferState
-{
+class TransferState extends AbstractTransferState {
     /**
      * {@inheritdoc}
      */
-    public static function fromUploadId(AwsClientInterface $client, UploadIdInterface $uploadId)
-    {
+    public static function fromUploadId(AwsClientInterface $client, UploadIdInterface $uploadId) {
         $transferState = new self($uploadId);
 
         foreach ($client->getIterator('ListParts', $uploadId->toParams()) as $part) {

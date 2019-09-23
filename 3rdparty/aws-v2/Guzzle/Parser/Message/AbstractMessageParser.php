@@ -5,28 +5,26 @@ namespace Guzzle\Parser\Message;
 /**
  * Implements shared message parsing functionality
  */
-abstract class AbstractMessageParser implements MessageParserInterface
-{
+abstract class AbstractMessageParser implements MessageParserInterface {
     /**
      * Create URL parts from HTTP message parts
      *
      * @param string $requestUrl Associated URL
-     * @param array  $parts      HTTP message parts
+     * @param array $parts HTTP message parts
      *
      * @return array
      */
-    protected function getUrlPartsFromMessage($requestUrl, array $parts)
-    {
+    protected function getUrlPartsFromMessage($requestUrl, array $parts) {
         // Parse the URL information from the message
         $urlParts = array(
-            'path'   => $requestUrl,
-            'scheme' => 'http'
+                'path' => $requestUrl,
+                'scheme' => 'http'
         );
 
         // Check for the Host header
         if (isset($parts['headers']['Host'])) {
             $urlParts['host'] = $parts['headers']['Host'];
-        } elseif (isset($parts['headers']['host'])) {
+        } else if (isset($parts['headers']['host'])) {
             $urlParts['host'] = $parts['headers']['host'];
         } else {
             $urlParts['host'] = null;

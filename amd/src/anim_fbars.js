@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -20,15 +20,15 @@ define(['jquery','core/log'], function($, log) {
         //init
         init: function (analyser, cvs) {
             this.cvs = cvs;
-            this.cvsctx=cvs.getContext("2d");
+            this.cvsctx = cvs.getContext("2d");
             this.analyser = analyser;
         },
 
-        clear: function(){
-            this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+        clear: function () {
+            this.cvsctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
         },
 
-        start: function(){
+        start: function () {
             this.analyser.core.fftSize = 256;
             var bufferLength = this.analyser.core.frequencyBinCount;
             var dataArray = new Uint8Array(bufferLength);
@@ -43,24 +43,26 @@ define(['jquery','core/log'], function($, log) {
                 var drawVisual = requestAnimationFrame(draw);
 
                 //cancel out if the theinterval is null
-                if(!analyser.theinterval){return;}
+                if (!analyser.theinterval) {
+                    return;
+                }
 
                 analyser.core.getByteFrequencyData(dataArray);
 
                 //filling is rubbish, we just clear it
                 //canvasCtx.fillStyle = 'rgb(0, 0, 0)';
                 //canvasCtx.fillRect(0, 0, cwidth, cheight);
-                canvasCtx.clearRect(0, 0, cwidth,cheight);
+                canvasCtx.clearRect(0, 0, cwidth, cheight);
 
                 var barWidth = (cwidth / bufferLength) * 2.5;
                 var barHeight;
                 var x = 0;
 
-                for(var i = 0; i < bufferLength; i++) {
+                for (var i = 0; i < bufferLength; i++) {
                     barHeight = dataArray[i];
 
-                    canvasCtx.fillStyle = 'rgb(' + (barHeight+100) + ',50,50)';
-                    canvasCtx.fillRect(x,cheight-barHeight/2,barWidth,barHeight/2);
+                    canvasCtx.fillStyle = 'rgb(' + (barHeight + 100) + ',50,50)';
+                    canvasCtx.fillRect(x, cheight - barHeight / 2, barWidth, barHeight / 2);
 
                     x += barWidth + 1;
                 }

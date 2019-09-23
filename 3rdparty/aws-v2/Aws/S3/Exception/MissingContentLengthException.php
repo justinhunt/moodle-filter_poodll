@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * You must provide the Content-Length HTTP header.
  */
-class MissingContentLengthException extends S3Exception {}
+class MissingContentLengthException extends S3Exception {
+}

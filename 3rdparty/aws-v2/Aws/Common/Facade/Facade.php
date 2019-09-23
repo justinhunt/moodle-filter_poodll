@@ -23,8 +23,7 @@ use Aws\Common\Aws;
  *
  * @deprecated "Facades" are being removed in version 3.0 of the SDK.
  */
-abstract class Facade implements FacadeInterface
-{
+abstract class Facade implements FacadeInterface {
     /** @var Aws */
     protected static $serviceBuilder;
 
@@ -35,8 +34,7 @@ abstract class Facade implements FacadeInterface
      *
      * @param Aws $serviceBuilder
      */
-    public static function mountFacades(Aws $serviceBuilder, $targetNamespace = null)
-    {
+    public static function mountFacades(Aws $serviceBuilder, $targetNamespace = null) {
         self::$serviceBuilder = $serviceBuilder;
         require_once __DIR__ . '/facade-classes.php';
         foreach ($serviceBuilder->getConfig() as $service) {
@@ -57,13 +55,11 @@ abstract class Facade implements FacadeInterface
      *
      * @return \Aws\Common\Client\AwsClientInterface
      */
-    public static function getClient()
-    {
+    public static function getClient() {
         return self::$serviceBuilder->get(static::getServiceBuilderKey());
     }
 
-    public static function __callStatic($method, $args)
-    {
+    public static function __callStatic($method, $args) {
         return call_user_func_array(array(self::getClient(), $method), $args);
     }
 }

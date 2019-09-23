@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The provided token has expired.
  */
-class ExpiredTokenException extends S3Exception {}
+class ExpiredTokenException extends S3Exception {
+}

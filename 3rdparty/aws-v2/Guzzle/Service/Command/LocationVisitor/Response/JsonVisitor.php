@@ -14,20 +14,18 @@ use Guzzle\Service\Command\CommandInterface;
  * traversed. This allows data to be normalized before returning it to users (for example converting timestamps to
  * DateTime objects).
  */
-class JsonVisitor extends AbstractResponseVisitor
-{
-    public function before(CommandInterface $command, array &$result)
-    {
+class JsonVisitor extends AbstractResponseVisitor {
+    public function before(CommandInterface $command, array &$result) {
         // Ensure that the result of the command is always rooted with the parsed JSON data
         $result = $command->getResponse()->json();
     }
 
     public function visit(
-        CommandInterface $command,
-        Response $response,
-        Parameter $param,
-        &$value,
-        $context =  null
+            CommandInterface $command,
+            Response $response,
+            Parameter $param,
+            &$value,
+            $context = null
     ) {
         $name = $param->getName();
         $key = $param->getWireName();
@@ -44,10 +42,9 @@ class JsonVisitor extends AbstractResponseVisitor
      * Recursively process a parameter while applying filters
      *
      * @param Parameter $param API parameter being validated
-     * @param mixed     $value Value to validate and process. The value may change during this process.
+     * @param mixed $value Value to validate and process. The value may change during this process.
      */
-    protected function recursiveProcess(Parameter $param, &$value)
-    {
+    protected function recursiveProcess(Parameter $param, &$value) {
         if ($value === null) {
             return;
         }
@@ -58,7 +55,7 @@ class JsonVisitor extends AbstractResponseVisitor
                 foreach ($value as &$item) {
                     $this->recursiveProcess($param->getItems(), $item);
                 }
-            } elseif ($type == 'object' && !isset($value[0])) {
+            } else if ($type == 'object' && !isset($value[0])) {
                 // On the above line, we ensure that the array is associative and not numerically indexed
                 $knownProperties = array();
                 if ($properties = $param->getProperties()) {
@@ -79,7 +76,7 @@ class JsonVisitor extends AbstractResponseVisitor
                 // Remove any unknown and potentially unsafe properties
                 if ($param->getAdditionalProperties() === false) {
                     $value = array_intersect_key($value, $knownProperties);
-                } elseif (($additional = $param->getAdditionalProperties()) !== true) {
+                } else if (($additional = $param->getAdditionalProperties()) !== true) {
                     // Validate and filter additional properties
                     foreach ($value as &$v) {
                         $this->recursiveProcess($additional, $v);

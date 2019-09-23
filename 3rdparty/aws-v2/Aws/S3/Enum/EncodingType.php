@@ -21,7 +21,6 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable EncodingType values
  */
-class EncodingType extends Enum
-{
+class EncodingType extends Enum {
     const URL = 'url';
 }

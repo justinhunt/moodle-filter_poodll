@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\DynamoDb;
 
 /**
@@ -18,9 +19,8 @@ namespace Aws\DynamoDb;
  * triggered randomly. You must run garbage collection manually or through other
  * automated means using a cron job or similar scheduling technique.
  */
-class SessionHandler implements \SessionHandlerInterface
-{
-    /** @var SessionConnectionInterface Session save logic.*/
+class SessionHandler implements \SessionHandlerInterface {
+    /** @var SessionConnectionInterface Session save logic. */
     private $connection;
 
     /** @var string Session save path. */
@@ -53,12 +53,11 @@ class SessionHandler implements \SessionHandlerInterface
      * - max_lock_retry_microtime: Max time (µs) to wait between lock attempts.
      *
      * @param DynamoDbClient $client Client for doing DynamoDB operations
-     * @param array          $config Configuration for the Session Handler
+     * @param array $config Configuration for the Session Handler
      *
      * @return SessionHandler
      */
-    public static function fromClient(DynamoDbClient $client, array $config = [])
-    {
+    public static function fromClient(DynamoDbClient $client, array $config = []) {
         $config += ['locking' => false];
         if ($config['locking']) {
             $connection = new LockingSessionConnection($client, $config);
@@ -72,8 +71,7 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * @param SessionConnectionInterface $connection
      */
-    public function __construct(SessionConnectionInterface $connection)
-    {
+    public function __construct(SessionConnectionInterface $connection) {
         $this->connection = $connection;
     }
 
@@ -83,21 +81,19 @@ class SessionHandler implements \SessionHandlerInterface
      * @return bool Whether or not the handler was registered.
      * @codeCoverageIgnore
      */
-    public function register()
-    {
-         return session_set_save_handler($this, true);
+    public function register() {
+        return session_set_save_handler($this, true);
     }
 
     /**
      * Open a session for writing. Triggered by session_start().
      *
-     * @param string $savePath    Session save path.
+     * @param string $savePath Session save path.
      * @param string $sessionName Session name.
      *
      * @return bool Whether or not the operation succeeded.
      */
-    public function open($savePath, $sessionName)
-    {
+    public function open($savePath, $sessionName) {
         $this->savePath = $savePath;
         $this->sessionName = $sessionName;
 
@@ -109,8 +105,7 @@ class SessionHandler implements \SessionHandlerInterface
      *
      * @return bool Success
      */
-    public function close()
-    {
+    public function close() {
         $id = session_id();
         // Make sure the session is unlocked and the expiration time is updated,
         // even if the write did not occur
@@ -129,8 +124,7 @@ class SessionHandler implements \SessionHandlerInterface
      *
      * @return string Session data.
      */
-    public function read($id)
-    {
+    public function read($id) {
         $this->openSessionId = $id;
         // PHP expects an empty string to be returned from this method if no
         // data is retrieved
@@ -154,20 +148,19 @@ class SessionHandler implements \SessionHandlerInterface
     /**
      * Write a session to DynamoDB.
      *
-     * @param string $id   Session ID.
+     * @param string $id Session ID.
      * @param string $data Serialized session data to write.
      *
      * @return bool Whether or not the operation succeeded.
      */
-    public function write($id, $data)
-    {
+    public function write($id, $data) {
         $changed = $id !== $this->openSessionId
-            || $data !== $this->dataRead;
+                || $data !== $this->dataRead;
         $this->openSessionId = $id;
 
         // Write the session data using the selected locking strategy
         $this->sessionWritten = $this->connection
-            ->write($this->formatId($id), $data, $changed);
+                ->write($this->formatId($id), $data, $changed);
 
         return $this->sessionWritten;
     }
@@ -179,12 +172,11 @@ class SessionHandler implements \SessionHandlerInterface
      *
      * @return bool Whether or not the operation succeeded.
      */
-    public function destroy($id)
-    {
+    public function destroy($id) {
         $this->openSessionId = $id;
         // Delete the session data using the selected locking strategy
         $this->sessionWritten
-            = $this->connection->delete($this->formatId($id));
+                = $this->connection->delete($this->formatId($id));
 
         return $this->sessionWritten;
     }
@@ -198,18 +190,17 @@ class SessionHandler implements \SessionHandlerInterface
      * @return bool Whether or not the operation succeeded.
      * @codeCoverageIgnore
      */
-    public function gc($maxLifetime)
-    {
+    public function gc($maxLifetime) {
         // Garbage collection for a DynamoDB table must be triggered manually.
         return true;
     }
 
     /**
      * Triggers garbage collection on expired sessions.
+     *
      * @codeCoverageIgnore
      */
-    public function garbageCollect()
-    {
+    public function garbageCollect() {
         $this->connection->deleteExpired();
     }
 
@@ -220,8 +211,7 @@ class SessionHandler implements \SessionHandlerInterface
      *
      * @return string Prepared session ID.
      */
-    private function formatId($id)
-    {
+    private function formatId($id) {
         return trim($this->sessionName . '_' . $id, '_');
     }
 }

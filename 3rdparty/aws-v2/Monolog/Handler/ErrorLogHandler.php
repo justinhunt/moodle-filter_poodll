@@ -19,8 +19,7 @@ use Monolog\Logger;
  *
  * @author Elan Ruusamäe <glen@delfi.ee>
  */
-class ErrorLogHandler extends AbstractProcessingHandler
-{
+class ErrorLogHandler extends AbstractProcessingHandler {
     const OPERATING_SYSTEM = 0;
     const SAPI = 4;
 
@@ -28,13 +27,13 @@ class ErrorLogHandler extends AbstractProcessingHandler
     protected $expandNewlines;
 
     /**
-     * @param int     $messageType    Says where the error should go.
-     * @param int     $level          The minimum logging level at which this handler will be triggered
-     * @param Boolean $bubble         Whether the messages that are handled can bubble up the stack or not
+     * @param int $messageType Says where the error should go.
+     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
      * @param Boolean $expandNewlines If set to true, newlines in the message will be expanded to be take multiple log entries
      */
-    public function __construct($messageType = self::OPERATING_SYSTEM, $level = Logger::DEBUG, $bubble = true, $expandNewlines = false)
-    {
+    public function __construct($messageType = self::OPERATING_SYSTEM, $level = Logger::DEBUG, $bubble = true,
+            $expandNewlines = false) {
         parent::__construct($level, $bubble);
 
         if (false === in_array($messageType, self::getAvailableTypes())) {
@@ -49,32 +48,29 @@ class ErrorLogHandler extends AbstractProcessingHandler
     /**
      * @return array With all available types
      */
-    public static function getAvailableTypes()
-    {
+    public static function getAvailableTypes() {
         return array(
-            self::OPERATING_SYSTEM,
-            self::SAPI,
+                self::OPERATING_SYSTEM,
+                self::SAPI,
         );
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function getDefaultFormatter()
-    {
+    protected function getDefaultFormatter() {
         return new LineFormatter('[%datetime%] %channel%.%level_name%: %message% %context% %extra%');
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function write(array $record)
-    {
+    protected function write(array $record) {
         if ($this->expandNewlines) {
             $lines = preg_split('{[\r\n]+}', (string) $record['formatted']);
             foreach ($lines as $line) {
                 //Justin 20170921 this is a Moodle Sin it seems
-               // error_log($line, $this->messageType);
+                // error_log($line, $this->messageType);
             }
         } else {
             //Justin 20170921 this is a Moodle Sin it seems

@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified bucket is not valid.
  */
-class InvalidBucketNameException extends S3Exception {}
+class InvalidBucketNameException extends S3Exception {
+}

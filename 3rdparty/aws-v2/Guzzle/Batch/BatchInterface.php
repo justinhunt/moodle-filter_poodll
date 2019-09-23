@@ -5,8 +5,7 @@ namespace Guzzle\Batch;
 /**
  * Interface for efficiently transferring items in a queue using batches
  */
-interface BatchInterface
-{
+interface BatchInterface {
     /**
      * Add an item to the queue
      *

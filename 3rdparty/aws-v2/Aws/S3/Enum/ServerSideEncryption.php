@@ -21,7 +21,6 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable ServerSideEncryption values
  */
-class ServerSideEncryption extends Enum
-{
+class ServerSideEncryption extends Enum {
     const AES256 = 'AES256';
 }

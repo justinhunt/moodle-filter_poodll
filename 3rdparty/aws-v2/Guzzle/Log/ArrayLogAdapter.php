@@ -5,12 +5,10 @@ namespace Guzzle\Log;
 /**
  * Stores all log messages in an array
  */
-class ArrayLogAdapter implements LogAdapterInterface
-{
+class ArrayLogAdapter implements LogAdapterInterface {
     protected $logs = array();
 
-    public function log($message, $priority = LOG_INFO, $extras = array())
-    {
+    public function log($message, $priority = LOG_INFO, $extras = array()) {
         $this->logs[] = array('message' => $message, 'priority' => $priority, 'extras' => $extras);
     }
 
@@ -19,16 +17,14 @@ class ArrayLogAdapter implements LogAdapterInterface
      *
      * @return array
      */
-    public function getLogs()
-    {
+    public function getLogs() {
         return $this->logs;
     }
 
     /**
      * Clears logged entries
      */
-    public function clearLogs()
-    {
+    public function clearLogs() {
         $this->logs = array();
     }
 }

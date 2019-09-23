@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The body of your POST request is not well-formed multipart/form-data.
  */
-class MalformedPOSTRequestException extends S3Exception {}
+class MalformedPOSTRequestException extends S3Exception {
+}

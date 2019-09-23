@@ -8,9 +8,8 @@ use Guzzle\Common\Exception\RuntimeException;
 /**
  * Builder used to create custom batch objects
  */
-class BatchBuilder
-{
-    /** @var bool Whether or not the batch should automatically flush*/
+class BatchBuilder {
+    /** @var bool Whether or not the batch should automatically flush */
     protected $autoFlush = false;
 
     /** @var bool Whether or not to maintain a batch history */
@@ -30,8 +29,8 @@ class BatchBuilder
 
     /** @var array of Mapped transfer strategies by handle name */
     protected static $mapping = array(
-        'request' => 'Guzzle\Batch\BatchRequestTransfer',
-        'command' => 'Guzzle\Batch\BatchCommandTransfer'
+            'request' => 'Guzzle\Batch\BatchRequestTransfer',
+            'command' => 'Guzzle\Batch\BatchCommandTransfer'
     );
 
     /**
@@ -39,8 +38,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public static function factory()
-    {
+    public static function factory() {
         return new self();
     }
 
@@ -51,8 +49,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public function autoFlushAt($threshold)
-    {
+    public function autoFlushAt($threshold) {
         $this->autoFlush = $threshold;
 
         return $this;
@@ -63,8 +60,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public function keepHistory()
-    {
+    public function keepHistory() {
         $this->history = true;
 
         return $this;
@@ -76,8 +72,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public function bufferExceptions()
-    {
+    public function bufferExceptions() {
         $this->exceptionBuffering = true;
 
         return $this;
@@ -91,8 +86,7 @@ class BatchBuilder
      * @return BatchBuilder
      * @throws InvalidArgumentException if the argument is not callable
      */
-    public function notify($callable)
-    {
+    public function notify($callable) {
         $this->afterFlush = $callable;
 
         return $this;
@@ -106,8 +100,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public function transferRequests($batchSize = 50)
-    {
+    public function transferRequests($batchSize = 50) {
         $className = self::$mapping['request'];
         $this->transferStrategy = new $className($batchSize);
         $this->divisorStrategy = $this->transferStrategy;
@@ -123,8 +116,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public function transferCommands($batchSize = 50)
-    {
+    public function transferCommands($batchSize = 50) {
         $className = self::$mapping['command'];
         $this->transferStrategy = new $className($batchSize);
         $this->divisorStrategy = $this->transferStrategy;
@@ -139,8 +131,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public function createBatchesWith(BatchDivisorInterface $divisorStrategy)
-    {
+    public function createBatchesWith(BatchDivisorInterface $divisorStrategy) {
         $this->divisorStrategy = $divisorStrategy;
 
         return $this;
@@ -153,8 +144,7 @@ class BatchBuilder
      *
      * @return BatchBuilder
      */
-    public function transferWith(BatchTransferInterface $transferStrategy)
-    {
+    public function transferWith(BatchTransferInterface $transferStrategy) {
         $this->transferStrategy = $transferStrategy;
 
         return $this;
@@ -166,8 +156,7 @@ class BatchBuilder
      * @return BatchInterface
      * @throws RuntimeException if no transfer strategy has been specified
      */
-    public function build()
-    {
+    public function build() {
         if (!$this->transferStrategy) {
             throw new RuntimeException('No transfer strategy has been specified');
         }

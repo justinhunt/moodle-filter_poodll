@@ -9,8 +9,7 @@ use Guzzle\Http\Message\Response;
 /**
  * Determines if a request can be cached using a callback
  */
-class CallbackCanCacheStrategy extends DefaultCanCacheStrategy
-{
+class CallbackCanCacheStrategy extends DefaultCanCacheStrategy {
     /** @var callable Callback for request */
     protected $requestCallback;
 
@@ -18,13 +17,12 @@ class CallbackCanCacheStrategy extends DefaultCanCacheStrategy
     protected $responseCallback;
 
     /**
-     * @param \Closure|array|mixed $requestCallback  Callable method to invoke for requests
+     * @param \Closure|array|mixed $requestCallback Callable method to invoke for requests
      * @param \Closure|array|mixed $responseCallback Callable method to invoke for responses
      *
      * @throws InvalidArgumentException
      */
-    public function __construct($requestCallback = null, $responseCallback = null)
-    {
+    public function __construct($requestCallback = null, $responseCallback = null) {
         if ($requestCallback && !is_callable($requestCallback)) {
             throw new InvalidArgumentException('Method must be callable');
         }
@@ -37,17 +35,15 @@ class CallbackCanCacheStrategy extends DefaultCanCacheStrategy
         $this->responseCallback = $responseCallback;
     }
 
-    public function canCacheRequest(RequestInterface $request)
-    {
+    public function canCacheRequest(RequestInterface $request) {
         return $this->requestCallback
-            ? call_user_func($this->requestCallback, $request)
-            : parent::canCacheRequest($request);
+                ? call_user_func($this->requestCallback, $request)
+                : parent::canCacheRequest($request);
     }
 
-    public function canCacheResponse(Response $response)
-    {
+    public function canCacheResponse(Response $response) {
         return $this->responseCallback
-            ? call_user_func($this->responseCallback, $response)
-            : parent::canCacheResponse($response);
+                ? call_user_func($this->responseCallback, $response)
+                : parent::canCacheResponse($response);
     }
 }

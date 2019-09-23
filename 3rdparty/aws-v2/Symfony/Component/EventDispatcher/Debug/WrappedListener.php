@@ -18,8 +18,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * @author Fabien Potencier <fabien@symfony.com>
  */
-class WrappedListener
-{
+class WrappedListener {
     private $listener;
     private $name;
     private $called;
@@ -27,8 +26,7 @@ class WrappedListener
     private $stopwatch;
     private $dispatcher;
 
-    public function __construct($listener, $name, Stopwatch $stopwatch, EventDispatcherInterface $dispatcher = null)
-    {
+    public function __construct($listener, $name, Stopwatch $stopwatch, EventDispatcherInterface $dispatcher = null) {
         $this->listener = $listener;
         $this->name = $name;
         $this->stopwatch = $stopwatch;
@@ -37,23 +35,19 @@ class WrappedListener
         $this->stoppedPropagation = false;
     }
 
-    public function getWrappedListener()
-    {
+    public function getWrappedListener() {
         return $this->listener;
     }
 
-    public function wasCalled()
-    {
+    public function wasCalled() {
         return $this->called;
     }
 
-    public function stoppedPropagation()
-    {
+    public function stoppedPropagation() {
         return $this->stoppedPropagation;
     }
 
-    public function __invoke(Event $event, $eventName, EventDispatcherInterface $dispatcher)
-    {
+    public function __invoke(Event $event, $eventName, EventDispatcherInterface $dispatcher) {
         $this->called = true;
 
         $e = $this->stopwatch->start($this->name, 'event_listener');

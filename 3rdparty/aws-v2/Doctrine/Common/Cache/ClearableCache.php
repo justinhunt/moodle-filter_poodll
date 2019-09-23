@@ -29,8 +29,7 @@ namespace Doctrine\Common\Cache;
  * @since  1.4
  * @author Adirelle <adirelle@gmail.com>
  */
-interface ClearableCache
-{
+interface ClearableCache {
     /**
      * Deletes all cache entries in the current cache namespace.
      *

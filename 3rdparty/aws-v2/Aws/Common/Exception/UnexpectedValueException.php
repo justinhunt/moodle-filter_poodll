@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL UnexpectedValueException.
  */
-class UnexpectedValueException extends \UnexpectedValueException implements AwsExceptionInterface {}
+class UnexpectedValueException extends \UnexpectedValueException implements AwsExceptionInterface {
+}

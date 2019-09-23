@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
 
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-concat');
@@ -16,7 +16,7 @@ module.exports = function(grunt) {
     if (featureList) {
         featureList = featureList.split(',');
         featureSources = [];
-        featureList.forEach(function(feature) {
+        featureList.forEach(function (feature) {
             var path = 'src/js/mep-feature-' + feature + '.js';
             if (grunt.file.isFile(path)) {
                 featureSources.push(path);
@@ -59,7 +59,7 @@ module.exports = function(grunt) {
                     'src/js/mep-feature-contextmenu.js',
                     'src/js/mep-feature-skipback.js',
                     'src/js/mep-feature-postroll.js'
-                    ]),
+                ]),
                 dest: 'build/mediaelementplayer.js'
             },
             bundle: {
@@ -85,18 +85,18 @@ module.exports = function(grunt) {
         },
         uglify: {
             me: {
-                src    : ['build/mediaelement.js'],
-                dest   : 'build/mediaelement.min.js',
-                banner : 'src/js/me-header.js'
+                src: ['build/mediaelement.js'],
+                dest: 'build/mediaelement.min.js',
+                banner: 'src/js/me-header.js'
             },
             mep: {
-                src    : ['build/mediaelementplayer.js'],
-                dest   : 'build/mediaelementplayer.min.js',
-                banner : 'src/js/mep-header.js'
+                src: ['build/mediaelementplayer.js'],
+                dest: 'build/mediaelementplayer.min.js',
+                banner: 'src/js/mep-header.js'
             },
             bundle: {
-                src  : ['build/mediaelement-and-player.js'],
-                dest : 'build/mediaelement-and-player.min.js'
+                src: ['build/mediaelement-and-player.js'],
+                dest: 'build/mediaelement-and-player.min.js'
             },
             options: {
                 // Preserve comments that start with a bang (like the file header)
@@ -105,23 +105,23 @@ module.exports = function(grunt) {
         },
         cssmin: {
             build: {
-                src  : ['src/css/mediaelementplayer.css'],
-                dest : 'build/mediaelementplayer.min.css'
+                src: ['src/css/mediaelementplayer.css'],
+                dest: 'build/mediaelementplayer.min.css'
             }
         },
         copy: {
             build: {
-                expand  : true,
-                cwd     : 'src/css/',
-                src     : ['*.png', '*.svg', '*.gif', '*.css'],
-                dest    : 'build/',
-                flatten : true,
-                filter  : 'isFile'
+                expand: true,
+                cwd: 'src/css/',
+                src: ['*.png', '*.svg', '*.gif', '*.css'],
+                dest: 'build/',
+                flatten: true,
+                filter: 'isFile'
             }
         },
         clean: {
-          build: ['build'],
-          temp:  ['tmp']
+            build: ['build'],
+            temp: ['tmp']
         },
 
         // Task that compiles flashmediaelement.swf using the free Flex SDK on Linux/Mac.
@@ -164,7 +164,7 @@ module.exports = function(grunt) {
 
         shell: {
             buildFlash: {
-                command: function() {
+                command: function () {
                     grunt.config.set("cdnBuild", 'false');
                     grunt.config.set("debugBuild", 'false');
                     grunt.config.set("flashOut", 'build/flashmediaelement.swf');
@@ -172,7 +172,7 @@ module.exports = function(grunt) {
                 }
             },
             buildFlashCDN: {
-                command: function() {
+                command: function () {
                     grunt.config.set("cdnBuild", 'true');
                     grunt.config.set("debugBuild", 'false');
                     grunt.config.set("flashOut", 'build/flashmediaelement-cdn.swf');
@@ -180,7 +180,7 @@ module.exports = function(grunt) {
                 }
             },
             buildFlashDebug: {
-                command: function() {
+                command: function () {
                     grunt.config.set("cdnBuild", 'true');
                     grunt.config.set("debugBuild", 'true');
                     grunt.config.set("flashOut", 'build/flashmediaelement-debug.swf');

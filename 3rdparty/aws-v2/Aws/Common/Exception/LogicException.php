@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL LogicException.
  */
-class LogicException extends \LogicException implements AwsExceptionInterface {}
+class LogicException extends \LogicException implements AwsExceptionInterface {
+}

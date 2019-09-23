@@ -7,8 +7,7 @@ use Guzzle\Common\Exception\InvalidArgumentException;
 /**
  * POST file upload
  */
-interface PostFileInterface
-{
+interface PostFileInterface {
     /**
      * Set the name of the field
      *

@@ -21,23 +21,21 @@ use Aws\Common\Model\MultipartUpload\TransferStateInterface;
 /**
  * Thrown when a {@see Aws\Common\MultipartUpload\TransferInterface} object encounters an error during transfer
  */
-class MultipartUploadException extends RuntimeException
-{
+class MultipartUploadException extends RuntimeException {
     /**
      * @var TransferStateInterface State of the transfer when the error was encountered
      */
     protected $state;
 
     /**
-     * @param TransferStateInterface $state     Transfer state
-     * @param \Exception             $exception Last encountered exception
+     * @param TransferStateInterface $state Transfer state
+     * @param \Exception $exception Last encountered exception
      */
-    public function __construct(TransferStateInterface $state, \Exception $exception = null)
-    {
+    public function __construct(TransferStateInterface $state, \Exception $exception = null) {
         parent::__construct(
-            'An error was encountered while performing a multipart upload: ' . $exception->getMessage(),
-            0,
-            $exception
+                'An error was encountered while performing a multipart upload: ' . $exception->getMessage(),
+                0,
+                $exception
         );
 
         $this->state = $state;
@@ -48,8 +46,7 @@ class MultipartUploadException extends RuntimeException
      *
      * @return TransferStateInterface
      */
-    public function getState()
-    {
+    public function getState() {
         return $this->state;
     }
 }

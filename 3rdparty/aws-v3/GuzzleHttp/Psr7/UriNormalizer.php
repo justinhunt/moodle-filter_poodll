@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp\Psr7;
 
 use Psr\Http\Message\UriInterface;
@@ -10,8 +11,7 @@ use Psr\Http\Message\UriInterface;
  *
  * @link https://tools.ietf.org/html/rfc3986#section-6
  */
-final class UriNormalizer
-{
+final class UriNormalizer {
     /**
      * Default normalizations which only include the ones that preserve semantics.
      *
@@ -110,14 +110,13 @@ final class UriNormalizer
      * treated equivalent which is not necessarily true according to RFC 3986. But that difference
      * is highly uncommon in reality. So this potential normalization is implied in PSR-7 as well.
      *
-     * @param UriInterface $uri   The URI to normalize
-     * @param int          $flags A bitmask of normalizations to apply, see constants
+     * @param UriInterface $uri The URI to normalize
+     * @param int $flags A bitmask of normalizations to apply, see constants
      *
      * @return UriInterface The normalized URI
      * @link https://tools.ietf.org/html/rfc3986#section-6.2
      */
-    public static function normalize(UriInterface $uri, $flags = self::PRESERVING_NORMALIZATIONS)
-    {
+    public static function normalize(UriInterface $uri, $flags = self::PRESERVING_NORMALIZATIONS) {
         if ($flags & self::CAPITALIZE_PERCENT_ENCODING) {
             $uri = self::capitalizePercentEncoding($uri);
         }
@@ -127,7 +126,7 @@ final class UriNormalizer
         }
 
         if ($flags & self::CONVERT_EMPTY_PATH && $uri->getPath() === '' &&
-            ($uri->getScheme() === 'http' || $uri->getScheme() === 'https')
+                ($uri->getScheme() === 'http' || $uri->getScheme() === 'https')
         ) {
             $uri = $uri->withPath('/');
         }
@@ -165,52 +164,48 @@ final class UriNormalizer
      * resolved against the same base URI. If this is not the case, determination of equivalence or difference of
      * relative references does not mean anything.
      *
-     * @param UriInterface $uri1           An URI to compare
-     * @param UriInterface $uri2           An URI to compare
-     * @param int          $normalizations A bitmask of normalizations to apply, see constants
+     * @param UriInterface $uri1 An URI to compare
+     * @param UriInterface $uri2 An URI to compare
+     * @param int $normalizations A bitmask of normalizations to apply, see constants
      *
      * @return bool
      * @link https://tools.ietf.org/html/rfc3986#section-6.1
      */
-    public static function isEquivalent(UriInterface $uri1, UriInterface $uri2, $normalizations = self::PRESERVING_NORMALIZATIONS)
-    {
+    public static function isEquivalent(UriInterface $uri1, UriInterface $uri2, $normalizations = self::PRESERVING_NORMALIZATIONS) {
         return (string) self::normalize($uri1, $normalizations) === (string) self::normalize($uri2, $normalizations);
     }
 
-    private static function capitalizePercentEncoding(UriInterface $uri)
-    {
+    private static function capitalizePercentEncoding(UriInterface $uri) {
         $regex = '/(?:%[A-Fa-f0-9]{2})++/';
 
-        $callback = function (array $match) {
+        $callback = function(array $match) {
             return strtoupper($match[0]);
         };
 
         return
-            $uri->withPath(
-                preg_replace_callback($regex, $callback, $uri->getPath())
-            )->withQuery(
-                preg_replace_callback($regex, $callback, $uri->getQuery())
-            );
+                $uri->withPath(
+                        preg_replace_callback($regex, $callback, $uri->getPath())
+                )->withQuery(
+                        preg_replace_callback($regex, $callback, $uri->getQuery())
+                );
     }
 
-    private static function decodeUnreservedCharacters(UriInterface $uri)
-    {
+    private static function decodeUnreservedCharacters(UriInterface $uri) {
         $regex = '/%(?:2D|2E|5F|7E|3[0-9]|[46][1-9A-F]|[57][0-9A])/i';
 
-        $callback = function (array $match) {
+        $callback = function(array $match) {
             return rawurldecode($match[0]);
         };
 
         return
-            $uri->withPath(
-                preg_replace_callback($regex, $callback, $uri->getPath())
-            )->withQuery(
-                preg_replace_callback($regex, $callback, $uri->getQuery())
-            );
+                $uri->withPath(
+                        preg_replace_callback($regex, $callback, $uri->getPath())
+                )->withQuery(
+                        preg_replace_callback($regex, $callback, $uri->getQuery())
+                );
     }
 
-    private function __construct()
-    {
+    private function __construct() {
         // cannot be instantiated
     }
 }

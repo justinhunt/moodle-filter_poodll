@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified method is not allowed against this resource.
  */
-class MethodNotAllowedException extends S3Exception {}
+class MethodNotAllowedException extends S3Exception {
+}

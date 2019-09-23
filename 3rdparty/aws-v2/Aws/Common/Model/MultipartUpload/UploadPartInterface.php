@@ -19,8 +19,7 @@ namespace Aws\Common\Model\MultipartUpload;
 /**
  * An object that encapsulates the data for an upload part
  */
-interface UploadPartInterface extends \Serializable
-{
+interface UploadPartInterface extends \Serializable {
     /**
      * Create an upload part from an array
      *

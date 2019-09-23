@@ -1,11 +1,11 @@
 <?php
+
 namespace Aws;
 
 /**
  * AWS command object.
  */
-class Command implements CommandInterface
-{
+class Command implements CommandInterface {
     use HasDataTrait;
 
     /** @var string */
@@ -19,12 +19,11 @@ class Command implements CommandInterface
      *
      * - @http: (array) Associative array of transfer options.
      *
-     * @param string      $name           Name of the command
-     * @param array       $args           Arguments to pass to the command
-     * @param HandlerList $list           Handler list
+     * @param string $name Name of the command
+     * @param array $args Arguments to pass to the command
+     * @param HandlerList $list Handler list
      */
-    public function __construct($name, array $args = [], HandlerList $list = null)
-    {
+    public function __construct($name, array $args = [], HandlerList $list = null) {
         $this->name = $name;
         $this->data = $args;
         $this->handlerList = $list ?: new HandlerList();
@@ -34,29 +33,24 @@ class Command implements CommandInterface
         }
     }
 
-    public function __clone()
-    {
+    public function __clone() {
         $this->handlerList = clone $this->handlerList;
     }
 
-    public function getName()
-    {
+    public function getName() {
         return $this->name;
     }
 
-    public function hasParam($name)
-    {
+    public function hasParam($name) {
         return array_key_exists($name, $this->data);
     }
 
-    public function getHandlerList()
-    {
+    public function getHandlerList() {
         return $this->handlerList;
     }
 
     /** @deprecated */
-    public function get($name)
-    {
+    public function get($name) {
         return $this[$name];
     }
 }

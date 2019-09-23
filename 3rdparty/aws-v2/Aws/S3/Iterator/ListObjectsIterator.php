@@ -28,10 +28,8 @@ use Guzzle\Service\Resource\Model;
  * - sort_results: Set to true to sort mixed (object/prefix) results
  * - names_only: Set to true to receive only the object/prefix names
  */
-class ListObjectsIterator extends AwsResourceIterator
-{
-    protected function handleResults(Model $result)
-    {
+class ListObjectsIterator extends AwsResourceIterator {
+    protected function handleResults(Model $result) {
         // Get the list of objects and record the last key
         $objects = $result->get('Contents') ?: array();
         $numObjects = count($objects);
@@ -41,7 +39,7 @@ class ListObjectsIterator extends AwsResourceIterator
         }
 
         // Closure for getting the name of an object or prefix
-        $getName = function ($object) {
+        $getName = function($object) {
             return isset($object['Key']) ? $object['Key'] : $object['Prefix'];
         };
 
@@ -52,7 +50,7 @@ class ListObjectsIterator extends AwsResourceIterator
 
             // Sort the objects and prefixes to maintain alphabetical order, but only if some of each were returned
             if ($this->get('sort_results') && $lastKey && $objects) {
-                usort($objects, function ($object1, $object2) use ($getName) {
+                usort($objects, function($object1, $object2) use ($getName) {
                     return strcmp($getName($object1), $getName($object2));
                 });
             }

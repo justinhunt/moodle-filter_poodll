@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified location constraint is not valid. For more information about Regions, see How to Select a Region for Your Buckets.
  */
-class InvalidLocationConstraintException extends S3Exception {}
+class InvalidLocationConstraintException extends S3Exception {
+}

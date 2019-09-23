@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -16,66 +16,67 @@ define(['jquery','core/log'], function($, log) {
         drawparams: {
             micColor: '#CCCCCC',
             wavColor: "#CCCCCC",
-            lineWidth: 2},
+            lineWidth: 2
+        },
 
         //for making multiple instances
         clone: function () {
             return $.extend(true, {}, this);
         },
 
-        setDrawParam: function(paramkey,paramvalue){
-            this.drawparams[paramkey]=paramvalue;
+        setDrawParam: function (paramkey, paramvalue) {
+            this.drawparams[paramkey] = paramvalue;
         },
 
 
         //init
         init: function (analyser, cvs) {
             this.cvs = cvs;
-            this.cvsctx=cvs.getContext("2d");
-            this.cvsctx.textAlign="center";
+            this.cvsctx = cvs.getContext("2d");
+            this.cvsctx.textAlign = "center";
             this.analyser = analyser;
 
             //init images
             //listen for load to ensure initial display
-            var that =this;
+            var that = this;
             this.imgone = new Image();
-            this.imgone.addEventListener('load',function(){
-                that.imgoneloaded=true;
+            this.imgone.addEventListener('load', function () {
+                that.imgoneloaded = true;
             });
             this.imgone.src = M.cfg.wwwroot + '/filter/poodll/pix/svg/mic.svg';
         },
 
-        clear: function(){
-            if(!this.imgoneloaded) {
+        clear: function () {
+            if (!this.imgoneloaded) {
                 var that = this;
-                this.imgone.addEventListener('load',function(){
-                    that.imgoneloaded=true;
+                this.imgone.addEventListener('load', function () {
+                    that.imgoneloaded = true;
                     that.clear();
                 });
                 return;
             }
-            this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+            this.cvsctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
 
             this.cvsctx.beginPath();
-            this.cvsctx.lineWidth =  this.drawparams.lineWidth;
+            this.cvsctx.lineWidth = this.drawparams.lineWidth;
             this.cvsctx.strokeStyle = this.drawparams.wavColor;
-            this.cvsctx.moveTo(0, this.cvs.height/2);
-            this.cvsctx.lineTo(this.cvs.width, this.cvs.height/2);
+            this.cvsctx.moveTo(0, this.cvs.height / 2);
+            this.cvsctx.lineTo(this.cvs.width, this.cvs.height / 2);
             this.cvsctx.stroke();
 
-           // this.cvsctx.beginPath();
-          //  this.cvsctx.strokeStyle = this.drawparams.micColor;
-            this.drawMic(this.cvsctx,this.cvs.width,this.cvs.height, this.imgone);
-          //  this.cvsctx.stroke();
+            // this.cvsctx.beginPath();
+            //  this.cvsctx.strokeStyle = this.drawparams.micColor;
+            this.drawMic(this.cvsctx, this.cvs.width, this.cvs.height, this.imgone);
+            //  this.cvsctx.stroke();
         },
 
-        drawMic: function(ctx,cwidth,cheight,mic){
+        drawMic: function (ctx, cwidth, cheight, mic) {
             var x = (cwidth - mic.width) / 2;
             var y = (cheight - mic.height) / 2;
-            ctx.drawImage(mic,x,y);
+            ctx.drawImage(mic, x, y);
         },
 
-        start: function(){
+        start: function () {
             this.analyser.core.fftSize = 2048;
             var bufferLength = this.analyser.core.fftSize;
             var dataArray = new Uint8Array(bufferLength);
@@ -91,14 +92,16 @@ define(['jquery','core/log'], function($, log) {
                 var drawVisual = requestAnimationFrame(draw);
 
                 //cancel out if the theinterval is null
-                if(!analyser.theinterval){return;}
+                if (!analyser.theinterval) {
+                    return;
+                }
 
                 analyser.core.getByteTimeDomainData(dataArray);
 
                 //filling is rubbish, we just clear it
                 //canvasCtx.fillStyle = 'rgb(200, 200, 200)';
                 //canvasCtx.fillRect(0, 0, cwidth, cheight);
-                canvasCtx.clearRect(0, 0, cwidth,cheight);
+                canvasCtx.clearRect(0, 0, cwidth, cheight);
 
                 canvasCtx.lineWidth = that.drawparams.lineWidth;
                 canvasCtx.strokeStyle = that.drawparams.wavColor;
@@ -110,10 +113,10 @@ define(['jquery','core/log'], function($, log) {
                 var oldy = 0;
 
                 //we check if we could capture sound here
-                if(bufferLength > 0) {
+                if (bufferLength > 0) {
                     var level = dataArray[bufferLength - 1];
-                    if(level !=128){
-                        that.sounddetected =true;
+                    if (level != 128) {
+                        that.sounddetected = true;
                     }
                 }
 
@@ -129,14 +132,14 @@ define(['jquery','core/log'], function($, log) {
                         canvasCtx.lineTo(x, y);
 
                     }
-                    oldy=y;
+                    oldy = y;
                     x += sliceWidth;
                 }
                 canvasCtx.lineTo(cwidth, cheight / 2);
                 canvasCtx.stroke();
 
                 //draw a microphone
-                that.drawMic(canvasCtx,cwidth,cheight,that.imgone);
+                that.drawMic(canvasCtx, cwidth, cheight, that.imgone);
 
 
             };

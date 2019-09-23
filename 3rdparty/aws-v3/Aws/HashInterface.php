@@ -1,11 +1,11 @@
 <?php
+
 namespace Aws;
 
 /**
  * Interface that allows implementing various incremental hashes.
  */
-interface HashInterface
-{
+interface HashInterface {
     /**
      * Adds data to the hash.
      *

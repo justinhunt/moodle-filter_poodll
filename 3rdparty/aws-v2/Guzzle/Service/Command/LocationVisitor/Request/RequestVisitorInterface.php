@@ -9,8 +9,7 @@ use Guzzle\Service\Command\CommandInterface;
 /**
  * Location visitor used to add values to different locations in a request with different behaviors as needed
  */
-interface RequestVisitorInterface
-{
+interface RequestVisitorInterface {
     /**
      * Called after visiting all parameters
      *
@@ -24,8 +23,8 @@ interface RequestVisitorInterface
      *
      * @param CommandInterface $command Command being visited
      * @param RequestInterface $request Request being visited
-     * @param Parameter        $param   Parameter being visited
-     * @param mixed            $value   Value to set
+     * @param Parameter $param Parameter being visited
+     * @param mixed $value Value to set
      */
     public function visit(CommandInterface $command, RequestInterface $request, Parameter $param, $value);
 }

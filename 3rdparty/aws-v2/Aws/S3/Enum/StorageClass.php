@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable StorageClass values
  */
-class StorageClass extends Enum
-{
+class StorageClass extends Enum {
     const STANDARD = 'STANDARD';
     const REDUCED_REDUNDANCY = 'REDUCED_REDUNDANCY';
 }

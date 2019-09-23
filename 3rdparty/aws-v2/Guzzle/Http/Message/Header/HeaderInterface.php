@@ -4,8 +4,7 @@ namespace Guzzle\Http\Message\Header;
 
 use Guzzle\Common\ToArrayInterface;
 
-interface HeaderInterface extends ToArrayInterface, \Countable, \IteratorAggregate
-{
+interface HeaderInterface extends ToArrayInterface, \Countable, \IteratorAggregate {
     /**
      * Convert the header to a string
      *

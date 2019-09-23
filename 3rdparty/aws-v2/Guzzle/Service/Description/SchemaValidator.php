@@ -7,8 +7,7 @@ use Guzzle\Common\ToArrayInterface;
 /**
  * Default parameter validator
  */
-class SchemaValidator implements ValidatorInterface
-{
+class SchemaValidator implements ValidatorInterface {
     /** @var self Cache instance of the object */
     protected static $instance;
 
@@ -22,8 +21,7 @@ class SchemaValidator implements ValidatorInterface
      * @return self
      * @codeCoverageIgnore
      */
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (!self::$instance) {
             self::$instance = new self();
         }
@@ -35,13 +33,11 @@ class SchemaValidator implements ValidatorInterface
      * @param bool $castIntegerToStringType Set to true to convert integers into strings when a required type is a
      *                                      string and the input value is an integer. Defaults to true.
      */
-    public function __construct($castIntegerToStringType = true)
-    {
+    public function __construct($castIntegerToStringType = true) {
         $this->castIntegerToStringType = $castIntegerToStringType;
     }
 
-    public function validate(Parameter $param, &$value)
-    {
+    public function validate(Parameter $param, &$value) {
         $this->errors = array();
         $this->recursiveProcess($param, $value);
 
@@ -58,23 +54,21 @@ class SchemaValidator implements ValidatorInterface
      *
      * @return array
      */
-    public function getErrors()
-    {
+    public function getErrors() {
         return $this->errors ?: array();
     }
 
     /**
      * Recursively validate a parameter
      *
-     * @param Parameter $param  API parameter being validated
-     * @param mixed     $value  Value to validate and validate. The value may change during this validate.
-     * @param string    $path   Current validation path (used for error reporting)
-     * @param int       $depth  Current depth in the validation validate
+     * @param Parameter $param API parameter being validated
+     * @param mixed $value Value to validate and validate. The value may change during this validate.
+     * @param string $path Current validation path (used for error reporting)
+     * @param int $depth Current depth in the validation validate
      *
      * @return bool Returns true if valid, or false if invalid
      */
-    protected function recursiveProcess(Parameter $param, &$value, $path = '', $depth = 0)
-    {
+    protected function recursiveProcess(Parameter $param, &$value, $path = '', $depth = 0) {
         // Update the value by adding default or static values
         $value = $param->getValue($value);
 
@@ -118,7 +112,7 @@ class SchemaValidator implements ValidatorInterface
                     return false;
                 }
                 $traverse = true;
-            } elseif ($value === null) {
+            } else if ($value === null) {
                 // Attempt to let the contents be built up by default values if possible
                 $value = array();
                 $temporaryValue = $valueIsArray = $traverse = true;
@@ -173,7 +167,7 @@ class SchemaValidator implements ValidatorInterface
                 }
             }
 
-        } elseif ($type == 'array' && $valueIsArray && $param->getItems()) {
+        } else if ($type == 'array' && $valueIsArray && $param->getItems()) {
             foreach ($value as $i => &$item) {
                 // Validate each item in an array against the items attribute of the schema
                 $this->recursiveProcess($param->getItems(), $item, $path . "[{$i}]", $depth + 1);
@@ -182,7 +176,8 @@ class SchemaValidator implements ValidatorInterface
 
         // If the value is required and the type is not null, then there is an error if the value is not set
         if ($required && $value === null && $type != 'null') {
-            $message = "{$path} is " . ($param->getType() ? ('a required ' . implode(' or ', (array) $param->getType())) : 'required');
+            $message =
+                    "{$path} is " . ($param->getType() ? ('a required ' . implode(' or ', (array) $param->getType())) : 'required');
             if ($param->getDescription()) {
                 $message .= ': ' . $param->getDescription();
             }
@@ -205,12 +200,12 @@ class SchemaValidator implements ValidatorInterface
 
             // Strings can have enums which are a list of predefined values
             if (($enum = $param->getEnum()) && !in_array($value, $enum)) {
-                $this->errors[] = "{$path} must be one of " . implode(' or ', array_map(function ($s) {
-                    return '"' . addslashes($s) . '"';
-                }, $enum));
+                $this->errors[] = "{$path} must be one of " . implode(' or ', array_map(function($s) {
+                            return '"' . addslashes($s) . '"';
+                        }, $enum));
             }
             // Strings can have a regex pattern that the value must match
-            if (($pattern  = $param->getPattern()) && !preg_match($pattern, $value)) {
+            if (($pattern = $param->getPattern()) && !preg_match($pattern, $value)) {
                 $this->errors[] = "{$path} must match the following regular expression: {$pattern}";
             }
 
@@ -227,7 +222,7 @@ class SchemaValidator implements ValidatorInterface
                 }
             }
 
-        } elseif ($type == 'array') {
+        } else if ($type == 'array') {
 
             $size = null;
             if ($min = $param->getMinItems()) {
@@ -242,7 +237,7 @@ class SchemaValidator implements ValidatorInterface
                 }
             }
 
-        } elseif ($type == 'integer' || $type == 'number' || $type == 'numeric') {
+        } else if ($type == 'integer' || $type == 'number' || $type == 'numeric') {
             if (($min = $param->getMinimum()) && $value < $min) {
                 $this->errors[] = "{$path} must be greater than or equal to {$min}";
             }
@@ -257,31 +252,30 @@ class SchemaValidator implements ValidatorInterface
     /**
      * From the allowable types, determine the type that the variable matches
      *
-     * @param string $type  Parameter type
-     * @param mixed  $value Value to determine the type
+     * @param string $type Parameter type
+     * @param mixed $value Value to determine the type
      *
      * @return string|bool Returns the matching type on
      */
-    protected function determineType($type, $value)
-    {
+    protected function determineType($type, $value) {
         foreach ((array) $type as $t) {
             if ($t == 'string' && (is_string($value) || (is_object($value) && method_exists($value, '__toString')))) {
                 return 'string';
-            } elseif ($t == 'object' && (is_array($value) || is_object($value))) {
+            } else if ($t == 'object' && (is_array($value) || is_object($value))) {
                 return 'object';
-            } elseif ($t == 'array' && is_array($value)) {
+            } else if ($t == 'array' && is_array($value)) {
                 return 'array';
-            } elseif ($t == 'integer' && is_integer($value)) {
+            } else if ($t == 'integer' && is_integer($value)) {
                 return 'integer';
-            } elseif ($t == 'boolean' && is_bool($value)) {
+            } else if ($t == 'boolean' && is_bool($value)) {
                 return 'boolean';
-            } elseif ($t == 'number' && is_numeric($value)) {
+            } else if ($t == 'number' && is_numeric($value)) {
                 return 'number';
-            } elseif ($t == 'numeric' && is_numeric($value)) {
+            } else if ($t == 'numeric' && is_numeric($value)) {
                 return 'numeric';
-            } elseif ($t == 'null' && !$value) {
+            } else if ($t == 'null' && !$value) {
                 return 'null';
-            } elseif ($t == 'any') {
+            } else if ($t == 'any') {
                 return 'any';
             }
         }

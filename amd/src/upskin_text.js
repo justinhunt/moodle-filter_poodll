@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -16,36 +16,36 @@ define(['jquery','core/log'], function($, log) {
         },
 
         //init
-        init: function (config, element, cvs,messagearea) {
+        init: function (config, element, cvs, messagearea) {
             this.config = config;
             this.element = element;
             this.cvs = cvs;
             this.messagearea = messagearea;
         },
 
-        initControls: function(){
+        initControls: function () {
             //add html and events to recorder here
         },
 
         //create a progress bar
-        initProgressSession: function(xhr){
+        initProgressSession: function (xhr) {
             var self = this;
-            self.percent =0;
+            self.percent = 0;
             var uploadingmessage = M.util.get_string('recui_uploading', 'filter_poodll');
             // Handle event
-            xhr.upload.addEventListener("progress", function(e) {
+            xhr.upload.addEventListener("progress", function (e) {
                 if (e.lengthComputable) {
                     self.percent = e.loaded / e.total;
-                    self.showMessage(uploadingmessage + '(' + Math.floor(self.percent *100) + '%)');
+                    self.showMessage(uploadingmessage + '(' + Math.floor(self.percent * 100) + '%)');
                 }
             });
         },
 
-        deactivateProgressSession: function(){
+        deactivateProgressSession: function () {
             log.debug('deactivating session');
         },
 
-        showMessage: function(msg,msgid){
+        showMessage: function (msg, msgid) {
             this.messagearea.html(msg);
         }//End of send message
     };//end of returned object

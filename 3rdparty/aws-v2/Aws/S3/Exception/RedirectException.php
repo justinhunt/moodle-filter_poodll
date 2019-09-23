@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Temporary redirect.
  */
-class RedirectException extends S3Exception {}
+class RedirectException extends S3Exception {
+}

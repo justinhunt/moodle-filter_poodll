@@ -21,4 +21,5 @@ use Aws\Common\Exception\ServiceResponseException;
 /**
  * Default service exception class
  */
-class ElasticTranscoderException extends ServiceResponseException {}
+class ElasticTranscoderException extends ServiceResponseException {
+}

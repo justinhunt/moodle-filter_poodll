@@ -21,8 +21,7 @@ use Aws\Common\Exception\InvalidArgumentException;
 /**
  * An object that encapsulates the data identifying an upload
  */
-abstract class AbstractUploadId implements UploadIdInterface
-{
+abstract class AbstractUploadId implements UploadIdInterface {
     /**
      * @var array Expected values (with defaults)
      */
@@ -36,8 +35,7 @@ abstract class AbstractUploadId implements UploadIdInterface
     /**
      * {@inheritdoc}
      */
-    public static function fromParams($data)
-    {
+    public static function fromParams($data) {
         $uploadId = new static();
         $uploadId->loadData($data);
 
@@ -47,24 +45,21 @@ abstract class AbstractUploadId implements UploadIdInterface
     /**
      * {@inheritdoc}
      */
-    public function toParams()
-    {
+    public function toParams() {
         return $this->data;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function serialize()
-    {
+    public function serialize() {
         return serialize($this->data);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         $this->loadData(unserialize($serialized));
     }
 
@@ -75,8 +70,7 @@ abstract class AbstractUploadId implements UploadIdInterface
      *
      * @throws InvalidArgumentException if a required key is missing
      */
-    protected function loadData($data)
-    {
+    protected function loadData($data) {
         $data = array_replace(static::$expectedValues, array_intersect_key($data, static::$expectedValues));
         foreach ($data as $key => $value) {
             if (isset($data[$key])) {

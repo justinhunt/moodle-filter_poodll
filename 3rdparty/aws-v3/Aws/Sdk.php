@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 /**
@@ -166,9 +167,11 @@ namespace Aws;
  * @method \Aws\MultiRegionClient createMultiRegionMTurk(array $args = [])
  * @method \Aws\MachineLearning\MachineLearningClient createMachineLearning(array $args = [])
  * @method \Aws\MultiRegionClient createMultiRegionMachineLearning(array $args = [])
- * @method \Aws\MarketplaceCommerceAnalytics\MarketplaceCommerceAnalyticsClient createMarketplaceCommerceAnalytics(array $args = [])
+ * @method \Aws\MarketplaceCommerceAnalytics\MarketplaceCommerceAnalyticsClient createMarketplaceCommerceAnalytics(array $args =
+ *         [])
  * @method \Aws\MultiRegionClient createMultiRegionMarketplaceCommerceAnalytics(array $args = [])
- * @method \Aws\MarketplaceEntitlementService\MarketplaceEntitlementServiceClient createMarketplaceEntitlementService(array $args = [])
+ * @method \Aws\MarketplaceEntitlementService\MarketplaceEntitlementServiceClient createMarketplaceEntitlementService(array $args =
+ *         [])
  * @method \Aws\MultiRegionClient createMultiRegionMarketplaceEntitlementService(array $args = [])
  * @method \Aws\MarketplaceMetering\MarketplaceMeteringClient createMarketplaceMetering(array $args = [])
  * @method \Aws\MultiRegionClient createMultiRegionMarketplaceMetering(array $args = [])
@@ -218,7 +221,8 @@ namespace Aws;
  * @method \Aws\MultiRegionClient createMultiRegionSageMaker(array $args = [])
  * @method \Aws\SageMakerRuntime\SageMakerRuntimeClient createSageMakerRuntime(array $args = [])
  * @method \Aws\MultiRegionClient createMultiRegionSageMakerRuntime(array $args = [])
- * @method \Aws\ServerlessApplicationRepository\ServerlessApplicationRepositoryClient createServerlessApplicationRepository(array $args = [])
+ * @method \Aws\ServerlessApplicationRepository\ServerlessApplicationRepositoryClient createServerlessApplicationRepository(array
+ *         $args = [])
  * @method \Aws\MultiRegionClient createMultiRegionServerlessApplicationRepository(array $args = [])
  * @method \Aws\ServiceCatalog\ServiceCatalogClient createServiceCatalog(array $args = [])
  * @method \Aws\MultiRegionClient createMultiRegionServiceCatalog(array $args = [])
@@ -265,8 +269,7 @@ namespace Aws;
  * @method \Aws\XRay\XRayClient createXRay(array $args = [])
  * @method \Aws\MultiRegionClient createMultiRegionXRay(array $args = [])
  */
-class Sdk
-{
+class Sdk {
     const VERSION = '3.52.2';
 
     /** @var array Arguments for creating clients */
@@ -281,8 +284,7 @@ class Sdk
      * @throws \InvalidArgumentException
      * @see Aws\AwsClient::__construct for a list of available options.
      */
-    public function __construct(array $args = [])
-    {
+    public function __construct(array $args = []) {
         $this->args = $args;
 
         if (!isset($args['handler']) && !isset($args['http_handler'])) {
@@ -290,12 +292,11 @@ class Sdk
         }
     }
 
-    public function __call($name, array $args)
-    {
+    public function __call($name, array $args) {
         $args = isset($args[0]) ? $args[0] : [];
         if (strpos($name, 'createMultiRegion') === 0) {
             return $this->createMultiRegionClient(substr($name, 17), $args);
-        } elseif (strpos($name, 'create') === 0) {
+        } else if (strpos($name, 'create') === 0) {
             return $this->createClient(substr($name, 6), $args);
         }
 
@@ -306,15 +307,14 @@ class Sdk
      * Get a client by name using an array of constructor options.
      *
      * @param string $name Service name or namespace (e.g., DynamoDb, s3).
-     * @param array  $args Arguments to configure the client.
+     * @param array $args Arguments to configure the client.
      *
      * @return AwsClientInterface
      * @throws \InvalidArgumentException if any required options are missing or
      *                                   the service is not supported.
      * @see Aws\AwsClient::__construct for a list of available options for args.
      */
-    public function createClient($name, array $args = [])
-    {
+    public function createClient($name, array $args = []) {
         // Get information about the service from the manifest file.
         $service = manifest($name);
         $namespace = $service['namespace'];
@@ -324,8 +324,7 @@ class Sdk
         return new $client($this->mergeArgs($namespace, $service, $args));
     }
 
-    public function createMultiRegionClient($name, array $args = [])
-    {
+    public function createMultiRegionClient($name, array $args = []) {
         // Get information about the service from the manifest file.
         $service = manifest($name);
         $namespace = $service['namespace'];
@@ -336,8 +335,7 @@ class Sdk
         return new $klass($this->mergeArgs($namespace, $service, $args));
     }
 
-    private function mergeArgs($namespace, array $manifest, array $args = [])
-    {
+    private function mergeArgs($namespace, array $manifest, array $args = []) {
         // Merge provided args with stored, service-specific args.
         if (isset($this->args[$namespace])) {
             $args += $this->args[$namespace];
@@ -360,8 +358,7 @@ class Sdk
      * @internal
      * @deprecated Use the `\Aws\manifest()` function instead.
      */
-    public static function getEndpointPrefix($name)
-    {
+    public static function getEndpointPrefix($name) {
         return manifest($name)['endpoint'];
     }
 }

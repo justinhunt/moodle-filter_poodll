@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified key does not exist.
  */
-class NoSuchKeyException extends S3Exception {}
+class NoSuchKeyException extends S3Exception {
+}

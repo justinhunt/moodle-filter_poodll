@@ -21,8 +21,7 @@ use Guzzle\Common\Collection;
 /**
  * Configuration info of a waiter object
  */
-class WaiterConfig extends Collection
-{
+class WaiterConfig extends Collection {
     const WAITER_NAME = 'name';
     const MAX_ATTEMPTS = 'max_attempts';
     const INTERVAL = 'interval';
@@ -39,8 +38,7 @@ class WaiterConfig extends Collection
     /**
      * @param array $data Array of configuration directives
      */
-    public function __construct(array $data = array())
-    {
+    public function __construct(array $data = array()) {
         $this->data = $data;
         $this->extractConfig();
     }
@@ -48,8 +46,7 @@ class WaiterConfig extends Collection
     /**
      * Create the command configuration variables
      */
-    protected function extractConfig()
-    {
+    protected function extractConfig() {
         // Populate success.* and failure.* if specified in acceptor.*
         foreach ($this->data as $key => $value) {
             if (substr($key, 0, 9) == 'acceptor.') {

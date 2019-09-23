@@ -25,8 +25,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Listener used to sign requests before they are sent over the wire
  */
-class SignatureListener implements EventSubscriberInterface
-{
+class SignatureListener implements EventSubscriberInterface {
     /**
      * @var CredentialsInterface
      */
@@ -41,10 +40,9 @@ class SignatureListener implements EventSubscriberInterface
      * Construct a new request signing plugin
      *
      * @param CredentialsInterface $credentials Credentials used to sign requests
-     * @param SignatureInterface   $signature   Signature implementation
+     * @param SignatureInterface $signature Signature implementation
      */
-    public function __construct(CredentialsInterface $credentials, SignatureInterface $signature)
-    {
+    public function __construct(CredentialsInterface $credentials, SignatureInterface $signature) {
         $this->credentials = $credentials;
         $this->signature = $signature;
     }
@@ -52,11 +50,10 @@ class SignatureListener implements EventSubscriberInterface
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array(
-            'request.before_send'        => array('onRequestBeforeSend', -255),
-            'client.credentials_changed' => array('onCredentialsChanged')
+                'request.before_send' => array('onRequestBeforeSend', -255),
+                'client.credentials_changed' => array('onCredentialsChanged')
         );
     }
 
@@ -65,8 +62,7 @@ class SignatureListener implements EventSubscriberInterface
      *
      * @param Event $event Event emitted
      */
-    public function onCredentialsChanged(Event $event)
-    {
+    public function onCredentialsChanged(Event $event) {
         $this->credentials = $event['credentials'];
     }
 
@@ -75,13 +71,12 @@ class SignatureListener implements EventSubscriberInterface
      *
      * @param Event $event Event emitted
      */
-    public function onRequestBeforeSend(Event $event)
-    {
+    public function onRequestBeforeSend(Event $event) {
         $creds = $this->credentials instanceof AbstractRefreshableCredentials
-            ? $this->credentials->getCredentials()
-            : $this->credentials;
+                ? $this->credentials->getCredentials()
+                : $this->credentials;
 
-        if(!$creds instanceof NullCredentials) {
+        if (!$creds instanceof NullCredentials) {
             $this->signature->signRequest($event['request'], $creds);
         }
     }

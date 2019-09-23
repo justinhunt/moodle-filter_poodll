@@ -21,8 +21,7 @@ use Monolog\Logger;
  *
  * @author Christophe Coevoet <stof@notk.org>
  */
-class BufferHandler extends AbstractHandler
-{
+class BufferHandler extends AbstractHandler {
     protected $handler;
     protected $bufferSize = 0;
     protected $bufferLimit;
@@ -31,14 +30,16 @@ class BufferHandler extends AbstractHandler
     protected $initialized = false;
 
     /**
-     * @param HandlerInterface $handler         Handler.
-     * @param int              $bufferLimit     How many entries should be buffered at most, beyond that the oldest items are removed from the buffer.
-     * @param int              $level           The minimum logging level at which this handler will be triggered
-     * @param Boolean          $bubble          Whether the messages that are handled can bubble up the stack or not
-     * @param Boolean          $flushOnOverflow If true, the buffer is flushed when the max size has been reached, by default oldest entries are discarded
+     * @param HandlerInterface $handler Handler.
+     * @param int $bufferLimit How many entries should be buffered at most, beyond that the oldest items are removed from the
+     *         buffer.
+     * @param int $level The minimum logging level at which this handler will be triggered
+     * @param Boolean $bubble Whether the messages that are handled can bubble up the stack or not
+     * @param Boolean $flushOnOverflow If true, the buffer is flushed when the max size has been reached, by default oldest entries
+     *         are discarded
      */
-    public function __construct(HandlerInterface $handler, $bufferLimit = 0, $level = Logger::DEBUG, $bubble = true, $flushOnOverflow = false)
-    {
+    public function __construct(HandlerInterface $handler, $bufferLimit = 0, $level = Logger::DEBUG, $bubble = true,
+            $flushOnOverflow = false) {
         parent::__construct($level, $bubble);
         $this->handler = $handler;
         $this->bufferLimit = (int) $bufferLimit;
@@ -48,8 +49,7 @@ class BufferHandler extends AbstractHandler
     /**
      * {@inheritdoc}
      */
-    public function handle(array $record)
-    {
+    public function handle(array $record) {
         if ($record['level'] < $this->level) {
             return false;
         }
@@ -81,8 +81,7 @@ class BufferHandler extends AbstractHandler
         return false === $this->bubble;
     }
 
-    public function flush()
-    {
+    public function flush() {
         if ($this->bufferSize === 0) {
             return;
         }
@@ -91,8 +90,7 @@ class BufferHandler extends AbstractHandler
         $this->clear();
     }
 
-    public function __destruct()
-    {
+    public function __destruct() {
         // suppress the parent behavior since we already have register_shutdown_function()
         // to call close(), and the reference contained there will prevent this from being
         // GC'd until the end of the request
@@ -101,16 +99,14 @@ class BufferHandler extends AbstractHandler
     /**
      * {@inheritdoc}
      */
-    public function close()
-    {
+    public function close() {
         $this->flush();
     }
 
     /**
      * Clears the buffer without flushing any messages down to the wrapped handler.
      */
-    public function clear()
-    {
+    public function clear() {
         $this->bufferSize = 0;
         $this->buffer = array();
     }

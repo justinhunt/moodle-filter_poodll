@@ -22,8 +22,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Converts generic Guzzle response exceptions into AWS specific exceptions
  */
-class ExceptionListener implements EventSubscriberInterface
-{
+class ExceptionListener implements EventSubscriberInterface {
     /**
      * @var ExceptionFactoryInterface Factory used to create new exceptions
      */
@@ -32,16 +31,14 @@ class ExceptionListener implements EventSubscriberInterface
     /**
      * @param ExceptionFactoryInterface $factory Factory used to create exceptions
      */
-    public function __construct(ExceptionFactoryInterface $factory)
-    {
+    public function __construct(ExceptionFactoryInterface $factory) {
         $this->factory = $factory;
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array('request.error' => array('onRequestError', -1));
     }
 
@@ -50,8 +47,7 @@ class ExceptionListener implements EventSubscriberInterface
      *
      * @param Event $event Event emitted
      */
-    public function onRequestError(Event $event)
-    {
+    public function onRequestError(Event $event) {
         $e = $this->factory->fromResponse($event['request'], $event['response']);
         $event->stopPropagation();
         throw $e;

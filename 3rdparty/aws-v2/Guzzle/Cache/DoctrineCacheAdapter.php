@@ -9,33 +9,27 @@ use Doctrine\Common\Cache\Cache;
  *
  * @link http://www.doctrine-project.org/
  */
-class DoctrineCacheAdapter extends AbstractCacheAdapter
-{
+class DoctrineCacheAdapter extends AbstractCacheAdapter {
     /**
      * @param Cache $cache Doctrine cache object
      */
-    public function __construct(Cache $cache)
-    {
+    public function __construct(Cache $cache) {
         $this->cache = $cache;
     }
 
-    public function contains($id, array $options = null)
-    {
+    public function contains($id, array $options = null) {
         return $this->cache->contains($id);
     }
 
-    public function delete($id, array $options = null)
-    {
+    public function delete($id, array $options = null) {
         return $this->cache->delete($id);
     }
 
-    public function fetch($id, array $options = null)
-    {
+    public function fetch($id, array $options = null) {
         return $this->cache->fetch($id);
     }
 
-    public function save($id, $data, $lifeTime = false, array $options = null)
-    {
+    public function save($id, $data, $lifeTime = false, array $options = null) {
         return $this->cache->save($id, $data, $lifeTime !== false ? $lifeTime : 0);
     }
 }

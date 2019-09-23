@@ -8,10 +8,8 @@ use Guzzle\Service\Command\CommandInterface;
 /**
  * Abstract resource iterator factory implementation
  */
-abstract class AbstractResourceIteratorFactory implements ResourceIteratorFactoryInterface
-{
-    public function build(CommandInterface $command, array $options = array())
-    {
+abstract class AbstractResourceIteratorFactory implements ResourceIteratorFactoryInterface {
+    public function build(CommandInterface $command, array $options = array()) {
         if (!$this->canBuild($command)) {
             throw new InvalidArgumentException('Iterator was not found for ' . $command->getName());
         }
@@ -21,8 +19,7 @@ abstract class AbstractResourceIteratorFactory implements ResourceIteratorFactor
         return new $className($command, $options);
     }
 
-    public function canBuild(CommandInterface $command)
-    {
+    public function canBuild(CommandInterface $command) {
         return (bool) $this->getClassName($command);
     }
 

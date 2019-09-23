@@ -22,20 +22,18 @@ use Guzzle\Http\Message\Response;
 /**
  * Parses JSON encoded exception responses
  */
-abstract class AbstractJsonExceptionParser implements ExceptionParserInterface
-{
+abstract class AbstractJsonExceptionParser implements ExceptionParserInterface {
     /**
      * {@inheritdoc}
      */
-    public function parse(RequestInterface $request, Response $response)
-    {
+    public function parse(RequestInterface $request, Response $response) {
         // Build array of default error data
         $data = array(
-            'code'       => null,
-            'message'    => null,
-            'type'       => $response->isClientError() ? 'client' : 'server',
-            'request_id' => (string) $response->getHeader('x-amzn-RequestId'),
-            'parsed'     => null
+                'code' => null,
+                'message' => null,
+                'type' => $response->isClientError() ? 'client' : 'server',
+                'request_id' => (string) $response->getHeader('x-amzn-RequestId'),
+                'parsed' => null
         );
 
         // Parse the json and normalize key casings
@@ -57,7 +55,7 @@ abstract class AbstractJsonExceptionParser implements ExceptionParserInterface
     /**
      * Pull relevant exception data out of the parsed json
      *
-     * @param array    $data     The exception data
+     * @param array $data The exception data
      * @param Response $response The response from the service containing the error
      *
      * @return array

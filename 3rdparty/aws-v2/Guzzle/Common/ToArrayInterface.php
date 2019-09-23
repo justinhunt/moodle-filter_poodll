@@ -5,8 +5,7 @@ namespace Guzzle\Common;
 /**
  * An object that can be represented as an array
  */
-interface ToArrayInterface
-{
+interface ToArrayInterface {
     /**
      * Get the array representation of an object
      *

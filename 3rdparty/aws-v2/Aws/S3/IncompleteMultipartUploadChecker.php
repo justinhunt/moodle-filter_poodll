@@ -24,31 +24,28 @@ use Guzzle\Plugin\Backoff\AbstractBackoffStrategy;
  *     request succeeded. Note that if Complete Multipart Upload fails,
  *     applications should be prepared to retry the failed requests.
  */
-class IncompleteMultipartUploadChecker extends AbstractBackoffStrategy
-{
-    public function __construct(BackoffStrategyInterface $next = null)
-    {
+class IncompleteMultipartUploadChecker extends AbstractBackoffStrategy {
+    public function __construct(BackoffStrategyInterface $next = null) {
         if ($next) {
             $this->setNext($next);
         }
     }
 
-    public function makesDecision()
-    {
+    public function makesDecision() {
         return true;
     }
 
     protected function getDelay(
-        $retries,
-        RequestInterface $request,
-        Response $response = null,
-        HttpException $e = null
+            $retries,
+            RequestInterface $request,
+            Response $response = null,
+            HttpException $e = null
     ) {
         if ($response && $request->getMethod() === 'POST'
-            && $request instanceof EntityEnclosingRequestInterface
-            && $response->getStatusCode() == 200
-            && strpos($request->getBody(), '<CompleteMultipartUpload xmlns') !== false
-            && strpos($response->getBody(), '<CompleteMultipartUploadResult xmlns') === false
+                && $request instanceof EntityEnclosingRequestInterface
+                && $response->getStatusCode() == 200
+                && strpos($request->getBody(), '<CompleteMultipartUpload xmlns') !== false
+                && strpos($response->getBody(), '<CompleteMultipartUploadResult xmlns') === false
         ) {
             return true;
         }

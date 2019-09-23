@@ -20,8 +20,7 @@ namespace Aws\Common\Signature;
  * Interface for signatures that use specific region and service names when
  * signing requests.
  */
-interface EndpointSignatureInterface extends SignatureInterface
-{
+interface EndpointSignatureInterface extends SignatureInterface {
     /**
      * Set the service name instead of inferring it from a request URL
      *

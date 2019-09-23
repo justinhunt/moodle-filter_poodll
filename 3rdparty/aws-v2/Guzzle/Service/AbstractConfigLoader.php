@@ -8,8 +8,7 @@ use Guzzle\Common\Exception\RuntimeException;
 /**
  * Abstract config loader
  */
-abstract class AbstractConfigLoader implements ConfigLoaderInterface
-{
+abstract class AbstractConfigLoader implements ConfigLoaderInterface {
     /** @var array Array of aliases for actual filenames */
     protected $aliases = array();
 
@@ -18,22 +17,21 @@ abstract class AbstractConfigLoader implements ConfigLoaderInterface
 
     /** @var array JSON error code mappings */
     protected static $jsonErrors = array(
-        JSON_ERROR_NONE => 'JSON_ERROR_NONE - No errors',
-        JSON_ERROR_DEPTH => 'JSON_ERROR_DEPTH - Maximum stack depth exceeded',
-        JSON_ERROR_STATE_MISMATCH => 'JSON_ERROR_STATE_MISMATCH - Underflow or the modes mismatch',
-        JSON_ERROR_CTRL_CHAR => 'JSON_ERROR_CTRL_CHAR - Unexpected control character found',
-        JSON_ERROR_SYNTAX => 'JSON_ERROR_SYNTAX - Syntax error, malformed JSON',
-        JSON_ERROR_UTF8 => 'JSON_ERROR_UTF8 - Malformed UTF-8 characters, possibly incorrectly encoded'
+            JSON_ERROR_NONE => 'JSON_ERROR_NONE - No errors',
+            JSON_ERROR_DEPTH => 'JSON_ERROR_DEPTH - Maximum stack depth exceeded',
+            JSON_ERROR_STATE_MISMATCH => 'JSON_ERROR_STATE_MISMATCH - Underflow or the modes mismatch',
+            JSON_ERROR_CTRL_CHAR => 'JSON_ERROR_CTRL_CHAR - Unexpected control character found',
+            JSON_ERROR_SYNTAX => 'JSON_ERROR_SYNTAX - Syntax error, malformed JSON',
+            JSON_ERROR_UTF8 => 'JSON_ERROR_UTF8 - Malformed UTF-8 characters, possibly incorrectly encoded'
     );
 
-    public function load($config, array $options = array())
-    {
+    public function load($config, array $options = array()) {
         // Reset the array of loaded files because this is a new config
         $this->loadedFiles = array();
 
         if (is_string($config)) {
             $config = $this->loadFile($config);
-        } elseif (!is_array($config)) {
+        } else if (!is_array($config)) {
             throw new InvalidArgumentException('Unknown type passed to configuration loader: ' . gettype($config));
         } else {
             $this->mergeIncludes($config);
@@ -46,12 +44,11 @@ abstract class AbstractConfigLoader implements ConfigLoaderInterface
      * Add an include alias to the loader
      *
      * @param string $filename Filename to alias (e.g. _foo)
-     * @param string $alias    Actual file to use (e.g. /path/to/foo.json)
+     * @param string $alias Actual file to use (e.g. /path/to/foo.json)
      *
      * @return self
      */
-    public function addAlias($filename, $alias)
-    {
+    public function addAlias($filename, $alias) {
         $this->aliases[$filename] = $alias;
 
         return $this;
@@ -64,8 +61,7 @@ abstract class AbstractConfigLoader implements ConfigLoaderInterface
      *
      * @return self
      */
-    public function removeAlias($alias)
-    {
+    public function removeAlias($alias) {
         unset($this->aliases[$alias]);
 
         return $this;
@@ -74,7 +70,7 @@ abstract class AbstractConfigLoader implements ConfigLoaderInterface
     /**
      * Perform the parsing of a config file and create the end result
      *
-     * @param array $config  Configuration data
+     * @param array $config Configuration data
      * @param array $options Options to use when building
      *
      * @return mixed
@@ -90,8 +86,7 @@ abstract class AbstractConfigLoader implements ConfigLoaderInterface
      * @throws InvalidArgumentException
      * @throws RuntimeException when the JSON cannot be parsed
      */
-    protected function loadFile($filename)
-    {
+    protected function loadFile($filename) {
         if (isset($this->aliases[$filename])) {
             $filename = $this->aliases[$filename];
         }
@@ -142,13 +137,12 @@ abstract class AbstractConfigLoader implements ConfigLoaderInterface
     /**
      * Merges in all include files
      *
-     * @param array  $config   Config data that contains includes
+     * @param array $config Config data that contains includes
      * @param string $basePath Base path to use when a relative path is encountered
      *
      * @return array Returns the merged and included data
      */
-    protected function mergeIncludes(&$config, $basePath = null)
-    {
+    protected function mergeIncludes(&$config, $basePath = null) {
         if (!empty($config['includes'])) {
             foreach ($config['includes'] as &$path) {
                 // Account for relative paths
@@ -172,8 +166,7 @@ abstract class AbstractConfigLoader implements ConfigLoaderInterface
      *
      * @return array
      */
-    protected function mergeData(array $a, array $b)
-    {
+    protected function mergeData(array $a, array $b) {
         return array_merge_recursive($a, $b);
     }
 }

@@ -9,8 +9,7 @@ use Guzzle\Batch\BatchDivisorInterface as DivisorStrategy;
 /**
  * Exception thrown during a batch transfer
  */
-class BatchTransferException extends \Exception implements GuzzleException
-{
+class BatchTransferException extends \Exception implements GuzzleException {
     /** @var array The batch being sent when the exception occurred */
     protected $batch;
 
@@ -24,27 +23,27 @@ class BatchTransferException extends \Exception implements GuzzleException
     protected $transferredItems;
 
     /**
-     * @param array            $batch            The batch being sent when the exception occurred
-     * @param array            $transferredItems Items transferred at the point in which the exception was encountered
-     * @param \Exception       $exception        Exception encountered
+     * @param array $batch The batch being sent when the exception occurred
+     * @param array $transferredItems Items transferred at the point in which the exception was encountered
+     * @param \Exception $exception Exception encountered
      * @param TransferStrategy $transferStrategy The transfer strategy in use when the exception occurred
-     * @param DivisorStrategy  $divisorStrategy  The divisor strategy in use when the exception occurred
+     * @param DivisorStrategy $divisorStrategy The divisor strategy in use when the exception occurred
      */
     public function __construct(
-        array $batch,
-        array $transferredItems,
-        \Exception $exception,
-        TransferStrategy $transferStrategy = null,
-        DivisorStrategy $divisorStrategy = null
+            array $batch,
+            array $transferredItems,
+            \Exception $exception,
+            TransferStrategy $transferStrategy = null,
+            DivisorStrategy $divisorStrategy = null
     ) {
         $this->batch = $batch;
         $this->transferredItems = $transferredItems;
         $this->transferStrategy = $transferStrategy;
         $this->divisorStrategy = $divisorStrategy;
         parent::__construct(
-            'Exception encountered while transferring batch: ' . $exception->getMessage(),
-            $exception->getCode(),
-            $exception
+                'Exception encountered while transferring batch: ' . $exception->getMessage(),
+                $exception->getCode(),
+                $exception
         );
     }
 
@@ -53,8 +52,7 @@ class BatchTransferException extends \Exception implements GuzzleException
      *
      * @return array
      */
-    public function getBatch()
-    {
+    public function getBatch() {
         return $this->batch;
     }
 
@@ -63,8 +61,7 @@ class BatchTransferException extends \Exception implements GuzzleException
      *
      * @return array
      */
-    public function getTransferredItems()
-    {
+    public function getTransferredItems() {
         return $this->transferredItems;
     }
 
@@ -73,8 +70,7 @@ class BatchTransferException extends \Exception implements GuzzleException
      *
      * @return TransferStrategy
      */
-    public function getTransferStrategy()
-    {
+    public function getTransferStrategy() {
         return $this->transferStrategy;
     }
 
@@ -83,8 +79,7 @@ class BatchTransferException extends \Exception implements GuzzleException
      *
      * @return DivisorStrategy
      */
-    public function getDivisorStrategy()
-    {
+    public function getDivisorStrategy() {
         return $this->divisorStrategy;
     }
 }

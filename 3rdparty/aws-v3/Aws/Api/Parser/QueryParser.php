@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api\Parser;
 
 use Aws\Api\Service;
@@ -9,8 +10,7 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * @internal Parses query (XML) responses (e.g., EC2, SQS, and many others)
  */
-class QueryParser extends AbstractParser
-{
+class QueryParser extends AbstractParser {
     use PayloadParserTrait;
 
     /** @var XmlParser */
@@ -20,16 +20,16 @@ class QueryParser extends AbstractParser
     private $honorResultWrapper;
 
     /**
-     * @param Service   $api                Service description
-     * @param XmlParser $xmlParser          Optional XML parser
-     * @param bool      $honorResultWrapper Set to false to disable the peeling
+     * @param Service $api Service description
+     * @param XmlParser $xmlParser Optional XML parser
+     * @param bool $honorResultWrapper Set to false to disable the peeling
      *                                      back of result wrappers from the
      *                                      output structure.
      */
     public function __construct(
-        Service $api,
-        XmlParser $xmlParser = null,
-        $honorResultWrapper = true
+            Service $api,
+            XmlParser $xmlParser = null,
+            $honorResultWrapper = true
     ) {
         parent::__construct($api);
         $this->xmlParser = $xmlParser ?: new XmlParser();
@@ -37,8 +37,8 @@ class QueryParser extends AbstractParser
     }
 
     public function __invoke(
-        CommandInterface $command,
-        ResponseInterface $response
+            CommandInterface $command,
+            ResponseInterface $response
     ) {
         $output = $this->api->getOperation($command->getName())->getOutput();
         $xml = $this->parseXml($response->getBody());

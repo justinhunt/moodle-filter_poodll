@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api;
 
 /**
@@ -6,8 +7,7 @@ namespace Aws\Api;
  * provides methods for extracting the desired parts related to a service,
  * operation, error, or shape (i.e., parameter).
  */
-class DocModel
-{
+class DocModel {
     /** @var array */
     private $docs;
 
@@ -16,8 +16,7 @@ class DocModel
      *
      * @throws \RuntimeException
      */
-    public function __construct(array $docs)
-    {
+    public function __construct(array $docs) {
         if (!extension_loaded('tidy')) {
             throw new \RuntimeException('The "tidy" PHP extension is required.');
         }
@@ -30,8 +29,7 @@ class DocModel
      *
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         return $this->docs;
     }
 
@@ -40,8 +38,7 @@ class DocModel
      *
      * @return null|string
      */
-    public function getServiceDocs()
-    {
+    public function getServiceDocs() {
         return isset($this->docs['service']) ? $this->docs['service'] : null;
     }
 
@@ -52,11 +49,10 @@ class DocModel
      *
      * @return null|string
      */
-    public function getOperationDocs($operation)
-    {
+    public function getOperationDocs($operation) {
         return isset($this->docs['operations'][$operation])
-            ? $this->docs['operations'][$operation]
-            : null;
+                ? $this->docs['operations'][$operation]
+                : null;
     }
 
     /**
@@ -66,24 +62,22 @@ class DocModel
      *
      * @return null|string
      */
-    public function getErrorDocs($error)
-    {
+    public function getErrorDocs($error) {
         return isset($this->docs['shapes'][$error]['base'])
-            ? $this->docs['shapes'][$error]['base']
-            : null;
+                ? $this->docs['shapes'][$error]['base']
+                : null;
     }
 
     /**
      * Retrieves documentation about a shape, specific to the context.
      *
-     * @param string $shapeName  Name of the shape.
+     * @param string $shapeName Name of the shape.
      * @param string $parentName Name of the parent/context shape.
-     * @param string $ref        Name used by the context to reference the shape.
+     * @param string $ref Name used by the context to reference the shape.
      *
      * @return null|string
      */
-    public function getShapeDocs($shapeName, $parentName, $ref)
-    {
+    public function getShapeDocs($shapeName, $parentName, $ref) {
         if (!isset($this->docs['shapes'][$shapeName])) {
             return '';
         }
@@ -92,7 +86,7 @@ class DocModel
         $d = $this->docs['shapes'][$shapeName];
         if (isset($d['refs']["{$parentName}\$${ref}"])) {
             $result = $d['refs']["{$parentName}\$${ref}"];
-        } elseif (isset($d['base'])) {
+        } else if (isset($d['base'])) {
             $result = $d['base'];
         }
 
@@ -103,23 +97,22 @@ class DocModel
         return $this->clean($result);
     }
 
-    private function clean($content)
-    {
+    private function clean($content) {
         if (!$content) {
             return '';
         }
 
         $tidy = new \Tidy();
         $tidy->parseString($content, [
-            'indent' => true,
-            'doctype' => 'omit',
-            'output-html' => true,
-            'show-body-only' => true,
-            'drop-empty-paras' => true,
-            'drop-font-tags' => true,
-            'drop-proprietary-attributes' => true,
-            'hide-comments' => true,
-            'logical-emphasis' => true
+                'indent' => true,
+                'doctype' => 'omit',
+                'output-html' => true,
+                'show-body-only' => true,
+                'drop-empty-paras' => true,
+                'drop-font-tags' => true,
+                'drop-proprietary-attributes' => true,
+                'hide-comments' => true,
+                'logical-emphasis' => true
         ]);
         $tidy->cleanRepair();
 

@@ -26,8 +26,7 @@ namespace Doctrine\Common\Cache;
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
  * @author Tobias Schultze <http://tobion.de>
  */
-abstract class FileCache extends CacheProvider
-{
+abstract class FileCache extends CacheProvider {
     /**
      * The cache directory.
      *
@@ -70,28 +69,27 @@ abstract class FileCache extends CacheProvider
      *
      * @throws \InvalidArgumentException
      */
-    public function __construct($directory, $extension = '', $umask = 0002)
-    {
+    public function __construct($directory, $extension = '', $umask = 0002) {
         // YES, this needs to be *before* createPathIfNeeded()
-        if ( ! is_int($umask)) {
+        if (!is_int($umask)) {
             throw new \InvalidArgumentException(sprintf(
-                'The umask parameter is required to be integer, was: %s',
-                gettype($umask)
+                    'The umask parameter is required to be integer, was: %s',
+                    gettype($umask)
             ));
         }
         $this->umask = $umask;
 
-        if ( ! $this->createPathIfNeeded($directory)) {
+        if (!$this->createPathIfNeeded($directory)) {
             throw new \InvalidArgumentException(sprintf(
-                'The directory "%s" does not exist and could not be created.',
-                $directory
+                    'The directory "%s" does not exist and could not be created.',
+                    $directory
             ));
         }
 
-        if ( ! is_writable($directory)) {
+        if (!is_writable($directory)) {
             throw new \InvalidArgumentException(sprintf(
-                'The directory "%s" is not writable.',
-                $directory
+                    'The directory "%s" is not writable.',
+                    $directory
             ));
         }
 
@@ -101,7 +99,7 @@ abstract class FileCache extends CacheProvider
 
         $this->directoryStringLength = strlen($this->directory);
         $this->extensionStringLength = strlen($this->extension);
-        $this->isRunningOnWindows    = defined('PHP_WINDOWS_VERSION_BUILD');
+        $this->isRunningOnWindows = defined('PHP_WINDOWS_VERSION_BUILD');
     }
 
     /**
@@ -109,8 +107,7 @@ abstract class FileCache extends CacheProvider
      *
      * @return string
      */
-    public function getDirectory()
-    {
+    public function getDirectory() {
         return $this->directory;
     }
 
@@ -119,8 +116,7 @@ abstract class FileCache extends CacheProvider
      *
      * @return string
      */
-    public function getExtension()
-    {
+    public function getExtension() {
         return $this->extension;
     }
 
@@ -129,15 +125,15 @@ abstract class FileCache extends CacheProvider
      *
      * @return string
      */
-    protected function getFilename($id)
-    {
+    protected function getFilename($id) {
         $hash = hash('sha256', $id);
 
         // This ensures that the filename is unique and that there are no invalid chars in it.
         if (
-            '' === $id
-            || ((strlen($id) * 2 + $this->extensionStringLength) > 255)
-            || ($this->isRunningOnWindows && ($this->directoryStringLength + 4 + strlen($id) * 2 + $this->extensionStringLength) > 258)
+                '' === $id
+                || ((strlen($id) * 2 + $this->extensionStringLength) > 255)
+                || ($this->isRunningOnWindows &&
+                        ($this->directoryStringLength + 4 + strlen($id) * 2 + $this->extensionStringLength) > 258)
         ) {
             // Most filesystems have a limit of 255 chars for each path component. On Windows the the whole path is limited
             // to 260 chars (including terminating null char). Using long UNC ("\\?\" prefix) does not work with the PHP API.
@@ -150,35 +146,33 @@ abstract class FileCache extends CacheProvider
         }
 
         return $this->directory
-            . DIRECTORY_SEPARATOR
-            . substr($hash, 0, 2)
-            . DIRECTORY_SEPARATOR
-            . $filename
-            . $this->extension;
+                . DIRECTORY_SEPARATOR
+                . substr($hash, 0, 2)
+                . DIRECTORY_SEPARATOR
+                . $filename
+                . $this->extension;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
-    {
+    protected function doDelete($id) {
         $filename = $this->getFilename($id);
 
-        return @unlink($filename) || ! file_exists($filename);
+        return @unlink($filename) || !file_exists($filename);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doFlush()
-    {
+    protected function doFlush() {
         foreach ($this->getIterator() as $name => $file) {
             if ($file->isDir()) {
                 // Remove the intermediate directories which have been created to balance the tree. It only takes effect
                 // if the directory is empty. If several caches share the same directory but with different file extensions,
                 // the other ones are not removed.
                 @rmdir($name);
-            } elseif ($this->isFilenameEndingWithExtension($name)) {
+            } else if ($this->isFilenameEndingWithExtension($name)) {
                 // If an extension is set, only remove files which end with the given extension.
                 // If no extension is set, we have no other choice than removing everything.
                 @unlink($name);
@@ -191,11 +185,10 @@ abstract class FileCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doGetStats()
-    {
+    protected function doGetStats() {
         $usage = 0;
         foreach ($this->getIterator() as $name => $file) {
-            if (! $file->isDir() && $this->isFilenameEndingWithExtension($name)) {
+            if (!$file->isDir() && $this->isFilenameEndingWithExtension($name)) {
                 $usage += $file->getSize();
             }
         }
@@ -203,11 +196,11 @@ abstract class FileCache extends CacheProvider
         $free = disk_free_space($this->directory);
 
         return array(
-            Cache::STATS_HITS               => null,
-            Cache::STATS_MISSES             => null,
-            Cache::STATS_UPTIME             => null,
-            Cache::STATS_MEMORY_USAGE       => $usage,
-            Cache::STATS_MEMORY_AVAILABLE   => $free,
+                Cache::STATS_HITS => null,
+                Cache::STATS_MISSES => null,
+                Cache::STATS_UPTIME => null,
+                Cache::STATS_MEMORY_USAGE => $usage,
+                Cache::STATS_MEMORY_AVAILABLE => $free,
         );
     }
 
@@ -217,9 +210,8 @@ abstract class FileCache extends CacheProvider
      * @param string $path
      * @return bool TRUE on success or if path already exists, FALSE if path cannot be created.
      */
-    private function createPathIfNeeded($path)
-    {
-        if ( ! is_dir($path)) {
+    private function createPathIfNeeded($path) {
+        if (!is_dir($path)) {
             if (false === @mkdir($path, 0777 & (~$this->umask), true) && !is_dir($path)) {
                 return false;
             }
@@ -232,19 +224,18 @@ abstract class FileCache extends CacheProvider
      * Writes a string content to file in an atomic way.
      *
      * @param string $filename Path to the file where to write the data.
-     * @param string $content  The content to write
+     * @param string $content The content to write
      *
      * @return bool TRUE on success, FALSE if path cannot be created, if path is not writable or an any other error.
      */
-    protected function writeFile($filename, $content)
-    {
+    protected function writeFile($filename, $content) {
         $filepath = pathinfo($filename, PATHINFO_DIRNAME);
 
-        if ( ! $this->createPathIfNeeded($filepath)) {
+        if (!$this->createPathIfNeeded($filepath)) {
             return false;
         }
 
-        if ( ! is_writable($filepath)) {
+        if (!is_writable($filepath)) {
             return false;
         }
 
@@ -268,11 +259,10 @@ abstract class FileCache extends CacheProvider
     /**
      * @return \Iterator
      */
-    private function getIterator()
-    {
+    private function getIterator() {
         return new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($this->directory, \FilesystemIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::CHILD_FIRST
+                new \RecursiveDirectoryIterator($this->directory, \FilesystemIterator::SKIP_DOTS),
+                \RecursiveIteratorIterator::CHILD_FIRST
         );
     }
 
@@ -281,9 +271,8 @@ abstract class FileCache extends CacheProvider
      *
      * @return bool
      */
-    private function isFilenameEndingWithExtension($name)
-    {
+    private function isFilenameEndingWithExtension($name) {
         return '' === $this->extension
-            || strrpos($name, $this->extension) === (strlen($name) - $this->extensionStringLength);
+                || strrpos($name, $this->extension) === (strlen($name) - $this->extensionStringLength);
     }
 }

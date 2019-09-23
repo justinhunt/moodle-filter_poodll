@@ -23,8 +23,7 @@ use Aws\Common\Exception\InstanceProfileCredentialsException;
  * Credentials decorator used to implement retrieving credentials from the
  * EC2 metadata server
  */
-class RefreshableInstanceProfileCredentials extends AbstractRefreshableCredentials
-{
+class RefreshableInstanceProfileCredentials extends AbstractRefreshableCredentials {
     /**
      * @var InstanceMetadataClient
      */
@@ -35,26 +34,23 @@ class RefreshableInstanceProfileCredentials extends AbstractRefreshableCredentia
     /**
      * Constructs a new instance profile credentials decorator
      *
-     * @param CredentialsInterface   $credentials Credentials to adapt
-     * @param InstanceMetadataClient $client      Client used to get new credentials
+     * @param CredentialsInterface $credentials Credentials to adapt
+     * @param InstanceMetadataClient $client Client used to get new credentials
      */
-    public function __construct(CredentialsInterface $credentials, InstanceMetadataClient $client = null)
-    {
+    public function __construct(CredentialsInterface $credentials, InstanceMetadataClient $client = null) {
         parent::__construct($credentials);
         $this->setClient($client);
     }
 
-    public function setClient(InstanceMetadataClient $client = null)
-    {
+    public function setClient(InstanceMetadataClient $client = null) {
         $this->customClient = null !== $client;
         $this->client = $client ?: InstanceMetadataClient::factory();
     }
 
-    public function serialize()
-    {
+    public function serialize() {
         $serializable = array(
-            'credentials' => parent::serialize(),
-            'customClient' => $this->customClient,
+                'credentials' => parent::serialize(),
+                'customClient' => $this->customClient,
         );
 
         if ($this->customClient) {
@@ -64,14 +60,13 @@ class RefreshableInstanceProfileCredentials extends AbstractRefreshableCredentia
         return json_encode($serializable);
     }
 
-    public function unserialize($value)
-    {
+    public function unserialize($value) {
         $serialized = json_decode($value, true);
         parent::unserialize($serialized['credentials']);
         $this->customClient = $serialized['customClient'];
         $this->client = $this->customClient ?
-            unserialize($serialized['client'])
-            : InstanceMetadataClient::factory();
+                unserialize($serialized['client'])
+                : InstanceMetadataClient::factory();
     }
 
     /**
@@ -79,13 +74,12 @@ class RefreshableInstanceProfileCredentials extends AbstractRefreshableCredentia
      *
      * @throws InstanceProfileCredentialsException On error
      */
-    protected function refresh()
-    {
+    protected function refresh() {
         $credentials = $this->client->getInstanceProfileCredentials();
         // Expire the token 5 minutes early to pre-fetch before expiring.
         $this->credentials->setAccessKeyId($credentials->getAccessKeyId())
-            ->setSecretKey($credentials->getSecretKey())
-            ->setSecurityToken($credentials->getSecurityToken())
-            ->setExpiration($credentials->getExpiration() - 300);
+                ->setSecretKey($credentials->getSecretKey())
+                ->setSecurityToken($credentials->getSecurityToken())
+                ->setExpiration($credentials->getExpiration() - 300);
     }
 }

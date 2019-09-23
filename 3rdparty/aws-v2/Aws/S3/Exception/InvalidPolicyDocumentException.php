@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The content of the form does not meet the conditions specified in the policy document.
  */
-class InvalidPolicyDocumentException extends S3Exception {}
+class InvalidPolicyDocumentException extends S3Exception {
+}

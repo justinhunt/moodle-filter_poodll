@@ -26,8 +26,7 @@ use Guzzle\Http\Message\RequestFactory;
 /**
  * Client used for interacting with the Amazon EC2 instance metadata server
  */
-class InstanceMetadataClient extends AbstractClient
-{
+class InstanceMetadataClient extends AbstractClient {
     /**
      * Factory method to create a new InstanceMetadataClient using an array
      * of configuration options.
@@ -40,15 +39,14 @@ class InstanceMetadataClient extends AbstractClient
      *
      * @return InstanceMetadataClient
      */
-    public static function factory($config = array())
-    {
+    public static function factory($config = array()) {
         $config = Collection::fromConfig($config, array(
-            Options::BASE_URL => 'http://169.254.169.254/{version}/',
-            'version'         => 'latest',
-            'request.options' => array(
-                'connect_timeout' => 5,
-                'timeout'         => 10
-            )
+                Options::BASE_URL => 'http://169.254.169.254/{version}/',
+                'version' => 'latest',
+                'request.options' => array(
+                        'connect_timeout' => 5,
+                        'timeout' => 10
+                )
         ), array('base_url', 'version'));
 
         return new self($config);
@@ -57,8 +55,7 @@ class InstanceMetadataClient extends AbstractClient
     /**
      * Constructor override
      */
-    public function __construct(Collection $config)
-    {
+    public function __construct(Collection $config) {
         $this->setConfig($config);
         $this->setBaseUrl($config->get(Options::BASE_URL));
         $this->defaultHeaders = new Collection();
@@ -71,17 +68,16 @@ class InstanceMetadataClient extends AbstractClient
      * @return Credentials
      * @throws InstanceProfileCredentialsException
      */
-    public function getInstanceProfileCredentials()
-    {
+    public function getInstanceProfileCredentials() {
         try {
             $request = $this->get('meta-data/iam/security-credentials/');
             $credentials = trim($request->send()->getBody(true));
             $result = $this->get("meta-data/iam/security-credentials/{$credentials}")->send()->json();
         } catch (\Exception $e) {
             $message = sprintf('Error retrieving credentials from the instance profile metadata server. When you are'
-                . ' not running inside of Amazon EC2, you must provide your AWS access key ID and secret access key in'
-                . ' the "key" and "secret" options when creating a client or provide an instantiated'
-                . ' Aws\\Common\\Credentials\\CredentialsInterface object. (%s)', $e->getMessage());
+                    . ' not running inside of Amazon EC2, you must provide your AWS access key ID and secret access key in'
+                    . ' the "key" and "secret" options when creating a client or provide an instantiated'
+                    . ' Aws\\Common\\Credentials\\CredentialsInterface object. (%s)', $e->getMessage());
             throw new InstanceProfileCredentialsException($message, $e->getCode());
         }
 
@@ -93,10 +89,10 @@ class InstanceMetadataClient extends AbstractClient
         }
 
         return new Credentials(
-            $result['AccessKeyId'],
-            $result['SecretAccessKey'],
-            $result['Token'],
-            strtotime($result['Expiration'])
+                $result['AccessKeyId'],
+                $result['SecretAccessKey'],
+                $result['Token'],
+                strtotime($result['Expiration'])
         );
     }
 }

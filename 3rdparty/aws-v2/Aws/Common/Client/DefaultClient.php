@@ -22,8 +22,7 @@ use Guzzle\Common\Collection;
 /**
  * Generic client for interacting with an AWS service
  */
-class DefaultClient extends AbstractClient
-{
+class DefaultClient extends AbstractClient {
     /**
      * Factory method to create a default client using an array of configuration options.
      *
@@ -34,12 +33,15 @@ class DefaultClient extends AbstractClient
      * - key: AWS Access Key ID
      * - secret: AWS secret access key
      * - credentials: You can optionally provide a custom `Aws\Common\Credentials\CredentialsInterface` object
-     * - token: Custom AWS security token to use with request authentication. Please note that not all services accept temporary credentials. See http://docs.aws.amazon.com/STS/latest/UsingSTS/UsingTokens.html
+     * - token: Custom AWS security token to use with request authentication. Please note that not all services accept temporary
+     * credentials. See http://docs.aws.amazon.com/STS/latest/UsingSTS/UsingTokens.html
      * - token.ttd: UNIX timestamp for when the custom credentials expire
      * - credentials.cache.key: Optional custom cache key to use with the credentials
-     * - credentials.client: Pass this option to specify a custom `Guzzle\Http\ClientInterface` to use if your credentials require a HTTP request (e.g. RefreshableInstanceProfileCredentials)
+     * - credentials.client: Pass this option to specify a custom `Guzzle\Http\ClientInterface` to use if your credentials require
+     * a HTTP request (e.g. RefreshableInstanceProfileCredentials)
      *
-     * Region and endpoint options (Some services do not require a region while others do. Check the service specific user guide documentation for details):
+     * Region and endpoint options (Some services do not require a region while others do. Check the service specific user guide
+     * documentation for details):
      *
      * - region: Region name (e.g. 'us-east-1', 'us-west-1', 'us-west-2', 'eu-west-1', etc...)
      * - scheme: URI Scheme of the base URL (e.g. 'https', 'http') used when endpoint is not supplied
@@ -47,21 +49,24 @@ class DefaultClient extends AbstractClient
      *
      * Generic client options:
      *
-     * - signature: Overrides the signature used by the client. Clients will always choose an appropriate default signature. However, it can be useful to override this with a custom setting. This can be set to "v4", "v3https", "v2" or an instance of Aws\Common\Signature\SignatureInterface.
+     * - signature: Overrides the signature used by the client. Clients will always choose an appropriate default signature.
+     * However, it can be useful to override this with a custom setting. This can be set to "v4", "v3https", "v2" or an instance of
+     * Aws\Common\Signature\SignatureInterface.
      * - ssl.certificate_authority: Set to true to use the bundled CA cert or pass the full path to an SSL certificate bundle
      * - curl.options: Associative of CURLOPT_* cURL options to add to each request
-     * - client.backoff.logger: `Guzzle\Log\LogAdapterInterface` object used to log backoff retries. Use 'debug' to emit PHP warnings when a retry is issued.
-     * - client.backoff.logger.template: Optional template to use for exponential backoff log messages. See `Guzzle\Plugin\Backoff\BackoffLogger` for formatting information.
+     * - client.backoff.logger: `Guzzle\Log\LogAdapterInterface` object used to log backoff retries. Use 'debug' to emit PHP
+     * warnings when a retry is issued.
+     * - client.backoff.logger.template: Optional template to use for exponential backoff log messages. See
+     * `Guzzle\Plugin\Backoff\BackoffLogger` for formatting information.
      *
      * @param array|Collection $config Client configuration data
      *
      * @return self
      */
-    public static function factory($config = array())
-    {
+    public static function factory($config = array()) {
         return ClientBuilder::factory()
-            ->setConfig($config)
-            ->setConfigDefaults(array(Options::SCHEME => 'https'))
-            ->build();
+                ->setConfig($config)
+                ->setConfigDefaults(array(Options::SCHEME => 'https'))
+                ->build();
     }
 }

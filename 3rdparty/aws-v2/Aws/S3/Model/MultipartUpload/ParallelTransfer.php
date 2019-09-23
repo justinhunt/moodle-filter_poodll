@@ -25,13 +25,11 @@ use Guzzle\Http\ReadLimitEntityBody;
 /**
  * Transfers multipart upload parts in parallel
  */
-class ParallelTransfer extends AbstractTransfer
-{
+class ParallelTransfer extends AbstractTransfer {
     /**
      * {@inheritdoc}
      */
-    protected function init()
-    {
+    protected function init() {
         parent::init();
 
         if (!$this->source->isLocal() || $this->source->getWrapper() != 'plainfile') {
@@ -46,12 +44,11 @@ class ParallelTransfer extends AbstractTransfer
     /**
      * {@inheritdoc}
      */
-    protected function transfer()
-    {
-        $totalParts  = (int) ceil($this->source->getContentLength() / $this->partSize);
+    protected function transfer() {
+        $totalParts = (int) ceil($this->source->getContentLength() / $this->partSize);
         $concurrency = min($totalParts, $this->options['concurrency']);
         $partsToSend = $this->prepareParts($concurrency);
-        $eventData   = $this->getEventData();
+        $eventData = $this->getEventData();
 
         while (!$this->stopped && count($this->state) < $totalParts) {
 
@@ -71,10 +68,10 @@ class ParallelTransfer extends AbstractTransfer
 
                 $params = $this->state->getUploadId()->toParams();
                 $eventData['command'] = $this->client->getCommand('UploadPart', array_replace($params, array(
-                    'PartNumber' => count($this->state) + 1 + $i,
-                    'Body'       => $partsToSend[$i],
-                    'ContentMD5' => (bool) $this->options['part_md5'],
-                    Ua::OPTION   => Ua::MULTIPART_UPLOAD
+                        'PartNumber' => count($this->state) + 1 + $i,
+                        'Body' => $partsToSend[$i],
+                        'ContentMD5' => (bool) $this->options['part_md5'],
+                        Ua::OPTION => Ua::MULTIPART_UPLOAD
                 )));
                 $commands[] = $eventData['command'];
                 // Notify any listeners of the part upload
@@ -90,10 +87,10 @@ class ParallelTransfer extends AbstractTransfer
             /** @var \Guzzle\Service\Command\OperationCommand $command */
             foreach ($this->client->execute($commands) as $command) {
                 $this->state->addPart(UploadPart::fromArray(array(
-                    'PartNumber'   => $command['PartNumber'],
-                    'ETag'         => $command->getResponse()->getEtag(),
-                    'Size'         => (int) $command->getRequest()->getBody()->getContentLength(),
-                    'LastModified' => gmdate(DateFormat::RFC2822)
+                        'PartNumber' => $command['PartNumber'],
+                        'ETag' => $command->getResponse()->getEtag(),
+                        'Size' => (int) $command->getRequest()->getBody()->getContentLength(),
+                        'LastModified' => gmdate(DateFormat::RFC2822)
                 )));
                 $eventData['command'] = $command;
                 // Notify any listeners the the part was uploaded
@@ -109,8 +106,7 @@ class ParallelTransfer extends AbstractTransfer
      *
      * @return array Parts to send
      */
-    protected function prepareParts($concurrency)
-    {
+    protected function prepareParts($concurrency) {
         $url = $this->source->getUri();
         // Use the source EntityBody as the first part
         $parts = array(new ReadLimitEntityBody($this->source, $this->partSize));

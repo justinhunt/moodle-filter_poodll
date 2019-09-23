@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL BadMethodCallException.
  */
-class BadMethodCallException extends \BadMethodCallException implements AwsExceptionInterface {}
+class BadMethodCallException extends \BadMethodCallException implements AwsExceptionInterface {
+}

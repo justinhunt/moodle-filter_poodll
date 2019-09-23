@@ -8,8 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Holds an event dispatcher
  */
-interface HasDispatcherInterface
-{
+interface HasDispatcherInterface {
     /**
      * Get a list of all of the events emitted from the class
      *
@@ -37,7 +36,7 @@ interface HasDispatcherInterface
      * Helper to dispatch Guzzle events and set the event name on the event
      *
      * @param string $eventName Name of the event to dispatch
-     * @param array  $context   Context of the event
+     * @param array $context Context of the event
      *
      * @return Event Returns the created event object
      */

@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * The request was rejected because the same certificate is associated to another user under the account.
  */
-class DuplicateCertificateException extends IamException {}
+class DuplicateCertificateException extends IamException {
+}

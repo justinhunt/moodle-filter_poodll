@@ -30,61 +30,53 @@ namespace Doctrine\Common\Cache;
  * @author Roman Borschel <roman@code-factory.org>
  * @author David Abdemoulaie <dave@hobodave.com>
  */
-class WinCacheCache extends CacheProvider
-{
+class WinCacheCache extends CacheProvider {
     /**
      * {@inheritdoc}
      */
-    protected function doFetch($id)
-    {
+    protected function doFetch($id) {
         return wincache_ucache_get($id);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doContains($id)
-    {
+    protected function doContains($id) {
         return wincache_ucache_exists($id);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
-    {
+    protected function doSave($id, $data, $lifeTime = 0) {
         return wincache_ucache_set($id, $data, $lifeTime);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
-    {
+    protected function doDelete($id) {
         return wincache_ucache_delete($id);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doFlush()
-    {
+    protected function doFlush() {
         return wincache_ucache_clear();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doFetchMultiple(array $keys)
-    {
+    protected function doFetchMultiple(array $keys) {
         return wincache_ucache_get($keys);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0)
-    {
+    protected function doSaveMultiple(array $keysAndValues, $lifetime = 0) {
         $result = wincache_ucache_set($keysAndValues, null, $lifetime);
 
         return empty($result);
@@ -93,17 +85,16 @@ class WinCacheCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doGetStats()
-    {
-        $info    = wincache_ucache_info();
+    protected function doGetStats() {
+        $info = wincache_ucache_info();
         $meminfo = wincache_ucache_meminfo();
 
         return array(
-            Cache::STATS_HITS             => $info['total_hit_count'],
-            Cache::STATS_MISSES           => $info['total_miss_count'],
-            Cache::STATS_UPTIME           => $info['total_cache_uptime'],
-            Cache::STATS_MEMORY_USAGE     => $meminfo['memory_total'],
-            Cache::STATS_MEMORY_AVAILABLE => $meminfo['memory_free'],
+                Cache::STATS_HITS => $info['total_hit_count'],
+                Cache::STATS_MISSES => $info['total_miss_count'],
+                Cache::STATS_UPTIME => $info['total_cache_uptime'],
+                Cache::STATS_MEMORY_USAGE => $meminfo['memory_total'],
+                Cache::STATS_MEMORY_AVAILABLE => $meminfo['memory_free'],
         );
     }
 }

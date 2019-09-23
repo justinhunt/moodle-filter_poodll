@@ -9,8 +9,7 @@ use Guzzle\Service\ClientInterface;
 /**
  * Command factory used to create commands referencing concrete command classes
  */
-class ConcreteClassFactory implements FactoryInterface
-{
+class ConcreteClassFactory implements FactoryInterface {
     /** @var ClientInterface */
     protected $client;
 
@@ -18,17 +17,15 @@ class ConcreteClassFactory implements FactoryInterface
     protected $inflector;
 
     /**
-     * @param ClientInterface    $client    Client that owns the commands
+     * @param ClientInterface $client Client that owns the commands
      * @param InflectorInterface $inflector Inflector used to resolve class names
      */
-    public function __construct(ClientInterface $client, InflectorInterface $inflector = null)
-    {
+    public function __construct(ClientInterface $client, InflectorInterface $inflector = null) {
         $this->client = $client;
         $this->inflector = $inflector ?: Inflector::getDefault();
     }
 
-    public function factory($name, array $args = array())
-    {
+    public function factory($name, array $args = array()) {
         // Determine the class to instantiate based on the namespace of the current client and the default directory
         $prefix = $this->client->getConfig('command.prefix');
         if (!$prefix) {

@@ -1,19 +1,18 @@
 <?php
+
 namespace Aws\DynamoDb;
 
 /**
  * Special object to represent a DynamoDB set (SS/NS/BS) value.
  */
-class SetValue implements \JsonSerializable, \Countable, \IteratorAggregate
-{
+class SetValue implements \JsonSerializable, \Countable, \IteratorAggregate {
     /** @var array Values in the set as provided. */
     private $values;
 
     /**
-     * @param array  $values Values in the set.
+     * @param array $values Values in the set.
      */
-    public function __construct(array $values)
-    {
+    public function __construct(array $values) {
         $this->values = $values;
     }
 
@@ -22,23 +21,19 @@ class SetValue implements \JsonSerializable, \Countable, \IteratorAggregate
      *
      * @return array
      */
-    public function toArray()
-    {
+    public function toArray() {
         return $this->values;
     }
 
-    public function count()
-    {
+    public function count() {
         return count($this->values);
     }
 
-    public function getIterator()
-    {
+    public function getIterator() {
         return new \ArrayIterator($this->values);
     }
 
-    public function jsonSerialize()
-    {
+    public function jsonSerialize() {
         return $this->toArray();
     }
 }

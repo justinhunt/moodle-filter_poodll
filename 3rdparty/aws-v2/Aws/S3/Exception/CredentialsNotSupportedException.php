@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * This request does not support credentials.
  */
-class CredentialsNotSupportedException extends S3Exception {}
+class CredentialsNotSupportedException extends S3Exception {
+}

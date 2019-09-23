@@ -1,11 +1,11 @@
 <?php
+
 namespace Aws\Common;
 
 /**
  * Provides endpoints based on a rules configuration file.
  */
-class RulesEndpointProvider
-{
+class RulesEndpointProvider {
     /** @var array */
     private $patterns;
 
@@ -13,8 +13,7 @@ class RulesEndpointProvider
      * @param array $patterns Hash of endpoint patterns mapping to endpoint
      *                        configurations.
      */
-    public function __construct(array $patterns)
-    {
+    public function __construct(array $patterns) {
         $this->patterns = $patterns;
     }
 
@@ -24,13 +23,11 @@ class RulesEndpointProvider
      *
      * @return self
      */
-    public static function fromDefaults()
-    {
+    public static function fromDefaults() {
         return new self(require __DIR__ . '/Resources/public-endpoints.php');
     }
 
-    public function __invoke(array $args = array())
-    {
+    public function __invoke(array $args = array()) {
         if (!isset($args['service'])) {
             throw new \InvalidArgumentException('Requires a "service" value');
         }
@@ -48,20 +45,18 @@ class RulesEndpointProvider
         throw new \RuntimeException('Could not resolve endpoint');
     }
 
-    private function expand(array $config, array $args)
-    {
+    private function expand(array $config, array $args) {
         $scheme = isset($args['scheme']) ? $args['scheme'] : 'https';
         $config['endpoint'] = $scheme . '://' . str_replace(
-            array('{service}', '{region}'),
-            array($args['service'], $args['region']),
-            $config['endpoint']
-        );
+                        array('{service}', '{region}'),
+                        array($args['service'], $args['region']),
+                        $config['endpoint']
+                );
 
         return $config;
     }
 
-    private function getKeys($region, $service)
-    {
+    private function getKeys($region, $service) {
         return array("$region/$service", "$region/*", "*/$service", "*/*");
     }
 }

@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The AWS Access Key Id you provided does not exist in our records.
  */
-class InvalidAccessKeyIdException extends S3Exception {}
+class InvalidAccessKeyIdException extends S3Exception {
+}

@@ -5,8 +5,7 @@ namespace Guzzle\Service\Command;
 /**
  * Interface used to accept a completed OperationCommand and parse the result into a specific response type
  */
-interface ResponseClassInterface
-{
+interface ResponseClassInterface {
     /**
      * Create a response model object from a completed command
      *

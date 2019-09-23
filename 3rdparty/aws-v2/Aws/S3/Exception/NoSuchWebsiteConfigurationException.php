@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The specified bucket does not have a website configuration.
  */
-class NoSuchWebsiteConfigurationException extends S3Exception {}
+class NoSuchWebsiteConfigurationException extends S3Exception {
+}

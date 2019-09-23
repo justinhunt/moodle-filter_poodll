@@ -19,4 +19,5 @@ namespace Aws\Support\Exception;
 /**
  * An internal server error occurred.
  */
-class InternalServerErrorException extends SupportException {}
+class InternalServerErrorException extends SupportException {
+}

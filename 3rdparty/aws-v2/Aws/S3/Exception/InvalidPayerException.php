@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * All access to this object has been disabled.
  */
-class InvalidPayerException extends S3Exception {}
+class InvalidPayerException extends S3Exception {
+}

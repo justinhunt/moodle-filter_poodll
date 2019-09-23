@@ -17,6 +17,8 @@
 namespace Aws\S3\Exception;
 
 /**
- * The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing method. For more information, see REST Authentication and SOAP Authentication for details.
+ * The request signature we calculated does not match the signature you provided. Check your AWS Secret Access Key and signing
+ * method. For more information, see REST Authentication and SOAP Authentication for details.
  */
-class SignatureDoesNotMatchException extends S3Exception {}
+class SignatureDoesNotMatchException extends S3Exception {
+}

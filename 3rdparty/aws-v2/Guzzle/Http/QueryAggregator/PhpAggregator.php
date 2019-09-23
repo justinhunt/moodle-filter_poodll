@@ -7,10 +7,8 @@ use Guzzle\Http\QueryString;
 /**
  * Aggregates nested query string variables using PHP style []
  */
-class PhpAggregator implements QueryAggregatorInterface
-{
-    public function aggregate($key, $value, QueryString $query)
-    {
+class PhpAggregator implements QueryAggregatorInterface {
+    public function aggregate($key, $value, QueryString $query) {
         $ret = array();
 
         foreach ($value as $k => $v) {

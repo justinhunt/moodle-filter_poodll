@@ -19,4 +19,5 @@ namespace Aws\ElasticTranscoder\Exception;
 /**
  * General authentication failure. The request was not signed correctly.
  */
-class AccessDeniedException extends ElasticTranscoderException {}
+class AccessDeniedException extends ElasticTranscoderException {
+}

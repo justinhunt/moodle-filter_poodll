@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
  * @copyright  2017 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class adhoc_completed extends  \core\event\base  {
+class adhoc_completed extends \core\event\base {
 
     /**
      * Create instance of event.
@@ -47,26 +47,26 @@ class adhoc_completed extends  \core\event\base  {
      */
     public static function create_from_task(\stdClass $taskdata) {
         //($taskdata->mediatype,$taskdata->infilename, $taskdata->outfilename, $taskdata->filename,$taskdata->filerecord);
-        $filerecord= $taskdata->filerecord;
-        $contextid=$filerecord->contextid;
-        $userid=$filerecord->userid;
+        $filerecord = $taskdata->filerecord;
+        $contextid = $filerecord->contextid;
+        $userid = $filerecord->userid;
         $context = \context::instance_by_id($contextid);
-        
+
         //weird moodle event proc. complains if other field is an object
         //and showhow it gets altered in json, so we do this to avoid a warning
         $taskjson = json_encode($taskdata);
-        $taskvars = json_decode($taskjson,true);
+        $taskvars = json_decode($taskjson, true);
 
         $data = array(
-            'context' => $context,
-            'objectid' => $filerecord->id,
-            'userid' => $userid,
-            'relateduserid' => $userid,
-            'other' => $taskvars
+                'context' => $context,
+                'objectid' => $filerecord->id,
+                'userid' => $userid,
+                'relateduserid' => $userid,
+                'other' => $taskvars
         );
         /** @var extension_granted $event */
         $event = self::create($data);
-       //the filerecord data might not be sufficient here ...for now we skip it
+        //the filerecord data might not be sufficient here ...for now we skip it
         // $event->add_record_snapshot('files', $filerecord);
 
         return $event;

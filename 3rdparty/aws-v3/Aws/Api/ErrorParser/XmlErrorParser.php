@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api\ErrorParser;
 
 use Aws\Api\Parser\PayloadParserTrait;
@@ -7,20 +8,18 @@ use Psr\Http\Message\ResponseInterface;
 /**
  * Parses XML errors.
  */
-class XmlErrorParser
-{
+class XmlErrorParser {
     use PayloadParserTrait;
 
-    public function __invoke(ResponseInterface $response)
-    {
+    public function __invoke(ResponseInterface $response) {
         $code = (string) $response->getStatusCode();
 
         $data = [
-            'type'        => $code[0] == '4' ? 'client' : 'server',
-            'request_id'  => null,
-            'code'        => null,
-            'message'     => null,
-            'parsed'      => null
+                'type' => $code[0] == '4' ? 'client' : 'server',
+                'request_id' => null,
+                'code' => null,
+                'message' => null,
+                'parsed' => null
         ];
 
         $body = $response->getBody();
@@ -33,14 +32,13 @@ class XmlErrorParser
         return $data;
     }
 
-    private function parseHeaders(ResponseInterface $response, array &$data)
-    {
+    private function parseHeaders(ResponseInterface $response, array &$data) {
         if ($response->getStatusCode() == '404') {
             $data['code'] = 'NotFound';
         }
 
         $data['message'] = $response->getStatusCode() . ' '
-            . $response->getReasonPhrase();
+                . $response->getReasonPhrase();
 
         if ($requestId = $response->getHeaderLine('x-amz-request-id')) {
             $data['request_id'] = $requestId;
@@ -48,8 +46,7 @@ class XmlErrorParser
         }
     }
 
-    private function parseBody(\SimpleXMLElement $body, array &$data)
-    {
+    private function parseBody(\SimpleXMLElement $body, array &$data) {
         $data['parsed'] = $body;
 
         $namespaces = $body->getDocNamespaces();

@@ -29,8 +29,7 @@ use Guzzle\Common\Collection;
  * Basic implementation of the AWSCredentials interface that allows callers to
  * pass in the AWS access key and secret access in the constructor.
  */
-class Credentials implements CredentialsInterface, FromConfigInterface
-{
+class Credentials implements CredentialsInterface, FromConfigInterface {
     const ENV_KEY = 'AWS_ACCESS_KEY_ID';
     const ENV_SECRET = 'AWS_SECRET_KEY';
     const ENV_SECRET_ACCESS_KEY = 'AWS_SECRET_ACCESS_KEY';
@@ -53,17 +52,16 @@ class Credentials implements CredentialsInterface, FromConfigInterface
      *
      * @return array
      */
-    public static function getConfigDefaults()
-    {
+    public static function getConfigDefaults() {
         return array(
-            Options::KEY                   => null,
-            Options::SECRET                => null,
-            Options::TOKEN                 => null,
-            Options::TOKEN_TTD             => null,
-            Options::PROFILE               => null,
-            Options::CREDENTIALS_CACHE     => null,
-            Options::CREDENTIALS_CACHE_KEY => null,
-            Options::CREDENTIALS_CLIENT    => null
+                Options::KEY => null,
+                Options::SECRET => null,
+                Options::TOKEN => null,
+                Options::TOKEN_TTD => null,
+                Options::PROFILE => null,
+                Options::CREDENTIALS_CACHE => null,
+                Options::CREDENTIALS_CACHE_KEY => null,
+                Options::CREDENTIALS_CLIENT => null
         );
     }
 
@@ -78,8 +76,7 @@ class Credentials implements CredentialsInterface, FromConfigInterface
      * @throws InvalidArgumentException If the caching options are invalid
      * @throws RuntimeException         If using the default cache and APC is disabled
      */
-    public static function factory($config = array())
-    {
+    public static function factory($config = array()) {
         // Add default key values
         foreach (self::getConfigDefaults() as $key => $value) {
             if (!isset($config[$key])) {
@@ -90,12 +87,12 @@ class Credentials implements CredentialsInterface, FromConfigInterface
         // Set up the cache
         $cache = $config[Options::CREDENTIALS_CACHE];
         $cacheKey = $config[Options::CREDENTIALS_CACHE_KEY] ?:
-            'credentials_' . ($config[Options::KEY] ?: crc32(gethostname()));
+                'credentials_' . ($config[Options::KEY] ?: crc32(gethostname()));
 
         if (
-            $cacheKey &&
-            $cache instanceof CacheAdapterInterface &&
-            $cached = self::createFromCache($cache, $cacheKey)
+                $cacheKey &&
+                $cache instanceof CacheAdapterInterface &&
+                $cached = self::createFromCache($cache, $cacheKey)
         ) {
             return $cached;
         }
@@ -106,10 +103,10 @@ class Credentials implements CredentialsInterface, FromConfigInterface
         } else {
             // Instantiate using short or long term credentials
             $credentials = new static(
-                $config[Options::KEY],
-                $config[Options::SECRET],
-                $config[Options::TOKEN],
-                $config[Options::TOKEN_TTD]
+                    $config[Options::KEY],
+                    $config[Options::SECRET],
+                    $config[Options::TOKEN],
+                    $config[Options::TOKEN_TTD]
             );
         }
 
@@ -125,7 +122,7 @@ class Credentials implements CredentialsInterface, FromConfigInterface
     /**
      * Create credentials from the credentials ini file in the HOME directory.
      *
-     * @param string|null $profile  Pass a specific profile to use. If no
+     * @param string|null $profile Pass a specific profile to use. If no
      *                              profile is specified we will attempt to use
      *                              the value specified in the AWS_PROFILE
      *                              environment variable. If AWS_PROFILE is not
@@ -139,8 +136,7 @@ class Credentials implements CredentialsInterface, FromConfigInterface
      * @throws \RuntimeException if the file cannot be found, if the file is
      *                           invalid, or if the profile is invalid.
      */
-    public static function fromIni($profile = null, $filename = null)
-    {
+    public static function fromIni($profile = null, $filename = null) {
         if (!$filename) {
             $filename = self::getHomeDir() . '/.aws/credentials';
         }
@@ -158,11 +154,11 @@ class Credentials implements CredentialsInterface, FromConfigInterface
         }
 
         return new self(
-            $data[$profile]['aws_access_key_id'],
-            $data[$profile]['aws_secret_access_key'],
-            isset($data[$profile]['aws_security_token'])
-                ? $data[$profile]['aws_security_token']
-                : null
+                $data[$profile]['aws_access_key_id'],
+                $data[$profile]['aws_secret_access_key'],
+                isset($data[$profile]['aws_security_token'])
+                        ? $data[$profile]['aws_security_token']
+                        : null
         );
     }
 
@@ -170,86 +166,74 @@ class Credentials implements CredentialsInterface, FromConfigInterface
      * Constructs a new BasicAWSCredentials object, with the specified AWS
      * access key and AWS secret key
      *
-     * @param string $accessKeyId     AWS access key ID
+     * @param string $accessKeyId AWS access key ID
      * @param string $secretAccessKey AWS secret access key
-     * @param string $token           Security token to use
-     * @param int    $expiration      UNIX timestamp for when credentials expire
+     * @param string $token Security token to use
+     * @param int $expiration UNIX timestamp for when credentials expire
      */
-    public function __construct($accessKeyId, $secretAccessKey, $token = null, $expiration = null)
-    {
+    public function __construct($accessKeyId, $secretAccessKey, $token = null, $expiration = null) {
         $this->key = trim($accessKeyId);
         $this->secret = trim($secretAccessKey);
         $this->token = $token;
         $this->ttd = $expiration;
     }
 
-    public function serialize()
-    {
+    public function serialize() {
         return json_encode(array(
-            Options::KEY       => $this->key,
-            Options::SECRET    => $this->secret,
-            Options::TOKEN     => $this->token,
-            Options::TOKEN_TTD => $this->ttd
+                Options::KEY => $this->key,
+                Options::SECRET => $this->secret,
+                Options::TOKEN => $this->token,
+                Options::TOKEN_TTD => $this->ttd
         ));
     }
 
-    public function unserialize($serialized)
-    {
+    public function unserialize($serialized) {
         $data = json_decode($serialized, true);
-        $this->key    = $data[Options::KEY];
+        $this->key = $data[Options::KEY];
         $this->secret = $data[Options::SECRET];
-        $this->token  = $data[Options::TOKEN];
-        $this->ttd    = $data[Options::TOKEN_TTD];
+        $this->token = $data[Options::TOKEN];
+        $this->ttd = $data[Options::TOKEN_TTD];
     }
 
-    public function getAccessKeyId()
-    {
+    public function getAccessKeyId() {
         return $this->key;
     }
 
-    public function getSecretKey()
-    {
+    public function getSecretKey() {
         return $this->secret;
     }
 
-    public function getSecurityToken()
-    {
+    public function getSecurityToken() {
         return $this->token;
     }
 
-    public function getExpiration()
-    {
+    public function getExpiration() {
         return $this->ttd;
     }
 
-    public function isExpired()
-    {
+    public function isExpired() {
         return $this->ttd !== null && time() >= $this->ttd;
     }
 
-    public function setAccessKeyId($key)
-    {
+    public function setAccessKeyId($key) {
         $this->key = $key;
 
         return $this;
     }
 
-    public function setSecretKey($secret)
-    {
+    public function setSecretKey($secret) {
         $this->secret = $secret;
 
         return $this;
     }
 
-    public function setSecurityToken($token)
-    {
+    public function setSecurityToken($token) {
         $this->token = $token;
 
         return $this;
     }
 
-    public function setExpiration($timestamp)
-    {
+    public function setExpiration($timestamp) {
         $this->ttd = $timestamp;
 
         return $this;
@@ -263,8 +247,7 @@ class Credentials implements CredentialsInterface, FromConfigInterface
      *
      * @return CredentialsInterface
      */
-    private static function createFromEnvironment($config)
-    {
+    private static function createFromEnvironment($config) {
         // Get key and secret from ENV variables
         $envKey = self::getEnvVar(self::ENV_KEY);
         if (!($envSecret = self::getEnvVar(self::ENV_SECRET))) {
@@ -283,14 +266,13 @@ class Credentials implements CredentialsInterface, FromConfigInterface
         } catch (\RuntimeException $e) {
             // Otherwise, try using instance profile credentials (available on EC2 instances)
             return new RefreshableInstanceProfileCredentials(
-                new static('', '', '', 1),
-                $config[Options::CREDENTIALS_CLIENT]
+                    new static('', '', '', 1),
+                    $config[Options::CREDENTIALS_CLIENT]
             );
         }
     }
 
-    private static function createFromCache(CacheAdapterInterface $cache, $cacheKey)
-    {
+    private static function createFromCache(CacheAdapterInterface $cache, $cacheKey) {
         $cached = $cache->fetch($cacheKey);
         if ($cached instanceof CredentialsInterface && !$cached->isExpired()) {
             return new CacheableCredentials($cached, $cache, $cacheKey);
@@ -299,24 +281,23 @@ class Credentials implements CredentialsInterface, FromConfigInterface
         return null;
     }
 
-    private static function createCache(CredentialsInterface $credentials, $cache, $cacheKey)
-    {
+    private static function createCache(CredentialsInterface $credentials, $cache, $cacheKey) {
         if ($cache === 'true' || $cache === true) {
             // If no cache adapter was provided, then create one for the user
             // @codeCoverageIgnoreStart
             if (!extension_loaded('apc')) {
                 throw new RequiredExtensionNotLoadedException('PHP has not been compiled with APC. Unable to cache '
-                    . 'the credentials.');
-            } elseif (!class_exists('Doctrine\Common\Cache\ApcCache')) {
+                        . 'the credentials.');
+            } else if (!class_exists('Doctrine\Common\Cache\ApcCache')) {
                 throw new RuntimeException(
-                    'Cannot set ' . Options::CREDENTIALS_CACHE . ' to true because the Doctrine cache component is '
-                    . 'not installed. Either install doctrine/cache or pass in an instantiated '
-                    . 'Guzzle\Cache\CacheAdapterInterface object'
+                        'Cannot set ' . Options::CREDENTIALS_CACHE . ' to true because the Doctrine cache component is '
+                        . 'not installed. Either install doctrine/cache or pass in an instantiated '
+                        . 'Guzzle\Cache\CacheAdapterInterface object'
                 );
             }
             // @codeCoverageIgnoreEnd
             $cache = new DoctrineCacheAdapter(new \Doctrine\Common\Cache\ApcCache());
-        } elseif (!($cache instanceof CacheAdapterInterface)) {
+        } else if (!($cache instanceof CacheAdapterInterface)) {
             throw new InvalidArgumentException('Unable to utilize caching with the specified options');
         }
 
@@ -324,8 +305,7 @@ class Credentials implements CredentialsInterface, FromConfigInterface
         return new CacheableCredentials($credentials, $cache, $cacheKey);
     }
 
-    private static function getHomeDir()
-    {
+    private static function getHomeDir() {
         // On Linux/Unix-like systems, use the HOME environment variable
         if ($homeDir = self::getEnvVar('HOME')) {
             return $homeDir;
@@ -345,8 +325,7 @@ class Credentials implements CredentialsInterface, FromConfigInterface
      *
      * @return mixed|null
      */
-    private static function getEnvVar($var)
-    {
+    private static function getEnvVar($var) {
         return isset($_SERVER[$var]) ? $_SERVER[$var] : getenv($var);
     }
 }

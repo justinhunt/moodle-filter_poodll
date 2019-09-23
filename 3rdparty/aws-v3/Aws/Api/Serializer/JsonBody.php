@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api\Serializer;
 
 use Aws\Api\Service;
@@ -7,14 +8,13 @@ use Aws\Api\TimestampShape;
 
 /**
  * Formats the JSON body of a JSON-REST or JSON-RPC operation.
+ *
  * @internal
  */
-class JsonBody
-{
+class JsonBody {
     private $api;
 
-    public function __construct(Service $api)
-    {
+    public function __construct(Service $api) {
         $this->api = $api;
     }
 
@@ -25,29 +25,26 @@ class JsonBody
      *
      * @return string
      */
-    public static function getContentType(Service $service)
-    {
+    public static function getContentType(Service $service) {
         return 'application/x-amz-json-'
-            . number_format($service->getMetadata('jsonVersion'), 1);
+                . number_format($service->getMetadata('jsonVersion'), 1);
     }
 
     /**
      * Builds the JSON body based on an array of arguments.
      *
      * @param Shape $shape Operation being constructed
-     * @param array $args  Associative array of arguments
+     * @param array $args Associative array of arguments
      *
      * @return string
      */
-    public function build(Shape $shape, array $args)
-    {
+    public function build(Shape $shape, array $args) {
         $result = json_encode($this->format($shape, $args));
 
         return $result == '[]' ? '{}' : $result;
     }
 
-    private function format(Shape $shape, $value)
-    {
+    private function format(Shape $shape, $value) {
         switch ($shape['type']) {
             case 'structure':
                 $data = [];
@@ -55,7 +52,7 @@ class JsonBody
                     if ($v !== null && $shape->hasMember($k)) {
                         $valueShape = $shape->getMember($k);
                         $data[$valueShape['locationName'] ?: $k]
-                            = $this->format($valueShape, $v);
+                                = $this->format($valueShape, $v);
                     }
                 }
                 return $data;

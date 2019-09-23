@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, speechrecognition) {
+define(['jquery', 'core/log', 'filter_poodll/speech_poodll'], function ($, log, speechrecognition) {
 
     "use strict"; // jshint ;_;
 
@@ -16,7 +16,8 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
             textColor: '#0',
             wavColor: '#0',
             font: '14px Comic Sans MS',
-            textAlign: "center"},
+            textAlign: "center"
+        },
 
         //for making multiple instances
         clone: function () {
@@ -27,7 +28,7 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
         //init
         init: function (analyser, cvs) {
             this.cvs = cvs;
-            this.cvsctx=cvs.getContext("2d");
+            this.cvsctx = cvs.getContext("2d");
             this.analyser = analyser;
 
             this.speechrec = speechrecognition.clone();
@@ -35,21 +36,21 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
 
         },
 
-        setDrawParam: function(paramkey,paramvalue){
-            this.drawparams[paramkey]=paramvalue;
+        setDrawParam: function (paramkey, paramvalue) {
+            this.drawparams[paramkey] = paramvalue;
         },
 
         //clear
         //more specifically stop, but to be consistent with how we do other anims, we call it clear
-        clear: function(){
-            this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
-            this.enabled=false;
+        clear: function () {
+            this.cvsctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
+            this.enabled = false;
             this.speechrec.stop();
         },
 
 
         //start the anim
-        start: function(){
+        start: function () {
             //set up variables used in drawing
             this.enabled = true;
             var that = this;
@@ -60,12 +61,12 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
             var cheight = this.cvs.height;
 
             //clear the canvas
-            this.cvsctx.clearRect(0, 0, cwidth,this.ceight);
+            this.cvsctx.clearRect(0, 0, cwidth, this.ceight);
 
             //set up speechrecognizer to fill words array
-            var words = ['..','..','..','..','..','..','..','..'];
-            this.speechrec.oninterimspeechcapture = function(speechtext){
-                var newwords= speechtext.split(' ');
+            var words = ['..', '..', '..', '..', '..', '..', '..', '..'];
+            this.speechrec.oninterimspeechcapture = function (speechtext) {
+                var newwords = speechtext.split(' ');
                 words = words.concat(newwords);
             };
             this.speechrec.start();
@@ -73,7 +74,9 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
             var draw = function () {
 
                 //cancel out if no longer active is null.
-                if(!that.enabled){return;}
+                if (!that.enabled) {
+                    return;
+                }
 
                 //this is the loop that continually calls itself to draw
                 var reqAnimFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||
@@ -81,13 +84,12 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
                 var drawVisual = reqAnimFrame(draw);
 
 
-
                 //this is the audio data
                 that.analyser.core.getByteTimeDomainData(dataArray);
 
                 //this fills grey, but its lame lets just leave it clear
                 //that.cvsctx.fillStyle = 'rgb(200, 200, 200)';
-                that.cvsctx.clearRect(0, 0, cwidth,cheight);
+                that.cvsctx.clearRect(0, 0, cwidth, cheight);
 
                 //sets up the pen
                 that.cvsctx.lineWidth = 2;
@@ -118,11 +120,11 @@ define(['jquery','core/log', 'filter_poodll/speech_poodll'], function($, log, sp
                 that.cvsctx.font = that.drawparams.font;
                 that.cvsctx.fillStyle = that.drawparams.textColor;
                 that.cvsctx.textAlign = that.drawparams.textAlign;
-                var cellvcenter = cheight/4;
-                var cellwidth=cwidth / 4;
+                var cellvcenter = cheight / 4;
+                var cellwidth = cwidth / 4;
                 var cellhcenter = cwidth / 8;
-                for (i=1; i<9;i++){
-                    that.cvsctx.fillText(words[words.length-i], (cellwidth * (i % 4)) + cellhcenter, i <5 ? cellvcenter : cellvcenter *3);
+                for (i = 1; i < 9; i++) {
+                    that.cvsctx.fillText(words[words.length - i], (cellwidth * (i % 4)) + cellhcenter, i < 5 ? cellvcenter : cellvcenter * 3);
                 }
             };
 

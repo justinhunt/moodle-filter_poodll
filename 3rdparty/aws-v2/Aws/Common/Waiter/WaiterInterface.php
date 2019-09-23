@@ -19,8 +19,7 @@ namespace Aws\Common\Waiter;
 /**
  * WaiterInterface used to wait on something to be in a particular state
  */
-interface WaiterInterface
-{
+interface WaiterInterface {
     const INTERVAL = 'waiter.interval';
     const MAX_ATTEMPTS = 'waiter.max_attempts';
 

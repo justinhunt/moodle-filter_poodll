@@ -24,17 +24,15 @@ use Guzzle\Http\Message\RequestInterface;
 /**
  * Amazon S3 signature version 4 overrides.
  */
-class S3SignatureV4 extends SignatureV4 implements S3SignatureInterface
-{
+class S3SignatureV4 extends SignatureV4 implements S3SignatureInterface {
     /**
      * Always add a x-amz-content-sha-256 for data integrity.
      */
-    public function signRequest(RequestInterface $request, CredentialsInterface $credentials)
-    {
+    public function signRequest(RequestInterface $request, CredentialsInterface $credentials) {
         if (!$request->hasHeader('x-amz-content-sha256')) {
             $request->setHeader(
-                'x-amz-content-sha256',
-                $this->getPayload($request)
+                    'x-amz-content-sha256',
+                    $this->getPayload($request)
             );
         }
 
@@ -45,16 +43,14 @@ class S3SignatureV4 extends SignatureV4 implements S3SignatureInterface
      * Override used to allow pre-signed URLs to be created for an
      * in-determinate request payload.
      */
-    protected function getPresignedPayload(RequestInterface $request)
-    {
+    protected function getPresignedPayload(RequestInterface $request) {
         return 'UNSIGNED-PAYLOAD';
     }
 
     /**
      * Amazon S3 does not double-encode the path component in the canonical req
      */
-    protected function createCanonicalizedPath(RequestInterface $request)
-    {
+    protected function createCanonicalizedPath(RequestInterface $request) {
         return '/' . ltrim($request->getPath(), '/');
     }
 }

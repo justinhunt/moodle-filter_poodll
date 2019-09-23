@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * The request was rejected because the public key certificate and the private key do not match.
  */
-class KeyPairMismatchException extends IamException {}
+class KeyPairMismatchException extends IamException {
+}

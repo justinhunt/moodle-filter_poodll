@@ -25,23 +25,23 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-  'filter/poodll:use' => array(
-      'captype' => 'write',
-      'contextlevel' => CONTEXT_COURSE,
-      'archetypes' => array(
-          'manager' => CAP_ALLOW,
-          'editingteacher' => CAP_ALLOW
-      ),
-  ),
-    'filter/poodll:candownloadmedia' => array(
-        'captype' => 'read',
-        'contextlevel' => CONTEXT_COURSE,
-        'archetypes' => array(
-			'coursecreator' => CAP_ALLOW,
-			'teacher' => CAP_ALLOW,
-            'editingteacher' => CAP_ALLOW,
-            'manager' => CAP_ALLOW
+        'filter/poodll:use' => array(
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_COURSE,
+                'archetypes' => array(
+                        'manager' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW
+                ),
+        ),
+        'filter/poodll:candownloadmedia' => array(
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_COURSE,
+                'archetypes' => array(
+                        'coursecreator' => CAP_ALLOW,
+                        'teacher' => CAP_ALLOW,
+                        'editingteacher' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW
+                )
         )
-    )
 );
 

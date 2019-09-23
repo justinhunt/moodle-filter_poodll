@@ -9,8 +9,7 @@ use Guzzle\Http\Exception\BadResponseException;
 /**
  * Default revalidation strategy
  */
-class DefaultRevalidation implements RevalidationInterface
-{
+class DefaultRevalidation implements RevalidationInterface {
     /** @var CacheStorageInterface Cache object storing cache data */
     protected $storage;
 
@@ -18,23 +17,21 @@ class DefaultRevalidation implements RevalidationInterface
     protected $canCache;
 
     /**
-     * @param CacheStorageInterface     $cache    Cache storage
+     * @param CacheStorageInterface $cache Cache storage
      * @param CanCacheStrategyInterface $canCache Determines if a message can be cached
      */
-    public function __construct(CacheStorageInterface $cache, CanCacheStrategyInterface $canCache = null)
-    {
+    public function __construct(CacheStorageInterface $cache, CanCacheStrategyInterface $canCache = null) {
         $this->storage = $cache;
         $this->canCache = $canCache ?: new DefaultCanCacheStrategy();
     }
 
-    public function revalidate(RequestInterface $request, Response $response)
-    {
+    public function revalidate(RequestInterface $request, Response $response) {
         try {
             $revalidate = $this->createRevalidationRequest($request, $response);
             $validateResponse = $revalidate->send();
             if ($validateResponse->getStatusCode() == 200) {
                 return $this->handle200Response($request, $validateResponse);
-            } elseif ($validateResponse->getStatusCode() == 304) {
+            } else if ($validateResponse->getStatusCode() == 304) {
                 return $this->handle304Response($request, $validateResponse, $response);
             }
         } catch (BadResponseException $e) {
@@ -46,8 +43,7 @@ class DefaultRevalidation implements RevalidationInterface
         return false;
     }
 
-    public function shouldRevalidate(RequestInterface $request, Response $response)
-    {
+    public function shouldRevalidate(RequestInterface $request, Response $response) {
         if ($request->getMethod() != RequestInterface::GET) {
             return false;
         }
@@ -56,8 +52,8 @@ class DefaultRevalidation implements RevalidationInterface
         $resCache = $response->getHeader('Cache-Control');
 
         $revalidate = $request->getHeader('Pragma') == 'no-cache' ||
-            ($reqCache && ($reqCache->hasDirective('no-cache') || $reqCache->hasDirective('must-revalidate'))) ||
-            ($resCache && ($resCache->hasDirective('no-cache') || $resCache->hasDirective('must-revalidate')));
+                ($reqCache && ($reqCache->hasDirective('no-cache') || $reqCache->hasDirective('must-revalidate'))) ||
+                ($resCache && ($resCache->hasDirective('no-cache') || $resCache->hasDirective('must-revalidate')));
 
         // Use the strong ETag validator if available and the response contains no Cache-Control directive
         if (!$revalidate && !$resCache && $response->hasHeader('ETag')) {
@@ -74,8 +70,7 @@ class DefaultRevalidation implements RevalidationInterface
      *
      * @throws BadResponseException
      */
-    protected function handleBadResponse(BadResponseException $e)
-    {
+    protected function handleBadResponse(BadResponseException $e) {
         // 404 errors mean the resource no longer exists, so remove from
         // cache, and prevent an additional request by throwing the exception
         if ($e->getResponse()->getStatusCode() == 404) {
@@ -87,13 +82,12 @@ class DefaultRevalidation implements RevalidationInterface
     /**
      * Creates a request to use for revalidation
      *
-     * @param RequestInterface $request  Request
-     * @param Response         $response Response to revalidate
+     * @param RequestInterface $request Request
+     * @param Response $response Response to revalidate
      *
      * @return RequestInterface returns a revalidation request
      */
-    protected function createRevalidationRequest(RequestInterface $request, Response $response)
-    {
+    protected function createRevalidationRequest(RequestInterface $request, Response $response) {
         $revalidate = clone $request;
         $revalidate->removeHeader('Pragma')->removeHeader('Cache-Control');
 
@@ -121,13 +115,12 @@ class DefaultRevalidation implements RevalidationInterface
     /**
      * Handles a 200 response response from revalidating. The server does not support validation, so use this response.
      *
-     * @param RequestInterface $request          Request that was sent
-     * @param Response         $validateResponse Response received
+     * @param RequestInterface $request Request that was sent
+     * @param Response $validateResponse Response received
      *
      * @return bool Returns true if valid, false if invalid
      */
-    protected function handle200Response(RequestInterface $request, Response $validateResponse)
-    {
+    protected function handle200Response(RequestInterface $request, Response $validateResponse) {
         $request->setResponse($validateResponse);
         if ($this->canCache->canCacheResponse($validateResponse)) {
             $this->storage->cache($request, $validateResponse);
@@ -139,14 +132,13 @@ class DefaultRevalidation implements RevalidationInterface
     /**
      * Handle a 304 response and ensure that it is still valid
      *
-     * @param RequestInterface $request          Request that was sent
-     * @param Response         $validateResponse Response received
-     * @param Response         $response         Original cached response
+     * @param RequestInterface $request Request that was sent
+     * @param Response $validateResponse Response received
+     * @param Response $response Original cached response
      *
      * @return bool Returns true if valid, false if invalid
      */
-    protected function handle304Response(RequestInterface $request, Response $validateResponse, Response $response)
-    {
+    protected function handle304Response(RequestInterface $request, Response $validateResponse, Response $response) {
         static $replaceHeaders = array('Date', 'Expires', 'Cache-Control', 'ETag', 'Last-Modified');
 
         // Make sure that this response has the same ETag

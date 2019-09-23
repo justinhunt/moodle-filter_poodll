@@ -39,11 +39,13 @@ if (!isloggedin()) {
 
 $filename = required_param('filename', PARAM_TEXT);
 
-if($CFG->filter_poodll_cloudrecording){
-    $dbresults = $DB->get_records('task_adhoc',array('component'=>'filter_poodll','classname'=>'\filter_poodll\task\adhoc_s3_move'));
-}elseif($CFG->filter_poodll_ffmpeg){
-    $dbresults = $DB->get_records('task_adhoc',array('component'=>'filter_poodll','classname'=>'\filter_poodll\task\adhoc_convert_media'));
-}else{
+if ($CFG->filter_poodll_cloudrecording) {
+    $dbresults = $DB->get_records('task_adhoc',
+            array('component' => 'filter_poodll', 'classname' => '\filter_poodll\task\adhoc_s3_move'));
+} else if ($CFG->filter_poodll_ffmpeg) {
+    $dbresults = $DB->get_records('task_adhoc',
+            array('component' => 'filter_poodll', 'classname' => '\filter_poodll\task\adhoc_convert_media'));
+} else {
     //if we got here we have nothing to do, no conversions are set up
     $result->code = 'notask';
     $result->message = get_string('no_event_or_task', 'filter_poodll', '');
@@ -51,24 +53,25 @@ if($CFG->filter_poodll_cloudrecording){
     die();
 }
 
-if($dbresults){}
-    foreach($dbresults as $rec){
-     $cd = $rec->customdata;
-     $cd_object=json_decode($cd);
-     if($cd_object && $cd_object->filename){
-         if($cd_object->filename == $filename){
-             $result->code = 'stillwaiting';
-             $result->message = get_string('have_task', 'filter_poodll', $filename);
-             echo json_encode($result);
-             die();
-         }
+if ($dbresults) {
+}
+foreach ($dbresults as $rec) {
+    $cd = $rec->customdata;
+    $cd_object = json_decode($cd);
+    if ($cd_object && $cd_object->filename) {
+        if ($cd_object->filename == $filename) {
+            $result->code = 'stillwaiting';
+            $result->message = get_string('have_task', 'filter_poodll', $filename);
+            echo json_encode($result);
+            die();
+        }
     }
 }
 
 //if we get here then we could not find a task
 //lets see if we have a recent event (TO DO)
-$have_recent_event=false;
-if($have_recent_event){
+$have_recent_event = false;
+if ($have_recent_event) {
     $result->code = 'mediaready';
     $result->message = get_string('have_recent_event', 'filter_poodll', $filename);
     echo json_encode($result);

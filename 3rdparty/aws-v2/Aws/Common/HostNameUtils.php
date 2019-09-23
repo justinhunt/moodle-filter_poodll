@@ -21,8 +21,7 @@ use Guzzle\Http\Url;
 /**
  * Utility class for parsing regions and services from URLs
  */
-class HostNameUtils
-{
+class HostNameUtils {
     const DEFAULT_REGION = 'us-east-1';
     const DEFAULT_GOV_REGION = 'us-gov-west-1';
 
@@ -35,8 +34,7 @@ class HostNameUtils
      * @return string
      * @link http://docs.aws.amazon.com/general/latest/gr/rande.html
      */
-    public static function parseRegionName(Url $url)
-    {
+    public static function parseRegionName(Url $url) {
         // If we don't recognize the domain, just return the default
         if (substr($url->getHost(), -14) != '.amazonaws.com') {
             return self::DEFAULT_REGION;
@@ -70,8 +68,7 @@ class HostNameUtils
      * @return string Returns a service name (or empty string)
      * @link http://docs.aws.amazon.com/general/latest/gr/rande.html
      */
-    public static function parseServiceName(Url $url)
-    {
+    public static function parseServiceName(Url $url) {
         // The service name is the first part of the host
         $parts = explode('.', $url->getHost(), 2);
 

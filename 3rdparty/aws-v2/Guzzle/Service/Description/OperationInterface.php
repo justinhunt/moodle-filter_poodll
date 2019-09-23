@@ -7,8 +7,7 @@ use Guzzle\Common\ToArrayInterface;
 /**
  * Interface defining data objects that hold the information of an API operation
  */
-interface OperationInterface extends ToArrayInterface
-{
+interface OperationInterface extends ToArrayInterface {
     const TYPE_PRIMITIVE = 'primitive';
     const TYPE_CLASS = 'class';
     const TYPE_DOCUMENTATION = 'documentation';

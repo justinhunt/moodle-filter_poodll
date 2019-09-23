@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -10,7 +10,8 @@ define(['jquery','core/log'], function($, log) {
         analyser: null,
         cvs: null,
         cvsctx: null,
-        drawparams: {wavColor: '#0',
+        drawparams: {
+            wavColor: '#0',
             barColor: '#ad2323',
             shadowOffsetX: 0,
             shadowOffsetY: 0,
@@ -18,7 +19,8 @@ define(['jquery','core/log'], function($, log) {
             shadowColor: '#fff',
             font: '18px Arial',
             textAlign: "center",
-            textBaseline: 'middle'},
+            textBaseline: 'middle'
+        },
 
 
         //for making multiple instances
@@ -30,26 +32,26 @@ define(['jquery','core/log'], function($, log) {
         //init
         init: function (analyser, cvs) {
             this.cvs = cvs;
-            this.cvsctx=cvs.getContext("2d");
+            this.cvsctx = cvs.getContext("2d");
             this.analyser = analyser;
             this.clear();
         },
 
-        setDrawParam: function(paramkey,paramvalue){
-            this.drawparams[paramkey]=paramvalue;
+        setDrawParam: function (paramkey, paramvalue) {
+            this.drawparams[paramkey] = paramvalue;
         },
 
-        clear: function(){
-            this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+        clear: function () {
+            this.cvsctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
             this.cvsctx.lineWidth = 2;
             this.cvsctx.strokeStyle = this.drawparams.wavColor;
             this.cvsctx.beginPath();
-            this.cvsctx.moveTo(0, this.cvs.height/2);
-            this.cvsctx.lineTo(this.cvs.width, this.cvs.height/2);
+            this.cvsctx.moveTo(0, this.cvs.height / 2);
+            this.cvsctx.lineTo(this.cvs.width, this.cvs.height / 2);
             this.cvsctx.stroke();
         },
 
-        start: function(){
+        start: function () {
             this.analyser.core.fftSize = 2048;
             var bufferLength = this.analyser.core.fftSize;
             var dataArray = new Uint8Array(bufferLength);
@@ -65,14 +67,16 @@ define(['jquery','core/log'], function($, log) {
                 var drawVisual = requestAnimationFrame(draw);
 
                 //cancel out if the theinterval is null
-                if(!analyser.theinterval){return;}
+                if (!analyser.theinterval) {
+                    return;
+                }
 
                 analyser.core.getByteTimeDomainData(dataArray);
 
                 //filling is rubbish, we just clear it
                 //canvasCtx.fillStyle = 'rgb(200, 200, 200)';
                 //canvasCtx.fillRect(0, 0, cwidth, cheight);
-                canvasCtx.clearRect(0, 0, cwidth,cheight);
+                canvasCtx.clearRect(0, 0, cwidth, cheight);
 
                 canvasCtx.lineWidth = 2;
                 canvasCtx.strokeStyle = that.drawparams.wavColor;

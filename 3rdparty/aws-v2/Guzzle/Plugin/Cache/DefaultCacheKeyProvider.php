@@ -10,10 +10,8 @@ use Guzzle\Http\Message\RequestInterface;
  * @deprecated This class is no longer used
  * @codeCoverageIgnore
  */
-class DefaultCacheKeyProvider implements CacheKeyProviderInterface
-{
-    public function getCacheKey(RequestInterface $request)
-    {
+class DefaultCacheKeyProvider implements CacheKeyProviderInterface {
+    public function getCacheKey(RequestInterface $request) {
         // See if the key has already been calculated
         $key = $request->getParams()->get(self::CACHE_KEY);
 
@@ -29,7 +27,7 @@ class DefaultCacheKeyProvider implements CacheKeyProviderInterface
                     foreach (array_map('trim', explode(',', $pieces[1])) as $remove) {
                         if ($pieces[0] == 'header') {
                             $cloned->removeHeader($remove);
-                        } elseif ($pieces[0] == 'query') {
+                        } else if ($pieces[0] == 'query') {
                             $cloned->getQuery()->remove($remove);
                         }
                     }

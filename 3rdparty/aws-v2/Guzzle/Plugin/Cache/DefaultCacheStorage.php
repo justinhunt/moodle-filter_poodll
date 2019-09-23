@@ -13,8 +13,7 @@ use Guzzle\Http\Message\Response;
 /**
  * Default cache storage implementation
  */
-class DefaultCacheStorage implements CacheStorageInterface
-{
+class DefaultCacheStorage implements CacheStorageInterface {
     /** @var string */
     protected $keyPrefix;
 
@@ -25,19 +24,17 @@ class DefaultCacheStorage implements CacheStorageInterface
     protected $defaultTtl;
 
     /**
-     * @param mixed  $cache      Cache used to store cache data
-     * @param string $keyPrefix  Provide an optional key prefix to prefix on all cache keys
-     * @param int    $defaultTtl Default cache TTL
+     * @param mixed $cache Cache used to store cache data
+     * @param string $keyPrefix Provide an optional key prefix to prefix on all cache keys
+     * @param int $defaultTtl Default cache TTL
      */
-    public function __construct($cache, $keyPrefix = '', $defaultTtl = 3600)
-    {
+    public function __construct($cache, $keyPrefix = '', $defaultTtl = 3600) {
         $this->cache = CacheAdapterFactory::fromCache($cache);
         $this->defaultTtl = $defaultTtl;
         $this->keyPrefix = $keyPrefix;
     }
 
-    public function cache(RequestInterface $request, Response $response)
-    {
+    public function cache(RequestInterface $request, Response $response) {
         $currentTime = time();
 
         $overrideTtl = $request->getParams()->get('cache.override_ttl');
@@ -89,18 +86,17 @@ class DefaultCacheStorage implements CacheStorageInterface
         }
 
         array_unshift($entries, array(
-            $persistedRequest,
-            $this->persistHeaders($response),
-            $response->getStatusCode(),
-            $bodyDigest,
-            $currentTime + $ttl
+                $persistedRequest,
+                $this->persistHeaders($response),
+                $response->getStatusCode(),
+                $bodyDigest,
+                $currentTime + $ttl
         ));
 
         $this->cache->save($key, serialize($entries));
     }
 
-    public function delete(RequestInterface $request)
-    {
+    public function delete(RequestInterface $request) {
         $key = $this->getCacheKey($request);
         if ($entries = $this->cache->fetch($key)) {
             // Delete each cached body
@@ -113,15 +109,13 @@ class DefaultCacheStorage implements CacheStorageInterface
         }
     }
 
-    public function purge($url)
-    {
+    public function purge($url) {
         foreach (array('GET', 'HEAD', 'POST', 'PUT', 'DELETE') as $method) {
             $this->delete(new Request($method, $url));
         }
     }
 
-    public function fetch(RequestInterface $request)
-    {
+    public function fetch(RequestInterface $request) {
         $key = $this->getCacheKey($request);
         if (!($entries = $this->cache->fetch($key))) {
             return null;
@@ -178,8 +172,7 @@ class DefaultCacheStorage implements CacheStorageInterface
      *
      * @return string
      */
-    protected function getCacheKey(RequestInterface $request)
-    {
+    protected function getCacheKey(RequestInterface $request) {
         // Allow cache.key_filter to trim down the URL cache key by removing generate query string values (e.g. auth)
         if ($filter = $request->getParams()->get('cache.key_filter')) {
             $url = $request->getUrl(true);
@@ -196,13 +189,12 @@ class DefaultCacheStorage implements CacheStorageInterface
     /**
      * Create a cache key for a response's body
      *
-     * @param string              $url  URL of the entry
+     * @param string $url URL of the entry
      * @param EntityBodyInterface $body Response body
      *
      * @return string
      */
-    protected function getBodyKey($url, EntityBodyInterface $body)
-    {
+    protected function getBodyKey($url, EntityBodyInterface $body) {
         return $this->keyPrefix . md5($url) . $body->getContentMd5();
     }
 
@@ -210,13 +202,12 @@ class DefaultCacheStorage implements CacheStorageInterface
      * Determines whether two Request HTTP header sets are non-varying
      *
      * @param string $vary Response vary header
-     * @param array  $r1   HTTP header array
-     * @param array  $r2   HTTP header array
+     * @param array $r1 HTTP header array
+     * @param array $r2 HTTP header array
      *
      * @return bool
      */
-    private function requestsMatch($vary, $r1, $r2)
-    {
+    private function requestsMatch($vary, $r1, $r2) {
         if ($vary) {
             foreach (explode(',', $vary) as $header) {
                 $key = trim(strtolower($header));
@@ -238,28 +229,29 @@ class DefaultCacheStorage implements CacheStorageInterface
      *
      * @return array
      */
-    private function persistHeaders(MessageInterface $message)
-    {
+    private function persistHeaders(MessageInterface $message) {
         // Headers are excluded from the caching (see RFC 2616:13.5.1)
         static $noCache = array(
-            'age' => true,
-            'connection' => true,
-            'keep-alive' => true,
-            'proxy-authenticate' => true,
-            'proxy-authorization' => true,
-            'te' => true,
-            'trailers' => true,
-            'transfer-encoding' => true,
-            'upgrade' => true,
-            'set-cookie' => true,
-            'set-cookie2' => true
+                'age' => true,
+                'connection' => true,
+                'keep-alive' => true,
+                'proxy-authenticate' => true,
+                'proxy-authorization' => true,
+                'te' => true,
+                'trailers' => true,
+                'transfer-encoding' => true,
+                'upgrade' => true,
+                'set-cookie' => true,
+                'set-cookie2' => true
         );
 
         // Clone the response to not destroy any necessary headers when caching
         $headers = $message->getHeaders()->getAll();
         $headers = array_diff_key($headers, $noCache);
         // Cast the headers to a string
-        $headers = array_map(function ($h) { return (string) $h; }, $headers);
+        $headers = array_map(function($h) {
+            return (string) $h;
+        }, $headers);
 
         return $headers;
     }

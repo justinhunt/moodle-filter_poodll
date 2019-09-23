@@ -22,16 +22,14 @@ use Guzzle\Http\Message\Response;
 /**
  * Parses default XML exception responses
  */
-class DefaultXmlExceptionParser implements ExceptionParserInterface
-{
-    public function parse(RequestInterface $request, Response $response)
-    {
+class DefaultXmlExceptionParser implements ExceptionParserInterface {
+    public function parse(RequestInterface $request, Response $response) {
         $data = array(
-            'code'       => null,
-            'message'    => null,
-            'type'       => $response->isClientError() ? 'client' : 'server',
-            'request_id' => null,
-            'parsed'     => null
+                'code' => null,
+                'message' => null,
+                'type' => $response->isClientError() ? 'client' : 'server',
+                'request_id' => null,
+                'parsed' => null
         );
 
         $body = $response->getBody(true);
@@ -58,12 +56,11 @@ class DefaultXmlExceptionParser implements ExceptionParserInterface
     /**
      * Parses additional exception information from the response headers
      *
-     * @param RequestInterface $request  Request that was issued
-     * @param Response         $response The response from the request
-     * @param array            $data     The current set of exception data
+     * @param RequestInterface $request Request that was issued
+     * @param Response $response The response from the request
+     * @param array $data The current set of exception data
      */
-    protected function parseHeaders(RequestInterface $request, Response $response, array &$data)
-    {
+    protected function parseHeaders(RequestInterface $request, Response $response, array &$data) {
         $data['message'] = $response->getStatusCode() . ' ' . $response->getReasonPhrase();
         if ($requestId = $response->getHeader('x-amz-request-id')) {
             $data['request_id'] = $requestId;
@@ -75,10 +72,9 @@ class DefaultXmlExceptionParser implements ExceptionParserInterface
      * Parses additional exception information from the response body
      *
      * @param \SimpleXMLElement $body The response body as XML
-     * @param array             $data The current set of exception data
+     * @param array $data The current set of exception data
      */
-    protected function parseBody(\SimpleXMLElement $body, array &$data)
-    {
+    protected function parseBody(\SimpleXMLElement $body, array &$data) {
         $data['parsed'] = $body;
 
         $namespaces = $body->getDocNamespaces();

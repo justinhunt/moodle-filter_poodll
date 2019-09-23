@@ -23,8 +23,7 @@ use Guzzle\Common\HasDispatcherInterface;
 use Guzzle\Common\Event;
 use Guzzle\Service\Command\CommandInterface;
 
-class UploadSyncBuilder extends AbstractSyncBuilder
-{
+class UploadSyncBuilder extends AbstractSyncBuilder {
     /** @var string|Acp Access control policy to set on each object */
     protected $acp = 'private';
 
@@ -38,12 +37,11 @@ class UploadSyncBuilder extends AbstractSyncBuilder
      *
      * @return $this
      */
-    public function uploadFromDirectory($path)
-    {
+    public function uploadFromDirectory($path) {
         $this->baseDir = realpath($path);
         $this->sourceIterator = $this->filterIterator(new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator(
-            $path,
-            FI::SKIP_DOTS | FI::UNIX_PATHS | FI::FOLLOW_SYMLINKS
+                $path,
+                FI::SKIP_DOTS | FI::UNIX_PATHS | FI::FOLLOW_SYMLINKS
         )));
 
         return $this;
@@ -57,10 +55,9 @@ class UploadSyncBuilder extends AbstractSyncBuilder
      * @return $this
      * @link http://www.php.net/manual/en/function.glob.php
      */
-    public function uploadFromGlob($glob)
-    {
+    public function uploadFromGlob($glob) {
         $this->sourceIterator = $this->filterIterator(
-            new \GlobIterator($glob, FI::SKIP_DOTS | FI::UNIX_PATHS | FI::FOLLOW_SYMLINKS)
+                new \GlobIterator($glob, FI::SKIP_DOTS | FI::UNIX_PATHS | FI::FOLLOW_SYMLINKS)
         );
 
         return $this;
@@ -73,8 +70,7 @@ class UploadSyncBuilder extends AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setAcl($acl)
-    {
+    public function setAcl($acl) {
         $this->acp = $acl;
 
         return $this;
@@ -87,8 +83,7 @@ class UploadSyncBuilder extends AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setAcp(Acp $acp)
-    {
+    public function setAcp(Acp $acp) {
         $this->acp = $acp;
 
         return $this;
@@ -102,62 +97,55 @@ class UploadSyncBuilder extends AbstractSyncBuilder
      *
      * @return $this
      */
-    public function setMultipartUploadSize($size)
-    {
+    public function setMultipartUploadSize($size) {
         $this->multipartUploadSize = $size;
 
         return $this;
     }
 
-    protected function specificBuild()
-    {
+    protected function specificBuild() {
         $sync = new UploadSync(array(
-            'client' => $this->client,
-            'bucket' => $this->bucket,
-            'iterator' => $this->sourceIterator,
-            'source_converter' => $this->sourceConverter,
-            'target_converter' => $this->targetConverter,
-            'concurrency' => $this->concurrency,
-            'multipart_upload_size' => $this->multipartUploadSize,
-            'acl' => $this->acp
+                'client' => $this->client,
+                'bucket' => $this->bucket,
+                'iterator' => $this->sourceIterator,
+                'source_converter' => $this->sourceConverter,
+                'target_converter' => $this->targetConverter,
+                'concurrency' => $this->concurrency,
+                'multipart_upload_size' => $this->multipartUploadSize,
+                'acl' => $this->acp
         ));
 
         return $sync;
     }
 
-    protected function addCustomParamListener(HasDispatcherInterface $sync)
-    {
+    protected function addCustomParamListener(HasDispatcherInterface $sync) {
         // Handle the special multi-part upload event
         parent::addCustomParamListener($sync);
         $params = $this->params;
         $sync->getEventDispatcher()->addListener(
-            UploadSync::BEFORE_MULTIPART_BUILD,
-            function (Event $e) use ($params) {
-                foreach ($params as $k => $v) {
-                    $e['builder']->setOption($k, $v);
+                UploadSync::BEFORE_MULTIPART_BUILD,
+                function(Event $e) use ($params) {
+                    foreach ($params as $k => $v) {
+                        $e['builder']->setOption($k, $v);
+                    }
                 }
-            }
         );
     }
 
-    protected function getTargetIterator()
-    {
+    protected function getTargetIterator() {
         return $this->createS3Iterator();
     }
 
-    protected function getDefaultSourceConverter()
-    {
+    protected function getDefaultSourceConverter() {
         return new KeyConverter($this->baseDir, $this->keyPrefix . $this->delimiter, $this->delimiter);
     }
 
-    protected function getDefaultTargetConverter()
-    {
+    protected function getDefaultTargetConverter() {
         return new KeyConverter('s3://' . $this->bucket . '/', '', DIRECTORY_SEPARATOR);
     }
 
-    protected function addDebugListener(AbstractSync $sync, $resource)
-    {
-        $sync->getEventDispatcher()->addListener(UploadSync::BEFORE_TRANSFER, function (Event $e) use ($resource) {
+    protected function addDebugListener(AbstractSync $sync, $resource) {
+        $sync->getEventDispatcher()->addListener(UploadSync::BEFORE_TRANSFER, function(Event $e) use ($resource) {
 
             $c = $e['command'];
 
@@ -176,14 +164,14 @@ class UploadSyncBuilder extends AbstractSyncBuilder
             fwrite($resource, $c->getState()->getFromId('Key') . " ({$totalSize} bytes)\n");
 
             $c->getEventDispatcher()->addListener(
-                AbstractTransfer::BEFORE_PART_UPLOAD,
-                function ($e) use (&$progress, $totalSize, $resource) {
-                    $command = $e['command'];
-                    $size = $command['Body']->getContentLength();
-                    $percentage = number_format(($progress / $totalSize) * 100, 2);
-                    fwrite($resource, "- Part {$command['PartNumber']} ({$size} bytes, {$percentage}%)\n");
-                    $progress += $size;
-                }
+                    AbstractTransfer::BEFORE_PART_UPLOAD,
+                    function($e) use (&$progress, $totalSize, $resource) {
+                        $command = $e['command'];
+                        $size = $command['Body']->getContentLength();
+                        $percentage = number_format(($progress / $totalSize) * 100, 2);
+                        fwrite($resource, "- Part {$command['PartNumber']} ({$size} bytes, {$percentage}%)\n");
+                        $progress += $size;
+                    }
             );
         });
     }

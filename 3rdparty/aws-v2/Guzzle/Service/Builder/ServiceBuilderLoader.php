@@ -8,10 +8,8 @@ use Guzzle\Service\Exception\ServiceNotFoundException;
 /**
  * Service builder config loader
  */
-class ServiceBuilderLoader extends AbstractConfigLoader
-{
-    protected function build($config, array $options)
-    {
+class ServiceBuilderLoader extends AbstractConfigLoader {
+    protected function build($config, array $options) {
         // A service builder class can be specified in the class field
         $class = !empty($config['class']) ? $config['class'] : __NAMESPACE__ . '\\ServiceBuilder';
 
@@ -29,7 +27,7 @@ class ServiceBuilderLoader extends AbstractConfigLoader
                 // Make sure that the service it's extending has been defined
                 if (!isset($services[$service['extends']])) {
                     throw new ServiceNotFoundException(
-                        "{$name} is trying to extend a non-existent service: {$service['extends']}"
+                            "{$name} is trying to extend a non-existent service: {$service['extends']}"
                     );
                 }
 
@@ -55,8 +53,7 @@ class ServiceBuilderLoader extends AbstractConfigLoader
         return new $class($services);
     }
 
-    protected function mergeData(array $a, array $b)
-    {
+    protected function mergeData(array $a, array $b) {
         $result = $b + $a;
 
         // Merge services using a recursive union of arrays
@@ -70,8 +67,8 @@ class ServiceBuilderLoader extends AbstractConfigLoader
 
                 // By default, services completely override a previously defined service unless it extends itself
                 if (isset($a['services'][$name]['extends'])
-                    && isset($b['services'][$name]['extends'])
-                    && $b['services'][$name]['extends'] == $name
+                        && isset($b['services'][$name]['extends'])
+                        && $b['services'][$name]['extends'] == $name
                 ) {
                     $service += $a['services'][$name];
                     // Use the `extends` attribute of the parent

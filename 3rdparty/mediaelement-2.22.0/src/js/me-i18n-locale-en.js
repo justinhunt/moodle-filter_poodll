@@ -12,7 +12,7 @@
  * @params
  *  - exports - CommonJS, window ..
  */
-;(function(exports, undefined) {
+;(function (exports, undefined) {
 
     "use strict";
 
@@ -23,14 +23,14 @@
 
             // mep-feature-contextmenu
             "Turn off Fullscreen": "Turn off Fullscreen",
-            "Go Fullscreen" : "Go Fullscreen",
+            "Go Fullscreen": "Go Fullscreen",
             // Duplicated from mep-feature-volume
             // "Unmute" : "Unmute",
             // "Mute" : "Mute",
-            "Download Video" : "Download Video",
+            "Download Video": "Download Video",
 
             // mep-feature-fullscreen
-            "Fullscreen" : "Fullscreen",
+            "Fullscreen": "Fullscreen",
 
             // mep-feature-jumpforward
             "Jump forward %1 seconds": "Jump forward %1 seconds",
@@ -40,7 +40,7 @@
             "Pause": "Pause",
 
             // mep-feature-postroll
-            "Close" : "Close",
+            "Close": "Close",
 
             // mep-feature-progress
             "Time Slider": "Time Slider",
@@ -50,14 +50,14 @@
             "Skip back %1 seconds": "Skip back %1 seconds",
 
             // mep-feature-tracks
-            "Captions/Subtitles" : "Captions/Subtitles",
-            "None" : "None",
+            "Captions/Subtitles": "Captions/Subtitles",
+            "None": "None",
 
             // mep-feature-volume
-            "Mute Toggle" : "Mute Toggle",
+            "Mute Toggle": "Mute Toggle",
             "Use Up/Down Arrow keys to increase or decrease volume.": "Use Up/Down Arrow keys to increase or decrease volume.",
-            "Unmute" : "Unmute",
-            "Mute" : "Mute",
+            "Unmute": "Unmute",
+            "Mute": "Mute",
             "Volume Slider": "Volume Slider",
 
             // mep-player

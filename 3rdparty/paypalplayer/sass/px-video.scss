@@ -53,7 +53,7 @@
 // time 
 .px-video-time {
   float: right;
-  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-size: 14px;
   margin-top: 2px;
 }
@@ -85,7 +85,7 @@
     height: 20px;
     overflow: hidden;
     background: no-repeat url('../video/stories/px-video-sprite.png');
-  
+
     // restart button
     .px-video-restart {
       background-position: -9px -333px;
@@ -99,8 +99,8 @@
     // rewind button
     .px-video-rewind {
       background-position: -11px -189px;
-      
-      &:hover, 
+
+      &:hover,
       &:focus {
         background-position: -11px -153px;
       }
@@ -109,7 +109,7 @@
     // play button 
     .px-video-play {
       background-position: -11px -45px;
-      
+
       &:hover,
       &:focus {
         background-position: -11px -9px;
@@ -187,18 +187,18 @@
   }
 
   input[type="checkbox"] {
-    
-    &:focus+label {
+
+    &:focus + label {
       outline: 1px #999 dotted;
       background-position: -6px -799px;
     }
 
-    &:hover+label {
+    &:hover + label {
       background-position: -6px -799px;
       cursor: pointer;
     }
-    
-    &:checked+label {
+
+    &:checked + label {
       background-position: -6px -871px;
     }
   }
@@ -218,23 +218,23 @@
   }
 
   input[type="checkbox"] {
-    &:focus+label {
+    &:focus + label {
       outline: 1px #999 dotted;
       background-position: -6px -440px;
     }
-    
-    &:hover+label {
+
+    &:hover + label {
       background-position: -6px -440px;
       cursor: pointer;
     }
 
     // checked state of mute button 
-    &:checked+label {
+    &:checked + label {
       background-position: -6px -692px;
     }
 
-    &:checked:hover+label,
-    &:checked:focus+label {
+    &:checked:hover + label,
+    &:checked:focus + label {
       background-position: -6px -656px;
     }
   }

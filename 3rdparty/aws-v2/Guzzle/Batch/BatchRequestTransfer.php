@@ -11,8 +11,7 @@ use Guzzle\Http\Message\RequestInterface;
  * Batch transfer strategy used to efficiently transfer a batch of requests.
  * This class is to be used with {@see Guzzle\Batch\BatchInterface}
  */
-class BatchRequestTransfer implements BatchTransferInterface, BatchDivisorInterface
-{
+class BatchRequestTransfer implements BatchTransferInterface, BatchDivisorInterface {
     /** @var int Size of each command batch */
     protected $batchSize;
 
@@ -21,8 +20,7 @@ class BatchRequestTransfer implements BatchTransferInterface, BatchDivisorInterf
      *
      * @param int $batchSize Size of each batch
      */
-    public function __construct($batchSize = 50)
-    {
+    public function __construct($batchSize = 50) {
         $this->batchSize = $batchSize;
     }
 
@@ -30,8 +28,7 @@ class BatchRequestTransfer implements BatchTransferInterface, BatchDivisorInterf
      * Creates batches of requests by grouping requests by their associated curl multi object.
      * {@inheritdoc}
      */
-    public function createBatches(\SplQueue $queue)
-    {
+    public function createBatches(\SplQueue $queue) {
         // Create batches by client objects
         $groups = new \SplObjectStorage();
         foreach ($queue as $item) {
@@ -56,8 +53,7 @@ class BatchRequestTransfer implements BatchTransferInterface, BatchDivisorInterf
         return $batches;
     }
 
-    public function transfer(array $batch)
-    {
+    public function transfer(array $batch) {
         if ($batch) {
             reset($batch)->getClient()->send($batch);
         }

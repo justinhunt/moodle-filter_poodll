@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Couldn't parse the specified URI.
  */
-class InvalidURIException extends S3Exception {}
+class InvalidURIException extends S3Exception {
+}

@@ -19,4 +19,5 @@ namespace Aws\Iam\Exception;
 /**
  * The request was rejected because it attempted to create a resource that already exists.
  */
-class EntityAlreadyExistsException extends IamException {}
+class EntityAlreadyExistsException extends IamException {
+}

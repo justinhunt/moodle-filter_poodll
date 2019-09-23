@@ -9,20 +9,18 @@ use Guzzle\Service\Command\CommandInterface;
 /**
  * Location visitor used to marshal XML response data into a formatted array
  */
-class XmlVisitor extends AbstractResponseVisitor
-{
-    public function before(CommandInterface $command, array &$result)
-    {
+class XmlVisitor extends AbstractResponseVisitor {
+    public function before(CommandInterface $command, array &$result) {
         // Set the result of the command to the array conversion of the XML body
         $result = json_decode(json_encode($command->getResponse()->xml()), true);
     }
 
     public function visit(
-        CommandInterface $command,
-        Response $response,
-        Parameter $param,
-        &$value,
-        $context =  null
+            CommandInterface $command,
+            Response $response,
+            Parameter $param,
+            &$value,
+            $context = null
     ) {
         $sentAs = $param->getWireName();
         $name = $param->getName();
@@ -39,10 +37,9 @@ class XmlVisitor extends AbstractResponseVisitor
      * Recursively process a parameter while applying filters
      *
      * @param Parameter $param API parameter being processed
-     * @param mixed     $value Value to validate and process. The value may change during this process.
+     * @param mixed $value Value to validate and process. The value may change during this process.
      */
-    protected function recursiveProcess(Parameter $param, &$value)
-    {
+    protected function recursiveProcess(Parameter $param, &$value) {
         $type = $param->getType();
 
         if (!is_array($value)) {
@@ -51,11 +48,11 @@ class XmlVisitor extends AbstractResponseVisitor
                 $this->recursiveProcess($param->getItems(), $value);
                 $value = array($value);
             }
-        } elseif ($type == 'object') {
+        } else if ($type == 'object') {
             $this->processObject($param, $value);
-        } elseif ($type == 'array') {
+        } else if ($type == 'array') {
             $this->processArray($param, $value);
-        } elseif ($type == 'string' && gettype($value) == 'array') {
+        } else if ($type == 'string' && gettype($value) == 'array') {
             $value = '';
         }
 
@@ -68,10 +65,9 @@ class XmlVisitor extends AbstractResponseVisitor
      * Process an array
      *
      * @param Parameter $param API parameter being parsed
-     * @param mixed     $value Value to process
+     * @param mixed $value Value to process
      */
-    protected function processArray(Parameter $param, &$value)
-    {
+    protected function processArray(Parameter $param, &$value) {
         // Convert the node if it was meant to be an array
         if (!isset($value[0])) {
             // Collections fo nodes are sometimes wrapped in an additional array. For example:
@@ -86,7 +82,7 @@ class XmlVisitor extends AbstractResponseVisitor
                 if (!isset($value[0]) || !is_array($value)) {
                     $value = array($value);
                 }
-            } elseif (!empty($value)) {
+            } else if (!empty($value)) {
                 // Account for repeated nodes that must be an array: Foo => Baz, Foo => Baz, but only if the
                 // value is set and not empty
                 $value = array($value);
@@ -102,10 +98,9 @@ class XmlVisitor extends AbstractResponseVisitor
      * Process an object
      *
      * @param Parameter $param API parameter being parsed
-     * @param mixed     $value Value to process
+     * @param mixed $value Value to process
      */
-    protected function processObject(Parameter $param, &$value)
-    {
+    protected function processObject(Parameter $param, &$value) {
         // Ensure that the array is associative and not numerically indexed
         if (!isset($value[0]) && ($properties = $param->getProperties())) {
             $knownProperties = array();
@@ -115,7 +110,7 @@ class XmlVisitor extends AbstractResponseVisitor
                 $knownProperties[$name] = 1;
                 if ($property->getData('xmlAttribute')) {
                     $this->processXmlAttribute($property, $value);
-                } elseif (isset($value[$sentAs])) {
+                } else if (isset($value[$sentAs])) {
                     $this->recursiveProcess($property, $value[$sentAs]);
                     if ($name != $sentAs) {
                         $value[$name] = $value[$sentAs];
@@ -135,10 +130,9 @@ class XmlVisitor extends AbstractResponseVisitor
      * Process an XML attribute property
      *
      * @param Parameter $property Property to process
-     * @param array     $value    Value to process and update
+     * @param array $value Value to process and update
      */
-    protected function processXmlAttribute(Parameter $property, array &$value)
-    {
+    protected function processXmlAttribute(Parameter $property, array &$value) {
         $sentAs = $property->getWireName();
         if (isset($value['@attributes'][$sentAs])) {
             $value[$property->getName()] = $value['@attributes'][$sentAs];

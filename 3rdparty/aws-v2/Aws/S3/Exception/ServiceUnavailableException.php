@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Please reduce your request rate.
  */
-class ServiceUnavailableException extends S3Exception {}
+class ServiceUnavailableException extends S3Exception {
+}

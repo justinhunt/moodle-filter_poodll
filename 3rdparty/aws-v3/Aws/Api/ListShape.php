@@ -1,15 +1,14 @@
 <?php
+
 namespace Aws\Api;
 
 /**
  * Represents a list shape.
  */
-class ListShape extends Shape
-{
+class ListShape extends Shape {
     private $member;
 
-    public function __construct(array $definition, ShapeMap $shapeMap)
-    {
+    public function __construct(array $definition, ShapeMap $shapeMap) {
         $definition['type'] = 'list';
         parent::__construct($definition, $shapeMap);
     }
@@ -18,15 +17,14 @@ class ListShape extends Shape
      * @return Shape
      * @throws \RuntimeException if no member is specified
      */
-    public function getMember()
-    {
+    public function getMember() {
         if (!$this->member) {
             if (!isset($this->definition['member'])) {
                 throw new \RuntimeException('No member attribute specified');
             }
             $this->member = Shape::create(
-                $this->definition['member'],
-                $this->shapeMap
+                    $this->definition['member'],
+                    $this->shapeMap
             );
         }
 

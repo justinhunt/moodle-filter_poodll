@@ -19,8 +19,7 @@ namespace Aws\S3\Sync;
 /**
  * Converts filenames from one system to another
  */
-class KeyConverter implements FilenameConverterInterface
-{
+class KeyConverter implements FilenameConverterInterface {
     /** @var string Directory separator for Amazon S3 keys */
     protected $delimiter;
 
@@ -31,19 +30,17 @@ class KeyConverter implements FilenameConverterInterface
     protected $baseDir;
 
     /**
-     * @param string $baseDir   Base directory to remove from each converted name
-     * @param string $prefix    Amazon S3 prefix
+     * @param string $baseDir Base directory to remove from each converted name
+     * @param string $prefix Amazon S3 prefix
      * @param string $delimiter Directory separator used with generated names
      */
-    public function __construct($baseDir = '', $prefix = '', $delimiter = '/')
-    {
+    public function __construct($baseDir = '', $prefix = '', $delimiter = '/') {
         $this->baseDir = (string) $baseDir;
         $this->prefix = $prefix;
         $this->delimiter = $delimiter;
     }
 
-    public function convert($filename)
-    {
+    public function convert($filename) {
         $key = $filename;
 
         // Remove base directory from the key (only the first occurrence)
@@ -57,9 +54,9 @@ class KeyConverter implements FilenameConverterInterface
         // Add the key prefix and remove double slashes that are not in the protocol (e.g. prefixed with ":")
         $delim = preg_quote($this->delimiter);
         $key = preg_replace(
-            "#(?<!:){$delim}{$delim}#",
-            $this->delimiter,
-            $this->prefix . $key
+                "#(?<!:){$delim}{$delim}#",
+                $this->delimiter,
+                $this->prefix . $key
         );
 
         return $key;

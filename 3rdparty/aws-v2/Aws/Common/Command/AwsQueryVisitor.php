@@ -10,12 +10,10 @@ use Guzzle\Service\Command\LocationVisitor\Request\AbstractRequestVisitor;
 /**
  * Location visitor used to serialize AWS query parameters (e.g. EC2, SES, SNS, SQS, etc) as POST fields
  */
-class AwsQueryVisitor extends AbstractRequestVisitor
-{
+class AwsQueryVisitor extends AbstractRequestVisitor {
     private $fqname;
 
-    public function visit(CommandInterface $command, RequestInterface $request, Parameter $param, $value)
-    {
+    public function visit(CommandInterface $command, RequestInterface $request, Parameter $param, $value) {
         $this->fqname = $command->getName();
         $query = array();
         $this->customResolver($value, $param, $query, $param->getWireName());
@@ -25,13 +23,12 @@ class AwsQueryVisitor extends AbstractRequestVisitor
     /**
      * Map nested parameters into the location_key based parameters
      *
-     * @param array     $value  Value to map
-     * @param Parameter $param  Parameter that holds information about the current key
-     * @param array     $query  Built up query string values
-     * @param string    $prefix String to prepend to sub query values
+     * @param array $value Value to map
+     * @param Parameter $param Parameter that holds information about the current key
+     * @param array $query Built up query string values
+     * @param string $prefix String to prepend to sub query values
      */
-    protected function customResolver($value, Parameter $param, array &$query, $prefix = '')
-    {
+    protected function customResolver($value, Parameter $param, array &$query, $prefix = '') {
         switch ($param->getType()) {
             case 'object':
                 $this->resolveObject($param, $value, $prefix, $query);
@@ -47,13 +44,12 @@ class AwsQueryVisitor extends AbstractRequestVisitor
     /**
      * Custom handling for objects
      *
-     * @param Parameter $param  Parameter for the object
-     * @param array     $value  Value that is set for this parameter
-     * @param string    $prefix Prefix for the resulting key
-     * @param array     $query  Query string array passed by reference
+     * @param Parameter $param Parameter for the object
+     * @param array $value Value that is set for this parameter
+     * @param string $prefix Prefix for the resulting key
+     * @param array $query Query string array passed by reference
      */
-    protected function resolveObject(Parameter $param, array $value, $prefix, array &$query)
-    {
+    protected function resolveObject(Parameter $param, array $value, $prefix, array &$query) {
         // Maps are implemented using additional properties
         $hasAdditionalProperties = ($param->getAdditionalProperties() instanceof Parameter);
         $additionalPropertyCount = 0;
@@ -63,7 +59,7 @@ class AwsQueryVisitor extends AbstractRequestVisitor
                 // if the parameter was found by name as a regular property
                 $key = $prefix . '.' . $subParam->getWireName();
                 $this->customResolver($v, $subParam, $query, $key);
-            } elseif ($hasAdditionalProperties) {
+            } else if ($hasAdditionalProperties) {
                 // Handle map cases like &Attribute.1.Name=<name>&Attribute.1.Value=<value>
                 $additionalPropertyCount++;
                 $data = $param->getData();
@@ -83,17 +79,16 @@ class AwsQueryVisitor extends AbstractRequestVisitor
     /**
      * Custom handling for arrays
      *
-     * @param Parameter $param  Parameter for the object
-     * @param array     $value  Value that is set for this parameter
-     * @param string    $prefix Prefix for the resulting key
-     * @param array     $query  Query string array passed by reference
+     * @param Parameter $param Parameter for the object
+     * @param array $value Value that is set for this parameter
+     * @param string $prefix Prefix for the resulting key
+     * @param array $query Query string array passed by reference
      */
-    protected function resolveArray(Parameter $param, array $value, $prefix, array &$query)
-    {
+    protected function resolveArray(Parameter $param, array $value, $prefix, array &$query) {
         static $serializeEmpty = array(
-            'SetLoadBalancerPoliciesForBackendServer' => 1,
-            'SetLoadBalancerPoliciesOfListener' => 1,
-            'UpdateStack' => 1
+                'SetLoadBalancerPoliciesForBackendServer' => 1,
+                'SetLoadBalancerPoliciesOfListener' => 1,
+                'UpdateStack' => 1
         );
 
         // For BC, serialize empty lists for specific operations

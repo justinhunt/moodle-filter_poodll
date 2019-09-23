@@ -12,27 +12,27 @@
  * @params
  *  - exports - CommonJS, window ..
  */
-;(function(exports, undefined) {
+;(function (exports, undefined) {
 
     "use strict";
 
     if (typeof exports.es === 'undefined') {
         exports.es = {
-            "None" : "Ninguno",
-            "Unmute" : "Reactivar silencio",
-            "Fullscreen" : "Pantalla completa",
-            "Download File" : "Descargar archivo",
-            "Mute Toggle" : "Alternar silencio",
-            "Play/Pause" : "Reproducción/Pausa",
-            "Captions/Subtitles" : "Leyendas/Subtítulos",
-            "Download Video" : "Descargar vídeo",
-            "Mute" : "Silencio",
-            "Turn off Fullscreen" : "Desconectar pantalla completa",
-            "Go Fullscreen" : "Ir a pantalla completa",
-            "Close" : "Cerrar",
-	    "Skip ad": "Salta publicidad",
-	    "Skip in": "Salta en",
-	    "seconds": "segundos"
+            "None": "Ninguno",
+            "Unmute": "Reactivar silencio",
+            "Fullscreen": "Pantalla completa",
+            "Download File": "Descargar archivo",
+            "Mute Toggle": "Alternar silencio",
+            "Play/Pause": "Reproducción/Pausa",
+            "Captions/Subtitles": "Leyendas/Subtítulos",
+            "Download Video": "Descargar vídeo",
+            "Mute": "Silencio",
+            "Turn off Fullscreen": "Desconectar pantalla completa",
+            "Go Fullscreen": "Ir a pantalla completa",
+            "Close": "Cerrar",
+            "Skip ad": "Salta publicidad",
+            "Skip in": "Salta en",
+            "seconds": "segundos"
         };
     }
 

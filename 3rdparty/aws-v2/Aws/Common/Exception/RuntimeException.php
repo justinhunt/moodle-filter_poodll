@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL RuntimeException.
  */
-class RuntimeException extends \RuntimeException implements AwsExceptionInterface {}
+class RuntimeException extends \RuntimeException implements AwsExceptionInterface {
+}

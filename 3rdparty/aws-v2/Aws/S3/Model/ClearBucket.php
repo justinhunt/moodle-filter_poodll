@@ -26,8 +26,7 @@ use Guzzle\Common\Exception\ExceptionCollection;
 /**
  * Class used to clear the contents of a bucket or the results of an iterator
  */
-class ClearBucket extends AbstractHasDispatcher
-{
+class ClearBucket extends AbstractHasDispatcher {
     /**
      * @var string Event emitted when a batch request has completed
      */
@@ -60,10 +59,9 @@ class ClearBucket extends AbstractHasDispatcher
 
     /**
      * @param AwsClientInterface $client Client used to execute requests
-     * @param string             $bucket Name of the bucket to clear
+     * @param string $bucket Name of the bucket to clear
      */
-    public function __construct(AwsClientInterface $client, $bucket)
-    {
+    public function __construct(AwsClientInterface $client, $bucket) {
         $this->client = $client;
         $this->bucket = $bucket;
     }
@@ -71,8 +69,7 @@ class ClearBucket extends AbstractHasDispatcher
     /**
      * {@inheritdoc}
      */
-    public static function getAllEvents()
-    {
+    public static function getAllEvents() {
         return array(self::AFTER_DELETE, self::BEFORE_CLEAR, self::AFTER_CLEAR);
     }
 
@@ -83,8 +80,7 @@ class ClearBucket extends AbstractHasDispatcher
      *
      * @return $this
      */
-    public function setBucket($bucket)
-    {
+    public function setBucket($bucket) {
         $this->bucket = $bucket;
 
         return $this;
@@ -96,11 +92,10 @@ class ClearBucket extends AbstractHasDispatcher
      *
      * @return \Iterator
      */
-    public function getIterator()
-    {
+    public function getIterator() {
         if (!$this->iterator) {
             $this->iterator = $this->client->getIterator('ListObjectVersions', array(
-                'Bucket' => $this->bucket
+                    'Bucket' => $this->bucket
             ));
         }
 
@@ -116,8 +111,7 @@ class ClearBucket extends AbstractHasDispatcher
      *
      * @return $this
      */
-    public function setIterator(\Iterator $iterator)
-    {
+    public function setIterator(\Iterator $iterator) {
         $this->iterator = $iterator;
 
         return $this;
@@ -131,8 +125,7 @@ class ClearBucket extends AbstractHasDispatcher
      *
      * @return $this
      */
-    public function setMfa($mfa)
-    {
+    public function setMfa($mfa) {
         $this->mfa = $mfa;
 
         return $this;
@@ -144,20 +137,19 @@ class ClearBucket extends AbstractHasDispatcher
      * @return int Returns the number of deleted keys
      * @throws ExceptionCollection
      */
-    public function clear()
-    {
+    public function clear() {
         $that = $this;
         $batch = DeleteObjectsBatch::factory($this->client, $this->bucket, $this->mfa);
-        $batch = new NotifyingBatch($batch, function ($items) use ($that) {
+        $batch = new NotifyingBatch($batch, function($items) use ($that) {
             $that->dispatch(ClearBucket::AFTER_DELETE, array('keys' => $items));
         });
         $batch = new FlushingBatch(new ExceptionBufferingBatch($batch), 1000);
 
         // Let any listeners know that the bucket is about to be cleared
         $this->dispatch(self::BEFORE_CLEAR, array(
-            'iterator' => $this->getIterator(),
-            'batch'    => $batch,
-            'mfa'      => $this->mfa
+                'iterator' => $this->getIterator(),
+                'batch' => $batch,
+                'mfa' => $this->mfa
         ));
 
         $deleted = 0;

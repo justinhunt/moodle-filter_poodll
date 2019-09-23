@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * You did not provide the number of bytes specified by the Content-Length HTTP header
  */
-class IncompleteBodyException extends S3Exception {}
+class IncompleteBodyException extends S3Exception {
+}

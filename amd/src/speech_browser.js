@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -15,31 +15,31 @@ define(['jquery','core/log'], function($, log) {
         lang: 'en-US',
 
 
-    //for making multiple instances
-        clone: function(){
-            return $.extend(true,{},this);
+        //for making multiple instances
+        clone: function () {
+            return $.extend(true, {}, this);
         },
 
-        init: function(lang){
+        init: function (lang) {
             var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
             this.recognition = new SpeechRecognition();
             this.recognition.continuous = true;
             this.recognition.interimResults = true;
-            this.lang= lang ? lang : 'en-US';
+            this.lang = lang ? lang : 'en-US';
 
             this.register_events();
         },
 
-        set_grammar: function(grammar){
+        set_grammar: function (grammar) {
             var SpeechGrammarList = SpeechGrammarList || webkitSpeechGrammarList;
-            if(SpeechGrammarList) {
+            if (SpeechGrammarList) {
                 var speechRecognitionList = new SpeechGrammarList();
                 speechRecognitionList.addFromString(grammar, 1);
                 this.recognition.grammars = speechRecognitionList;
             }
         },
 
-        start: function(){
+        start: function () {
             if (this.recognizing) {
                 return;
             }
@@ -51,24 +51,24 @@ define(['jquery','core/log'], function($, log) {
             this.start_timestamp = Date.now();//event.timeStamp;
 
         },
-        stop: function(){
-           // if (this.recognizing) {
-                this.recognizing = false;
-                this.recognition.stop();
-                return;
+        stop: function () {
+            // if (this.recognizing) {
+            this.recognizing = false;
+            this.recognition.stop();
+            return;
             //}
         },
 
-        register_events: function(){
+        register_events: function () {
 
-           var recognition= this.recognition;
-           var that= this;
+            var recognition = this.recognition;
+            var that = this;
 
-            recognition.onstart = function() {
+            recognition.onstart = function () {
                 that.recognizing = true;
 
             };
-            recognition.onerror = function(event) {
+            recognition.onerror = function (event) {
                 if (event.error == 'no-speech') {
                     log.debug('info_no_speech');
                     that.ignore_onend = true;
@@ -86,28 +86,28 @@ define(['jquery','core/log'], function($, log) {
                     that.ignore_onend = true;
                 }
             };
-            recognition.onend = function() {
+            recognition.onend = function () {
                 //that.recognizing = false;
 
                 // we restart by default
                 // we might need to be more clever here
-                if(that.recognizing == false){
+                if (that.recognizing == false) {
                     return;
                 }
-                if(that.ignore_onend) {
+                if (that.ignore_onend) {
                     that.recognizing = false;
-                }else{
+                } else {
                     recognition.start();
                 }
 
             };
-            recognition.onresult = function(event) {
+            recognition.onresult = function (event) {
                 var interim_transcript = '';
                 for (var i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         that.final_transcript += event.results[i][0].transcript;
                         that.onfinalspeechcapture(that.final_transcript);
-                        that.final_transcript='';
+                        that.final_transcript = '';
                     } else {
                         interim_transcript += event.results[i][0].transcript;
                         that.oninterimspeechcapture(interim_transcript);
@@ -118,11 +118,11 @@ define(['jquery','core/log'], function($, log) {
             };
         },//end of register events
 
-        onfinalspeechcapture: function(speechtext){
+        onfinalspeechcapture: function (speechtext) {
             log.debug(speechtext);
         },
-        oninterimspeechcapture: function(speechtext){
-           // log.debug(speechtext);
+        oninterimspeechcapture: function (speechtext) {
+            // log.debug(speechtext);
         }
 
     };//end of returned object

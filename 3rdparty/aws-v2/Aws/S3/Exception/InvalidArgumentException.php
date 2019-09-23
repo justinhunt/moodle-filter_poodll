@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * Invalid Argument
  */
-class InvalidArgumentException extends S3Exception {}
+class InvalidArgumentException extends S3Exception {
+}

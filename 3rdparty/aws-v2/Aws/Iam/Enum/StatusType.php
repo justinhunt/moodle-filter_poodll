@@ -21,8 +21,7 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable StatusType values
  */
-class StatusType extends Enum
-{
+class StatusType extends Enum {
     const ACTIVE = 'Active';
     const INACTIVE = 'Inactive';
 }

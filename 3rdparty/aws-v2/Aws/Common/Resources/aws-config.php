@@ -15,348 +15,348 @@
  */
 
 return array(
-    'class' => 'Aws\Common\Aws',
-    'services' => array(
+        'class' => 'Aws\Common\Aws',
+        'services' => array(
 
-        'default_settings' => array(
-            'params' => array()
-        ),
+                'default_settings' => array(
+                        'params' => array()
+                ),
 
-        'autoscaling' => array(
-            'alias'   => 'AutoScaling',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\AutoScaling\AutoScalingClient'
-        ),
+                'autoscaling' => array(
+                        'alias' => 'AutoScaling',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\AutoScaling\AutoScalingClient'
+                ),
 
-        'cloudformation' => array(
-            'alias'   => 'CloudFormation',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudFormation\CloudFormationClient'
-        ),
+                'cloudformation' => array(
+                        'alias' => 'CloudFormation',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudFormation\CloudFormationClient'
+                ),
 
-        'cloudfront' => array(
-            'alias'   => 'CloudFront',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudFront\CloudFrontClient'
-        ),
+                'cloudfront' => array(
+                        'alias' => 'CloudFront',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudFront\CloudFrontClient'
+                ),
 
-        'cloudfront_20120505' => array(
-            'extends' => 'cloudfront',
-            'params' => array(
-                'version' => '2012-05-05'
-            )
-        ),
+                'cloudfront_20120505' => array(
+                        'extends' => 'cloudfront',
+                        'params' => array(
+                                'version' => '2012-05-05'
+                        )
+                ),
 
-        'cloudhsm' => array(
-            'alias'   => 'CloudHsm',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudHsm\CloudHsmClient'
-        ),
+                'cloudhsm' => array(
+                        'alias' => 'CloudHsm',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudHsm\CloudHsmClient'
+                ),
 
-        'cloudsearch' => array(
-            'alias'   => 'CloudSearch',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudSearch\CloudSearchClient'
-        ),
+                'cloudsearch' => array(
+                        'alias' => 'CloudSearch',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudSearch\CloudSearchClient'
+                ),
 
-        'cloudsearch_20110201' => array(
-            'extends' => 'cloudsearch',
-            'params' => array(
-                'version' => '2011-02-01'
-            )
-        ),
+                'cloudsearch_20110201' => array(
+                        'extends' => 'cloudsearch',
+                        'params' => array(
+                                'version' => '2011-02-01'
+                        )
+                ),
 
-        'cloudsearchdomain' => array(
-            'alias'   => 'CloudSearchDomain',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudSearchDomain\CloudSearchDomainClient'
-        ),
+                'cloudsearchdomain' => array(
+                        'alias' => 'CloudSearchDomain',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudSearchDomain\CloudSearchDomainClient'
+                ),
 
-        'cloudtrail' => array(
-            'alias'   => 'CloudTrail',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudTrail\CloudTrailClient'
-        ),
+                'cloudtrail' => array(
+                        'alias' => 'CloudTrail',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudTrail\CloudTrailClient'
+                ),
 
-        'cloudwatch' => array(
-            'alias'   => 'CloudWatch',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudWatch\CloudWatchClient'
-        ),
+                'cloudwatch' => array(
+                        'alias' => 'CloudWatch',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudWatch\CloudWatchClient'
+                ),
 
-        'cloudwatchlogs' => array(
-            'alias'   => 'CloudWatchLogs',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CloudWatchLogs\CloudWatchLogsClient'
-        ),
+                'cloudwatchlogs' => array(
+                        'alias' => 'CloudWatchLogs',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CloudWatchLogs\CloudWatchLogsClient'
+                ),
 
-        'cognito-identity' => array(
-            'alias'   => 'CognitoIdentity',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CognitoIdentity\CognitoIdentityClient'
-        ),
+                'cognito-identity' => array(
+                        'alias' => 'CognitoIdentity',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CognitoIdentity\CognitoIdentityClient'
+                ),
 
-        'cognitoidentity' => array('extends' => 'cognito-identity'),
+                'cognitoidentity' => array('extends' => 'cognito-identity'),
 
-        'cognito-sync' => array(
-            'alias'   => 'CognitoSync',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CognitoSync\CognitoSyncClient'
-        ),
+                'cognito-sync' => array(
+                        'alias' => 'CognitoSync',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CognitoSync\CognitoSyncClient'
+                ),
 
-        'cognitosync' => array('extends' => 'cognito-sync'),
+                'cognitosync' => array('extends' => 'cognito-sync'),
 
-        'codecommit' => array(
-            'alias'   => 'CodeCommit',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CodeCommit\CodeCommitClient'
-        ),
+                'codecommit' => array(
+                        'alias' => 'CodeCommit',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CodeCommit\CodeCommitClient'
+                ),
 
-        'codedeploy' => array(
-            'alias'   => 'CodeDeploy',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CodeDeploy\CodeDeployClient'
-        ),
+                'codedeploy' => array(
+                        'alias' => 'CodeDeploy',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CodeDeploy\CodeDeployClient'
+                ),
 
-        'codepipeline' => array(
-            'alias'   => 'CodePipeline',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\CodePipeline\CodePipelineClient'
-        ),
+                'codepipeline' => array(
+                        'alias' => 'CodePipeline',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\CodePipeline\CodePipelineClient'
+                ),
 
-        'config' => array(
-            'alias'   => 'ConfigService',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\ConfigService\ConfigServiceClient'
-        ),
+                'config' => array(
+                        'alias' => 'ConfigService',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\ConfigService\ConfigServiceClient'
+                ),
 
-        'datapipeline' => array(
-            'alias'   => 'DataPipeline',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\DataPipeline\DataPipelineClient'
-        ),
+                'datapipeline' => array(
+                        'alias' => 'DataPipeline',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\DataPipeline\DataPipelineClient'
+                ),
 
-        'devicefarm' => array(
-            'alias'   => 'DeviceFarm',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\DeviceFarm\DeviceFarmClient'
-        ),
+                'devicefarm' => array(
+                        'alias' => 'DeviceFarm',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\DeviceFarm\DeviceFarmClient'
+                ),
 
-        'directconnect' => array(
-            'alias'   => 'DirectConnect',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\DirectConnect\DirectConnectClient'
-        ),
+                'directconnect' => array(
+                        'alias' => 'DirectConnect',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\DirectConnect\DirectConnectClient'
+                ),
 
-        'ds' => array(
-            'alias'   => 'DirectoryService',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\DirectoryService\DirectoryServiceClient'
-        ),
+                'ds' => array(
+                        'alias' => 'DirectoryService',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\DirectoryService\DirectoryServiceClient'
+                ),
 
-        'dynamodb' => array(
-            'alias'   => 'DynamoDb',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\DynamoDb\DynamoDbClient'
-        ),
+                'dynamodb' => array(
+                        'alias' => 'DynamoDb',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\DynamoDb\DynamoDbClient'
+                ),
 
-        'dynamodb_20111205' => array(
-            'extends' => 'dynamodb',
-            'params' => array(
-                'version' => '2011-12-05'
-            )
-        ),
+                'dynamodb_20111205' => array(
+                        'extends' => 'dynamodb',
+                        'params' => array(
+                                'version' => '2011-12-05'
+                        )
+                ),
 
-        'dynamodbstreams' => array(
-            'alias'   => 'DynamoDbStreams',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\DynamoDbStreams\DynamoDbStreamsClient'
-        ),
+                'dynamodbstreams' => array(
+                        'alias' => 'DynamoDbStreams',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\DynamoDbStreams\DynamoDbStreamsClient'
+                ),
 
-        'ec2' => array(
-            'alias'   => 'Ec2',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Ec2\Ec2Client'
-        ),
+                'ec2' => array(
+                        'alias' => 'Ec2',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Ec2\Ec2Client'
+                ),
 
-        'ecs' => array(
-            'alias'   => 'Ecs',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Ecs\EcsClient'
-        ),
+                'ecs' => array(
+                        'alias' => 'Ecs',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Ecs\EcsClient'
+                ),
 
-        'elasticache' => array(
-            'alias'   => 'ElastiCache',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\ElastiCache\ElastiCacheClient'
-        ),
+                'elasticache' => array(
+                        'alias' => 'ElastiCache',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\ElastiCache\ElastiCacheClient'
+                ),
 
-        'elasticbeanstalk' => array(
-            'alias'   => 'ElasticBeanstalk',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\ElasticBeanstalk\ElasticBeanstalkClient'
-        ),
+                'elasticbeanstalk' => array(
+                        'alias' => 'ElasticBeanstalk',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\ElasticBeanstalk\ElasticBeanstalkClient'
+                ),
 
-        'efs' => array(
-            'alias'   => 'Efs',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Efs\EfsClient'
-        ),
+                'efs' => array(
+                        'alias' => 'Efs',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Efs\EfsClient'
+                ),
 
-        'elasticloadbalancing' => array(
-            'alias'   => 'ElasticLoadBalancing',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\ElasticLoadBalancing\ElasticLoadBalancingClient'
-        ),
+                'elasticloadbalancing' => array(
+                        'alias' => 'ElasticLoadBalancing',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\ElasticLoadBalancing\ElasticLoadBalancingClient'
+                ),
 
-        'elastictranscoder' => array(
-            'alias'   => 'ElasticTranscoder',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\ElasticTranscoder\ElasticTranscoderClient'
-        ),
+                'elastictranscoder' => array(
+                        'alias' => 'ElasticTranscoder',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\ElasticTranscoder\ElasticTranscoderClient'
+                ),
 
-        'emr' => array(
-            'alias'   => 'Emr',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Emr\EmrClient'
-        ),
+                'emr' => array(
+                        'alias' => 'Emr',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Emr\EmrClient'
+                ),
 
-        'glacier' => array(
-            'alias'   => 'Glacier',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Glacier\GlacierClient'
-        ),
+                'glacier' => array(
+                        'alias' => 'Glacier',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Glacier\GlacierClient'
+                ),
 
-        'kinesis' => array(
-            'alias'   => 'Kinesis',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Kinesis\KinesisClient'
-        ),
+                'kinesis' => array(
+                        'alias' => 'Kinesis',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Kinesis\KinesisClient'
+                ),
 
-        'kms' => array(
-            'alias'   => 'Kms',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Kms\KmsClient'
-        ),
+                'kms' => array(
+                        'alias' => 'Kms',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Kms\KmsClient'
+                ),
 
-        'lambda' => array(
-            'alias'   => 'Lambda',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Lambda\LambdaClient'
-        ),
+                'lambda' => array(
+                        'alias' => 'Lambda',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Lambda\LambdaClient'
+                ),
 
-        'iam' => array(
-            'alias'   => 'Iam',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Iam\IamClient'
-        ),
+                'iam' => array(
+                        'alias' => 'Iam',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Iam\IamClient'
+                ),
 
-        'importexport' => array(
-            'alias'   => 'ImportExport',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\ImportExport\ImportExportClient'
-        ),
+                'importexport' => array(
+                        'alias' => 'ImportExport',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\ImportExport\ImportExportClient'
+                ),
 
-        'machinelearning' => array(
-            'alias'   => 'MachineLearning',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\MachineLearning\MachineLearningClient'
-        ),
+                'machinelearning' => array(
+                        'alias' => 'MachineLearning',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\MachineLearning\MachineLearningClient'
+                ),
 
-        'opsworks' => array(
-            'alias'   => 'OpsWorks',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\OpsWorks\OpsWorksClient'
-        ),
+                'opsworks' => array(
+                        'alias' => 'OpsWorks',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\OpsWorks\OpsWorksClient'
+                ),
 
-        'rds' => array(
-            'alias'   => 'Rds',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Rds\RdsClient'
-        ),
+                'rds' => array(
+                        'alias' => 'Rds',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Rds\RdsClient'
+                ),
 
-        'redshift' => array(
-            'alias'   => 'Redshift',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Redshift\RedshiftClient'
-        ),
+                'redshift' => array(
+                        'alias' => 'Redshift',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Redshift\RedshiftClient'
+                ),
 
-        'route53' => array(
-            'alias'   => 'Route53',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Route53\Route53Client'
-        ),
+                'route53' => array(
+                        'alias' => 'Route53',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Route53\Route53Client'
+                ),
 
-        'route53domains' => array(
-            'alias'   => 'Route53Domains',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Route53Domains\Route53DomainsClient'
-        ),
+                'route53domains' => array(
+                        'alias' => 'Route53Domains',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Route53Domains\Route53DomainsClient'
+                ),
 
-        's3' => array(
-            'alias'   => 'S3',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\S3\S3Client'
-        ),
+                's3' => array(
+                        'alias' => 'S3',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\S3\S3Client'
+                ),
 
-        'sdb' => array(
-            'alias'   => 'SimpleDb',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\SimpleDb\SimpleDbClient'
-        ),
+                'sdb' => array(
+                        'alias' => 'SimpleDb',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\SimpleDb\SimpleDbClient'
+                ),
 
-        'ses' => array(
-            'alias'   => 'Ses',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Ses\SesClient'
-        ),
+                'ses' => array(
+                        'alias' => 'Ses',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Ses\SesClient'
+                ),
 
-        'sns' => array(
-            'alias'   => 'Sns',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Sns\SnsClient'
-        ),
+                'sns' => array(
+                        'alias' => 'Sns',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Sns\SnsClient'
+                ),
 
-        'sqs' => array(
-            'alias'   => 'Sqs',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Sqs\SqsClient'
-        ),
+                'sqs' => array(
+                        'alias' => 'Sqs',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Sqs\SqsClient'
+                ),
 
-        'ssm' => array(
-            'alias'   => 'Ssm',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Ssm\SsmClient'
-        ),
+                'ssm' => array(
+                        'alias' => 'Ssm',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Ssm\SsmClient'
+                ),
 
-        'storagegateway' => array(
-            'alias'   => 'StorageGateway',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\StorageGateway\StorageGatewayClient'
-        ),
+                'storagegateway' => array(
+                        'alias' => 'StorageGateway',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\StorageGateway\StorageGatewayClient'
+                ),
 
-        'sts' => array(
-            'alias'   => 'Sts',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Sts\StsClient'
-        ),
+                'sts' => array(
+                        'alias' => 'Sts',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Sts\StsClient'
+                ),
 
-        'support' => array(
-            'alias'   => 'Support',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Support\SupportClient'
-        ),
+                'support' => array(
+                        'alias' => 'Support',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Support\SupportClient'
+                ),
 
-        'swf' => array(
-            'alias'   => 'Swf',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\Swf\SwfClient'
-        ),
+                'swf' => array(
+                        'alias' => 'Swf',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\Swf\SwfClient'
+                ),
 
-        'workspaces' => array(
-            'alias'   => 'WorkSpaces',
-            'extends' => 'default_settings',
-            'class'   => 'Aws\WorkSpaces\WorkSpacesClient'
-        ),
-    )
+                'workspaces' => array(
+                        'alias' => 'WorkSpaces',
+                        'extends' => 'default_settings',
+                        'class' => 'Aws\WorkSpaces\WorkSpacesClient'
+                ),
+        )
 );

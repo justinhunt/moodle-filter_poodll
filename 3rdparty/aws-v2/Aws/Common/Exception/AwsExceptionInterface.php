@@ -19,12 +19,16 @@ namespace Aws\Common\Exception;
 /**
  * "Marker Interface" implemented by every exception in the AWS SDK
  */
-interface AwsExceptionInterface
-{
+interface AwsExceptionInterface {
     public function getCode();
+
     public function getLine();
+
     public function getFile();
+
     public function getMessage();
+
     public function getPrevious();
+
     public function getTrace();
 }

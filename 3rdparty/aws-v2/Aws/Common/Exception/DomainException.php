@@ -19,4 +19,5 @@ namespace Aws\Common\Exception;
 /**
  * AWS SDK namespaced version of the SPL DomainException.
  */
-class DomainException extends \DomainException implements AwsExceptionInterface {}
+class DomainException extends \DomainException implements AwsExceptionInterface {
+}

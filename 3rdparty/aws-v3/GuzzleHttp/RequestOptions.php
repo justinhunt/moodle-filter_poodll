@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 /**
@@ -8,8 +9,7 @@ namespace GuzzleHttp;
  *
  * @link http://docs.guzzlephp.org/en/v6/request-options.html
  */
-final class RequestOptions
-{
+final class RequestOptions {
     /**
      * allow_redirects: (bool|array) Controls redirect behavior. Pass false
      * to disable redirects, pass true to enable redirects, pass an

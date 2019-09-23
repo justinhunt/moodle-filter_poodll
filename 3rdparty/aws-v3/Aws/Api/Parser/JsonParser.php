@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Api\Parser;
 
 use Aws\Api\DateTimeResult;
@@ -7,10 +8,8 @@ use Aws\Api\Shape;
 /**
  * @internal Implements standard JSON parsing.
  */
-class JsonParser
-{
-    public function parse(Shape $shape, $value)
-    {
+class JsonParser {
+    public function parse(Shape $shape, $value) {
         if ($value === null) {
             return $value;
         }

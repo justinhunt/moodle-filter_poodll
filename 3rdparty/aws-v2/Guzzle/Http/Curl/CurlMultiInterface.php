@@ -9,8 +9,7 @@ use Guzzle\Http\Message\RequestInterface;
 /**
  * Interface for sending a pool of {@see RequestInterface} objects in parallel
  */
-interface CurlMultiInterface extends \Countable, HasDispatcherInterface
-{
+interface CurlMultiInterface extends \Countable, HasDispatcherInterface {
     const POLLING_REQUEST = 'curl_multi.polling_request';
     const ADD_REQUEST = 'curl_multi.add_request';
     const REMOVE_REQUEST = 'curl_multi.remove_request';

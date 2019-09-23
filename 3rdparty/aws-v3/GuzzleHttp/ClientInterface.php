@@ -1,4 +1,5 @@
 <?php
+
 namespace GuzzleHttp;
 
 use GuzzleHttp\Promise\PromiseInterface;
@@ -10,15 +11,14 @@ use Psr\Http\Message\UriInterface;
 /**
  * Client interface for sending HTTP requests.
  */
-interface ClientInterface
-{
+interface ClientInterface {
     const VERSION = '6.2.1';
 
     /**
      * Send an HTTP request.
      *
      * @param RequestInterface $request Request to send
-     * @param array            $options Request options to apply to the given
+     * @param array $options Request options to apply to the given
      *                                  request and to the transfer.
      *
      * @return ResponseInterface
@@ -30,7 +30,7 @@ interface ClientInterface
      * Asynchronously send an HTTP request.
      *
      * @param RequestInterface $request Request to send
-     * @param array            $options Request options to apply to the given
+     * @param array $options Request options to apply to the given
      *                                  request and to the transfer.
      *
      * @return PromiseInterface
@@ -44,9 +44,9 @@ interface ClientInterface
      * relative path to append to the base path of the client. The URL can
      * contain the query string as well.
      *
-     * @param string              $method  HTTP method.
-     * @param string|UriInterface $uri     URI object or string.
-     * @param array               $options Request options to apply.
+     * @param string $method HTTP method.
+     * @param string|UriInterface $uri URI object or string.
+     * @param array $options Request options to apply.
      *
      * @return ResponseInterface
      * @throws GuzzleException
@@ -61,9 +61,9 @@ interface ClientInterface
      * contain the query string as well. Use an array to provide a URL
      * template and additional variables to use in the URL template expansion.
      *
-     * @param string              $method  HTTP method
-     * @param string|UriInterface $uri     URI object or string.
-     * @param array               $options Request options to apply.
+     * @param string $method HTTP method
+     * @param string|UriInterface $uri URI object or string.
+     * @param array $options Request options to apply.
      *
      * @return PromiseInterface
      */

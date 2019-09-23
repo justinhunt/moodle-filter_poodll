@@ -28,8 +28,7 @@ use Guzzle\Service\Command\CommandInterface;
  * Transfer logic for deleting multiple objects from an Amazon S3 bucket in a
  * single request
  */
-class DeleteObjectsTransfer implements BatchTransferInterface
-{
+class DeleteObjectsTransfer implements BatchTransferInterface {
     /**
      * @var AwsClientInterface The Amazon S3 client for doing transfers
      */
@@ -49,11 +48,10 @@ class DeleteObjectsTransfer implements BatchTransferInterface
      * Constructs a transfer using the injected client
      *
      * @param AwsClientInterface $client Client used to transfer the requests
-     * @param string             $bucket Name of the bucket that stores the objects
-     * @param string             $mfa    MFA token used when contacting the Amazon S3 API
+     * @param string $bucket Name of the bucket that stores the objects
+     * @param string $mfa MFA token used when contacting the Amazon S3 API
      */
-    public function __construct(AwsClientInterface $client, $bucket, $mfa = null)
-    {
+    public function __construct(AwsClientInterface $client, $bucket, $mfa = null) {
         $this->client = $client;
         $this->bucket = $bucket;
         $this->mfa = $mfa;
@@ -66,8 +64,7 @@ class DeleteObjectsTransfer implements BatchTransferInterface
      *
      * @return $this
      */
-    public function setMfa($token)
-    {
+    public function setMfa($token) {
         $this->mfa = $token;
 
         return $this;
@@ -78,8 +75,7 @@ class DeleteObjectsTransfer implements BatchTransferInterface
      * @throws OverflowException        if a batch has more than 1000 items
      * @throws InvalidArgumentException when an invalid batch item is encountered
      */
-    public function transfer(array $batch)
-    {
+    public function transfer(array $batch) {
         if (empty($batch)) {
             return;
         }
@@ -90,8 +86,8 @@ class DeleteObjectsTransfer implements BatchTransferInterface
 
         $del = array();
         $command = $this->client->getCommand('DeleteObjects', array(
-            'Bucket'   => $this->bucket,
-            Ua::OPTION => Ua::BATCH
+                'Bucket' => $this->bucket,
+                Ua::OPTION => Ua::BATCH
         ));
 
         if ($this->mfa) {
@@ -104,8 +100,8 @@ class DeleteObjectsTransfer implements BatchTransferInterface
                 throw new InvalidArgumentException('Invalid batch item encountered: ' . var_export($batch, true));
             }
             $del[] = array(
-                'Key'       => $object['Key'],
-                'VersionId' => isset($object['VersionId']) ? $object['VersionId'] : null
+                    'Key' => $object['Key'],
+                    'VersionId' => isset($object['VersionId']) ? $object['VersionId'] : null
             );
         }
 
@@ -120,8 +116,7 @@ class DeleteObjectsTransfer implements BatchTransferInterface
      *
      * @paramCommandInterface $command Command executed
      */
-    protected function processResponse(CommandInterface $command)
-    {
+    protected function processResponse(CommandInterface $command) {
         $result = $command->getResult();
 
         // Ensure that the objects were deleted successfully

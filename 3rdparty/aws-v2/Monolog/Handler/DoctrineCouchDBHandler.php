@@ -20,12 +20,10 @@ use Doctrine\CouchDB\CouchDBClient;
  *
  * @author Markus Bachmann <markus.bachmann@bachi.biz>
  */
-class DoctrineCouchDBHandler extends AbstractProcessingHandler
-{
+class DoctrineCouchDBHandler extends AbstractProcessingHandler {
     private $client;
 
-    public function __construct(CouchDBClient $client, $level = Logger::DEBUG, $bubble = true)
-    {
+    public function __construct(CouchDBClient $client, $level = Logger::DEBUG, $bubble = true) {
         $this->client = $client;
         parent::__construct($level, $bubble);
     }
@@ -33,13 +31,11 @@ class DoctrineCouchDBHandler extends AbstractProcessingHandler
     /**
      * {@inheritDoc}
      */
-    protected function write(array $record)
-    {
+    protected function write(array $record) {
         $this->client->postDocument($record['formatted']);
     }
 
-    protected function getDefaultFormatter()
-    {
+    protected function getDefaultFormatter() {
         return new NormalizerFormatter;
     }
 }

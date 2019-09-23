@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery','core/log'], function($, log) {
+define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
@@ -10,8 +10,10 @@ define(['jquery','core/log'], function($, log) {
         analyser: null,
         cvs: null,
         cvsctx: null,
-        drawparams: {rippleColor: '#0',
-            lineWidth: 2},
+        drawparams: {
+            rippleColor: '#0',
+            lineWidth: 2
+        },
 
         //for making multiple instances
         clone: function () {
@@ -21,19 +23,19 @@ define(['jquery','core/log'], function($, log) {
         //init
         init: function (analyser, cvs) {
             this.cvs = cvs;
-            this.cvsctx=cvs.getContext("2d");
+            this.cvsctx = cvs.getContext("2d");
             this.analyser = analyser;
         },
 
-        setDrawParam: function(paramkey,paramvalue){
-            this.drawparams[paramkey]=paramvalue;
+        setDrawParam: function (paramkey, paramvalue) {
+            this.drawparams[paramkey] = paramvalue;
         },
 
-        clear: function(){
-            this.cvsctx.clearRect(0, 0, this.cvs.width,this.cvs.height);
+        clear: function () {
+            this.cvsctx.clearRect(0, 0, this.cvs.width, this.cvs.height);
         },
 
-        start: function(){
+        start: function () {
             this.analyser.core.fftSize = 2048;
             var bufferLength = this.analyser.core.fftSize;
             var dataArray = new Uint8Array(bufferLength);
@@ -49,13 +51,15 @@ define(['jquery','core/log'], function($, log) {
                 var drawVisual = requestAnimationFrame(draw);
 
                 //cancel out if the theinterval is null
-                if(!analyser.theinterval){return;}
+                if (!analyser.theinterval) {
+                    return;
+                }
 
                 analyser.core.getByteTimeDomainData(dataArray);
 
                 //this fills grey, but its lame lets just leave it clear
                 //canvasCtx.fillStyle = 'rgb(200, 200, 200)';
-                canvasCtx.clearRect(0, 0, cwidth,cheight);
+                canvasCtx.clearRect(0, 0, cwidth, cheight);
 
                 canvasCtx.lineWidth = that.drawparams.lineWidth;
                 canvasCtx.setLineDash([15, 5]);
@@ -63,17 +67,17 @@ define(['jquery','core/log'], function($, log) {
 
                 canvasCtx.beginPath();
 
-                var recwidth= 100;
-                if(bufferLength>0) {
+                var recwidth = 100;
+                if (bufferLength > 0) {
                     var stepsize = 1 + bufferLength / 5;
                 }
 
 
-                for (var i = 0; i < bufferLength; i=i+stepsize) {
+                for (var i = 0; i < bufferLength; i = i + stepsize) {
                     var v = dataArray[i] / 128.0;
                     var y = v * (cheight - recwidth) / 4;
-                    var radius = recwidth / 2  + y
-                    canvasCtx.arc(cwidth/2,cheight/2,radius,0,2*Math.PI);
+                    var radius = recwidth / 2 + y
+                    canvasCtx.arc(cwidth / 2, cheight / 2, radius, 0, 2 * Math.PI);
                 }
                 canvasCtx.stroke();
             };

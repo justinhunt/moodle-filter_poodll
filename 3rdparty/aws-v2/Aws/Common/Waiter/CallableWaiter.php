@@ -22,8 +22,7 @@ use Aws\Common\Exception\RuntimeException;
 /**
  * Callable wait implementation
  */
-class CallableWaiter extends AbstractWaiter
-{
+class CallableWaiter extends AbstractWaiter {
     /**
      * @var callable Callable function
      */
@@ -42,8 +41,7 @@ class CallableWaiter extends AbstractWaiter
      * @return self
      * @throws InvalidArgumentException when the method is not callable
      */
-    public function setCallable($callable)
-    {
+    public function setCallable($callable) {
         if (!is_callable($callable)) {
             throw new InvalidArgumentException('Value is not callable');
         }
@@ -61,8 +59,7 @@ class CallableWaiter extends AbstractWaiter
      *
      * @return self
      */
-    public function setContext(array $context)
-    {
+    public function setContext(array $context) {
         $this->context = $context;
 
         return $this;
@@ -71,8 +68,7 @@ class CallableWaiter extends AbstractWaiter
     /**
      * {@inheritdoc}
      */
-    public function doWait()
-    {
+    public function doWait() {
         if (!$this->callable) {
             throw new RuntimeException('No callable was specified for the wait method');
         }

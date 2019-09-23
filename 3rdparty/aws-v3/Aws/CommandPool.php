@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws;
 
 use GuzzleHttp\Promise\PromisorInterface;
@@ -10,8 +11,7 @@ use GuzzleHttp\Promise\EachPromise;
  * The pool will read command objects from an iterator until it is cancelled or
  * until the iterator is consumed.
  */
-class CommandPool implements PromisorInterface
-{
+class CommandPool implements PromisorInterface {
     /** @var EachPromise */
     private $each;
 
@@ -37,25 +37,25 @@ class CommandPool implements PromisorInterface
      * - preserve_iterator_keys: (bool) Retain the iterator key when generating
      *   the commands.
      *
-     * @param AwsClientInterface $client   Client used to execute commands.
-     * @param array|\Iterator    $commands Iterable that yields commands.
-     * @param array              $config   Associative array of options.
+     * @param AwsClientInterface $client Client used to execute commands.
+     * @param array|\Iterator $commands Iterable that yields commands.
+     * @param array $config Associative array of options.
      */
     public function __construct(
-        AwsClientInterface $client,
-        $commands,
-        array $config = []
+            AwsClientInterface $client,
+            $commands,
+            array $config = []
     ) {
         if (!isset($config['concurrency'])) {
             $config['concurrency'] = 25;
         }
 
         $before = $this->getBefore($config);
-        $mapFn = function ($commands) use ($client, $before, $config) {
+        $mapFn = function($commands) use ($client, $before, $config) {
             foreach ($commands as $key => $command) {
                 if (!($command instanceof CommandInterface)) {
                     throw new \InvalidArgumentException('Each value yielded by '
-                        . 'the iterator must be an Aws\CommandInterface.');
+                            . 'the iterator must be an Aws\CommandInterface.');
                 }
                 if ($before) {
                     $before($command, $key);
@@ -74,8 +74,7 @@ class CommandPool implements PromisorInterface
     /**
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function promise()
-    {
+    public function promise() {
         return $this->each->promise();
     }
 
@@ -83,36 +82,35 @@ class CommandPool implements PromisorInterface
      * Executes a pool synchronously and aggregates the results of the pool
      * into an indexed array in the same order as the passed in array.
      *
-     * @param AwsClientInterface $client   Client used to execute commands.
-     * @param mixed              $commands Iterable that yields commands.
-     * @param array              $config   Configuration options.
+     * @param AwsClientInterface $client Client used to execute commands.
+     * @param mixed $commands Iterable that yields commands.
+     * @param array $config Configuration options.
      *
      * @return array
      * @see \Aws\CommandPool::__construct for available configuration options.
      */
     public static function batch(
-        AwsClientInterface $client,
-        $commands,
-        array $config = []
+            AwsClientInterface $client,
+            $commands,
+            array $config = []
     ) {
         $results = [];
         self::cmpCallback($config, 'fulfilled', $results);
         self::cmpCallback($config, 'rejected', $results);
 
         return (new self($client, $commands, $config))
-            ->promise()
-            ->then(static function () use (&$results) {
-                ksort($results);
-                return $results;
-            })
-            ->wait();
+                ->promise()
+                ->then(static function() use (&$results) {
+                    ksort($results);
+                    return $results;
+                })
+                ->wait();
     }
 
     /**
      * @return callable
      */
-    private function getBefore(array $config)
-    {
+    private function getBefore(array $config) {
         if (!isset($config['before'])) {
             return null;
         }
@@ -133,15 +131,14 @@ class CommandPool implements PromisorInterface
      * @param       $name
      * @param array $results
      */
-    private static function cmpCallback(array &$config, $name, array &$results)
-    {
+    private static function cmpCallback(array &$config, $name, array &$results) {
         if (!isset($config[$name])) {
-            $config[$name] = function ($v, $k) use (&$results) {
+            $config[$name] = function($v, $k) use (&$results) {
                 $results[$k] = $v;
             };
         } else {
             $currentFn = $config[$name];
-            $config[$name] = function ($v, $k) use (&$results, $currentFn) {
+            $config[$name] = function($v, $k) use (&$results, $currentFn) {
                 $currentFn($v, $k);
                 $results[$k] = $v;
             };

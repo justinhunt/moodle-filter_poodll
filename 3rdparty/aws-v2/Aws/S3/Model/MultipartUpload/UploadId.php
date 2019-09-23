@@ -20,16 +20,16 @@ use Aws\Common\Model\MultipartUpload\AbstractUploadId;
 
 /**
  * An object that encapsulates the identification for a Glacier upload part
+ *
  * @codeCoverageIgnore
  */
-class UploadId extends AbstractUploadId
-{
+class UploadId extends AbstractUploadId {
     /**
      * {@inheritdoc}
      */
     protected static $expectedValues = array(
-        'Bucket'   => false,
-        'Key'      => false,
-        'UploadId' => false
+            'Bucket' => false,
+            'Key' => false,
+            'UploadId' => false
     );
 }

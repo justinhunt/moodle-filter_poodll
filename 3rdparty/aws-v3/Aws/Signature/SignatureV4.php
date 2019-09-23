@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\Signature;
 
 use Aws\Credentials\CredentialsInterface;
@@ -8,10 +9,10 @@ use Psr\Http\Message\RequestInterface;
 
 /**
  * Signature Version 4
+ *
  * @link http://docs.aws.amazon.com/general/latest/gr/signature-version-4.html
  */
-class SignatureV4 implements SignatureInterface
-{
+class SignatureV4 implements SignatureInterface {
     use SignatureTrait;
     const ISO8601_BASIC = 'Ymd\THis\Z';
     const UNSIGNED_PAYLOAD = 'UNSIGNED-PAYLOAD';
@@ -27,21 +28,20 @@ class SignatureV4 implements SignatureInterface
 
     /**
      * @param string $service Service name to use when signing
-     * @param string $region  Region name to use when signing
+     * @param string $region Region name to use when signing
      * @param array $options Array of configuration options used when signing
      *      - unsigned-body: Flag to make request have unsigned payload.
      *        Unsigned body is used primarily for streaming requests.
      */
-    public function __construct($service, $region, array $options = [])
-    {
+    public function __construct($service, $region, array $options = []) {
         $this->service = $service;
         $this->region = $region;
         $this->unsigned = isset($options['unsigned-body']) ? $options['unsigned-body'] : false;
     }
 
     public function signRequest(
-        RequestInterface $request,
-        CredentialsInterface $credentials
+            RequestInterface $request,
+            CredentialsInterface $credentials
     ) {
         $ldt = gmdate(self::ISO8601_BASIC);
         $sdt = substr($ldt, 0, 8);
@@ -61,32 +61,32 @@ class SignatureV4 implements SignatureInterface
         $context = $this->createContext($parsed, $payload);
         $toSign = $this->createStringToSign($ldt, $cs, $context['creq']);
         $signingKey = $this->getSigningKey(
-            $sdt,
-            $this->region,
-            $this->service,
-            $credentials->getSecretKey()
+                $sdt,
+                $this->region,
+                $this->service,
+                $credentials->getSecretKey()
         );
         $signature = hash_hmac('sha256', $toSign, $signingKey);
         $parsed['headers']['Authorization'] = [
-            "AWS4-HMAC-SHA256 "
-            . "Credential={$credentials->getAccessKeyId()}/{$cs}, "
-            . "SignedHeaders={$context['headers']}, Signature={$signature}"
+                "AWS4-HMAC-SHA256 "
+                . "Credential={$credentials->getAccessKeyId()}/{$cs}, "
+                . "SignedHeaders={$context['headers']}, Signature={$signature}"
         ];
 
         return $this->buildRequest($parsed);
     }
 
     public function presign(
-        RequestInterface $request,
-        CredentialsInterface $credentials,
-        $expires,
-        array $options = []
+            RequestInterface $request,
+            CredentialsInterface $credentials,
+            $expires,
+            array $options = []
     ) {
 
         $startTimestamp = isset($options['start_time'])
-                            ? $this->convertToTimestamp($options['start_time'], null)
-                            : time();
-        
+                ? $this->convertToTimestamp($options['start_time'], null)
+                : time();
+
         $expiresTimestamp = $this->convertToTimestamp($expires, $startTimestamp);
 
         $parsed = $this->createPresignedRequest($request, $credentials);
@@ -103,10 +103,10 @@ class SignatureV4 implements SignatureInterface
         $context = $this->createContext($parsed, $payload);
         $stringToSign = $this->createStringToSign($httpDate, $scope, $context['creq']);
         $key = $this->getSigningKey(
-            $shortDate,
-            $this->region,
-            $this->service,
-            $credentials->getSecretKey()
+                $shortDate,
+                $this->region,
+                $this->service,
+                $credentials->getSecretKey()
         );
         $parsed['query']['X-Amz-Signature'] = hash_hmac('sha256', $stringToSign, $key);
 
@@ -124,17 +124,16 @@ class SignatureV4 implements SignatureInterface
      * @return RequestInterface
      * @throws \InvalidArgumentException if the method is not POST
      */
-    public static function convertPostToGet(RequestInterface $request)
-    {
+    public static function convertPostToGet(RequestInterface $request) {
         if ($request->getMethod() !== 'POST') {
             throw new \InvalidArgumentException('Expected a POST request but '
-                . 'received a ' . $request->getMethod() . ' request.');
+                    . 'received a ' . $request->getMethod() . ' request.');
         }
 
         $sr = $request->withMethod('GET')
-            ->withBody(Psr7\stream_for(''))
-            ->withoutHeader('Content-Type')
-            ->withoutHeader('Content-Length');
+                ->withBody(Psr7\stream_for(''))
+                ->withoutHeader('Content-Type')
+                ->withoutHeader('Content-Length');
 
         // Move POST fields to the query if they are present
         if ($request->getHeaderLine('Content-Type') === 'application/x-www-form-urlencoded') {
@@ -145,8 +144,7 @@ class SignatureV4 implements SignatureInterface
         return $sr;
     }
 
-    protected function getPayload(RequestInterface $request)
-    {
+    protected function getPayload(RequestInterface $request) {
         if ($this->unsigned && $request->getUri()->getScheme() == 'https') {
             return self::UNSIGNED_PAYLOAD;
         }
@@ -167,28 +165,25 @@ class SignatureV4 implements SignatureInterface
         }
     }
 
-    protected function getPresignedPayload(RequestInterface $request)
-    {
+    protected function getPresignedPayload(RequestInterface $request) {
         return $this->getPayload($request);
     }
 
-    protected function createCanonicalizedPath($path)
-    {
+    protected function createCanonicalizedPath($path) {
         $doubleEncoded = rawurlencode(ltrim($path, '/'));
 
         return '/' . str_replace('%2F', '/', $doubleEncoded);
     }
 
-    private function createStringToSign($longDate, $credentialScope, $creq)
-    {
+    private function createStringToSign($longDate, $credentialScope, $creq) {
         $hash = hash('sha256', $creq);
 
         return "AWS4-HMAC-SHA256\n{$longDate}\n{$credentialScope}\n{$hash}";
     }
 
     private function createPresignedRequest(
-        RequestInterface $request,
-        CredentialsInterface $credentials
+            RequestInterface $request,
+            CredentialsInterface $credentials
     ) {
         $parsedRequest = $this->parseRequest($request);
 
@@ -201,42 +196,41 @@ class SignatureV4 implements SignatureInterface
     }
 
     /**
-     * @param array  $parsedRequest
+     * @param array $parsedRequest
      * @param string $payload Hash of the request payload
      * @return array Returns an array of context information
      */
-    private function createContext(array $parsedRequest, $payload)
-    {
+    private function createContext(array $parsedRequest, $payload) {
         // The following headers are not signed because signing these headers
         // would potentially cause a signature mismatch when sending a request
         // through a proxy or if modified at the HTTP client level.
         static $blacklist = [
-            'cache-control'       => true,
-            'content-type'        => true,
-            'content-length'      => true,
-            'expect'              => true,
-            'max-forwards'        => true,
-            'pragma'              => true,
-            'range'               => true,
-            'te'                  => true,
-            'if-match'            => true,
-            'if-none-match'       => true,
-            'if-modified-since'   => true,
-            'if-unmodified-since' => true,
-            'if-range'            => true,
-            'accept'              => true,
-            'authorization'       => true,
-            'proxy-authorization' => true,
-            'from'                => true,
-            'referer'             => true,
-            'user-agent'          => true,
-            'x-amzn-trace-id'     => true
+                'cache-control' => true,
+                'content-type' => true,
+                'content-length' => true,
+                'expect' => true,
+                'max-forwards' => true,
+                'pragma' => true,
+                'range' => true,
+                'te' => true,
+                'if-match' => true,
+                'if-none-match' => true,
+                'if-modified-since' => true,
+                'if-unmodified-since' => true,
+                'if-range' => true,
+                'accept' => true,
+                'authorization' => true,
+                'proxy-authorization' => true,
+                'from' => true,
+                'referer' => true,
+                'user-agent' => true,
+                'x-amzn-trace-id' => true
         ];
 
         // Normalize the path as required by SigV4
         $canon = $parsedRequest['method'] . "\n"
-            . $this->createCanonicalizedPath($parsedRequest['path']) . "\n"
-            . $this->getCanonicalizedQuery($parsedRequest['query']) . "\n";
+                . $this->createCanonicalizedPath($parsedRequest['path']) . "\n"
+                . $this->getCanonicalizedQuery($parsedRequest['query']) . "\n";
 
         // Case-insensitively aggregate all of the headers.
         $aggregate = [];
@@ -260,14 +254,13 @@ class SignatureV4 implements SignatureInterface
 
         $signedHeadersString = implode(';', array_keys($aggregate));
         $canon .= implode("\n", $canonHeaders) . "\n\n"
-            . $signedHeadersString . "\n"
-            . $payload;
+                . $signedHeadersString . "\n"
+                . $payload;
 
         return ['creq' => $canon, 'headers' => $signedHeadersString];
     }
 
-    private function getCanonicalizedQuery(array $query)
-    {
+    private function getCanonicalizedQuery(array $query) {
         unset($query['X-Amz-Signature']);
 
         if (!$query) {
@@ -290,13 +283,12 @@ class SignatureV4 implements SignatureInterface
         return substr($qs, 0, -1);
     }
 
-    private function convertToTimestamp($dateValue, $relativeTimeBase = null)
-    {
+    private function convertToTimestamp($dateValue, $relativeTimeBase = null) {
         if ($dateValue instanceof \DateTime) {
             $timestamp = $dateValue->getTimestamp();
-        } elseif (!is_numeric($dateValue)) {
+        } else if (!is_numeric($dateValue)) {
             $timestamp = strtotime($dateValue,
-                                   $relativeTimeBase === null ? time() : $relativeTimeBase
+                    $relativeTimeBase === null ? time() : $relativeTimeBase
             );
         } else {
             $timestamp = $dateValue;
@@ -305,22 +297,20 @@ class SignatureV4 implements SignatureInterface
         return $timestamp;
     }
 
-    private function convertExpires($expiresTimestamp, $startTimestamp)
-    {
+    private function convertExpires($expiresTimestamp, $startTimestamp) {
         $duration = $expiresTimestamp - $startTimestamp;
 
         // Ensure that the duration of the signature is not longer than a week
         if ($duration > 604800) {
             throw new \InvalidArgumentException('The expiration date of a '
-                . 'signature version 4 presigned URL must be less than one '
-                . 'week');
+                    . 'signature version 4 presigned URL must be less than one '
+                    . 'week');
         }
 
         return $duration;
     }
 
-    private function moveHeadersToQuery(array $parsedRequest)
-    {
+    private function moveHeadersToQuery(array $parsedRequest) {
         foreach ($parsedRequest['headers'] as $name => $header) {
             $lname = strtolower($name);
             if (substr($lname, 0, 5) == 'x-amz') {
@@ -334,39 +324,37 @@ class SignatureV4 implements SignatureInterface
         return $parsedRequest;
     }
 
-    private function parseRequest(RequestInterface $request)
-    {
+    private function parseRequest(RequestInterface $request) {
         // Clean up any previously set headers.
         /** @var RequestInterface $request */
         $request = $request
-            ->withoutHeader('X-Amz-Date')
-            ->withoutHeader('Date')
-            ->withoutHeader('Authorization');
+                ->withoutHeader('X-Amz-Date')
+                ->withoutHeader('Date')
+                ->withoutHeader('Authorization');
         $uri = $request->getUri();
 
         return [
-            'method'  => $request->getMethod(),
-            'path'    => $uri->getPath(),
-            'query'   => Psr7\parse_query($uri->getQuery()),
-            'uri'     => $uri,
-            'headers' => $request->getHeaders(),
-            'body'    => $request->getBody(),
-            'version' => $request->getProtocolVersion()
+                'method' => $request->getMethod(),
+                'path' => $uri->getPath(),
+                'query' => Psr7\parse_query($uri->getQuery()),
+                'uri' => $uri,
+                'headers' => $request->getHeaders(),
+                'body' => $request->getBody(),
+                'version' => $request->getProtocolVersion()
         ];
     }
 
-    private function buildRequest(array $req)
-    {
+    private function buildRequest(array $req) {
         if ($req['query']) {
             $req['uri'] = $req['uri']->withQuery(Psr7\build_query($req['query']));
         }
 
         return new Psr7\Request(
-            $req['method'],
-            $req['uri'],
-            $req['headers'],
-            $req['body'],
-            $req['version']
+                $req['method'],
+                $req['uri'],
+                $req['headers'],
+                $req['body'],
+                $req['version']
         );
     }
 }

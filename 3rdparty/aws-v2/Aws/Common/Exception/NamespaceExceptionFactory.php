@@ -26,8 +26,7 @@ use Guzzle\Http\Message\Response;
  * upper camelCase and always end in 'Exception'. 'Exception' will be appended
  * if it is not present in the exception code.
  */
-class NamespaceExceptionFactory implements ExceptionFactoryInterface
-{
+class NamespaceExceptionFactory implements ExceptionFactoryInterface {
     /**
      * @var ExceptionParserInterface $parser Parser used to parse responses
      */
@@ -44,14 +43,14 @@ class NamespaceExceptionFactory implements ExceptionFactoryInterface
     protected $defaultException;
 
     /**
-     * @param ExceptionParserInterface $parser           Parser used to parse exceptions
-     * @param string                   $baseNamespace    Namespace containing exceptions
-     * @param string                   $defaultException Default class to use if one is not mapped
+     * @param ExceptionParserInterface $parser Parser used to parse exceptions
+     * @param string $baseNamespace Namespace containing exceptions
+     * @param string $defaultException Default class to use if one is not mapped
      */
     public function __construct(
-        ExceptionParserInterface $parser,
-        $baseNamespace,
-        $defaultException = 'Aws\Common\Exception\ServiceResponseException'
+            ExceptionParserInterface $parser,
+            $baseNamespace,
+            $defaultException = 'Aws\Common\Exception\ServiceResponseException'
     ) {
         $this->parser = $parser;
         $this->baseNamespace = $baseNamespace;
@@ -61,8 +60,7 @@ class NamespaceExceptionFactory implements ExceptionFactoryInterface
     /**
      * {@inheritdoc}
      */
-    public function fromResponse(RequestInterface $request, Response $response)
-    {
+    public function fromResponse(RequestInterface $request, Response $response) {
         $parts = $this->parser->parse($request, $response);
 
         // Removing leading 'AWS.' and embedded periods
@@ -79,15 +77,14 @@ class NamespaceExceptionFactory implements ExceptionFactoryInterface
     /**
      * Create an prepare an exception object
      *
-     * @param string           $className Name of the class to create
-     * @param RequestInterface $request   Request
-     * @param Response         $response  Response received
-     * @param array            $parts     Parsed exception data
+     * @param string $className Name of the class to create
+     * @param RequestInterface $request Request
+     * @param Response $response Response received
+     * @param array $parts Parsed exception data
      *
      * @return \Exception
      */
-    protected function createException($className, RequestInterface $request, Response $response, array $parts)
-    {
+    protected function createException($className, RequestInterface $request, Response $response, array $parts) {
         $class = new $className($parts['message']);
 
         if ($class instanceof ServiceResponseException) {

@@ -1,4 +1,5 @@
 <?php
+
 namespace Aws\DynamoDb;
 
 use Aws\Api\Parser\Crc32ValidatingParser;
@@ -70,10 +71,8 @@ use Aws\RetryMiddleware;
  * @method \Aws\Result updateTimeToLive(array $args = []) (supported in versions 2012-08-10)
  * @method \GuzzleHttp\Promise\Promise updateTimeToLiveAsync(array $args = []) (supported in versions 2012-08-10)
  */
-class DynamoDbClient extends AwsClient
-{
-    public static function getArguments()
-    {
+class DynamoDbClient extends AwsClient {
+    public static function getArguments() {
         $args = parent::getArguments();
         $args['retries']['default'] = 10;
         $args['retries']['fn'] = [__CLASS__, '_applyRetryConfig'];
@@ -90,8 +89,7 @@ class DynamoDbClient extends AwsClient
      *
      * @return SessionHandler
      */
-    public function registerSessionHandler(array $config = [])
-    {
+    public function registerSessionHandler(array $config = []) {
         $handler = SessionHandler::fromClient($this, $config);
         $handler->register();
 
@@ -99,31 +97,29 @@ class DynamoDbClient extends AwsClient
     }
 
     /** @internal */
-    public static function _applyRetryConfig($value, array &$args, HandlerList $list)
-    {
+    public static function _applyRetryConfig($value, array &$args, HandlerList $list) {
         if (!$value) {
             return;
         }
 
         $list->appendSign(
-            Middleware::retry(
-                RetryMiddleware::createDefaultDecider($value),
-                function ($retries) {
-                    return $retries
-                        ? RetryMiddleware::exponentialDelay($retries) / 2
-                        : 0;
-                },
-                isset($args['stats']['retries'])
-                    ? (bool) $args['stats']['retries']
-                    : false
-            ),
-            'retry'
+                Middleware::retry(
+                        RetryMiddleware::createDefaultDecider($value),
+                        function($retries) {
+                            return $retries
+                                    ? RetryMiddleware::exponentialDelay($retries) / 2
+                                    : 0;
+                        },
+                        isset($args['stats']['retries'])
+                                ? (bool) $args['stats']['retries']
+                                : false
+                ),
+                'retry'
         );
     }
 
     /** @internal */
-    public static function _applyApiProvider($value, array &$args, HandlerList $list)
-    {
+    public static function _applyApiProvider($value, array &$args, HandlerList $list) {
         ClientResolver::_apply_api_provider($value, $args, $list);
         $args['parser'] = new Crc32ValidatingParser($args['parser']);
     }

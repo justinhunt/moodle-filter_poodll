@@ -10,16 +10,14 @@ use Guzzle\Service\Description\Parameter;
 /**
  * Location visitor used to serialize XML bodies
  */
-class XmlVisitor extends AbstractRequestVisitor
-{
+class XmlVisitor extends AbstractRequestVisitor {
     /** @var \SplObjectStorage Data object for persisting XML data */
     protected $data;
 
     /** @var bool Content-Type header added when XML is found */
     protected $contentType = 'application/xml';
 
-    public function __construct()
-    {
+    public function __construct() {
         $this->data = new \SplObjectStorage();
     }
 
@@ -30,25 +28,22 @@ class XmlVisitor extends AbstractRequestVisitor
      *
      * @return self
      */
-    public function setContentTypeHeader($header)
-    {
+    public function setContentTypeHeader($header) {
         $this->contentType = $header;
 
         return $this;
     }
 
-    public function visit(CommandInterface $command, RequestInterface $request, Parameter $param, $value)
-    {
+    public function visit(CommandInterface $command, RequestInterface $request, Parameter $param, $value) {
         $xml = isset($this->data[$command])
-            ? $this->data[$command]
-            : $this->createRootElement($param->getParent());
+                ? $this->data[$command]
+                : $this->createRootElement($param->getParent());
         $this->addXml($xml, $param, $value);
 
         $this->data[$command] = $xml;
     }
 
-    public function after(CommandInterface $command, RequestInterface $request)
-    {
+    public function after(CommandInterface $command, RequestInterface $request) {
         $xml = null;
 
         // If data was found that needs to be serialized, then do so
@@ -80,8 +75,7 @@ class XmlVisitor extends AbstractRequestVisitor
      *
      * @return \XMLWriter
      */
-    protected function createRootElement(Operation $operation)
-    {
+    protected function createRootElement(Operation $operation) {
         static $defaultRoot = array('name' => 'Request');
         // If no root element was specified, then just wrap the XML in 'Request'
         $root = $operation->getData('xmlRoot') ?: $defaultRoot;
@@ -97,7 +91,7 @@ class XmlVisitor extends AbstractRequestVisitor
             foreach ((array) $root['namespaces'] as $prefix => $uri) {
                 $nsLabel = 'xmlns';
                 if (!is_numeric($prefix)) {
-                    $nsLabel .= ':'.$prefix;
+                    $nsLabel .= ':' . $prefix;
                 }
                 $xmlWriter->writeAttribute($nsLabel, $uri);
             }
@@ -109,11 +103,10 @@ class XmlVisitor extends AbstractRequestVisitor
      * Recursively build the XML body
      *
      * @param \XMLWriter $xmlWriter XML to modify
-     * @param Parameter  $param     API Parameter
-     * @param mixed      $value     Value to add
+     * @param Parameter $param API Parameter
+     * @param mixed $value Value to add
      */
-    protected function addXml(\XMLWriter $xmlWriter, Parameter $param, $value)
-    {
+    protected function addXml(\XMLWriter $xmlWriter, Parameter $param, $value) {
         if ($value === null) {
             return;
         }
@@ -133,7 +126,7 @@ class XmlVisitor extends AbstractRequestVisitor
             }
             if ($param->getType() == 'array') {
                 $this->addXmlArray($xmlWriter, $param, $value);
-            } elseif ($param->getType() == 'object') {
+            } else if ($param->getType() == 'object') {
                 $this->addXmlObject($xmlWriter, $param, $value);
             }
             if (!$param->getData('xmlFlattened')) {
@@ -152,13 +145,12 @@ class XmlVisitor extends AbstractRequestVisitor
      * Write an attribute with namespace if used
      *
      * @param  \XMLWriter $xmlWriter XMLWriter instance
-     * @param  string     $prefix    Namespace prefix if any
-     * @param  string     $name      Attribute name
-     * @param  string     $namespace The uri of the namespace
-     * @param  string     $value     The attribute content
+     * @param  string $prefix Namespace prefix if any
+     * @param  string $name Attribute name
+     * @param  string $namespace The uri of the namespace
+     * @param  string $value The attribute content
      */
-    protected function writeAttribute($xmlWriter, $prefix, $name, $namespace, $value)
-    {
+    protected function writeAttribute($xmlWriter, $prefix, $name, $namespace, $value) {
         if (empty($namespace)) {
             $xmlWriter->writeAttribute($name, $value);
         } else {
@@ -170,13 +162,12 @@ class XmlVisitor extends AbstractRequestVisitor
      * Write an element with namespace if used
      *
      * @param  \XMLWriter $xmlWriter XML writer resource
-     * @param  string     $prefix    Namespace prefix if any
-     * @param  string     $name      Element name
-     * @param  string     $namespace The uri of the namespace
-     * @param  string     $value     The element content
+     * @param  string $prefix Namespace prefix if any
+     * @param  string $name Element name
+     * @param  string $namespace The uri of the namespace
+     * @param  string $value The element content
      */
-    protected function writeElement(\XMLWriter $xmlWriter, $prefix, $name, $namespace, $value)
-    {
+    protected function writeElement(\XMLWriter $xmlWriter, $prefix, $name, $namespace, $value) {
         $xmlWriter->startElementNS($prefix, $name, $namespace);
         if (strpbrk($value, '<>&')) {
             $xmlWriter->writeCData($value);
@@ -193,8 +184,7 @@ class XmlVisitor extends AbstractRequestVisitor
      *
      * @return \XMLWriter the writer resource
      */
-    protected function startDocument($encoding)
-    {
+    protected function startDocument($encoding) {
         $xmlWriter = new \XMLWriter();
         $xmlWriter->openMemory();
         $xmlWriter->startDocument('1.0', $encoding);
@@ -209,8 +199,7 @@ class XmlVisitor extends AbstractRequestVisitor
      *
      * @return \string the writer resource
      */
-    protected function finishDocument($xmlWriter)
-    {
+    protected function finishDocument($xmlWriter) {
         $xmlWriter->endDocument();
 
         return $xmlWriter->outputMemory();
@@ -219,8 +208,7 @@ class XmlVisitor extends AbstractRequestVisitor
     /**
      * Add an array to the XML
      */
-    protected function addXmlArray(\XMLWriter $xmlWriter, Parameter $param, &$value)
-    {
+    protected function addXmlArray(\XMLWriter $xmlWriter, Parameter $param, &$value) {
         if ($items = $param->getItems()) {
             foreach ($value as $v) {
                 $this->addXml($xmlWriter, $items, $v);
@@ -231,8 +219,7 @@ class XmlVisitor extends AbstractRequestVisitor
     /**
      * Add an object to the XML
      */
-    protected function addXmlObject(\XMLWriter $xmlWriter, Parameter $param, &$value)
-    {
+    protected function addXmlObject(\XMLWriter $xmlWriter, Parameter $param, &$value) {
         $noAttributes = array();
         // add values which have attributes
         foreach ($value as $name => $v) {

@@ -10,24 +10,21 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 /**
  * Adds, extracts, and persists cookies between HTTP requests
  */
-class CookiePlugin implements EventSubscriberInterface
-{
+class CookiePlugin implements EventSubscriberInterface {
     /** @var CookieJarInterface Cookie cookieJar used to hold cookies */
     protected $cookieJar;
 
     /**
      * @param CookieJarInterface $cookieJar Cookie jar used to hold cookies. Creates an ArrayCookieJar by default.
      */
-    public function __construct(CookieJarInterface $cookieJar = null)
-    {
+    public function __construct(CookieJarInterface $cookieJar = null) {
         $this->cookieJar = $cookieJar ?: new ArrayCookieJar();
     }
 
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array(
-            'request.before_send' => array('onRequestBeforeSend', 125),
-            'request.sent'        => array('onRequestSent', 125)
+                'request.before_send' => array('onRequestBeforeSend', 125),
+                'request.sent' => array('onRequestSent', 125)
         );
     }
 
@@ -36,8 +33,7 @@ class CookiePlugin implements EventSubscriberInterface
      *
      * @return CookieJarInterface
      */
-    public function getCookieJar()
-    {
+    public function getCookieJar() {
         return $this->cookieJar;
     }
 
@@ -46,8 +42,7 @@ class CookiePlugin implements EventSubscriberInterface
      *
      * @param Event $event
      */
-    public function onRequestBeforeSend(Event $event)
-    {
+    public function onRequestBeforeSend(Event $event) {
         $request = $event['request'];
         if (!$request->getParams()->get('cookies.disable')) {
             $request->removeHeader('Cookie');
@@ -63,8 +58,7 @@ class CookiePlugin implements EventSubscriberInterface
      *
      * @param Event $event
      */
-    public function onRequestSent(Event $event)
-    {
+    public function onRequestSent(Event $event) {
         $this->cookieJar->addCookiesFromResponse($event['response'], $event['request']);
     }
 }

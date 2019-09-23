@@ -24,8 +24,7 @@ use Guzzle\Service\Resource\ResourceIterator;
 /**
  * Iterate over a client command
  */
-class AwsResourceIterator extends ResourceIterator
-{
+class AwsResourceIterator extends ResourceIterator {
     /**
      * @var Model Result of a command
      */
@@ -37,8 +36,7 @@ class AwsResourceIterator extends ResourceIterator
      *
      * @return Model|null
      */
-    public function getLastResult()
-    {
+    public function getLastResult() {
         return $this->lastResult;
     }
 
@@ -48,8 +46,7 @@ class AwsResourceIterator extends ResourceIterator
      * process. It relies on configuration and extension to implement the operation-specific logic of handling results
      * and nextTokens. This method will loop until resources are acquired or there are no more iterations available.
      */
-    protected function sendRequest()
-    {
+    protected function sendRequest() {
         do {
             // Prepare the request including setting the next token
             $this->prepareRequest();
@@ -72,8 +69,7 @@ class AwsResourceIterator extends ResourceIterator
         return $resources;
     }
 
-    protected function prepareRequest()
-    {
+    protected function prepareRequest() {
         // Get the limit parameter key to set
         $limitKey = $this->get('limit_key');
         if ($limitKey && ($limit = $this->command->get($limitKey))) {
@@ -87,8 +83,7 @@ class AwsResourceIterator extends ResourceIterator
         }
     }
 
-    protected function handleResults(Model $result)
-    {
+    protected function handleResults(Model $result) {
         $results = array();
 
         // Get the result key that contains the results
@@ -99,8 +94,7 @@ class AwsResourceIterator extends ResourceIterator
         return $results;
     }
 
-    protected function applyNextToken()
-    {
+    protected function applyNextToken() {
         // Get the token parameter key to set
         if ($tokenParam = $this->get('input_token')) {
             // Set the next token. Works with multi-value tokens
@@ -111,7 +105,7 @@ class AwsResourceIterator extends ResourceIterator
                     }
                 } else {
                     throw new RuntimeException('The definition of the iterator\'s token parameter and the actual token '
-                        . 'value are not compatible.');
+                            . 'value are not compatible.');
                 }
             } else {
                 $this->command->set($tokenParam, $this->nextToken);
@@ -119,8 +113,7 @@ class AwsResourceIterator extends ResourceIterator
         }
     }
 
-    protected function determineNextToken(Model $result)
-    {
+    protected function determineNextToken(Model $result) {
         $this->nextToken = null;
 
         // If the value of "more_results" is true or there is no "more_results" to check, then try to get the next token
@@ -146,13 +139,12 @@ class AwsResourceIterator extends ResourceIterator
      * to access n-1 indexes (e.g., ImportExport, Kinesis). The n-1 logic only works for the known cases. We will switch
      * to a jmespath implementation in the future to cover all cases
      *
-     * @param Model  $result
+     * @param Model $result
      * @param string $key
      *
      * @return mixed|null
      */
-    protected function getValueFromResult(Model $result, $key)
-    {
+    protected function getValueFromResult(Model $result, $key) {
         // Special handling for keys that need to access n-1 indexes
         if (strpos($key, '#') !== false) {
             $keyParts = explode('#', $key, 2);

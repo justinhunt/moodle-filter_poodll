@@ -21,7 +21,6 @@ use Aws\Common\Enum;
 /**
  * Contains enumerable Event values
  */
-class Event extends Enum
-{
+class Event extends Enum {
     const REDUCED_REDUNDANCY_LOST_OBJECT = 's3:ReducedRedundancyLostObject';
 }

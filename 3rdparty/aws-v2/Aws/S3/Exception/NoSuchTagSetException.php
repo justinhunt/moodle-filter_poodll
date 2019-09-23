@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * There is no TagSet associated with the bucket.
  */
-class NoSuchTagSetException extends S3Exception {}
+class NoSuchTagSetException extends S3Exception {
+}

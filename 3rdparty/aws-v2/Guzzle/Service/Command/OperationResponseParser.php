@@ -14,8 +14,7 @@ use Guzzle\Service\Resource\Model;
 /**
  * Response parser that attempts to marshal responses into an associative array based on models in a service description
  */
-class OperationResponseParser extends DefaultResponseParser
-{
+class OperationResponseParser extends DefaultResponseParser {
     /** @var VisitorFlyweight $factory Visitor factory */
     protected $factory;
 
@@ -29,8 +28,7 @@ class OperationResponseParser extends DefaultResponseParser
      * @return self
      * @codeCoverageIgnore
      */
-    public static function getInstance()
-    {
+    public static function getInstance() {
         if (!static::$instance) {
             static::$instance = new static(VisitorFlyweight::getInstance());
         }
@@ -39,11 +37,10 @@ class OperationResponseParser extends DefaultResponseParser
     }
 
     /**
-     * @param VisitorFlyweight $factory        Factory to use when creating visitors
-     * @param bool             $schemaInModels Set to true to inject schemas into models
+     * @param VisitorFlyweight $factory Factory to use when creating visitors
+     * @param bool $schemaInModels Set to true to inject schemas into models
      */
-    public function __construct(VisitorFlyweight $factory, $schemaInModels = false)
-    {
+    public function __construct(VisitorFlyweight $factory, $schemaInModels = false) {
         $this->factory = $factory;
         $this->schemaInModels = $schemaInModels;
     }
@@ -51,34 +48,32 @@ class OperationResponseParser extends DefaultResponseParser
     /**
      * Add a location visitor to the command
      *
-     * @param string                   $location Location to associate with the visitor
-     * @param ResponseVisitorInterface $visitor  Visitor to attach
+     * @param string $location Location to associate with the visitor
+     * @param ResponseVisitorInterface $visitor Visitor to attach
      *
      * @return self
      */
-    public function addVisitor($location, ResponseVisitorInterface $visitor)
-    {
+    public function addVisitor($location, ResponseVisitorInterface $visitor) {
         $this->factory->addResponseVisitor($location, $visitor);
 
         return $this;
     }
 
-    protected function handleParsing(CommandInterface $command, Response $response, $contentType)
-    {
+    protected function handleParsing(CommandInterface $command, Response $response, $contentType) {
         $operation = $command->getOperation();
         $type = $operation->getResponseType();
         $model = null;
 
         if ($type == OperationInterface::TYPE_MODEL) {
             $model = $operation->getServiceDescription()->getModel($operation->getResponseClass());
-        } elseif ($type == OperationInterface::TYPE_CLASS) {
+        } else if ($type == OperationInterface::TYPE_CLASS) {
             return $this->parseClass($command);
         }
 
         if (!$model) {
             // Return basic processing if the responseType is not model or the model cannot be found
             return parent::handleParsing($command, $response, $contentType);
-        } elseif ($command[AbstractCommand::RESPONSE_PROCESSING] != AbstractCommand::TYPE_MODEL) {
+        } else if ($command[AbstractCommand::RESPONSE_PROCESSING] != AbstractCommand::TYPE_MODEL) {
             // Returns a model with no visiting if the command response processing is not model
             return new Model(parent::handleParsing($command, $response, $contentType));
         } else {
@@ -95,8 +90,7 @@ class OperationResponseParser extends DefaultResponseParser
      * @return mixed
      * @throws ResponseClassException
      */
-    protected function parseClass(CommandInterface $command)
-    {
+    protected function parseClass(CommandInterface $command) {
         // Emit the operation.parse_class event. If a listener injects a 'result' property, then that will be the result
         $event = new CreateResponseClassEvent(array('command' => $command));
         $command->getClient()->getEventDispatcher()->dispatch('command.parse_response', $event);
@@ -115,14 +109,13 @@ class OperationResponseParser extends DefaultResponseParser
     /**
      * Perform transformations on the result array
      *
-     * @param Parameter        $model    Model that defines the structure
-     * @param CommandInterface $command  Command that performed the operation
-     * @param Response         $response Response received
+     * @param Parameter $model Model that defines the structure
+     * @param CommandInterface $command Command that performed the operation
+     * @param Response $response Response received
      *
      * @return array Returns the array of result data
      */
-    protected function visitResult(Parameter $model, CommandInterface $command, Response $response)
-    {
+    protected function visitResult(Parameter $model, CommandInterface $command, Response $response) {
         $foundVisitors = $result = $knownProps = array();
         $props = $model->getProperties();
 
@@ -163,12 +156,12 @@ class OperationResponseParser extends DefaultResponseParser
     }
 
     protected function visitAdditionalProperties(
-        Parameter $model,
-        CommandInterface $command,
-        Response $response,
-        Parameter $additional,
-        &$result,
-        array &$foundVisitors
+            Parameter $model,
+            CommandInterface $command,
+            Response $response,
+            Parameter $additional,
+            &$result,
+            array &$foundVisitors
     ) {
         // Only visit when a location is specified
         if ($location = $additional->getLocation()) {

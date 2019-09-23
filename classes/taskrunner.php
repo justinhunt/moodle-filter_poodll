@@ -18,7 +18,7 @@ namespace filter_poodll;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir.'/cronlib.php');
+require_once($CFG->libdir . '/cronlib.php');
 
 /**
  *
@@ -29,23 +29,19 @@ require_once($CFG->libdir.'/cronlib.php');
  * @copyright  2014 Justin Hunt
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class taskrunner
-{
-	protected $task_records=array();
-    protected $taskstart=0;
+class taskrunner {
+    protected $task_records = array();
+    protected $taskstart = 0;
 
-
-	 /**
+    /**
      * Constructor
      */
-    public function __construct($taskclassname, $timestart=0)
-    {
+    public function __construct($taskclassname, $timestart = 0) {
         global $CFG;
-        $this->load_all_tasks($taskclassname,$timestart);
+        $this->load_all_tasks($taskclassname, $timestart);
     }
 
-    function load_all_tasks($taskclassname, $timestart=false)
-    {
+    function load_all_tasks($taskclassname, $timestart = false) {
         global $CFG, $DB;
         if ($timestart) {
             $where = "(nextruntime IS NULL OR nextruntime < :timestart1) AND classname = :classname";
@@ -59,11 +55,11 @@ class taskrunner
         if ($records) {
             $this->task_records = $records;
         }
-       /* mtrace("Found ". count($this->task_records) . " eligible to run $taskclassname task records \n\n"); */
-        $this->timestart=$timestart;
+        /* mtrace("Found ". count($this->task_records) . " eligible to run $taskclassname task records \n\n"); */
+        $this->timestart = $timestart;
     }
 
-    function fetch_task_from_record($record){
+    function fetch_task_from_record($record) {
         global $CFG, $DB;
 
         $cronlockfactory = \core\lock\lock_config::get_lock_factory('cron');
@@ -100,25 +96,25 @@ class taskrunner
             }
             return $task;
         }
-         $cronlock->release();
+        $cronlock->release();
     }
 
     /**
      *Run all the move tasks outstanding
      */
-    function get_task_by_filename($filename){
+    function get_task_by_filename($filename) {
 
         // Run all adhoc tasks.
-        foreach($this->task_records as $record){
-            $thetask=$this->fetch_task_from_record($record);
-            if($thetask){
+        foreach ($this->task_records as $record) {
+            $thetask = $this->fetch_task_from_record($record);
+            if ($thetask) {
                 //mtrace('filename: ' . $thetask->get_custom_data()->filename . "\n\n");
-                if($thetask->get_custom_data()->filename==$filename){
+                if ($thetask->get_custom_data()->filename == $filename) {
                     return $thetask;
-                }else{
+                } else {
                     $this->adhoc_task_release($thetask);
                 }//end of if classname
-            }else{
+            } else {
                 continue;
             }//end of if thetask
         }//end of foreach
@@ -128,19 +124,21 @@ class taskrunner
     /**
      * Execute the move task with the given filename
      */
-    function run_task_by_filename($filename){
+    function run_task_by_filename($filename) {
         $task = $this->get_task_by_filename($filename);
-        if($task){$this->run_task($task);}
+        if ($task) {
+            $this->run_task($task);
+        }
     }
 
     /**
-    *Run all the tasks outstanding
-    */
-    function run_all_tasks(){
+     *Run all the tasks outstanding
+     */
+    function run_all_tasks() {
 
-        foreach($this->task_records as $record){
+        foreach ($this->task_records as $record) {
             //if the task cache has not been updated since we began, execute
-            if(!\core\task\manager::static_caches_cleared_since($this->timestart)) {
+            if (!\core\task\manager::static_caches_cleared_since($this->timestart)) {
                 $task = $this->fetch_task_from_record($record);
                 if ($task) {
                     $this->run_task($task);
@@ -167,7 +165,7 @@ class taskrunner
             exit(1);
         }
 
-        require_once($CFG->libdir.'/adminlib.php');
+        require_once($CFG->libdir . '/adminlib.php');
 
         if (!empty($CFG->showcronsql)) {
             $DB->set_debug(true);
@@ -182,13 +180,13 @@ class taskrunner
             $starttime = microtime();
 
             // Start output log
-            $timenow  = time();
-            mtrace("Server Time: ".date('r', $timenow)."\n\n");
+            $timenow = time();
+            mtrace("Server Time: " . date('r', $timenow) . "\n\n");
             mtrace("Poodll task runner Execute adhoc task: " . get_class($thetask));
             cron_trace_time_and_memory();
             $predbqueries = null;
             $predbqueries = $DB->perf_get_queries();
-            $pretime      = microtime(1);
+            $pretime = microtime(1);
 
             get_mailer('buffer');
             $thetask->execute();
@@ -227,7 +225,7 @@ class taskrunner
         gc_collect_cycles();
         mtrace('Task runner completed at ' . date('H:i:s') . '. Memory used ' . display_size(memory_get_usage()) . '.');
         $difftime = microtime_diff($starttime, microtime());
-        mtrace("Execution took ".$difftime." seconds");
+        mtrace("Execution took " . $difftime . " seconds");
     }
 
     /**
@@ -235,7 +233,7 @@ class taskrunner
      *
      * @param \core\task\adhoc_task $task
      */
-   function adhoc_task_release($task) {
+    function adhoc_task_release($task) {
         global $DB;
         if ($task->is_blocking()) {
             $task->get_cron_lock()->release();

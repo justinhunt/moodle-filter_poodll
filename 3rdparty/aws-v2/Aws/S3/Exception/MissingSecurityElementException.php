@@ -19,4 +19,5 @@ namespace Aws\S3\Exception;
 /**
  * The SOAP 1.1 request is missing a security element.
  */
-class MissingSecurityElementException extends S3Exception {}
+class MissingSecurityElementException extends S3Exception {
+}

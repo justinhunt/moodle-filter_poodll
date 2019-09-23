@@ -11,8 +11,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * header (if set) of an HTTP response.  An exception is thrown if the
  * calculated MD5 does not match the expected MD5.
  */
-class Md5ValidatorPlugin implements EventSubscriberInterface
-{
+class Md5ValidatorPlugin implements EventSubscriberInterface {
     /** @var int Maximum Content-Length in bytes to validate */
     protected $contentLengthCutoff;
 
@@ -20,7 +19,7 @@ class Md5ValidatorPlugin implements EventSubscriberInterface
     protected $contentEncoded;
 
     /**
-     * @param bool     $contentEncoded      Calculating the MD5 hash of an entity body where a Content-Encoding was
+     * @param bool $contentEncoded Calculating the MD5 hash of an entity body where a Content-Encoding was
      *                                      applied is a more expensive comparison because the entity body will need to
      *                                      be compressed in order to get the correct hash.  Set to FALSE to not
      *                                      validate the MD5 hash of an entity body with an applied Content-Encoding.
@@ -28,14 +27,12 @@ class Md5ValidatorPlugin implements EventSubscriberInterface
      *                                      response with a Content-Length greater than this value will not be validated
      *                                      because it will be deemed too memory intensive.
      */
-    public function __construct($contentEncoded = true, $contentLengthCutoff = false)
-    {
+    public function __construct($contentEncoded = true, $contentLengthCutoff = false) {
         $this->contentLengthCutoff = $contentLengthCutoff;
         $this->contentEncoded = $contentEncoded;
     }
 
-    public static function getSubscribedEvents()
-    {
+    public static function getSubscribedEvents() {
         return array('request.complete' => array('onRequestComplete', 255));
     }
 
@@ -43,8 +40,7 @@ class Md5ValidatorPlugin implements EventSubscriberInterface
      * {@inheritdoc}
      * @throws UnexpectedValueException
      */
-    public function onRequestComplete(Event $event)
-    {
+    public function onRequestComplete(Event $event) {
         $response = $event['response'];
 
         if (!$contentMd5 = $response->getContentMd5()) {
@@ -66,11 +62,11 @@ class Md5ValidatorPlugin implements EventSubscriberInterface
 
         if (!$contentEncoding) {
             $hash = $response->getBody()->getContentMd5();
-        } elseif ($contentEncoding == 'gzip') {
+        } else if ($contentEncoding == 'gzip') {
             $response->getBody()->compress('zlib.deflate');
             $hash = $response->getBody()->getContentMd5();
             $response->getBody()->uncompress();
-        } elseif ($contentEncoding == 'compress') {
+        } else if ($contentEncoding == 'compress') {
             $response->getBody()->compress('bzip2.compress');
             $hash = $response->getBody()->getContentMd5();
             $response->getBody()->uncompress();
@@ -80,8 +76,8 @@ class Md5ValidatorPlugin implements EventSubscriberInterface
 
         if ($contentMd5 !== $hash) {
             throw new UnexpectedValueException(
-                "The response entity body may have been modified over the wire.  The Content-MD5 "
-                . "received ({$contentMd5}) did not match the calculated MD5 hash ({$hash})."
+                    "The response entity body may have been modified over the wire.  The Content-MD5 "
+                    . "received ({$contentMd5}) did not match the calculated MD5 hash ({$hash})."
             );
         }
     }

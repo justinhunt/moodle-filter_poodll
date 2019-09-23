@@ -1,16 +1,15 @@
 /* jshint ignore:start */
 define(['jquery',
-    'core/log'],
-    function($, log) {
+        'core/log'],
+    function ($, log) {
 
-    "use strict"; // jshint ;_;
+        "use strict"; // jshint ;_;
 
-    log.debug('PoodLL Whammy: initialising');
+        log.debug('PoodLL Whammy: initialising');
 
 
-
-        var WhammyVideo ={};
-        WhammyVideo.init = function(duration, quality) {
+        var WhammyVideo = {};
+        WhammyVideo.init = function (duration, quality) {
             this.frames = [];
             if (!duration) {
                 duration = 1;
@@ -29,7 +28,7 @@ define(['jquery',
          * @param {string} frame - Canvas || Context || image/webp
          * @param {number} duration - Stick a duration (in milliseconds)
          */
-        WhammyVideo.add = function(frame, duration) {
+        WhammyVideo.add = function (frame, duration) {
             if ('canvas' in frame) { //CanvasRenderingContext2D
                 frame = frame.canvas;
             }
@@ -177,7 +176,7 @@ define(['jquery',
                 return [{
                     'data': clusterTimecode,
                     'id': 0xe7 // Timecode
-                }].concat(clusterFrames.map(function(webp) {
+                }].concat(clusterFrames.map(function (webp) {
                     var block = makeSimpleBlock({
                         discardable: 0,
                         frame: webp.data.slice(4),
@@ -229,7 +228,7 @@ define(['jquery',
             }
 
             function strToBuffer(str) {
-                return new Uint8Array(str.split('').map(function(e) {
+                return new Uint8Array(str.split('').map(function (e) {
                     return e.charCodeAt(0);
                 }));
             }
@@ -310,7 +309,7 @@ define(['jquery',
                     throw 'TrackNumber > 127 not supported';
                 }
 
-                var out = [data.trackNum | 0x80, data.timecode >> 8, data.timecode & 0xff, flags].map(function(e) {
+                var out = [data.trackNum | 0x80, data.timecode >> 8, data.timecode & 0xff, flags].map(function (e) {
                     return String.fromCharCode(e);
                 }).join('') + data.frame;
 
@@ -341,7 +340,7 @@ define(['jquery',
             }
 
             function getStrLength(string, offset) {
-                return parseInt(string.substr(offset + 4, 4).split('').map(function(i) {
+                return parseInt(string.substr(offset + 4, 4).split('').map(function (i) {
                     var unpadded = i.charCodeAt(0).toString(2);
                     return (new Array(8 - unpadded.length + 1)).join('0') + unpadded;
                 }).join(''), 2);
@@ -369,12 +368,12 @@ define(['jquery',
 
             function doubleToString(num) {
                 return [].slice.call(
-                    new Uint8Array((new Float64Array([num])).buffer), 0).map(function(e) {
+                    new Uint8Array((new Float64Array([num])).buffer), 0).map(function (e) {
                     return String.fromCharCode(e);
                 }).reverse().join('');
             }
 
-            var webm = new ArrayToWebM(frames.map(function(frame) {
+            var webm = new ArrayToWebM(frames.map(function (frame) {
                 var webp = parseWebP(parseRIFF(atob(frame.image.slice(23))));
                 webp.duration = frame.duration;
                 return webp;
@@ -394,10 +393,10 @@ define(['jquery',
      *    // blob.size - blob.type
      * });
          */
-        WhammyVideo.compile = function(callback) {
+        WhammyVideo.compile = function (callback) {
             var webWorker = processInWebWorker(whammyInWebWorker);
 
-            webWorker.onmessage = function(event) {
+            webWorker.onmessage = function (event) {
                 if (event.data.error) {
                     console.error(event.data.error);
                     return;
@@ -421,4 +420,4 @@ define(['jquery',
             Video: WhammyVideo
         };
 
-});// total end
+    });// total end

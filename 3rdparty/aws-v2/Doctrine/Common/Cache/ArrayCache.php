@@ -30,8 +30,7 @@ namespace Doctrine\Common\Cache;
  * @author Roman Borschel <roman@code-factory.org>
  * @author David Abdemoulaie <dave@hobodave.com>
  */
-class ArrayCache extends CacheProvider
-{
+class ArrayCache extends CacheProvider {
     /**
      * @var array[] $data each element being a tuple of [$data, $expiration], where the expiration is int|bool
      */
@@ -55,17 +54,15 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    public function __construct()
-    {
+    public function __construct() {
         $this->upTime = time();
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function doFetch($id)
-    {
-        if (! $this->doContains($id)) {
+    protected function doFetch($id) {
+        if (!$this->doContains($id)) {
             $this->missesCount += 1;
 
             return false;
@@ -79,9 +76,8 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doContains($id)
-    {
-        if (! isset($this->data[$id])) {
+    protected function doContains($id) {
+        if (!isset($this->data[$id])) {
             return false;
         }
 
@@ -99,8 +95,7 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doSave($id, $data, $lifeTime = 0)
-    {
+    protected function doSave($id, $data, $lifeTime = 0) {
         $this->data[$id] = [$data, $lifeTime ? time() + $lifeTime : false];
 
         return true;
@@ -109,8 +104,7 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doDelete($id)
-    {
+    protected function doDelete($id) {
         unset($this->data[$id]);
 
         return true;
@@ -119,8 +113,7 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doFlush()
-    {
+    protected function doFlush() {
         $this->data = [];
 
         return true;
@@ -129,14 +122,13 @@ class ArrayCache extends CacheProvider
     /**
      * {@inheritdoc}
      */
-    protected function doGetStats()
-    {
+    protected function doGetStats() {
         return [
-            Cache::STATS_HITS             => $this->hitsCount,
-            Cache::STATS_MISSES           => $this->missesCount,
-            Cache::STATS_UPTIME           => $this->upTime,
-            Cache::STATS_MEMORY_USAGE     => null,
-            Cache::STATS_MEMORY_AVAILABLE => null,
+                Cache::STATS_HITS => $this->hitsCount,
+                Cache::STATS_MISSES => $this->missesCount,
+                Cache::STATS_UPTIME => $this->upTime,
+                Cache::STATS_MEMORY_USAGE => null,
+                Cache::STATS_MEMORY_AVAILABLE => null,
         ];
     }
 }

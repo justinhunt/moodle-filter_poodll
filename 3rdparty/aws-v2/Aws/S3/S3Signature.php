@@ -23,46 +23,45 @@ use Guzzle\Http\Url;
 
 /**
  * Default Amazon S3 signature implementation
+ *
  * @link http://docs.aws.amazon.com/AmazonS3/latest/dev/RESTAuthentication.html
  */
-class S3Signature implements S3SignatureInterface
-{
+class S3Signature implements S3SignatureInterface {
     /**
      * @var array Query string values that must be signed
      */
-    protected $signableQueryString = array (
-        'acl',
-        'cors',
-        'delete',
-        'lifecycle',
-        'location',
-        'logging',
-        'notification',
-        'partNumber',
-        'policy',
-        'requestPayment',
-        'response-cache-control',
-        'response-content-disposition',
-        'response-content-encoding',
-        'response-content-language',
-        'response-content-type',
-        'response-expires',
-        'restore',
-        'tagging',
-        'torrent',
-        'uploadId',
-        'uploads',
-        'versionId',
-        'versioning',
-        'versions',
-        'website',
+    protected $signableQueryString = array(
+            'acl',
+            'cors',
+            'delete',
+            'lifecycle',
+            'location',
+            'logging',
+            'notification',
+            'partNumber',
+            'policy',
+            'requestPayment',
+            'response-cache-control',
+            'response-content-disposition',
+            'response-content-encoding',
+            'response-content-language',
+            'response-content-type',
+            'response-expires',
+            'restore',
+            'tagging',
+            'torrent',
+            'uploadId',
+            'uploads',
+            'versionId',
+            'versioning',
+            'versions',
+            'website',
     );
 
     /** @var array Sorted headers that must be signed */
     private $signableHeaders = array('Content-MD5', 'Content-Type');
 
-    public function signRequest(RequestInterface $request, CredentialsInterface $credentials)
-    {
+    public function signRequest(RequestInterface $request, CredentialsInterface $credentials) {
         // Ensure that the signable query string parameters are sorted
         sort($this->signableQueryString);
 
@@ -78,19 +77,19 @@ class S3Signature implements S3SignatureInterface
         $request->getParams()->set('aws.string_to_sign', $stringToSign);
 
         $request->setHeader(
-            'Authorization',
-            'AWS ' . $credentials->getAccessKeyId() . ':' . $this->signString($stringToSign, $credentials)
+                'Authorization',
+                'AWS ' . $credentials->getAccessKeyId() . ':' . $this->signString($stringToSign, $credentials)
         );
     }
 
     public function createPresignedUrl(
-        RequestInterface $request,
-        CredentialsInterface $credentials,
-        $expires
+            RequestInterface $request,
+            CredentialsInterface $credentials,
+            $expires
     ) {
         if ($expires instanceof \DateTime) {
             $expires = $expires->getTimestamp();
-        } elseif (!is_numeric($expires)) {
+        } else if (!is_numeric($expires)) {
             $expires = strtotime($expires);
         }
 
@@ -110,12 +109,12 @@ class S3Signature implements S3SignatureInterface
 
         // Set query params required for pre-signed URLs
         $request->getQuery()
-            ->set('AWSAccessKeyId', $credentials->getAccessKeyId())
-            ->set('Expires', $expires)
-            ->set('Signature', $this->signString(
-                $this->createCanonicalizedString($request, $expires),
-                $credentials
-            ));
+                ->set('AWSAccessKeyId', $credentials->getAccessKeyId())
+                ->set('Expires', $expires)
+                ->set('Signature', $this->signString(
+                        $this->createCanonicalizedString($request, $expires),
+                        $credentials
+                ));
 
         // Move X-Amz-* headers to the query string
         foreach ($request->getHeaders() as $name => $header) {
@@ -129,13 +128,11 @@ class S3Signature implements S3SignatureInterface
         return $request->getUrl();
     }
 
-    public function signString($string, CredentialsInterface $credentials)
-    {
+    public function signString($string, CredentialsInterface $credentials) {
         return base64_encode(hash_hmac('sha1', $string, $credentials->getSecretKey(), true));
     }
 
-    public function createCanonicalizedString(RequestInterface $request, $expires = null)
-    {
+    public function createCanonicalizedString(RequestInterface $request, $expires = null) {
         $buffer = $request->getMethod() . "\n";
 
         // Add the interesting headers
@@ -147,8 +144,8 @@ class S3Signature implements S3SignatureInterface
         $date = $expires ?: (string) $request->getHeader('date');
 
         $buffer .= "{$date}\n"
-            . $this->createCanonicalizedAmzHeaders($request)
-            . $this->createCanonicalizedResource($request);
+                . $this->createCanonicalizedAmzHeaders($request)
+                . $this->createCanonicalizedResource($request);
 
         return $buffer;
     }
@@ -160,8 +157,7 @@ class S3Signature implements S3SignatureInterface
      *
      * @return string Returns canonicalized AMZ headers.
      */
-    private function createCanonicalizedAmzHeaders(RequestInterface $request)
-    {
+    private function createCanonicalizedAmzHeaders(RequestInterface $request) {
         $headers = array();
         foreach ($request->getHeaders() as $name => $header) {
             $name = strtolower($name);
@@ -189,8 +185,7 @@ class S3Signature implements S3SignatureInterface
      *
      * @return string
      */
-    private function createCanonicalizedResource(RequestInterface $request)
-    {
+    private function createCanonicalizedResource(RequestInterface $request) {
         $buffer = $request->getParams()->get('s3.resource');
         // When sending a raw HTTP request (e.g. $client->get())
         if (null === $buffer) {
@@ -217,9 +212,9 @@ class S3Signature implements S3SignatureInterface
                 $buffer .= $key;
                 // Don't add values for empty sub-resources
                 if ($value !== '' &&
-                    $value !== false &&
-                    $value !== null &&
-                    $value !== QueryString::BLANK
+                        $value !== false &&
+                        $value !== null &&
+                        $value !== QueryString::BLANK
                 ) {
                     $buffer .= "={$value}";
                 }
@@ -236,8 +231,7 @@ class S3Signature implements S3SignatureInterface
      *
      * @return string
      */
-    private function parseBucketName(RequestInterface $request)
-    {
+    private function parseBucketName(RequestInterface $request) {
         $baseUrl = Url::factory($request->getClient()->getBaseUrl());
         $baseHost = $baseUrl->getHost();
         $host = $request->getHost();
