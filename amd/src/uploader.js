@@ -342,6 +342,9 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
 
                 uploader.upskin.deactivateProgressSession();
 
+                //deactivate premature leaving
+                $(window).off('beforeunload', this.preventPrematureLeaving);
+
                 if (xhr.status == 200) {
                     var filename = uploader.config.filename;
                     if (!filename) {
@@ -378,6 +381,10 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
 
         },
 
+        preventPrematureLeaving: function(){
+            return M.util.get_string('recui_waitwaitstilluploading', 'filter_poodll');
+        },
+
         // upload Media file to wherever
         uploadFile: function (filedata, sourcemimetype) {
 
@@ -398,6 +405,9 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
 
             //Handle UI display of this upload
             this.upskin.initProgressSession(xhr);
+
+            //Add a page unload check ..
+            $(window).on('beforeunload', this.preventPrematureLeaving);
 
             //alert user that we are now uploading
             this.upskin.showMessage(M.util.get_string('recui_uploading', 'filter_poodll'), 'recui_uploading');
