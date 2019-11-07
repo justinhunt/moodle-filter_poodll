@@ -109,7 +109,9 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
             var ip = this.fetch_instanceprops();
             ip.controlbar.status.html(ip.timer.fetch_display_time());
             if (ip.timer.seconds == 0 && ip.timer.initseconds > 0) {
-                ip.controlbar.stoprecbutton.click();
+                if (ip.controlbar.startbutton.hasClass('poodll_in_progress')) {
+                  ip.controlbar.startbutton.click();
+                }
             }
         },
 
