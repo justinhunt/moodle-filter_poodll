@@ -127,9 +127,9 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             //forever fail this task
             $this->do_forever_fail($errorstring, $trace);
 
-            //if its greater than 20 mins we let Moodle do its delayed retry thing
+            //if its greater than 20 mins we do a delayed retry thing
         } else if ($diffInSeconds > (MINSECS * 20)) {
-            $this->do_retry_delayed($errorstring, $trace);
+            $this->do_retry($errorstring, $trace, $cd,(MINSECS * 20));
 
         } else {
             $errorstring .= ' :will retry';
@@ -138,27 +138,21 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             $this->send_debug_data($errorcode,
                     $errorstring, $userid, $contextid);
 
-            //register a retry
-            $this->do_retry_soon($errorstring, $trace, $cd);
-
-            //previously we threw an error to force the retry
-            // throw new \file_exception('s3file', $errorstring);
+            //register a retry soon (30 seconds)
+            $this->do_retry($errorstring, $trace, $cd, 30);
 
         }//end of if/else
     }//end of function handle_S3_error
 
-    protected function do_retry_soon($reason, $trace, $customdata) {
-        $trace->output($reason . ": will try again next cron ");
+    protected function do_retry($reason, $trace, $customdata, $delay) {
+        $trace->output($reason . ": will try again next cron after $delay seconds");
         $s3_task = new \filter_poodll\task\adhoc_s3_move();
         $s3_task->set_component('filter_poodll');
         $s3_task->set_custom_data($customdata);
+        //if we do not set the next run time it can extend the current cron job indef with a recurring task
+        $s3_task->set_next_run_time(time()+$delay);
         // queue it
         \core\task\manager::queue_adhoc_task($s3_task);
-    }
-
-    protected function do_retry_delayed($reason, $trace) {
-        $trace->output($reason . ": will retry after a delay ");
-        throw new \file_exception('retrievefileproblem', 'could not fetch file.');
     }
 
     protected function do_forever_fail($reason, $trace) {
