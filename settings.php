@@ -71,7 +71,7 @@ if (is_siteadmin()) {
 
     //Widgets Settings: to show in poodll widgets 
     $widget_settings = new admin_settingpage('filter_poodll_widgets', get_string('widgetsettings', 'filter_poodll'));
-    $widget_items = \filter_poodll\settingstools::fetch_widget_items($conf);
+    $widget_items = \filter_poodll\settingstools::fetch_widget_items();
     foreach ($widget_items as $widget_item) {
         $widget_settings->add($widget_item);
     }
