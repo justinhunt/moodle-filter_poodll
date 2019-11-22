@@ -32,7 +32,7 @@ function xmldb_filter_poodll_install() {
     $forinstall = array('fff', 'flowplayer', 'mediaelementvideo', 'videojs', 'nativevideo', 'audiojs_shim', 'mediaelementaudio',
             'nativeaudio', 'youtubeplayer', 'youtube','onceplayer', 'twiceaudioplayer','interactivetranscriptaudio','interactivetranscriptvideo',
             'tabs', 'tabitem', 'accordian', 'accordianitem',
-            'Button-Maker','countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','speechcards','tapwordtohear',
+            'Button-Maker','countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards','tapwordtohear',
             'textblockreader','tta');
     $templateindex = 0;
     foreach ($presets as $preset) {
