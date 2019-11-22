@@ -33,7 +33,7 @@ function xmldb_filter_poodll_install() {
             'nativeaudio', 'youtubeplayer', 'youtube','onceplayer', 'twiceaudioplayer','interactivetranscriptaudio','interactivetranscriptvideo',
             'tabs', 'tabitem', 'accordian', 'accordianitem',
             'Button-Maker','countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards','tapwordtohear',
-            'textblockreader','tta');
+            'textblockreader','tta','soundboard');
     $templateindex = 0;
     foreach ($presets as $preset) {
         if (in_array($preset['key'], $forinstall)) {
