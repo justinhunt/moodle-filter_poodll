@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define([], function () {
+define(['core/config'], function () {
     window.requirejs.config({
         paths: {
             "db-jquery": M.cfg.wwwroot + '/filter/poodll/3rdparty/jquery/jquery-1.12.4.min',
