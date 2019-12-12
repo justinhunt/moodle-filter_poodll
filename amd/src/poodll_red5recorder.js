@@ -1,5 +1,5 @@
 /* jshint ignore:start */
-define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader', 'filter_poodll/lzflash'], function ($, log, utils, uploader, lz) {
+define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/uploader', 'filter_poodll/lzloader'], function ($, log, utils, uploader, lz) {
 
     "use strict"; // jshint ;_;
 
