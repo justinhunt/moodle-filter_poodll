@@ -194,6 +194,10 @@ class filter_poodll_renderer extends plugin_renderer_base {
                 'recui_cancelsnapshot',
                 'recui_pushtospeak',
                 'recui_waitwaitstilluploading',
+                'recui_upload',
+                'recui_testmic',
+                'recui_recordagain',
+                'recui_readytorecord',
             //media errors
                 'recui_mediaaborterror',
                 'recui_medianotallowederror',
