@@ -437,7 +437,10 @@ class awstools {
     }
 
     function stage_remote_process_job($host, $mediatype, $appid, $s3path, $s3outfilename,
-            $transcode, $transcoder, $transcribe, $subtitle, $language, $vocab, $notificationurl, $sourcemimetype) {
+            $transcode, $transcoder, $transcribe, $subtitle, $language, $vocab, $notificationurl, $sourcemimetype,$owner='poodll' ) {
+
+        global $USER;
+
         $dbclient = $this->fetch_dynamoDBClient();
         $marshaler = new Marshaler();
         $tablename = 'poodll_jobs';
@@ -445,6 +448,8 @@ class awstools {
         $itemarray['host'] = $host;
         $itemarray['filename'] = $s3outfilename;
         $itemarray['appid'] = $appid;
+        $itemarray['owner'] = $owner;
+        $itemarray['clientid'] = $USER->username;
         $itemarray['transcode'] = $transcode ? 'yes' : 'no';
         $itemarray['transcoder'] = $transcoder;
         if ($transcribe) {
