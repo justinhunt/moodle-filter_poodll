@@ -124,6 +124,21 @@ class awstools {
                 $this->preset_mp3 = "1498353323686-ql5apg";
                 break;
 
+            case self::REGION_APSE1:
+                $this->pipeline_video = '1580381783238-vnfloa';
+                $this->pipeline_audio = '1580381828495-ogbn8a';
+                $this->preset_mp4 = "1580381885190-ccobzi";
+                $this->preset_mp3 = "1580381920554-zv7v5b";
+                break;
+
+            case self::REGION_APS1:
+                $this->pipeline_video = '1580374511824-o6i0ft';
+                $this->pipeline_audio = '1580374593293-ydsqvi';
+                $this->preset_mp4 = "1580381534804-v6ew2u";
+                $this->preset_mp3 = "1580381692821-gq8yc7";
+                break;
+
+
             case self::REGION_USE1:
             default:
                 $this->pipeline_video = '1498352710890-ybul2c';
@@ -238,6 +253,12 @@ class awstools {
                 break;
             case 'london':
                 $ret = self::REGION_EUW2;
+                break;
+            case 'singapore':
+                $ret = self::REGION_APSE1;
+                break;
+            case 'mumbai':
+                $ret = self::REGION_APS1;
                 break;
             case 'tokyo':
             default:
