@@ -5,6 +5,7 @@ Version 3.1.28 (Build 2020040500)
 -added singapore and mumbai regions for cloudpoodll
 -fixed cloudpoodlltoken to be callable from template JS
 -replaced interactivetranscriptaudio and interactivetranscriptvideo with superinteractiveaudio and superinteractivevideo
+-replaced TTS templates with cloud poodll ones for new users
 
 Version 3.1.25 (Build 2019121200)
 -fixed lightbox2 template and popover template on classic theme (M3.8)

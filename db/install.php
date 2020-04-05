@@ -32,8 +32,8 @@ function xmldb_filter_poodll_install() {
     $forinstall = array('fff', 'flowplayer', 'mediaelementvideo', 'videojs', 'nativevideo', 'audiojs_shim', 'mediaelementaudio',
             'nativeaudio', 'youtubeplayer', 'youtube','onceplayer', 'twiceaudioplayer','superinteractiveaudio','superinteractivevideo',
             'tabs', 'tabitem', 'accordian', 'accordianitem',
-            'Button-Maker','countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards','tapwordtohear',
-            'textblockreader','tta','soundboard');
+            'Button-Maker','countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards','tapwordtohearcloud',
+            'textblockreadercloud','ttacloud','soundboardcloud');
     $templateindex = 0;
     foreach ($presets as $preset) {
         if (in_array($preset['key'], $forinstall)) {
