@@ -521,6 +521,7 @@ class awstools {
     function fetch_pollyspeech($text, $texttype = "text", $voice = "Justin") {
         $params = $this->make_pollyparams($text, $texttype, $voice);
         $pollyclient = $this->fetch_pollyclient();
+      //  $preSignedURL = $pollyclient->createSynthesizeSpeechPreSignedUrl($params);
         return $pollyclient->synthesizeSpeech($params);
     }
 

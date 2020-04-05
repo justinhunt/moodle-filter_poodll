@@ -198,6 +198,7 @@ class filter_poodll_renderer extends plugin_renderer_base {
                 'recui_testmic',
                 'recui_recordagain',
                 'recui_readytorecord',
+                'recui_clicktofinish',
             //media errors
                 'recui_mediaaborterror',
                 'recui_medianotallowederror',

@@ -27,24 +27,9 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
         },
 
         registerEvents: function () {
-            //register our receive message handler
             var that = this;
-            window.addEventListener('message', function (e) {
-                // Must be our parent
-                if (e.origin !== that.config.allowedURL) {
-                    return;
-                }
-
-                //process data and if it is valid do the action
-                var data = e.data;
-                if (data && data.hasOwnProperty('id') &&
-                    data.id == that.config.id && data.hasOwnProperty('type')) {
-                    switch (data.type) {
-                        case 'fetch_upload_url':
-                            that.fetchNewUploadDetails();
-                            break;
-                    }
-                }
+            this.config.hermes.on('fetch_upload_url',function(e){
+                that.fetchNewUploadDetails();
             });
         },
 
@@ -76,7 +61,7 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                                 messageObject.type = "error";
                                 messageObject.code = payloadobject.returnCode;
                                 messageObject.message = payloadobject.returnMessage;
-                                window.parent.postMessage(messageObject, that.config.allowedURL);
+                                that.config.hermes.postMessage(messageObject);
                                 return;
                                 //if all good, then lets do the embed
                             } else {

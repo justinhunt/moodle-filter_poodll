@@ -34,6 +34,24 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         // This recorder supports the current browser
         supports_current_browser: function (config) {
 
+            var protocol_ok = M.cfg.wwwroot.indexOf('https:') == 0 ||
+                M.cfg.wwwroot.indexOf('http://localhost') == 0;
+            if(!protocol_ok){return false;}
+
+            if (config.mediatype != 'audio' && config.mediatype != 'video') {
+                return false;
+            }
+
+            var ret = utils.can_html5_record(config.mediatype);
+            if (ret) {
+                log.debug('PoodLL Media Recorder: supports this browser');
+            }
+            return ret;
+        },
+
+        // This recorder supports the current browser
+        xxxxsupports_current_browser: function (config) {
+
             if (config.mediatype != 'audio' && config.mediatype != 'video') {
                 return false;
             }
@@ -598,9 +616,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 // set recorder type
                 if (ip.videorecordertype === 'mediarec') {
                     ip.mediaRecorder.recorderType = MediaRecorderWrapper;
-                }
-                if (ip.videorecordertype === 'webp') {
-                    ip.mediaRecorder.recorderType = WhammyRecorder;
                 }
 
                 // set capture size

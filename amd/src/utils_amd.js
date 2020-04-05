@@ -185,6 +185,23 @@ define(['jquery', 'core/log'], function ($, log) {
             return data.getUTCHours() + " hours, " + data.getUTCMinutes() + " minutes and " + data.getUTCSeconds() + " second(s)";
         },
 
+        has_mediarecorder: function(){
+          return typeof MediaRecorder !== 'undefined';
+        },
+
+        can_html5_record: function(mediatype){
+          if( navigator && navigator.mediaDevices
+            && navigator.mediaDevices.getUserMedia){
+              if(mediatype=='audio'){
+                  return true;
+              }else{
+                  return this.has_mediarecorder();
+              }
+          }else{
+              return false;
+          }
+        },
+
         is_edge: function () {
             return navigator.userAgent.indexOf('Edge') > -1;
         },

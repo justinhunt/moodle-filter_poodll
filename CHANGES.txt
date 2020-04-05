@@ -3,6 +3,8 @@ Change List
 Version 3.1.28 (Build 2020XXXXXXX)
 -added owner field to stage_remote_process_job for cloud poodll
 -added singapore and mumbai regions for cloudpoodll
+-fixed cloudpoodlltoken to be callable from template JS
+-replaced interactivetranscriptaudio and interactivetranscriptvideo with superinteractiveaudio and superinteractivevideo
 
 Version 3.1.25 (Build 2019121200)
 -fixed lightbox2 template and popover template on classic theme (M3.8)

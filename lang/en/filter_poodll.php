@@ -198,6 +198,7 @@ $string['recui_recording'] = 'Recording: ';
 $string['recui_unsupportedbrowser'] = 'This browser can not record here. Sorry.<br>Please try Google Chrome on a Desktop PC.';
 $string['recui_pushtospeak'] = 'Push to Speak';
 $string['recui_waitwaitstilluploading'] = 'Your file is still uploading. Do you really want to leave this page?';
+$string['recui_clicktofinish'] = 'Click to Stop';
 
 $string['insert'] = 'Insert';
 $string['cancel'] = 'Cancel';

@@ -16,7 +16,7 @@ define(['jquery',
             isPaused: false,
 
             // variables
-            deviceSampleRate: 44100, // range: 22050 to 96000
+            deviceSampleRate: 48000,//44100, // range: 22050 to 96000
             leftchannel: [],
             rightchannel: [],
             recording: false,

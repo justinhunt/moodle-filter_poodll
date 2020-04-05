@@ -169,8 +169,15 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
                         self.set_button_style(mode);
                         break;
                     case 'startbuttonrecording':
-                        ip.controlbar.thecaption.hide();
                         ip.controlbar.playcanvas.show();
+                        if (ip.config.allowearlyexit == "1" && ip.timer.enabled) {
+                           // self.enable_button(ip.controlbar.stopbutton);
+                            var ss_caption=M.util.get_string('recui_clicktofinish', 'filter_poodll');
+                            ip.controlbar.thecaption.text(ss_caption);
+                            ip.controlbar.thecaption.show();
+                        }else{
+                            ip.controlbar.thecaption.hide();
+                        }
                         self.set_button_style(mode);
                         break;
 
@@ -296,7 +303,9 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
                 ip.controlbar.bigbutton.click(function (e) {
                     //we do not want the dialog and other things to trigger events here
                     //just the caption and the button itself
-                    if (e.target !== this && !$(e.target).hasClass('poodll_mediarecorder_caption_readseed')) {
+                    if (e.target !== this
+                        && !$(e.target).hasClass('poodll_mediarecorder_caption_readseed')
+                        && !$(e.target).hasClass('poodll_mediarecorder_playcanvas_readseed')) {
                         return;
                     }
 
@@ -373,6 +382,13 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
                             var finalcount = 3000;
                             var previouscount = -1;
                             setTimeout(countingdown, 100);
+                            break;
+
+                        //if we ARE recording and allowearlyexit is true, a click will stop the activity
+                        case 'startbuttonrecording':
+                            if (ip.config.allowearlyexit == "1" && ip.timer.enabled) {
+                                self.process_recording_stop(controlbarid);
+                            }
                             break;
 
                         //there is no stop button ... just for consistency and testing

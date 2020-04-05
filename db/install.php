@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 function xmldb_filter_poodll_install() {
     $presets = \filter_poodll\poodllpresets::fetch_presets();
     $forinstall = array('fff', 'flowplayer', 'mediaelementvideo', 'videojs', 'nativevideo', 'audiojs_shim', 'mediaelementaudio',
-            'nativeaudio', 'youtubeplayer', 'youtube','onceplayer', 'twiceaudioplayer','interactivetranscriptaudio','interactivetranscriptvideo',
+            'nativeaudio', 'youtubeplayer', 'youtube','onceplayer', 'twiceaudioplayer','superinteractiveaudio','superinteractivevideo',
             'tabs', 'tabitem', 'accordian', 'accordianitem',
             'Button-Maker','countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards','tapwordtohear',
             'textblockreader','tta','soundboard');

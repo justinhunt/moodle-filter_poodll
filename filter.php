@@ -396,7 +396,10 @@ class filter_poodll extends moodle_text_filter {
                 !empty($conf['cpapiuser']) &&
                 !empty($conf['cpapisecret'])) {
             $token = \filter_poodll\poodlltools::fetch_token($conf['cpapiuser'], $conf['cpapisecret']);
+            if(!$token){$token = 'NO_TOKEN RETRIEVED';}
             $poodlltemplate = str_replace('@@CLOUDPOODLLTOKEN@@', $token, $poodlltemplate);
+            //stash this for passing to js
+            $filterprops['CLOUDPOODLLTOKEN'] = $token;
         }
 
         //If template requires a MOODLEPAGEID lets give them one

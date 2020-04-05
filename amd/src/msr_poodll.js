@@ -1,7 +1,7 @@
 /* jshint ignore:start */
 define(['jquery',
-        'core/log', 'filter_poodll/utils_amd', 'filter_poodll/msr_stereoaudio', 'filter_poodll/msr_whammy', 'filter_poodll/msr_plain'],
-    function ($, log, utils, stereoaudiorecorder, whammyrecorder, plainrecorder) {
+        'core/log', 'filter_poodll/utils_amd', 'filter_poodll/msr_stereoaudio', 'filter_poodll/msr_plain'],
+    function ($, log, utils, stereoaudiorecorder, plainrecorder) {
 
         "use strict"; // jshint ;_;
 
@@ -9,7 +9,7 @@ define(['jquery',
 
         return {
 
-            sampleRate: 44100,
+            sampleRate: 48000,//44100,
             mimeType: 'audio/wav',
             audioChannels: 1,
             bufferSize: 2048,
@@ -44,21 +44,17 @@ define(['jquery',
                         default:
                             this.therecorder = plainrecorder;
                     }
-                    //if browser has mediarecorder, lets use it! (FF/Chrome)
-                } else if (typeof MediaRecorder !== 'undefined') {
+                    //if browser has mediarecorder, lets use it!
+                } else if (utils.has_mediarecorder()) {
                     this.therecorder = plainrecorder;
                     log.debug('using plain recorder');
 
-                } else if (utils.is_chrome() || utils.is_opera || utils.is_edge()) {
-                    if (mediaType == 'video') {
-                        this.therecorder = whammyrecorder;
-                        log.debug('using whammy recorder');
-                    } else if (mediaType == 'audio') {
+                 //we can handle audio using wav encoder, so even without mediarecorder we are ok
+                } else if (mediaType == 'audio') {
                         this.therecorder = stereoaudiorecorder;
                         log.debug('using stereo recorder');
                         //before init is called, set mimeType/sampleRate/audioChannels
                         //etc on this object, they will be picked up when stereoaudiorecorder helper runs
-                    }
                 }
                 if (this.therecorder) {
                     this.therecorder.init(this, mediaStream, audioctx, mediaType);
