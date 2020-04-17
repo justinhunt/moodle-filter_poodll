@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.29 (Build 2020041700)
+-fixed broken whiteboard saving
+
 Version 3.1.28 (Build 2020040500)
 -added owner field to stage_remote_process_job for cloud poodll
 -added singapore and mumbai regions for cloudpoodll

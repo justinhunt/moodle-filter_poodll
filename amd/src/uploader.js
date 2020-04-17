@@ -28,9 +28,12 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
 
         registerEvents: function () {
             var that = this;
-            this.config.hermes.on('fetch_upload_url',function(e){
-                that.fetchNewUploadDetails();
-            });
+            //whteboard does not have a hermes
+           if(this.config.hermes) {
+                this.config.hermes.on('fetch_upload_url', function (e) {
+                    that.fetchNewUploadDetails();
+                });
+           }
         },
 
         fetchNewUploadDetails: function () {
