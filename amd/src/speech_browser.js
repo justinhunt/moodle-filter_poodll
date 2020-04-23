@@ -20,12 +20,16 @@ define(['jquery', 'core/log'], function ($, log) {
             return $.extend(true, {}, this);
         },
 
-        init: function (lang) {
+        will_work_ok: function(opts){
+            return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+        },
+
+        init: function (opts) {
             var SpeechRecognition = SpeechRecognition || webkitSpeechRecognition;
             this.recognition = new SpeechRecognition();
             this.recognition.continuous = true;
             this.recognition.interimResults = true;
-            this.lang = lang ? lang : 'en-US';
+            this.lang = opts.language ? opts.language : 'en-US';
 
             this.register_events();
         },
@@ -39,7 +43,8 @@ define(['jquery', 'core/log'], function ($, log) {
             }
         },
 
-        start: function () {
+        start: function (stream) {
+            //browser recognition does not actually need to the stream
             if (this.recognizing) {
                 return;
             }
@@ -106,7 +111,7 @@ define(['jquery', 'core/log'], function ($, log) {
                 for (var i = event.resultIndex; i < event.results.length; ++i) {
                     if (event.results[i].isFinal) {
                         that.final_transcript += event.results[i][0].transcript;
-                        that.onfinalspeechcapture(that.final_transcript);
+                        that.onfinalspeechcapture(that.final_transcript,JSON.stringify(event.results));
                         that.final_transcript = '';
                     } else {
                         interim_transcript += event.results[i][0].transcript;
@@ -118,7 +123,7 @@ define(['jquery', 'core/log'], function ($, log) {
             };
         },//end of register events
 
-        onfinalspeechcapture: function (speechtext) {
+        onfinalspeechcapture: function (speechtext,speechresults) {
             log.debug(speechtext);
         },
         oninterimspeechcapture: function (speechtext) {

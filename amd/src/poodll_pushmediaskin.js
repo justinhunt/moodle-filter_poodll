@@ -72,7 +72,7 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
                 return this.fetch_resource_audio(skin);
             },
 
-            onfinalspeechcapture: function (speechtext) {
+            onfinalspeechcapture: function (speechtext,speechresults) {
                 this.just_stop();
             },
 
@@ -231,13 +231,17 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
                     controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls += '<canvas id="' + controlbarid + '_playcanvas" class="poodll_mediarecorder_playcanvas_push" width="180" height="50"></canvas>';
                 controls += '<span id="' + controlbarid + '_caption" class="poodll_mediarecorder_caption_push"></span>';
-                controls += '<span id="' + controlbarid + '_bogusstartbutton" class="poodll_mediarecorder_bogusstartbutton_push"></span>';
-                controls += '<span id="' + controlbarid + '_bogusstopbutton" class="poodll_mediarecorder_bogusstopbutton_push"></span>';
+
+                //removing bgus buttons from html is better. The bogus items will send events(do_play_stop). Thf jquery object refering to them is enough for bogus to work
+                //controls += '<span id="' + controlbarid + '_bogusstartbutton" class="poodll_mediarecorder_bogusstartbutton_push"></span>';
+                //controls += '<span id="' + controlbarid + '_bogusstopbutton" class="poodll_mediarecorder_bogusstopbutton_push"></span>';
+
                 /*
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_push poodll_start-recording_push">' + this.ss['startlabel']  + '</button>';
                 controls +=  '<button type="button" class="poodll_mediarecorder_button_push poodll_test-recording_push">' + this.ss['testlabel']  +  '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_push poodll_stop-recording_push">' +  this.ss['stoplabel']  +  '</button>';
                 */
+
                 controls += status,
                     controls += '</div></div></div>';
                 $(element).prepend(controls);

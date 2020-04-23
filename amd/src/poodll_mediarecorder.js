@@ -122,21 +122,26 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             var theskin = this.init_skin(controlbarid, ip.config.media_skin, ip);
 
             //Speech recognition
-            if (config.speechevents && ip.speechrec.supports_browser()) {
-                if (!config.language) {
-                    config.language = 'en-US';
+            if (ip.config.speechevents && ip.speechrec.will_work_ok(ip.config)) {
+                if (!ip.config.language) {
+                    ip.config.language = 'en-US';
                 }
-                ip.speechrec.init(ip.config.language);
-                ip.speechrec.onfinalspeechcapture = function (speechtext) {
+                ip.speechrec.init(ip.config);
+                ip.speechrec.onfinalspeechcapture = function (speechtext,speechresults) {
                     var messageObject = {};
                     messageObject.type = "speech";
                     messageObject.capturedspeech = speechtext;
+                    messageObject.speechresults = speechresults;
                     ip.config.hermes.postMessage(messageObject);
                     //send message to our skin
                     if (theskin.hasOwnProperty('onfinalspeechcapture')) {
-                        theskin.onfinalspeechcapture(speechtext);
+                        theskin.onfinalspeechcapture(speechtext,speechresults);
                     }
                 };
+            }else{
+                //just turn off speech events to make it easier to check later
+                log.debug('turning off speech events. not req. or not supported.');
+                ip.config.speechevents = false;
             }
 
             // add callbacks for uploadsuccess and upload failure
@@ -422,8 +427,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             ip.mediaRecorder.resume();
             ip.mediaRecorder.stop();
 
-            //stop Google speech to text if doing that
-            if (ip.config.speechevents && ip.speechrec.supports_browser()) {
+            //stop Speech to text if doing that
+            if (ip.config.speechevents) {
                 ip.speechrec.stop();
             }
 
@@ -576,9 +581,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 messageObject.action = 'started';
                 ip.config.hermes.postMessage(messageObject);
 
-                //start Google speech to text
-                if (ip.config.speechevents && ip.speechrec.supports_browser()) {
-                    ip.speechrec.start();
+                //start  speech to text
+                if (ip.config.speechevents) {
+                    ip.speechrec.start(stream);
                 }
 
                 //defer to the skins code
@@ -636,9 +641,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 messageObject.action = 'started';
                 ip.config.hermes.postMessage(messageObject);
 
-                //start Google speech to text
-                if (ip.config.speechevents && ip.speechrec.supports_browser()) {
-                    ip.speechrec.start();
+                //start speech to text
+                if (ip.config.speechevents) {
+                    ip.speechrec.start(stream);
                 }
 
                 //defer to the skins code
