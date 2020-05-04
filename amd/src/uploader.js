@@ -161,6 +161,10 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                 case "audio/x-mpeg-3":
                     ext = "mp3";
                     break;
+                case "audio/m4a":
+                case "audio/x-m4a":
+                    ext = "m4a";
+                    break;
                 case "audio/3gpp":
                     ext = "3gpp";
                     break;
@@ -471,6 +475,57 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                         xhr.send(params);
                     };//end of fileread on load end
                 }//end of if blob
+            }//end of if using_s3
+        },
+
+        // upload Media file to wherever
+        uploadMultiPartFile: function (filedata, sourcemimetype) {
+
+            var xhr = new XMLHttpRequest();
+            var config = this.config;
+            var uploader = this;
+
+            //get the file extension from the filetype
+            var sourceext = this.fetchFileExtension(sourcemimetype);
+
+            //is this an iframe embed
+            if (typeof config.iframeembed == 'undefined') {
+                config.iframeembed = false;
+            }
+
+            //are we using s3
+            var using_s3 = config.using_s3;
+
+            //Handle UI display of this upload
+            this.upskin.initProgressSession(xhr);
+
+            //Add a page unload check ..
+            $(window).on('beforeunload', this.preventPrematureLeaving);
+
+            //alert user that we are now uploading
+            this.upskin.showMessage(M.util.get_string('recui_uploading', 'filter_poodll'), 'recui_uploading');
+
+            //init sourcemimetype and sourcefilename
+            uploader.config.sourcemimetype = sourcemimetype;
+            uploader.config.sourcefilename = uploader.config.s3filename;
+
+            xhr.onreadystatechange = function (e) {
+                if (using_s3 && this.readyState === 4) {
+                    if (config.iframeembed) {
+                        uploader.update_filenames(uploader, sourceext);
+                    } else {
+                        //ping Moodle and inform that we have a new file
+                        uploader.postprocess_s3_upload(uploader);
+                    }
+                }
+                uploader.postProcessUpload(e, uploader);
+
+            };
+
+            if (using_s3) {
+                xhr.open("put", config.posturl, true);
+                xhr.setRequestHeader("Content-Type", 'application/octet-stream');
+                xhr.send(filedata);
             }//end of if using_s3
         },
 

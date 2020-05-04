@@ -503,7 +503,7 @@ class awstools {
                     'Item' => $marshaler->marshalItem($itemarray)
             ]);
             return true;
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             echo "Unable to put item:\n";
             echo $e->getMessage() . "\n";
             return $e->getMessage();
@@ -677,12 +677,136 @@ class awstools {
             } else {
                 $theurl = $cmd->createPresignedUrl('+' . $minutes . ' minutes');
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             print_error($e->getMessage());
             $theurl = $e->getMessage();
         }
         return $theurl;
     }
+
+    public function complete_multipart_upload($mediatype, $key, $uploadid){
+        $s3client = $this->fetch_s3client();
+        $ret= new \stdClass();
+        $ret->success=true;
+        $ret->payload='';
+
+        //Get bucket
+        $bucket = '';
+        switch ($mediatype) {
+            case 'audio':
+                $bucket = $this->bucket_audio_in;
+                break;
+            case 'video':
+                $bucket = $this->bucket_video_in;
+                break;
+        }
+
+        //options
+        $options = array();
+        $options['Bucket'] = $bucket;
+        $options['Key'] = $key;
+        $options['UploadId'] = $uploadid;
+
+        try {
+            $partsModel = $s3client->listParts($options);
+            $options['MultipartUpload'] =["Parts"=>$partsModel["Parts"]];
+            $s3client->completeMultipartUpload($options);
+        } catch (\Exception $e) {
+            print_error($e->getMessage());
+            $ret->success=false;
+            $ret->payload= $e->getMessage();
+        }
+        return $ret;
+    }
+
+    public function fetch_multipart_upload_details($mediatype, $minutes = 60, $key, $iosvideo = false) {
+        $s3client = $this->fetch_s3client();
+
+        //Get bucket
+        $bucket = '';
+        switch ($mediatype) {
+            case 'audio':
+                $bucket = $this->bucket_audio_in;
+                break;
+            case 'video':
+                $bucket = $this->bucket_video_in;
+                break;
+        }
+
+
+        //options
+        $options = array();
+        $options['Bucket'] = $bucket;
+        $options['Key'] = $key;
+        if ($iosvideo) {
+            $options['ContentType'] = 'video/quicktime';
+        } else {
+            $options['ContentType'] = 'application/octet-stream';
+        }
+
+        //return etails + succes code
+        $ret= new \stdClass();
+        $ret->success=true;
+        $ret->payload='';
+        try {
+            $ret->payload= $s3client->createMultipartUpload($options);
+        } catch (\Exception $e) {
+            print_error($e->getMessage());
+            $ret->success=false;
+            $ret->payload= $e->getMessage();
+        }
+        return $ret;
+    }
+
+    function fetch_singlepart_upload_url($mediatype,$key,$uploadid,$partnumber,$contentlength, $minutes = 30) {
+        $s3client = $this->fetch_s3client();
+
+        //Get bucket
+        switch ($mediatype) {
+            case 'video':
+                $bucket = $this->bucket_video_in;
+                break;
+            case 'audio':
+            default:
+                $bucket = $this->bucket_audio_in;
+                break;
+        }
+
+         //options
+        $options = array();
+        $options['Bucket'] = $bucket;
+        $options['Key'] = $key;
+        $options['UploadId'] = $uploadid;
+        $options['PartNumber'] = $partnumber;
+        $options['ContentLength'] = $contentlength;
+
+        $cmd = $s3client->getCommand('PutObject', $options);
+        $awsversion = $this->awsversion;
+
+        //due to AWS SDK conflict in other plugins,
+        // Poodll Feedback has been known to arrive here with diff SDK ver. loaded
+        //We check for that here.
+        if ($awsversion == constants::AWS_V2) {
+            if (!method_exists($cmd, 'createPresignedUrl') &&
+                    method_exists($s3client, 'createPresignedRequest')) {
+                $awsversion = constants::AWS_V3;
+            }
+        }
+        //this can fail with SDK loading issues we return an error message in that case
+        try {
+            if ($awsversion == constants::AWS_V3) {
+                $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
+                $theurl = (string) $request->getUri();
+            } else {
+                $theurl = $cmd->createPresignedUrl('+' . $minutes . ' minutes');
+            }
+        } catch (\Exception $e) {
+            print_error($e->getMessage());
+            $theurl = $e->getMessage();
+        }
+        return $theurl;
+    }
+
 
     // list one bucket files
     function iterate_bucket_listing($thebucket) {

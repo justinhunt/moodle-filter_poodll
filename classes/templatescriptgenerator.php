@@ -110,8 +110,8 @@ class templatescriptgenerator {
                 case true:
 
                     //Create the dependency stuff in the output js
-                    $requires = array("'" . 'jquery' . "'", "'" . 'jqueryui' . "'");
-                    $params = array('$', 'jqui');
+                    $requires = array("'" . 'jquery' . "'", "'" . 'jqueryui' . "'", "'" . 'core/templates' . "'");
+                    $params = array('$', 'jqui','templates');
 
                     if ($requiredjs) {
                         $requires[] = "'" . $requiredjs . "'";

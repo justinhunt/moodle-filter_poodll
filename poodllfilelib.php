@@ -65,13 +65,14 @@ $filename = optional_param('filename', "", PARAM_TEXT);
 
 //error log flags
 CONST LOG_PFL_TEMPDIR_FAIL = 1;
-CONST LOG_PFL_FILE_SAVE_FAIL = 2;
+CONST LOG_PFL_SAVEFILE_FAIL=2;
 CONST LOG_PFL_FILE_EXISTS = 3;
 CONST LOG_PFL_MAKE_SF_FAIL = 4;
 CONST LOG_PFL_LOCAL_CONVERT_FAIL = 5;
 CONST LOG_PFL_DOWNLOAD_FAIL = 6;
 CONST LOG_PFL_CREATE_FROM_URL_FAIL = 7;
 CONST LOG_PFL_FILE_CREATED = 8;
+
 
 //map general recorder upload data to what we expect otherwise
 if ($p1 != '') {

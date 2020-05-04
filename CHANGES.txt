@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.30 (Build 2020XXXXXX)
+-Added support for audio/x-m4a mimetype
+-Added multipart uploader (experimental)
+
 Version 3.1.29 (Build 2020041700)
 -fixed broken whiteboard saving
 
