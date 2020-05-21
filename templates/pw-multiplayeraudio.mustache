@@ -1,0 +1,251 @@
+
+<!-- HTML from template body goes goes here  -->
+<div id='{{AUTOID}}_container' class='poodll_multiplayer'>
+
+  <div class="button-wrapper">
+    <button type='button' id='{{AUTOID}}' class='poodll_multiplayer_button'>
+		<audio id='{{AUTOID}}_player' class="onceplayerjs nomediaplugin" src="{{VIDEOURL}}"></audio>
+		<i class="fa fa-play fa-2x" aria-hidden="true"></i></button>
+  </div>
+  <div class="state-wrapper">
+    <div id='{{AUTOID}}_time' class='poodll_onceplayer_time'></div>
+    <!--<div id='{{AUTOID}}_state' class='poodll_onceplayer_state'></div>-->
+    <div id='{{AUTOID}}_playtime' class="poodll_multiplayer_playtime"></div>
+  </div>
+  <div class="volume-control">
+    <button type="button" id="{{AUTOID}}_vol-up" class="vol-up vol-but"></button>
+    <div class="meter">
+      <div id="{{AUTOID}}_indicator" class="indicator"></div>
+    </div>
+    <button type="button" id="{{AUTOID}}_vol-down" class="vol-down vol-but"></button>
+  </div>
+</div>
+  
+
+<!-- CSS from template  goes goes here  -->
+<style>
+   .poodll_multiplayer{
+	border: 3px solid #333;
+    width: 250px;
+    height: 120px;
+    text-align: center;
+    margin-bottom: 100px;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    position: relative;
+}
+.poodll_multiplayer  .skin{
+	height: 200px;
+    BACKGROUND-IMAGE: url(http://img.wennermedia.com/social/bruno-mars--press-photo-2---kai-z-feng-885f1d8b-0fc8-4ea6-a613-06ef6ce4e443.jpg);
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+.poodll_multiplayer   .poodll_multiplayer_button{
+	border: none;
+	width: 50px;
+	height: 42px;
+}
+.poodll_multiplayer .custom-pause:before{
+
+    content: "\f04b";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+
+	
+}
+.poodll_multiplayer .vol-but{
+    width: 25px;
+    float: right;
+    padding: 0px;
+}
+.poodll_multiplayer .volume-control .vol-up:before{
+	content: "\f028";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}
+.poodll_multiplayer .volume-control .vol-down:before{
+	content: "\f027";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}
+.poodll_multiplayer .meter{
+    width: 130px;
+    height: 15px;
+    border: 1px solid #333;
+    margin-top: 5px;
+    float: right;
+    margin-left: 5px;
+}
+.poodll_multiplayer .indicator{
+    height: 100%;
+    width: 20%;
+    background-color: red;
+	min-width: 0%;
+	max-width: 100%;
+}
+.poodll_multiplayer .button-wrapper{
+	width: 30%;
+	float: left;
+}
+.poodll_multiplayer .state-wrapper{
+	width: 70%;
+	float: left;
+}
+.poodll_multiplayer .volume-control{
+	position: absolute;
+    text-align: center;
+    bottom: 20px;
+}
+</style>
+
+<!-- Custom JS from template  goes goes here  -->
+{{#js}}
+ require(['jquery','filter_poodll/mediaparser'], function($,parser) {
+      
+$('#{{AUTOID}}').data('playtime', {{canplaycount}});
+      
+//get our player
+      
+var aplayer = $('#' + "{{AUTOID}}").children().first();
+var fa = $('#' + "{{AUTOID}}" + ' .fa');
+var thestate =$('#' + "{{AUTOID}}" + '_state'); 
+var thetime = $('#' + "{{AUTOID}}" + '_time'); 
+      
+var details = parser.parse('{{AUTOID}}_original', 'audio');
+aplayer.attr('src',details.mediaurl); // mediaurl, subtitlesurl, sources
+
+$(fa).removeClass('fa-minus');
+
+//set status
+thestate.text('- ready -');
+
+
+// setting base volume for audio player
+aplayer[0].volume = 0.2;
+
+
+
+// Append Playtime text
+$('#' + "{{AUTOID}}" + '_playtime').empty();
+var playtimer = $('#' + "{{AUTOID}}").data('playtime');
+$('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: '+playtimer +'x');
+
+
+
+$('#' + "{{AUTOID}}" + '_vol-up').click(function(){
+	$('#' + "{{AUTOID}}" + '_indicator').css("width", '+=' + (0.1 * $('.meter').width()));
+	
+	if(aplayer[0].volume == 1.1){
+		Alert("max Volume");
+	}else{
+		aplayer[0].volume+=0.1;	
+		console.log(aplayer[0].volume);
+	}
+});
+$('#' + "{{AUTOID}}" + '_vol-down').click(function(){
+	$('#' + "{{AUTOID}}" + '_indicator').css("width", '-=' + (0.1 * $('.meter').width()));
+	if(aplayer[0] == 0.0){
+		alert("audio is mute !");
+	}else{
+		aplayer[0].volume-=0.1;	
+		console.log(aplayer[0].volume);
+	}
+	
+});
+
+
+
+//player clicked event
+	$('#' + "{{AUTOID}}").click(function(){
+	
+		$('#' + "{{AUTOID}}").data('playtime',{{canplaycount}} - 1);
+		//$('#' + {{AUTOID}}).children().first().attr('playtime', {{canplaycount}} - 1);
+		play_audio();
+	
+	
+	
+		aplayer[0].addEventListener('ended', function(){
+		
+		$('#' + "{{AUTOID}}" + '_playtime').empty();
+		var playtime = $('#' + "{{AUTOID}}").data('playtime');
+		
+		$(fa).removeClass({{playing}});
+		$(fa).removeClass('fa-spin');
+		$(fa).removeClass({{play}});
+		aplayer[0].pause();	
+		
+		
+		if(playtime > 0){
+			
+			$('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: '+playtime+'x');
+			$(fa).addClass('custom-pause');
+			$(fa).removeClass('fa-minus');
+			//thestate.text('- Play Again -');
+			
+			$('#' + "{{AUTOID}}").click(function(){
+				$('#' + "{{AUTOID}}").data('playtime',playtime - 1);
+				$(fa).removeClass('custom-pause');
+				play_audio();
+				
+			});
+			
+		}else{
+			$('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: 0');
+			$(fa).addClass('custom-pause');
+			thestate.text('- finished -');
+			$('#' + "{{AUTOID}}").data("disabled", true);
+		}
+		
+	});
+   
+  
+});
+
+
+function play_audio(){
+	aplayer[0].play();
+	thestate.text('- playing -');
+	$(fa).removeClass({{play}});
+	$(fa).addClass({{playing}});
+	$(fa).addClass('fa-spin');
+}
+
+
+aplayer.bind('durationchange',function(){thetime.text(poodll_mp_fetchtime(aplayer));});
+
+
+//time display function
+function poodll_mp_sec2time(seconds){
+    var date = new Date(null);
+    date.setSeconds(seconds); 
+    return date.toISOString().substr(11, 8);
+}
+function poodll_mp_fetchtime(theplayer){
+     var a_currenttime= isNaN(theplayer[0].currentTime) ? 0 : theplayer[0].currentTime;
+     var a_duration= isNaN(theplayer[0].duration) ? 0 : theplayer[0].duration;
+     var currenttime = poodll_mp_sec2time(Math.floor(a_currenttime));
+     var totaltime = poodll_mp_sec2time(Math.floor(a_duration)); 
+     var displaytime = currenttime + ' / ' +  totaltime;
+    return displaytime;
+}
+//The timer display
+aplayer.on('timeupdate',function(e){
+ var displaytime = poodll_mp_fetchtime(aplayer)
+ thetime.text(displaytime);
+});
+
+//show current time
+ thetime.text(poodll_mp_fetchtime(aplayer));
+
+
+
+ 
+ });
+{{/js}}

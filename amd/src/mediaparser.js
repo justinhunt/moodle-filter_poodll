@@ -7,7 +7,6 @@ define(['jquery', 'core/log'], function ($, log) {
 
     return {
        parse:  function(containerid, mediatype) {
-
            var ret = {};
            ret.mediaurl = false;
            ret.lang = false;
@@ -52,6 +51,7 @@ define(['jquery', 'core/log'], function ($, log) {
                originallink.addClass('nomediaplugin');
                originallink.addClass('nopoodll');
            }
+           return ret; 
        }//end of parse function
     };//end of returned object
 });//total end

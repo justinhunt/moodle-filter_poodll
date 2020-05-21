@@ -1,0 +1,30 @@
+
+
+<audio id="{{AUTOID}}_player" controls="controls" class="nomediaplugin"></audio>
+
+<!-- CSS from template  goes goes here  -->
+<style>
+   <!-- style tags go here -->
+</style>
+
+<!-- Custom JS from template  goes goes here  -->
+{{#js}}
+ require(['jquery','filter_poodll/mediaparser'], function($,parser) {
+ 
+   var register_events =function (){
+
+ 
+    };
+
+    //fetch the media url
+    var details = parser.parse('{{AUTOID}}_original', 'audio');
+    
+    //get our player
+    var aplayer = $('#{{AUTOID}}_player');
+    aplayer.attr('src',details.mediaurl); 
+    
+    //registering events
+    register_events();
+ 
+ });
+{{/js}}
