@@ -1,10 +1,11 @@
 Change List
 =========
-Version 3.1.30 (Build 2020XXXXXX)
+Version 3.1.30 (Build 2020052000)
 -Added support for audio/x-m4a mimetype
 -Added multipart uploader (experimental)
 -Fixed Adam player
 -Replaced Elastic Transcoder call (postupload) with DynamoDB job log (pre upload)
+-added player widget templates
 
 Version 3.1.29 (Build 2020041700)
 -fixed broken whiteboard saving
