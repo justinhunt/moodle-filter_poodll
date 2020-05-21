@@ -116,7 +116,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
         $savedatetime = new \DateTime($cd->isodate);
         $diffInSeconds = $nowdatetime->getTimestamp() - $savedatetime->getTimestamp();
         if ($diffInSeconds > (60 * 60 * 24) || $giveup) {
-            //we do not retry after twenty four hours, we just report an error and return quietly
+            //we do not retry after 24 hours, we just report an error and return quietly
             $errorstring .= ' :will not retry';
             $trace->output('s3file:' . $errorstring);
 
@@ -127,9 +127,9 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             //forever fail this task
             $this->do_forever_fail($errorstring, $trace);
 
-            //if its greater than 20 mins we do a delayed retry thing
-        } else if ($diffInSeconds > (MINSECS * 20)) {
-            $this->do_retry($errorstring, $trace, $cd,(MINSECS * 20));
+            //if its greater than 10 mins we do a delayed retry thing
+        } else if ($diffInSeconds > (MINSECS * 10)) {
+            $this->do_retry($errorstring, $trace, $cd,(MINSECS * 10));
 
         } else {
             $errorstring .= ' :will retry';

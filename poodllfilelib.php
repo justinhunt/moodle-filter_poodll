@@ -614,8 +614,12 @@ function filter_poodll_instance_remotedownload($contextid, $filename, $component
                 $mediatype = 'audio';
                 break;
         }
+
+        $transcribelanguage = "en-US";
+        \filter_poodll\poodlltools::register_remote_poodlljob($mediatype,$filename,$transcribelanguage);
         $key = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
         $success = $awstools->s3_put_filedata($mediatype, $key, $filedata);
+
         $ret = \filter_poodll\poodlltools::postprocess_s3_upload($mediatype, $file_record);
         if (!$ret) {
             $return['success'] = false;

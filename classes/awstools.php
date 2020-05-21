@@ -844,7 +844,6 @@ class awstools {
                 }
                 break;
         }
-        $this->convfolder . $filename;
 
         //this is the format it should be in. getObjectUrl does not return it correctly. So we build it
         //  https://s3-us-east-1.amazonaws.com/examplebucket/mediadocs/example.mp4

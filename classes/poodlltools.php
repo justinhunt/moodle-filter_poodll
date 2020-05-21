@@ -1029,10 +1029,41 @@ class poodlltools {
 
         //if we still do not have our file, all is lost. But if we have a user we can at least log an error.
         if ($file_not_there && $USER->id) {
-            self::send_debug_data(SELF::LOG_NOTHING_TO_TRANSCODE, 'Nothing to transcode:' . $infilename, $USER->id,
+            self::send_debug_data(self::LOG_NOTHING_TO_TRANSCODE, 'Nothing to transcode:' . $infilename, $USER->id,
                     \context_user::instance($USER->id)->id);
         }
         return $ret;
+    }
+
+    public static function register_remote_poodlljob($mediatype,$filename, $transcribelanguage="en-US"){
+       global $CFG,$USER;
+
+       $awstools = new \filter_poodll\awstools();
+
+        //create our Dynamic DB entry that will process the recording when it arrives
+        $host = parse_url($CFG->wwwroot, PHP_URL_HOST);
+        if (!$host) {
+            $host = "unknown";
+        }
+        $appid='filter_poodll';
+        $s3path = 'transcoded/' . $host . '/';
+        $subtitle=false;
+        $vocab='none';
+        $transcoder='default';
+        $sourcemimetype='unknown';
+        $transcode=true;
+        //for now Classic Poodll transcription is off
+        //if($transcribe){$transcribe='yes';}
+        $transcribe=false;
+        if($CFG->filter_poodll_cloudnotifications) {
+            $notificationurl=$CFG->wwwroot . '/filter/poodll/poodllnotification.php';
+        }else{
+            $notificationurl='none';
+        }
+        $owner=hash('md5',$USER->username);
+        $awstools->stage_remote_process_job($host, $mediatype, $appid, $s3path, $filename,
+                $transcode, $transcoder, $transcribe, $subtitle, $transcribelanguage, $vocab, $notificationurl, $sourcemimetype,$owner);
+
     }
 
     public static function confirm_s3_arrival($mediatype, $filename) {
@@ -1052,55 +1083,24 @@ class poodlltools {
 
         $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $draftfilerecord->filename);
         $infilename = $s3filename;
-        $outfilename = $infilename;
-        //we added the suffix to make it harder for idiots to try to guess the transcoded url
-        //but since cloud poodll, and the poodll_job logged at fetch_upload_url, it was painfule
-        //so we removed it  JUSTIN 20180604
-        $outfilename = $infilename;
-        if (false) {
-            switch ($mediatype) {
-                case 'audio':
-                    $newsuffix = '_' . rand(100000, 999999) . '.mp3';
-                    $outfilename = str_replace('.mp3', $newsuffix, $infilename);
-                    break;
-                case 'video':
-                    $newsuffix = '_' . rand(100000, 999999) . '.mp4';
-                    $outfilename = str_replace('.mp4', $newsuffix, $infilename);
-            }
+
+        $host = parse_url($CFG->wwwroot, PHP_URL_HOST);
+        if (!$host) {
+            $host = "unknown";
+        }
+        $outfilename = $host . '/' . $draftfilerecord->filename;
+
+        //we quit using commence s3 transcode from here 2020 05 21
+        //$success = self::commence_s3_transcode($mediatype, $infilename, $outfilename);
+
+        $success = false;
+        $storedfile = self::save_placeholderfile_in_moodle($mediatype, $draftfilerecord);
+        if ($storedfile) {
+            $draftfilerecord->id = $storedfile->get_id();
+            self::register_s3_download_task($mediatype, $infilename, $outfilename, $draftfilerecord);
+            $success = true;
         }
 
-        $success = self::commence_s3_transcode($mediatype, $infilename, $outfilename);
-        if ($success) {
-            $success = false;
-            $storedfile = self::save_placeholderfile_in_moodle($mediatype, $draftfilerecord);
-            if ($storedfile) {
-                $draftfilerecord->id = $storedfile->get_id();
-                self::register_s3_download_task($mediatype, $infilename, $outfilename, $draftfilerecord);
-                $success = true;
-            }
-        }
-
-        //for now transcription is not ready in Classic Poodll but this would work... JUSTIN 20180602
-        if (false) {
-            //lets register our transcribe task
-            $transcribe = true;
-
-            //get the host
-            $thewwwroot = strtolower($CFG->wwwroot);
-            $wwwroot_bits = parse_url($thewwwroot);
-            $host = $wwwroot_bits['host'];
-
-            if ($transcribe) {
-                $language = 'en-US';
-                $vocab = $host . "-vocab1";
-                $awstools = new \filter_poodll\awstools();
-                $ret = $awstools::stage_remote_transcription_job($host, $mediatype,
-                        'transcoded/', $outfilename, $language, $vocab);
-                if ($ret['success']) {
-                    //register the pick up job here
-                }
-            }
-        }
         return $success;
     }
 
@@ -1358,7 +1358,7 @@ class poodlltools {
     public static function fetchAMDRecorderCode($mediatype, $updatecontrol, $contextid, $component, $filearea, $itemid,
             $timelimit = "0", $callbackjs = false, $hints = [],
             $transcribe = 0, $transcribelanguage = 'en-US') {
-        global $CFG, $PAGE;
+        global $CFG, $PAGE, $USER;
 
         $lm = new \filter_poodll\licensemanager();
         $registration_status = $lm->validate_license();
@@ -1381,24 +1381,18 @@ class poodlltools {
                 default:
                     $ext = '.wav';
             }
+
+            //get our pre-signed URLs
             $filename = \html_writer::random_id('poodllfile') . $ext;
             $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
             $awstools = new \filter_poodll\awstools();
             $posturl = $awstools->get_presigned_upload_url($mediatype, 60, $s3filename);
             $quicktime_signed_url = $awstools->get_presigned_upload_url($mediatype, 60, $s3filename, true);
 
-            if ($transcribe) {
-                //if using S3 and transcribing ... lets em transcribe
-                $host = parse_url($CFG->wwwroot, PHP_URL_HOST);
-                if (!$host) {
-                    $host = "unknown";
-                }
-                $vocab = 'none';
-                $notificationurl = 'none';
-                $s3path = 'transcoded/';
-                $awstools->stage_remote_transcription_job($host, $mediatype, $s3path, $s3filename, $transcribelanguage,
-                        $vocab, $notificationurl);
-            }
+
+            //create our Dynamic DB entry that will process the recording when it arrives
+            self::register_remote_poodlljob($mediatype,$filename,$transcribelanguage);
+
 
         } else {
             $filename = false;
