@@ -132,7 +132,6 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
         //fetch file extension from the filetype
         fetchFileExtension: function (filetype) {
             var ext = "";
-            //Might need more mimetypes than this, and 3gpp maynot work
             switch (filetype) {
                 case "image/jpeg":
                     ext = "jpg";
@@ -146,9 +145,6 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                 case "audio/ogg":
                     ext = "ogg";
                     break;
-                case "video/quicktime":
-                    ext = "mov";
-                    break;
                 case "audio/mpeg3":
                     ext = "mp3";
                     break;
@@ -157,6 +153,9 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                     break;
                 case "audio/webm":
                     ext = "webm";
+                    break;
+                case "audio/wma":
+                    ext = "wma";
                     break;
                 case "audio/x-mpeg-3":
                     ext = "mp3";
@@ -171,11 +170,21 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                 case "video/mpeg3":
                     ext = "3gpp";
                     break;
+                case "video/m4v":
+                    ext = "m4v";
+                    break;
                 case "video/mp4":
                     ext = "mp4";
                     break;
+                case "video/mov":
+                case "video/quicktime":
+                    ext = "mov";
+                    break;
                 case "video/webm":
                     ext = "webm";
+                    break;
+                case "video/wmv":
+                    ext = "wmv";
                     break;
                 case "video/ogg":
                     ext = "ogg";
