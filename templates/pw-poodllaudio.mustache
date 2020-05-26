@@ -141,9 +141,8 @@
      var app = {
 
          // "https://s3.amazonaws.com/poodll-audioprocessing-out-us-east-1/CP/365/jjustin/misc.poodll.com/21232f297a57a5a743894a0e4a801fc3/poodllfile5ec34af9814891.mp3.vtt"
-
          // "https://s3-ap-northeast-1.amazonaws.com/poodll-audioprocessing-out/CP/30/localhostuser/recordmp3online.com/poodll/poodllfile5ecb30ab645451.mp3"
-
+         //default options overridden on app.init
          options: {
              hasVtt: true,
              vtt: "https://s3.amazonaws.com/poodll-audioprocessing-out-us-east-1/CP/365/jjustin/misc.poodll.com/21232f297a57a5a743894a0e4a801fc3/poodllfile5ec34af9814891.mp3.vtt",
@@ -359,7 +358,7 @@
                      app.wavesurfer.setPlaybackRate(currentRate - 0.1);
                      $("#poodll-super-player-playback-rate").text("x" + app.wavesurfer.getPlaybackRate().toFixed(1));
                  }
-             });
+             });  
 
          }
 
@@ -376,7 +375,9 @@
      options.waveform= true;
      options.hasImage= mediadetails.imgurl ? true : false;
      options.image = mediadetails.imgurl;
+     options.size = '{{size}}';
      app.init(options);
+
 
  }); //end of script
 
