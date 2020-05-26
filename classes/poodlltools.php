@@ -1163,7 +1163,7 @@ class poodlltools {
 
         //branch logic if windows
         $iswindows = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
-        $command = $ffmpegpath . " -i " . $tempvideofilepath . " " . $ffmpegopts . " " . $tempsplashfilepath;
+        $command = $ffmpegpath . " -i " . escapeshellarg($tempvideofilepath) . " " . escapeshellcmd($ffmpegopts) . " " . escapeshellarg($tempsplashfilepath);
 
         if ($iswindows) {
             $output = system($command, $fv);
@@ -1287,7 +1287,7 @@ class poodlltools {
 
         //branch logic depending on if windows or nopt
         $iswindows = (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN');
-        $command = $ffmpegpath . " -i " . $tempdir . $tempfilename . " " . $ffmpegopts . " " . $tempdir . $convfilename;
+        $command = $ffmpegpath . " -i " . escapeshellarg($tempdir . $tempfilename) . " " . escapeshellcmd($ffmpegopts) . " " . escapeshellarg($tempdir . $convfilename);
 
         if ($iswindows) {
             $output = system($command, $fv);
