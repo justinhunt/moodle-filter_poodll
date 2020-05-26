@@ -12,6 +12,7 @@ define(['jquery', 'core/log'], function ($, log) {
            ret.lang = false;
            ret.subtitlesurl = false;
            ret.sources = false;
+           ret.imgurl = false;
 
            //do we have an audio player?
            var originalplayer = $('#' + containerid + ' ' + mediatype).first();
@@ -38,6 +39,7 @@ define(['jquery', 'core/log'], function ($, log) {
                ret.mediaurl = originallink.attr('href');
                ret.lang = originallink.attr('data-lang');
                ret.subtitlesurl = originallink.attr('data-subtitles');
+               ret.imgurl = originallink.attr('data-img');
 
                //but we might be in the old form where they were params on the url
                if (ret.subtitlesurl === undefined && ret.mediaurl.split('?').length > 0) {
@@ -51,6 +53,16 @@ define(['jquery', 'core/log'], function ($, log) {
                originallink.addClass('nomediaplugin');
                originallink.addClass('nopoodll');
            }
+
+           //do we have an image
+           if(!ret.imgurl) {
+               var originalimg = $('#' + containerid + ' img').first();
+               if (originalimg.length === 1) {
+                   ret.imgurl = originalimg.attr('src');
+                   ;
+               }
+           }
+
            return ret; 
        }//end of parse function
     };//end of returned object
