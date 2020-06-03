@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.32 (Build 2020060300)
+-Fixed a bug where proxy settings not properly passed to AWS SDK
+
 Version 3.1.31 (Build 2020052600)
 -made FFMPEG calls a little safer
 -added beta version of Poodll Audio Player

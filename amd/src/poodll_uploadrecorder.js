@@ -97,6 +97,7 @@ define(['jquery', 'core/log', 'filter_poodll/uploader'], function ($, log, uploa
             // process all File objects
             for (var i = 0, file; file = files[i]; i++) {
                 //this.ParseFile(f,widgetid);
+                log.debug('filetype:' + file.type);
                 ip.uploader.uploadBlob(file, file.type);
             }
         },
@@ -111,7 +112,8 @@ define(['jquery', 'core/log', 'filter_poodll/uploader'], function ($, log, uploa
             reader.onloadend = function (e) {
                 filedata = e.target.result;
                 ip.uploader.uploadFile(filedata, file.type);
-            }
+            };
+            log.debug('filetype:' + file.type);
             reader.readAsDataURL(file);
 
         }

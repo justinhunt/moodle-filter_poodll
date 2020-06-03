@@ -345,7 +345,11 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                $config['request.options'] = array('proxy' => $proxy);
+                if($this->awsversion == constants::AWS_V2) {
+                    $config['request.options'] = array('proxy' => $proxy);
+                }else{
+                    $config['http'] = array('proxy' => $proxy);
+                }
             }
             $this->transcoder = ElasticTranscoderClient::factory($config);
         }
@@ -607,7 +611,11 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                $config['request.options'] = array('proxy' => $proxy);
+                if($this->awsversion == constants::AWS_V2) {
+                    $config['request.options'] = array('proxy' => $proxy);
+                }else{
+                    $config['http'] = array('proxy' => $proxy);
+                }
             }
             $this->s3client = S3Client::factory($config);
         }
@@ -953,7 +961,11 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                $config['request.options'] = array('proxy' => $proxy);
+                if($this->awsversion == constants::AWS_V2) {
+                    $config['request.options'] = array('proxy' => $proxy);
+                }else{
+                    $config['http'] = array('proxy' => $proxy);
+                }
             }
 
             $this->dynamodbclient = DynamoDbClient::factory($config);
@@ -980,7 +992,11 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                $config['request.options'] = array('proxy' => $proxy);
+                if($this->awsversion == constants::AWS_V2) {
+                    $config['request.options'] = array('proxy' => $proxy);
+                }else{
+                    $config['http'] = array('proxy' => $proxy);
+                }
             }
 
             $this->transcribeclient = TranscribeServiceClient::factory($config);
@@ -1006,7 +1022,11 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                $config['request.options'] = array('proxy' => $proxy);
+                if($this->awsversion == constants::AWS_V2) {
+                    $config['request.options'] = array('proxy' => $proxy);
+                }else{
+                    $config['http'] = array('proxy' => $proxy);
+                }
             }
             $this->pollyclient = PollyClient::factory($config);
         }

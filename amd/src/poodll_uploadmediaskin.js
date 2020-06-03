@@ -209,6 +209,7 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
 
                 // process all File objects
                 for (var i = 0, file; file = files[i]; i++) {
+                    log.debug('filetype:' + file.type);
                     uploader.uploadBlob(file, file.type);
                 }
 
