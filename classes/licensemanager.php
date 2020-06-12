@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class licensemanager {
+
+    const CLOUDPOODLL = 'https://cloud.poodll.com';
     const FILTER_POODLL_VAL_BY_REGCODE = 1;
     const FILTER_POODLL_VAL_BY_APICREDS = 2;
     const FILTER_POODLL_IS_REGISTERED = 1;
@@ -464,7 +466,7 @@ gQIDAQAB
         }
 
         // Send the request & save response to $resp
-        $token_url = "https://cloud.poodll.com/local/cpapi/poodlltoken.php";
+        $token_url = self::CLOUDPOODLL . "/local/cpapi/poodlltoken.php";
         $postdata = array(
                 'username' => $apiuser,
                 'password' => $apisecret,

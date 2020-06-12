@@ -47,14 +47,15 @@ class adhoc_s3_move extends \core\task\adhoc_task {
 
         //get passed in data we need to perform conversion
         $cd = $this->get_custom_data();
-        $awstools = new \filter_poodll\awstools();
+        $awsremote = new \filter_poodll\awsremote();
 
         try {
-            $ret = $awstools->fetch_s3_converted_file($cd->mediatype, $cd->infilename, $cd->outfilename, $cd->filename,
-                    $cd->filerecord);
+            $ret = $awsremote->fetch_s3_converted_file($cd->mediatype, $cd->infilename, $cd->outfilename, $cd->filename);
 
         } catch (\Exception $e) {
-            $giveup = false;
+            //we ought to give up here. We used to try again. But if we get unrecoverable error here we will download
+            //multiple times until task expiry. This causes S3 blowout. So changing to giveup=true 20200603
+            $giveup = true;
             $message = 'could not fetch:' . $cd->filename . ':' . $e->getMessage();
             $this->handle_s3_error(self::LOG_FETCH_FILE_FAIL, $message, $cd, $giveup, $trace);
             return;
@@ -115,8 +116,8 @@ class adhoc_s3_move extends \core\task\adhoc_task {
         $nowdatetime = new \DateTime();
         $savedatetime = new \DateTime($cd->isodate);
         $diffInSeconds = $nowdatetime->getTimestamp() - $savedatetime->getTimestamp();
-        if ($diffInSeconds > (60 * 60 * 24) || $giveup) {
-            //we do not retry after 24 hours, we just report an error and return quietly
+        if ($diffInSeconds > (60 * 60 * 6) || $giveup) {
+            //we do not retry after 6 hours, we just report an error and return quietly
             $errorstring .= ' :will not retry';
             $trace->output('s3file:' . $errorstring);
 
@@ -127,9 +128,9 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             //forever fail this task
             $this->do_forever_fail($errorstring, $trace);
 
-            //if its greater than 10 mins we do a delayed retry thing
-        } else if ($diffInSeconds > (MINSECS * 10)) {
-            $this->do_retry($errorstring, $trace, $cd,(MINSECS * 10));
+            //if its greater than 5 mins we do a delayed retry thing
+        } else if ($diffInSeconds > (MINSECS * 5)) {
+            $this->do_retry($errorstring, $trace, $cd,(MINSECS * 5));
 
         } else {
             $errorstring .= ' :will retry';
@@ -138,8 +139,8 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             $this->send_debug_data($errorcode,
                     $errorstring, $userid, $contextid);
 
-            //register a retry soon (30 seconds)
-            $this->do_retry($errorstring, $trace, $cd, 30);
+            //register a retry soon (45 seconds)
+            $this->do_retry($errorstring, $trace, $cd, 45);
 
         }//end of if/else
     }//end of function handle_S3_error

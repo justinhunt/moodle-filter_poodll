@@ -66,40 +66,18 @@ class settingstools {
         $items[] = new \admin_setting_configtext('filter_poodll/cpapisecret', get_string('cpapisecret', 'filter_poodll'),
                 $tokeninfo, '');
 
-        //legacy license key stuff
-        $regkey_desc = get_string('registrationkey_explanation', 'filter_poodll');
-        if ($CFG && property_exists($CFG, 'filter_poodll_registrationkey') && !empty($CFG->filter_poodll_registrationkey)) {
-            $lm = new \filter_poodll\licensemanager();
-            $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
-            $license_details = $lm->fetch_license_details();
-            $display_license_details = get_string('license_details', 'filter_poodll', $license_details);
-            $regkey_desc .= $display_license_details;
-        }
-        $items[] =
-                new \admin_setting_configtextarea('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'),
-                        $regkey_desc, '');
+        //Adding Amazon AWS regions
+        $options = self::fetch_awsregion_options();
+        $items[] = new \admin_setting_configselect('filter_poodll_aws_region', get_string('awsregion', 'filter_poodll'),
+                get_string('awsregion_desc', 'filter_poodll'), awsremote::REGION_USE1, $options);
+
+
         $items[] =
                 new \admin_setting_configcheckbox('filter_poodll_cloudrecording', get_string('usecloudrecording', 'filter_poodll'),
                         get_string('usecloudrecording_desc', 'filter_poodll'), 1);
         $items[] = new \admin_setting_configcheckbox('filter_poodll_cloudnotifications',
                 get_string('usecloudnotifications', 'filter_poodll'), get_string('usecloudnotifications_desc', 'filter_poodll'), 1);
 
-        //The AWS version. Windows server often have issue with 3.x so we set it 2.x
-        $options = self::fetch_awssdk_options();
-        $os = php_uname();
-        $def = strpos($os, 'Windows NT') === 0 ? constants::AWS_V2 : constants::AWS_AUTO;
-
-        $items[] = new \admin_setting_configselect('filter_poodll_aws_sdk', get_string('awssdkversion', 'filter_poodll'),
-                get_string('awssdkversion_desc', 'filter_poodll'), $def, $options);
-
-        //Adding Amazon AWS regions
-        //for now we REMOVED the EUC1 and CAC1 regions, but they cost more and be slow
-        $options = array(awstools::REGION_APN1 => get_string('REGION_APN1', 'filter_poodll'),
-                awstools::REGION_APSE2 => get_string('REGION_APSE2', 'filter_poodll'),
-                awstools::REGION_EUW1 => get_string('REGION_EUW1', 'filter_poodll'),
-                awstools::REGION_USE1 => get_string('REGION_USE1', 'filter_poodll'));
-        $items[] = new \admin_setting_configselect('filter_poodll_aws_region', get_string('awsregion', 'filter_poodll'),
-                get_string('awsregion_desc', 'filter_poodll'), awstools::REGION_APN1, $options);
 
         $items[] = new \admin_setting_heading('filter_poodll_recorderorder_heading', get_string('recorderorder', 'filter_poodll'),
                 get_string('recorderorder_desc', 'filter_poodll'));
@@ -173,6 +151,19 @@ class settingstools {
     public static function fetch_advanced_items() {
         global $CFG;
         $items = array();
+
+        //legacy license key stuff
+        $regkey_desc = get_string('registrationkey_explanation', 'filter_poodll');
+        if ($CFG && property_exists($CFG, 'filter_poodll_registrationkey') && !empty($CFG->filter_poodll_registrationkey)) {
+            $lm = new \filter_poodll\licensemanager();
+            $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
+            $license_details = $lm->fetch_license_details();
+            $display_license_details = get_string('license_details', 'filter_poodll', $license_details);
+            $regkey_desc .= $display_license_details;
+        }
+        $items[] =
+                new \admin_setting_configtextarea('filter_poodll_registrationkey', get_string('registrationkey', 'filter_poodll'),
+                        $regkey_desc, '');
 
         /*
        //File Conversions
@@ -376,15 +367,19 @@ class settingstools {
         return $items;
     }//end of fetch extension items
 
-    //The options for AWS SDK loading
-    public static function fetch_awssdk_options() {
-        $items = array();
-        $items[constants::AWS_AUTO] = get_string('awssdkauto', 'filter_poodll');
-        $items[constants::AWS_NONE] = get_string('awssdknone', 'filter_poodll');
-        $items[constants::AWS_V2] = get_string('awssdkv2', 'filter_poodll');
-        $items[constants::AWS_V3] = get_string('awssdkv3', 'filter_poodll');
-        $items[constants::AWS_LOCAL] = get_string('awssdklocal', 'filter_poodll');
-        return $items;
+    public static function fetch_awsregion_options(){
+        $options = array(awsremote::REGION_APN1 => get_string('REGION_APN1', 'filter_poodll'),
+                awsremote::REGION_APS1 => get_string('REGION_APS1', 'filter_poodll'),
+                awsremote::REGION_APSE1 => get_string('REGION_APSE1', 'filter_poodll'),
+                awsremote::REGION_APSE2 => get_string('REGION_APSE2', 'filter_poodll'),
+                awsremote::REGION_EUW1 => get_string('REGION_EUW1', 'filter_poodll'),
+                awsremote::REGION_EUW2 => get_string('REGION_EUW2', 'filter_poodll'),
+                awsremote::REGION_EUC1 => get_string('REGION_EUC1', 'filter_poodll'),
+
+                awsremote::REGION_USE1 => get_string('REGION_USE1', 'filter_poodll'),
+                awsremote::REGION_CAC1 => get_string('REGION_CAC1', 'filter_poodll'),
+                awsremote::REGION_SAE1 => get_string('REGION_SAE1', 'filter_poodll'));
+        return $options;
     }
 
     //The options for HTML5 recorder skins

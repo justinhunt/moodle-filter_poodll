@@ -496,20 +496,6 @@ function filter_poodll_handle_s3_upload($mediatype, $contextid, $comp, $farea, $
 
 }
 
-function filter_poodll_speaktext($text) {
-    $awstools = new \filter_poodll\awstools();
-    $textarray = explode('|', $text);
-    if (count($textarray) > 2) {
-        $textarray[2] = str_replace('PPPP', '<', $textarray[2]);
-        $textarray[2] = str_replace('dddd', '>', $textarray[2]);
-        $spokentext = $awstools->fetch_pollyspeech($textarray[2], $textarray[0], $textarray[1]);
-    } else {
-        $spokentext = $awstools->fetch_pollyspeech($text);
-    }
-
-    return $spokentext;
-}
-
 /* download file from remote server and stash it in our file area */
 //15,'123456789.flv','user','draft','746337947','99999'
 function filter_poodll_instance_remotedownload($contextid, $filename, $component, $filearea, $itemid, $requestid, $filepath = '/') {
@@ -601,10 +587,8 @@ function filter_poodll_instance_remotedownload($contextid, $filename, $component
 
     //convert remotely on AWS
     if ($convertremotely) {
-        $awstools = new \filter_poodll\awstools();
         $mediatype = 'video';
 
-        $filedata = download_file_content($red5_fileurl);
 
         switch ($ext) {
             case '.mp4':
@@ -615,13 +599,23 @@ function filter_poodll_instance_remotedownload($contextid, $filename, $component
                 break;
         }
 
+
+
+        //register remote Job
         $transcribelanguage = "en-US";
         \filter_poodll\poodlltools::register_remote_poodlljob($mediatype,$filename,$transcribelanguage);
-        $key = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
-        $success = $awstools->s3_put_filedata($mediatype, $key, $filedata);
+        $key = \filter_poodll\awsremote::fetch_s3_filename($mediatype, $filename);
 
-        $ret = \filter_poodll\poodlltools::postprocess_s3_upload($mediatype, $file_record);
-        if (!$ret) {
+        //pull file from red5 and post it to S3
+        $awsremote = new \filter_poodll\awsremote();
+        $tempfilepath = $CFG->tempdir . "/source_" . $filename;
+        $awsremote->save_from_url_to_file($red5_fileurl,$tempfilepath);
+        $success = $awsremote->s3_put_filedata($mediatype, $key, $tempfilepath);
+
+        if($success) {
+            $success = \filter_poodll\poodlltools::postprocess_s3_upload($mediatype, $file_record);
+        }
+        if (!$success) {
             $return['success'] = false;
             array_push($return['messages'], "Unable to setup s3 post processing.");
         } else {

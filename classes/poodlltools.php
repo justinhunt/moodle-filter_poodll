@@ -104,67 +104,18 @@ class poodlltools {
         }
     }
 
-    //We need a Poodll token to make cloudpoodll happen
-    public static function fetch_token($apiuser, $apisecret) {
-
-        $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, 'filter_poodll', 'token');
-        $tokenobject = $cache->get('recentpoodlltoken');
-        $tokenuser = $cache->get('recentpoodlluser');
-
-        //if we got a token and its less than expiry time
-        // use the cached one
-        if ($tokenobject && $tokenuser && $tokenuser == $apiuser) {
-            if ($tokenobject->validuntil == 0 || $tokenobject->validuntil > time()) {
-                return $tokenobject->token;
-            }
-        }
-
-        // Send the request & save response to $resp
-        $token_url =
-                "https://cloud.poodll.com/local/cpapi/poodlltoken.php?username=$apiuser&password=$apisecret&service=cloud_poodll";
-        $token_response = self::curl_fetch($token_url);
-        if ($token_response) {
-            $resp_object = json_decode($token_response);
-            if ($resp_object && property_exists($resp_object, 'token')) {
-                $token = $resp_object->token;
-                //store the expiry timestamp and adjust it for diffs between our server times
-                if ($resp_object->validuntil) {
-                    $validuntil = $resp_object->validuntil - ($resp_object->poodlltime - time());
-                    //we refresh one hour out, to prevent any overlap
-                    $validuntil = $validuntil - (1 * HOURSECS);
-                } else {
-                    $validuntil = 0;
-                }
-
-                //cache the token
-                $tokenobject = new \stdClass();
-                $tokenobject->token = $token;
-                $tokenobject->validuntil = $validuntil;
-                $cache->set('recentpoodlltoken', $tokenobject);
-                $cache->set('recentpoodlluser', $apiuser);
-
-            } else {
-                $token = '';
-                if ($resp_object && property_exists($resp_object, 'error')) {
-                    //ERROR = $resp_object->error
-                }
-            }
-        } else {
-            $token = '';
-        }
-        return $token;
-    }
 
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper
-    public static function curl_fetch($url) {
-        $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        $data = curl_exec($curl);
-        curl_close($curl);
-        return $data;
+    public static function curl_fetch($url,$postdata=false)
+    {
+        global $CFG;
+
+        require_once($CFG->libdir.'/filelib.php');
+        $curl = new \curl();
+
+        $result = $curl->get($url, $postdata);
+        return $result;
     }
 
     /*
@@ -962,7 +913,7 @@ class poodlltools {
     }
 
     public static function register_s3_download_task($mediatype, $infilename, $outfilename, $draftfilerecord) {
-        global $USER;
+        global $CFG, $USER;
 
         // set up task and add custom data
         $s3_task = new \filter_poodll\task\adhoc_s3_move();
@@ -979,8 +930,12 @@ class poodlltools {
                 'isodate' => $isodate
         );
         $s3_task->set_custom_data($qdata);
-        // queue it
-        \core\task\manager::queue_adhoc_task($s3_task);
+        // queue it (check for duplicates if Moodle 3.3+)
+        if($CFG->version<2017051500) {
+            \core\task\manager::queue_adhoc_task($s3_task);
+        }else{
+            \core\task\manager::queue_adhoc_task($s3_task,true);
+        }
         \filter_poodll\event\adhoc_move_registered::create_from_task($qdata)->trigger();
 
     }
@@ -988,6 +943,8 @@ class poodlltools {
     //this should never be called, the adhoc task is no longer there.
     //but we might need in near future, so we hang on to it.
     public static function register_s3_transcode_task($mediatype, $s3filename) {
+        global $CFG;
+
         // set up task and add custom data
         $s3_task = new \filter_poodll\task\adhoc_s3_transcode();
         $s3_task->set_component('filter_poodll');
@@ -1000,45 +957,19 @@ class poodlltools {
                 'isodate' => $isodate
         );
         $s3_task->set_custom_data($qdata);
-        // queue it
-        \core\task\manager::queue_adhoc_task($s3_task);
+        // queue it (check for duplicates if Moodle 3.3+)
+        if($CFG->version<2017051500) {
+            \core\task\manager::queue_adhoc_task($s3_task);
+        }else{
+            \core\task\manager::queue_adhoc_task($s3_task,true);
+        }
     }
 
-    public static function commence_s3_transcode($mediatype, $infilename, $outfilename) {
-        global $CFG, $USER;
-
-        $ret = false;
-        $awstools = new \filter_poodll\awstools();
-
-        $sleepcount = 0;
-        $maxsleeps = 2;
-        $file_not_there = true;
-
-        //does file exist on s3 in bucket, look for it a few times, there can be delays and fast clickin' types can trigger
-        // a race condition
-        while ($sleepcount <= $maxsleeps && $file_not_there) {
-            if ($awstools->does_file_exist($mediatype, $infilename, 'in')) {
-                $file_not_there = false;
-                $awstools->create_one_transcoding_job($mediatype, $infilename, $outfilename);
-                $ret = true;
-            } else {
-                $sleepcount++;
-                sleep(1);
-            }
-        }
-
-        //if we still do not have our file, all is lost. But if we have a user we can at least log an error.
-        if ($file_not_there && $USER->id) {
-            self::send_debug_data(self::LOG_NOTHING_TO_TRANSCODE, 'Nothing to transcode:' . $infilename, $USER->id,
-                    \context_user::instance($USER->id)->id);
-        }
-        return $ret;
-    }
 
     public static function register_remote_poodlljob($mediatype,$filename, $transcribelanguage="en-US"){
        global $CFG,$USER;
 
-       $awstools = new \filter_poodll\awstools();
+       $awsremote = new \filter_poodll\awsremote();
 
         //create our Dynamic DB entry that will process the recording when it arrives
         $host = parse_url($CFG->wwwroot, PHP_URL_HOST);
@@ -1061,7 +992,7 @@ class poodlltools {
             $notificationurl='none';
         }
         $owner=hash('md5',$USER->username);
-        $awstools->stage_remote_process_job($host, $mediatype, $appid, $s3path, $filename,
+        $awsremote->stage_remote_process_job($host, $mediatype, $appid, $s3path, $filename,
                 $transcode, $transcoder, $transcribe, $subtitle, $transcribelanguage, $vocab, $notificationurl, $sourcemimetype,$owner);
 
     }
@@ -1069,9 +1000,9 @@ class poodlltools {
     public static function confirm_s3_arrival($mediatype, $filename) {
         global $CFG;
         //does file exist on s3
-        $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
-        $awstools = new \filter_poodll\awstools();
-        if ($awstools->does_file_exist($mediatype, $s3filename, 'in')) {
+        $s3filename = \filter_poodll\awsremote::fetch_s3_filename($mediatype, $filename);
+        $awsremote = new \filter_poodll\awsremote();
+        if ($awsremote->does_file_exist($mediatype, $s3filename, 'in')) {
             return true;
         } else {
             return false;
@@ -1081,7 +1012,7 @@ class poodlltools {
     public static function postprocess_s3_upload($mediatype, $draftfilerecord) {
         global $CFG;
 
-        $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $draftfilerecord->filename);
+        $s3filename = \filter_poodll\awsremote::fetch_s3_filename($mediatype, $draftfilerecord->filename);
         $infilename = $s3filename;
 
         $host = parse_url($CFG->wwwroot, PHP_URL_HOST);
@@ -1105,6 +1036,8 @@ class poodlltools {
     }
 
     public static function register_ffmpeg_task($filerecord, $originalfilename, $convfilenamebase, $convext) {
+        global $CFG;
+
         // set up task and add custom data
         $conv_task = new \filter_poodll\task\adhoc_convert_media();
         $conv_task->set_component('filter_poodll');
@@ -1121,8 +1054,12 @@ class poodlltools {
         //infilename and outfilename, are used only for logging. But we need them
 
         $conv_task->set_custom_data($qdata);
-        // queue it
-        \core\task\manager::queue_adhoc_task($conv_task);
+        // queue it (check for duplicates if Moodle 3.3+)
+        if($CFG->version<2017051500) {
+            \core\task\manager::queue_adhoc_task($conv_task);
+        }else{
+            \core\task\manager::queue_adhoc_task($conv_task,true);
+        }
         \filter_poodll\event\adhoc_convert_registered::create_from_task($qdata)->trigger();
         return true;
 
@@ -1384,10 +1321,10 @@ class poodlltools {
 
             //get our pre-signed URLs
             $filename = \html_writer::random_id('poodllfile') . $ext;
-            $s3filename = \filter_poodll\awstools::fetch_s3_filename($mediatype, $filename);
-            $awstools = new \filter_poodll\awstools();
-            $posturl = $awstools->get_presigned_upload_url($mediatype, 60, $s3filename);
-            $quicktime_signed_url = $awstools->get_presigned_upload_url($mediatype, 60, $s3filename, true);
+            $s3filename = \filter_poodll\awsremote::fetch_s3_filename($mediatype, $filename);
+            $awsremote = new \filter_poodll\awsremote();
+            $posturl = $awsremote->get_presignedupload_url($mediatype, 60, $s3filename);
+            $quicktime_signed_url = $awsremote->get_presignedupload_url($mediatype, 60, $s3filename, true);
 
 
             //create our Dynamic DB entry that will process the recording when it arrives

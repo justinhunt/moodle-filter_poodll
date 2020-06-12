@@ -25,16 +25,16 @@ $string['filter_poodll_mp3recorder_heading'] = 'MP3 Recorder Settings (Flash onl
 $string['filter_poodll_registration_heading'] = 'Register your Poodll';
 $string['filter_poodll_flashcards_heading'] = 'Flashcards Settings';
 $string['filter_poodll_registration_explanation'] =
-        "To authorise Poodll enter your Poodll API username and secret, or your license key (deprecated), but not both. You can obtain these from <a href='https://poodll.com/member'>https://poodll.com/member</a> after subscribing.";
+        "To authorise Poodll enter your Poodll API username and secret. You can obtain these from <a href='https://poodll.com/member'>https://poodll.com/member</a> after subscribing.  The old long registration key system is deprecated, but still available on the advanced menu. However you will need API credentials to use Poodll cloud assisted services.";
 $string['registrationkey'] = 'Registration Key';
 $string['registrationkey_explanation'] =
         "Enter your Poodll registration key here only if you have not entered an API key and secret above. You can obtain a key from <a href='https://poodll.com/pricing'>https://poodll.com/pricing</a>";
 $string['license_details'] =
         '<br> -------------- <br> License type: {$a->license_type} <br> Expires(JST): {$a->expire_date} <br> Registered URL: {$a->registered_url} ';
 
-$string['usecloudrecording'] = 'Cloud recording';
+$string['usecloudrecording'] = 'Remote conversion';
 $string['usecloudrecording_desc'] =
-        'Poodll cloud recording. This enables transcoding and other services in the cloud. The Poodll iOS app requires this, and so too do the html5 audio and video recorders. Recorded files are not hosted in the cloud.';
+        'Remote conversion. This enables transcoding and other services in the cloud. Submitted files are returned to Moodle and not hosted in the cloud.';
 
 $string['mobile_show'] = 'Show mobile';
 $string['mobile_show_desc'] =
@@ -48,15 +48,6 @@ $string['default_camera'] = 'Default camera';
 $string['camerafront'] = 'front';
 $string['cameraback'] = 'back';
 
-$string['awssdkversion'] = 'AWS SDK';
-$string['awssdkversion_desc'] =
-        'Poodll includes AWS SDK Ver. 3 and Ver. 2. Only version 3 supports Amazon AI based featiures like text to speech. Because other plugins use AWS SDK too, to avoid conflicts \'Auto select\' is recommended. Or install and use <a href="https://moodle.org/plugins/local_aws">local_aws</a>';
-$string['uploadkey'] = 'Upload key';
-$string['uploadkey_desc'] =
-        'Poodll cloud recording requires an upload key for recording. You should receive this when you sign up for Poodll. Enter the upload key here.';
-$string['uploadsecret'] = 'Upload secret';
-$string['uploadsecret_desc'] =
-        'Poodll cloud recording requires an upload secret for recording.  You should receive this when you sign up for Poodll. Enter the upload secret here.';
 
 $string['unregistered'] =
         'Poodll not displayed because it has not been registered. Ask your teacher/administrator to register Poodll at Poodll.com.';
@@ -121,7 +112,7 @@ $string['mp3_nocloud_details'] = 'Do not submit Flash mp3 recordings to cloud fo
 //transcode settings
 $string['transcode_heading'] = 'Audio/Video File Conversion Settings (FFMPEG)';
 $string['transcode_heading_desc'] =
-        'The settings in this section are for FFMPEG and Red5, and do not apply when using cloud recording.';
+        'The settings in this section are for FFMPEG and Red5, and do not apply when using remote conversions';
 $string['videotranscode'] = 'Auto Conv. to MP4';
 $string['videotranscodedetails'] =
         'Convert recorded/uploaded video files to MP4 format before storing in Moodle. This works for recordings made on tokyo.poodll.com, or uploaded recordings if using FFMPEG';
@@ -347,9 +338,9 @@ $string['have_recent_event'] = 'Found a recently fired move-completed event for:
 $string['no_event_or_task'] = 'Found neither a waiting move task, nor move-completed event for: {$a}';
 
 //cloud notifications
-$string['usecloudnotifications'] = 'Cloud notifications';
+$string['usecloudnotifications'] = 'Remote conversion notification';
 $string['usecloudnotifications_desc'] =
-        'Poodll cloud notifications. This enables instant notification that cloud transcoding is complete.';
+        'If true, Poodll will send a messge to your server that remote file conversion is complete so it can retrieve it as soon as possible.';
 
 //flash on android
 $string['flashonandroid'] = 'Use Flash on Android';
@@ -363,7 +354,7 @@ $string['wboardnozoom_details'] =
 
 $string['awsregion'] = 'Cloud Region (AWS)';
 $string['awsregion_desc'] =
-        'Choose the closest region to your Moodle server for best performance and to satisfy any data protection policies or regulations that apply to you.';
+        'Some Poodll services including remote conversion and text to speech are assisted by cloud services. Choose the closest region to your Moodle server for best performance and to satisfy any data protection policies or regulations that apply to you.';
 $string['REGION_APS1'] = 'Asia Pacific (Mumbai)';
 $string['REGION_APN2'] = 'Asia Pacific (Seoul)';
 $string['REGION_APSE1'] = 'Asia Pacific (Singapore)';

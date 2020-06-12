@@ -304,7 +304,7 @@ class filter_poodll extends moodle_text_filter {
                 }
             }
             if (!$tempindex) {
-                return;
+                return "";
             }
         } else {
             //else its from a  poodll filter string                
@@ -395,7 +395,13 @@ class filter_poodll extends moodle_text_filter {
         if (strpos($poodlltemplate, '@@CLOUDPOODLLTOKEN@@') &&
                 !empty($conf['cpapiuser']) &&
                 !empty($conf['cpapisecret'])) {
-            $token = \filter_poodll\poodlltools::fetch_token($conf['cpapiuser'], $conf['cpapisecret']);
+            $lm = new \filter_poodll\licensemanager();
+            $tokenobject = $lm->fetch_token($conf['cpapiuser'], $conf['cpapisecret']);
+            if(!isset($tokenobject->token)){
+                $token=$tokenobject->token;
+            }else{
+                $token = false;
+            }
             if(!$token){$token = 'NO_TOKEN RETRIEVED';}
             $poodlltemplate = str_replace('@@CLOUDPOODLLTOKEN@@', $token, $poodlltemplate);
             //stash this for passing to js

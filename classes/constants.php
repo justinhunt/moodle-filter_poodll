@@ -11,9 +11,5 @@ namespace filter_poodll;
 class constants {
     const MOD_FRANKY = 'filter_poodll';
     const M_COMP = 'filter_poodll';
-    const AWS_V2 = '2.x';
-    const AWS_V3 = '3.x';
-    const AWS_NONE = 'none';
-    const AWS_LOCAL = 'local';
-    const AWS_AUTO = 'auto';
+
 }

@@ -140,36 +140,22 @@ class awstools {
 
 
             case self::REGION_USE1:
-            default:
                 $this->pipeline_video = '1498352710890-ybul2c';
                 $this->pipeline_audio = '1498352776647-bgnr1z';
                 $this->preset_mp4 = "1498353119116-pdxliz";
                 $this->preset_mp3 = "1498353166217-bfalp1";
                 break;
 
-            //canada region has no elastic transcoder, so we use USE1 elastic trans . and a special pipeline NG
-            /*
             case self::REGION_CAC1:
-                $this->pipeline_video ='1498353689240-c4zdjs'; //special pipeline for diff region s3 buckets: COST
-                $this->pipeline_audio ='1498353802503-em5xlp'; //special pipeline for diff region s3 buckets: COST
-                $this->preset_mp4 = "1498353119116-pdxliz"; //USE1
-                $this->preset_mp3 = "1498353166217-bfalp1"; //USE1
-                break;
-               */
-            //Frankfurt region has no elastic transcoder, so we use EUW1 elast_transe. and a special pipeline NG
-            /*
+            case self::REGION_EUW2:
+            case self::REGION_SAE1:
             case self::REGION_EUC1:
-                $this->pipeline_video ='1498353981671-apvats'; //special pipeline for diff region s3 buckets: COST
-                $this->pipeline_audio ='1498354454000-3xp4bl'; //special pipeline for diff region s3 buckets: COST
-                $this->preset_mp4 = "1498301559020-465p9k"; //EUW1
-                $this->preset_mp3 = "1498301496472-zlun4d"; //EUW1
+            default:
+                $this->pipeline_video ='ffmpegtranscoder';
+                $this->pipeline_audio ='ffmpegtranscoder';
+                $this->preset_mp4 = "mp4";
+                $this->preset_mp3 = "mp3";
                 break;
-            */
-
-            //buckets for these also created, but there was no Elastic transcoder service in the region
-            //and we were stuch by 4 pipeline limit on the nearest region with elastic transcoder
-            //case self::REGION_EUW2
-            //case self::REGION_SAE1
 
         }
 
@@ -180,53 +166,12 @@ class awstools {
         $this->bucket_audio_out = self::BUCKET_NAME_AUDIOOUT . $bucketsuffix; //audio out bucket
         $this->bucket_thumbnails = self::BUCKET_NAME_VIDEOTHUMBS . $bucketsuffix; //video thumbs bucket
 
-        //Poodll carries its own AWS SDK, but if catalyst's local_aws is installed we use that
-        //to avoid clashes (which crash Moodle)
+        //Poodll no longer carries its own AWS SDK. It is loaded from local_aws. But it is not used for normal installations.
         $catalyst_s3_loader = $CFG->dirroot . '/local/aws/sdk/aws-autoloader.php';
-        //enrol_arlo loads guzzle which crashes AWS SDK3 (since it can not load it twice)
-        $enrolarlo_guzzle = $CFG->dirroot . '/enrol/arlo/vendor/guzzlehttp/guzzle/src/Client.php';
         $PHP55 = version_compare(phpversion(), '5.5.0', '>=');
-
-        switch ($CFG->filter_poodll_aws_sdk) {
-            case constants::AWS_V2:
-                $this->awsversion = constants::AWS_V2;
-                require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
-                break;
-            case constants::AWS_V3:
-                $this->awsversion = constants::AWS_V3;
-                require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
-                break;
-            case constants::AWS_NONE:
-                //If user set this, then lets assume its loaded and just carry on
-                $this->awsversion = "3.x";
-                break;
-            case constants::AWS_LOCAL:
-                $this->awsversion = constants::AWS_V3;
-                require_once($catalyst_s3_loader);
-                break;
-            case constants::AWS_AUTO:
-            default:
-                if (file_exists($catalyst_s3_loader) && $PHP55) {
-                    $this->awsversion = constants::AWS_V3;
-                    require_once($catalyst_s3_loader);
-
-                } else if (file_exists($enrolarlo_guzzle)) {
-                    //We use AWS 2.x if Arlo is loading guzzle
-                    $this->awsversion = constants::AWS_V2;
-                    require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
-
-                } else if (!$PHP55) {
-                    //We need to support pre 5.5 versions of PHP
-                    // but aws 3.x is from php 5.5 and up.
-                    $this->awsversion = constants::AWS_V2;
-                    require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v2/aws-autoloader.php');
-
-                } else {
-                    $this->awsversion = constants::AWS_V3;
-                    require_once($CFG->dirroot . '/filter/poodll/3rdparty/aws-v3/aws-autoloader.php');
-                }
-        }
-
+         if (file_exists($catalyst_s3_loader) && $PHP55) {
+             require_once($catalyst_s3_loader);
+          }
     }
 
     public static function parse_region($region) {
@@ -261,9 +206,11 @@ class awstools {
                 $ret = self::REGION_APS1;
                 break;
             case 'tokyo':
-            default:
                 $ret = self::REGION_APN1;
                 break;
+            default:
+                //the region might already be good
+                $ret = $region;
         }
         return $ret;
     }
@@ -345,80 +292,17 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                if($this->awsversion == constants::AWS_V2) {
-                    $config['request.options'] = array('proxy' => $proxy);
-                }else{
-                    $config['http'] = array('proxy' => $proxy);
-                }
+                $config['http'] = array('proxy' => $proxy);
+
             }
             $this->transcoder = ElasticTranscoderClient::factory($config);
         }
         return $this->transcoder;
     }
 
-    //post file data directly to S3
-    function s3_put_filedata($mediatype, $key, $filedata) {
-        $s3client = $this->fetch_s3client();
-
-        //Get bucket
-        $bucket = '';
-        switch ($mediatype) {
-            case 'audio':
-                $bucket = $this->bucket_audio_in;
-                break;
-            case 'video':
-                $bucket = $this->bucket_video_in;
-                break;
-        }
-        //options
-        $options = array();
-        $options['Bucket'] = $bucket;
-        $options['Key'] = $key;
-        $options['Body'] = $filedata;
-        //$options['Sourcefile']=$filepath;
-        //$options['ContentMD5']=false;
-        $options['ContentType'] = 'application/octet-stream';
-
-        $result = $s3client->putObject($options);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    //post file data directly to S3
-    function s3_put_transcriptdata($mediatype, $key, $filedata) {
-        $s3client = $this->fetch_s3client();
-
-        //Get bucket
-        $bucket = '';
-        switch ($mediatype) {
-            case 'audio':
-                $bucket = $this->bucket_audio_in;
-                break;
-            case 'video':
-                $bucket = $this->bucket_video_in;
-                break;
-        }
-        //options
-        $options = array();
-        $options['Bucket'] = $bucket;
-        $options['Key'] = $key;
-        $options['Body'] = $filedata;
-        //$options['Sourcefile']=$filepath;
-        //$options['ContentMD5']=false;
-        $options['ContentType'] = 'text/plain';
-
-        $result = $s3client->putObject($options);
-        if ($result) {
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     //create a single job
+    //Called from CloudPoodll AND Classic Poodll
     function create_one_transcoding_job($mediatype, $input_key, $output_key, $output_key_prefix = false) {
 
         $transcoder_client = $this->fetch_transcoder();
@@ -449,6 +333,9 @@ class awstools {
                 $outputs[] = $one_output;
                 break;
         }
+
+        // We should never get here with an ffmpegtrancoder pipleline, so just cancel out in that case
+        if($pipeline_id=='ffmpegtranscoder'){return 'no ET pipeline for ths region';}
 
         # Create the job.
         $create_job_request = array(
@@ -514,13 +401,7 @@ class awstools {
         }
     }
 
-    //fetch the transcription and return without processing
-    //the caller kind of needs the info
-    function fetch_transcription_result($jobname) {
-        $transcribeclient = $this->fetch_transcribeclient();
-        $result = $transcribeclient->getTranscriptionJob([$jobname]);
-        return $result;
-    }
+
 
     function fetch_pollyspeech($text, $texttype = "text", $voice = "Justin") {
         $params = $this->make_pollyparams($text, $texttype, $voice);
@@ -559,39 +440,6 @@ class awstools {
         return $s3client->doesObjectExist($bucket, $filename);
     }
 
-    //called if we get a file submitted twice
-    function remove_transcoded($mediatype, $filename) {
-        switch ($mediatype) {
-
-            case 'video':
-                $bucketname = $this->bucket_video_out;
-                break;
-
-            case 'audio':
-            default:
-                $bucketname = $this->bucket_audio_out;
-                break;
-        }
-        $this->s3remove($bucketname, $filename);
-    }
-
-    function fetch_s3_converted_file($mediatype, $infilename, $outfilename, $filename, $filerecord) {
-        global $CFG;
-        if ($this->does_file_exist($mediatype, $this->convfolder . $outfilename, 'out')) {
-            $tempfilepath = $CFG->tempdir . "/" . $filename;
-            $this->save_converted_to_file($mediatype, $outfilename, $tempfilepath);
-            return $tempfilepath;
-        } else {
-            if (!$this->does_file_exist($mediatype, $infilename, 'in')) {
-                //if we do not even have an input file then just return, somethings wrong
-                //but it can not be fixed
-                return false;
-            } else {
-                return true;
-            }
-        }
-
-    }
 
     //fetch or create the S3 object 
     function fetch_s3client() {
@@ -611,35 +459,14 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                if($this->awsversion == constants::AWS_V2) {
-                    $config['request.options'] = array('proxy' => $proxy);
-                }else{
-                    $config['http'] = array('proxy' => $proxy);
-                }
+                $config['http'] = array('proxy' => $proxy);
+
             }
             $this->s3client = S3Client::factory($config);
         }
         return $this->s3client;
     }
 
-    function save_converted_to_file($mediatype, $filename, $filepath) {
-        $s3client = $this->fetch_s3client();
-        $bucket = '';
-        switch ($mediatype) {
-            case 'audio':
-                $bucket = $this->bucket_audio_out;
-                break;
-            case 'video':
-                $bucket = $this->bucket_video_out;
-                break;
-        }
-        $s3client->getObject(array(
-                'Bucket' => $bucket,
-                'Key' => $this->convfolder . $filename,
-                'SaveAs' => $filepath
-        ));
-        return true;
-    }
 
     function get_presigned_upload_url($mediatype, $minutes = 30, $key, $iosvideo = false) {
         $s3client = $this->fetch_s3client();
@@ -666,25 +493,11 @@ class awstools {
         }
 
         $cmd = $s3client->getCommand('PutObject', $options);
-        $awsversion = $this->awsversion;
 
-        //due to AWS SDK conflict in other plugins,
-        // Poodll Feedback has been known to arrive here with diff SDK ver. loaded
-        //We check for that here.
-        if ($awsversion == constants::AWS_V2) {
-            if (!method_exists($cmd, 'createPresignedUrl') &&
-                    method_exists($s3client, 'createPresignedRequest')) {
-                $awsversion = constants::AWS_V3;
-            }
-        }
         //this can fail with SDK loading issues we return an error message in that case
         try {
-            if ($awsversion == constants::AWS_V3) {
-                $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
-                $theurl = (string) $request->getUri();
-            } else {
-                $theurl = $cmd->createPresignedUrl('+' . $minutes . ' minutes');
-            }
+           $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
+           $theurl = (string) $request->getUri();
         } catch (\Exception $e) {
             print_error($e->getMessage());
             $theurl = $e->getMessage();
@@ -692,6 +505,7 @@ class awstools {
         return $theurl;
     }
 
+    //Called from CloudPoodll
     public function complete_multipart_upload($mediatype, $key, $uploadid){
         $s3client = $this->fetch_s3client();
         $ret= new \stdClass();
@@ -727,6 +541,7 @@ class awstools {
         return $ret;
     }
 
+    //Called from CloudPoodll
     public function fetch_multipart_upload_details($mediatype, $minutes = 60, $key, $iosvideo = false) {
         $s3client = $this->fetch_s3client();
 
@@ -789,25 +604,10 @@ class awstools {
         $options['ContentLength'] = $contentlength;
 
         $cmd = $s3client->getCommand('PutObject', $options);
-        $awsversion = $this->awsversion;
-
-        //due to AWS SDK conflict in other plugins,
-        // Poodll Feedback has been known to arrive here with diff SDK ver. loaded
-        //We check for that here.
-        if ($awsversion == constants::AWS_V2) {
-            if (!method_exists($cmd, 'createPresignedUrl') &&
-                    method_exists($s3client, 'createPresignedRequest')) {
-                $awsversion = constants::AWS_V3;
-            }
-        }
         //this can fail with SDK loading issues we return an error message in that case
         try {
-            if ($awsversion == constants::AWS_V3) {
-                $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
-                $theurl = (string) $request->getUri();
-            } else {
-                $theurl = $cmd->createPresignedUrl('+' . $minutes . ' minutes');
-            }
+           $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
+           $theurl = (string) $request->getUri();
         } catch (\Exception $e) {
             print_error($e->getMessage());
             $theurl = $e->getMessage();
@@ -815,51 +615,6 @@ class awstools {
         return $theurl;
     }
 
-
-    // list one bucket files
-    function iterate_bucket_listing($thebucket) {
-
-        $s3client = $this->fetch_s3client();
-        $objects = $s3client->getIterator('ListObjects', array(
-                'Bucket' => $thebucket,
-                'Prefix' => ''
-        ));
-
-        //echo 'listing :' . $objects->count() . ' files' . PHP_EOL;
-        foreach ($objects as $object) {
-            $filename = $object['Key'];
-            //do something here ....
-            //echo 'file:' . $filename . PHP_EOL;
-        }
-    }
-
-    function s3getObjectUri($mediatype, $filename, $in_out = 'out') {
-
-        $bucket = '';
-        switch ($mediatype) {
-            case 'audio':
-                if ($in_out == 'out') {
-                    $bucket = $this->bucket_audio_out;
-                } else {
-                    $bucket = $this->bucket_audio_in;
-                }
-                break;
-            case 'video':
-                if ($in_out == 'out') {
-                    $bucket = $this->bucket_video_out;
-                } else {
-                    $bucket = $this->bucket_video_in;
-                }
-                break;
-        }
-
-        //this is the format it should be in. getObjectUrl does not return it correctly. So we build it
-        //  https://s3-us-east-1.amazonaws.com/examplebucket/mediadocs/example.mp4
-        //$s3client = $this->fetch_s3client();
-        // $uri = $s3client->getObjectUrl($bucket, $this->convfolder . $filename);
-        $uri = 'https://s3-' . $this->region . 'amazonaws.com/' . $bucket . '/' . $this->convfolder . $filename;
-        return $uri;
-    }
 
     function s3copy($sourcebucket, $sourceitemname, $targetbucket, $targetitemname, $ispublic = false) {
         $s3client = $this->fetch_s3client();
@@ -888,62 +643,11 @@ class awstools {
         ));
     }
 
-    //post process transcoded files
-    function s3copy_folder($sourcebucket, $sourceitemname, $targetbucket, $targetitemname, $ispublic = false) {
 
-        $s3client = $this->fetch_s3client();
-        $objects = $s3client->getIterator('ListObjects', array(
-                'Bucket' => $sourcebucket,
-                'Prefix' => $sourceitemname
-        ));
 
-        //get the folder name .. should be a better way .. but tired ..
-        $partsarray = split('/', $sourceitemname);
-        array_pop($partsarray);
-        $foldername = array_pop($partsarray);
 
-        //loop through all the objects and copy them
-        //then delete them!!!!
-        foreach ($objects as $object) {
-            $filename = str_replace($sourceitemname, '', $object['Key']);
-            //	echo 'lets copy object:' . $filename .  PHP_EOL ;	
-            //	echo 'targetbucket:' . $targetbucket .  PHP_EOL ;
-            //	echo 'targetitemname:' . $targetitemname .  PHP_EOL ;
-            $this->s3copy($sourcebucket, $sourceitemname . $filename,
-                    $targetbucket, $targetitemname . $foldername . '/' . $filename, $ispublic);
-        }
-        //echo 'folder copied:' . $targetitemname . PHP_EOL ;	
 
-    }
-
-    //post process transcoded files
-    function s3remove_folder($bucket, $itemname) {
-
-        $s3client = $this->fetch_s3client();
-        $objects = $s3client->getIterator('ListObjects', array(
-                'Bucket' => $bucket,
-                'Prefix' => $itemname
-        ));
-
-        //loop through all the objects and copy them
-        //then delete them!!!!
-        foreach ($objects as $object) {
-            $filename = str_replace($itemname, '', $object['Key']);
-            //remove object 
-            $s3client->deleteObject(array(
-                    'Bucket' => $bucket,
-                    'Key' => $itemname . $filename
-            ));
-        }
-
-        //remove the source folder too
-        $s3client->DeleteObject(array(
-                'Bucket' => $bucket,
-                'Key' => $itemname
-        ));
-        //echo 'folder removed:' . $itemname . PHP_EOL ;		
-    }
-
+    //Cloud and Classic Poodll
     function fetch_dynamoDBClient() {
         global $CFG;
 
@@ -961,11 +665,8 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                if($this->awsversion == constants::AWS_V2) {
-                    $config['request.options'] = array('proxy' => $proxy);
-                }else{
-                    $config['http'] = array('proxy' => $proxy);
-                }
+                $config['http'] = array('proxy' => $proxy);
+
             }
 
             $this->dynamodbclient = DynamoDbClient::factory($config);
@@ -992,11 +693,8 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                if($this->awsversion == constants::AWS_V2) {
-                    $config['request.options'] = array('proxy' => $proxy);
-                }else{
-                    $config['http'] = array('proxy' => $proxy);
-                }
+                $config['http'] = array('proxy' => $proxy);
+
             }
 
             $this->transcribeclient = TranscribeServiceClient::factory($config);
@@ -1022,11 +720,8 @@ class awstools {
                 if (!empty($CFG->proxyuser)) {
                     $proxy = $CFG->proxyuser . ':' . $CFG->proxypassword . '@' . $proxy;
                 }
-                if($this->awsversion == constants::AWS_V2) {
-                    $config['request.options'] = array('proxy' => $proxy);
-                }else{
-                    $config['http'] = array('proxy' => $proxy);
-                }
+                $config['http'] = array('proxy' => $proxy);
+
             }
             $this->pollyclient = PollyClient::factory($config);
         }
