@@ -50,86 +50,60 @@ aplayer[0].volume = 0.2;
 
 // Append Playtime text
 $('#' + "{{AUTOID}}" + '_playtime').empty();
-var playtimer = $('#' + "{{AUTOID}}").data('playtime');
+ var playtimer = $('#' + "{{AUTOID}}").data('playtime');
 $('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: '+playtimer +'x');
 
 
 
 $('#' + "{{AUTOID}}" + '_vol-up').click(function(){
+    if(aplayer[0].volume +0.1 > 1){return;}
 	$('#' + "{{AUTOID}}" + '_indicator').css("width", '+=' + (0.1 * $('.meter').width()));
-	
-	if(aplayer[0].volume == 1.1){
-		Alert("max Volume");
-	}else{
-		aplayer[0].volume+=0.1;	
-		console.log(aplayer[0].volume);
-	}
+	aplayer[0].volume+=0.1;
 });
 $('#' + "{{AUTOID}}" + '_vol-down').click(function(){
+    if(aplayer[0].volume - 0.1 < 0){return;}
 	$('#' + "{{AUTOID}}" + '_indicator').css("width", '-=' + (0.1 * $('.meter').width()));
-	if(aplayer[0] == 0.0){
-		alert("audio is mute !");
-	}else{
-		aplayer[0].volume-=0.1;	
-		console.log(aplayer[0].volume);
-	}
-	
+	aplayer[0].volume-=0.1;
 });
 
+ aplayer[0].addEventListener('ended', function(){
+      var playtimer = $('#' + "{{AUTOID}}");
+     $('#' + "{{AUTOID}}" + '_playtime').empty();
+     var currentplaycount = playtimer.data('playtime');
+       currentplaycount--;
+      playtimer.data('playtime',currentplaycount );
 
+     $(fa).removeClass('fa-circle-o-notch');
+     $(fa).removeClass('fa-spin');
+     $(fa).removeClass('fa-play');
+     aplayer[0].pause();
+
+
+     if(currentplaycount > 0){
+         $('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: '+currentplaycount+'x');
+         $(fa).addClass('fa-play');
+     }else{
+        $('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: 0');
+        $(fa).addClass('fa-minus');
+        $('#' + "{{AUTOID}}").data("disabled", true);
+     }//end of if currentplaycount > 0
+
+ });//end of ended listener
 
 //player clicked event
 	$('#' + "{{AUTOID}}").click(function(){
-	
-		$('#' + "{{AUTOID}}").data('playtime',{{canplaycount}} - 1);
-		//$('#' + {{AUTOID}}).children().first().attr('playtime', {{canplaycount}} - 1);
+        var playtimer = $('#' + "{{AUTOID}}");
+        var currentplaycount = playtimer.data('playtime');
+        if(currentplaycount==0){return;}
 		play_audio();
-	
-	
-	
-		aplayer[0].addEventListener('ended', function(){
-		
-		$('#' + "{{AUTOID}}" + '_playtime').empty();
-		var playtime = $('#' + "{{AUTOID}}").data('playtime');
-		
-		$(fa).removeClass({{playing}});
-		$(fa).removeClass('fa-spin');
-		$(fa).removeClass({{play}});
-		aplayer[0].pause();	
-		
-		
-		if(playtime > 0){
-			
-			$('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: '+playtime+'x');
-			$(fa).addClass('custom-pause');
-			$(fa).removeClass('fa-minus');
-			//thestate.text('- Play Again -');
-			
-			$('#' + "{{AUTOID}}").click(function(){
-				$('#' + "{{AUTOID}}").data('playtime',playtime - 1);
-				$(fa).removeClass('custom-pause');
-				play_audio();
-				
-			});
-			
-		}else{
-			$('#' + "{{AUTOID}}" + '_playtime').append('Remaining plays: 0');
-			$(fa).addClass('custom-pause');
-			thestate.text('- finished -');
-			$('#' + "{{AUTOID}}").data("disabled", true);
-		}
-		
-	});
-   
-  
-});
+});//end of click event
 
 
 function play_audio(){
 	aplayer[0].play();
 	thestate.text('- playing -');
-	$(fa).removeClass({{play}});
-	$(fa).addClass({{playing}});
+	$(fa).removeClass('fa-play');
+	$(fa).addClass('fa-circle-o-notch');
 	$(fa).addClass('fa-spin');
 }
 
