@@ -340,7 +340,7 @@ $string['no_event_or_task'] = 'Found neither a waiting move task, nor move-compl
 //cloud notifications
 $string['usecloudnotifications'] = 'Remote conversion notification';
 $string['usecloudnotifications_desc'] =
-        'If true, Poodll will send a messge to your server that remote file conversion is complete so it can retrieve it as soon as possible.';
+        'If true, Poodll will send a message to your server that remote file conversion is complete so it can retrieve it as soon as possible.';
 
 //flash on android
 $string['flashonandroid'] = 'Use Flash on Android';

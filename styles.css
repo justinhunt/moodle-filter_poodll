@@ -1,48 +1,3 @@
-/*
-One Button Audio Player
-Removing CSS from distro
-
-*/
-/*
-.poodll_onebuttonaudio_container {
-	position: relative;
-	width: 80px;
-	height: 80px;
-	text-align: center;
-	border-radius: 50%;
-	background-color: #333;
-}
-.poodll_onebuttonaudio_button {
-	height: 45px;
-	width: 45px;
-	border-radius: 50%;
-	border: none;
-	background-color: #333;
-	position: absolute;
-	top: 18px;
-	left: 18px;
-	padding: 0px !important;
-	text-align: center;
-	margin: 0px !important;
-}
-.poodll_onebuttonaudio_button button:focus {
-	border-style: none;
-}
-.poodll_onebuttonaudio_button .fa {
-	font-size: 20px;
-	margin-top: 2px;
-	color: #FFF;
-}
-.poodll_onebuttonaudio_button:focus {
-	outline: none;
-	border: none !important;
-}
-*/
-/*
-One Button Recorder
-*/
-
-/*end*/
 
 /*
 Base Media skin Setting Integration
@@ -4269,4 +4224,438 @@ audio.poodll_preview_bmr {
 }
 
 
+/* Poodll Super Audio Player */
+
+.poodll-super-player {
+    border: 1px solid black;
+    border-radius:5px;
+}
+
+.poodll-super-player-time,
+.poodll-super-player-image,
+.poodll-super-player-waveform,
+.poodll-super-player-captions,
+.poodll-super-player-controls,
+.poodll-super-player-speed-controls
+{
+    background-color: #f5f5f5;
+    box-sizing: border-box;
+}
+
+.poodll-super-player-time {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    border-bottom: 1px solid black;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.poodll-super-player-image {
+    justify-content: center;
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 300px;
+}
+
+.poodll-super-player-captions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    height: 50px;
+    border-bottom: 1px solid black;
+    font-size: 20px;
+}
+
+.poodll-super-player-waveform {
+    border-bottom: 1px solid black;
+    background-image: url('https://misc.poodll.com/pr/mod/wordcards/pix/spinner.gif');
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+.poodll-super-player-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.poodll-super-player-speed-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.poodll-super-player-ctrl {
+    border-radius: 10px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    margin: 5px;
+    cursor: pointer;
+    box-shadow: inset 0 -0.6em 1em -0.35em rgba(0,0,0,0.17),inset 0 0.6em 2em -0.3em rgba(255,255,255,0.15),inset 0 0 0em 0.05em rgba(255,255,255,0.12);
+}
+
+.poodll-super-player-ctrl:active {
+    box-shadow: inset 0 0.6em 2em -0.3em rgba(0,0,0,0.15),inset 0 0 0em 0.05em rgba(255,255,255,0.12);
+}
+
+.poodll-super-player-ctrl-small {
+    border-radius: 5px;
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 25px;
+    cursor: pointer;
+    box-shadow: inset 0 -0.6em 1em -0.35em rgba(0,0,0,0.17),inset 0 0.6em 2em -0.3em rgba(255,255,255,0.15),inset 0 0 0em 0.05em rgba(255,255,255,0.12);
+    margin: 5px;
+}
+
+.poodll-super-player-ctrl-small:active {
+    box-shadow: inset 0 0.6em 2em -0.3em rgba(0,0,0,0.15),inset 0 0 0em 0.05em rgba(255,255,255,0.12);
+}
+
+.poodll-super-player-play {
+    width: 100px;
+}
+
+.poodll-super-player-playback-rate {
+    margin-left: 10px;
+}
+/* Poodll Super Audio Player END */
+
+/* Poodll Once Player start */
+.poodll_onceplayer_progress {
+    width:100%;
+    background-color:grey;
+    position:relative;
+}
+
+.poodll_onceplayer_progress_inner {
+    position:absolute;
+    left:0;
+    top:0;
+    bottom:0;
+    right:0;
+    background-color:green;
+}
+
+.poodll_onceplayer {
+    border: 3px solid blue;
+    /* Safari 3-4, iOS 1-3.2, Android 1.6- */
+    -webkit-border-radius: 12px;
+    /* Firefox 1-3.6 */
+    -moz-border-radius: 12px;
+    /* Opera 10.5, IE 9, Safari 5, Chrome, Firefox 4, iOS 4, Android 2.1+ */
+    border-radius: 12px;
+    background-color: white;
+    width: 200px;
+    height: 110px;
+    text-align: center;
+}
+.poodll_onceplayer_time {
+    padding: 3px;
+}
+.poodll_onceplayer_button {
+    border: 1px solid;
+    width: 50px;
+    height: 42px;
+    margin-top: 5px;
+    margin-top: 5px;
+}
+
+/* Poodll Once Player END */
+/* Poodll Multi Player start */
+.poodll_multiplayer{
+    border: 3px solid #333;
+    width: 250px;
+    height: 120px;
+    text-align: center;
+    margin-bottom: 100px;
+    padding: 10px;
+    background-color: #333;
+    color: #fff;
+    position: relative;
+}
+.poodll_multiplayer  .skin {
+    height: 200px;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+.poodll_multiplayer   .poodll_multiplayer_button {
+    border: none;
+    width: 50px;
+    height: 42px;
+}
+.poodll_multiplayer .custom-pause:before {
+
+    content: "\f04b";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+
+
+}
+.poodll_multiplayer .vol-but {
+    width: 25px;
+    float: right;
+    padding: 0px;
+}
+.poodll_multiplayer .volume-control .vol-up:before {
+    content: "\f028";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}
+.poodll_multiplayer .volume-control .vol-down:before {
+    content: "\f027";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}
+.poodll_multiplayer .meter {
+    width: 130px;
+    height: 15px;
+    border: 1px solid #333;
+    margin-top: 5px;
+    float: right;
+    margin-left: 5px;
+}
+.poodll_multiplayer .indicator {
+    height: 100%;
+    width: 20%;
+    background-color: red;
+    min-width: 0%;
+    max-width: 100%;
+}
+.poodll_multiplayer .button-wrapper {
+    width: 30%;
+    float: left;
+}
+.poodll_multiplayer .state-wrapper {
+    width: 70%;
+    float: left;
+}
+.poodll_multiplayer .volume-control {
+    position: absolute;
+    text-align: center;
+    bottom: 20px;
+}
+
+/* Poodll Multi Player END */
+
+/* Poodll Mini Player START */
+.mini_player_holder {
+    overflow: hidden;
+    transform: scale(0.5);
+    width: 140px;
+    height: 140px;
+    padding: 0;
+    margin: 0;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.mini_player_loading {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.progress-circle {
+    font-size: 20px;
+    margin: 20px;
+    position: relative; /* so that children can be absolutely positioned */
+    padding: 0;
+    width: 5em;
+    height: 5em;
+    background-color: #F2E9E1;
+    border-radius: 50%;
+    line-height: 5em;
+}
+
+.progress-circle:after {
+    border: none;
+    position: absolute;
+    top: 0.35em;
+    left: 0.35em;
+    text-align: center;
+    display: block;
+    border-radius: 50%;
+    width: 4.3em;
+    height: 4.3em;
+    background-color: white;
+    content: " ";
+}
+/* Text inside the control */
+.progress-circle .play-btn {
+    position: absolute;
+    color: #53777A;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: auto;
+    font-size: 50px;
+    cursor: pointer;
+}
+.left-half-clipper {
+    /* a round circle */
+    border-radius: 50%;
+    width: 5em;
+    height: 5em;
+    position: absolute; /* needed for clipping */
+    clip: rect(0, 5em, 5em, 2.5em); /* clips the whole left half*/
+}
+/* when p>50, don't clip left half*/
+.progress-circle.over50 .left-half-clipper {
+    clip: rect(auto,auto,auto,auto);
+}
+.value-bar {
+    /*This is an overlayed square, that is made round with the border radius,
+    then it is cut to display only the left half, then rotated clockwise
+    to escape the outer clipping path.*/
+    position: absolute; /*needed for clipping*/
+    clip: rect(0, 2.5em, 5em, 0);
+    width: 5em;
+    height: 5em;
+    border-radius: 50%;
+    border: 0.45em solid #53777A; /*The border is 0.35 but making it larger removes visual artifacts */
+    /*background-color: #4D642D;*/ /* for debug */
+    box-sizing: border-box;
+
+}
+/* Progress bar filling the whole right half for values above 50% */
+.progress-circle.over50 .first50-bar {
+    /*Progress bar for the first 50%, filling the whole right half*/
+    position: absolute; /*needed for clipping*/
+    clip: rect(0, 5em, 5em, 2.5em);
+    background-color: #53777A;
+    border-radius: 50%;
+    width: 5em;
+    height: 5em;
+}
+.progress-circle:not(.over50) .first50-bar{ display: none; }
+
+
+/* Progress bar rotation position */
+.progress-circle.p0 .value-bar { display: none; }
+.progress-circle.p1 .value-bar { transform: rotate(4deg); }
+.progress-circle.p2 .value-bar { transform: rotate(7deg); }
+.progress-circle.p3 .value-bar { transform: rotate(11deg); }
+.progress-circle.p4 .value-bar { transform: rotate(14deg); }
+.progress-circle.p5 .value-bar { transform: rotate(18deg); }
+.progress-circle.p6 .value-bar { transform: rotate(22deg); }
+.progress-circle.p7 .value-bar { transform: rotate(25deg); }
+.progress-circle.p8 .value-bar { transform: rotate(29deg); }
+.progress-circle.p9 .value-bar { transform: rotate(32deg); }
+.progress-circle.p10 .value-bar { transform: rotate(36deg); }
+.progress-circle.p11 .value-bar { transform: rotate(40deg); }
+.progress-circle.p12 .value-bar { transform: rotate(43deg); }
+.progress-circle.p13 .value-bar { transform: rotate(47deg); }
+.progress-circle.p14 .value-bar { transform: rotate(50deg); }
+.progress-circle.p15 .value-bar { transform: rotate(54deg); }
+.progress-circle.p16 .value-bar { transform: rotate(58deg); }
+.progress-circle.p17 .value-bar { transform: rotate(61deg); }
+.progress-circle.p18 .value-bar { transform: rotate(65deg); }
+.progress-circle.p19 .value-bar { transform: rotate(68deg); }
+.progress-circle.p20 .value-bar { transform: rotate(72deg); }
+.progress-circle.p21 .value-bar { transform: rotate(76deg); }
+.progress-circle.p22 .value-bar { transform: rotate(79deg); }
+.progress-circle.p23 .value-bar { transform: rotate(83deg); }
+.progress-circle.p24 .value-bar { transform: rotate(86deg); }
+.progress-circle.p25 .value-bar { transform: rotate(90deg); }
+.progress-circle.p26 .value-bar { transform: rotate(94deg); }
+.progress-circle.p27 .value-bar { transform: rotate(97deg); }
+.progress-circle.p28 .value-bar { transform: rotate(101deg); }
+.progress-circle.p29 .value-bar { transform: rotate(104deg); }
+.progress-circle.p30 .value-bar { transform: rotate(108deg); }
+.progress-circle.p31 .value-bar { transform: rotate(112deg); }
+.progress-circle.p32 .value-bar { transform: rotate(115deg); }
+.progress-circle.p33 .value-bar { transform: rotate(119deg); }
+.progress-circle.p34 .value-bar { transform: rotate(122deg); }
+.progress-circle.p35 .value-bar { transform: rotate(126deg); }
+.progress-circle.p36 .value-bar { transform: rotate(130deg); }
+.progress-circle.p37 .value-bar { transform: rotate(133deg); }
+.progress-circle.p38 .value-bar { transform: rotate(137deg); }
+.progress-circle.p39 .value-bar { transform: rotate(140deg); }
+.progress-circle.p40 .value-bar { transform: rotate(144deg); }
+.progress-circle.p41 .value-bar { transform: rotate(148deg); }
+.progress-circle.p42 .value-bar { transform: rotate(151deg); }
+.progress-circle.p43 .value-bar { transform: rotate(155deg); }
+.progress-circle.p44 .value-bar { transform: rotate(158deg); }
+.progress-circle.p45 .value-bar { transform: rotate(162deg); }
+.progress-circle.p46 .value-bar { transform: rotate(166deg); }
+.progress-circle.p47 .value-bar { transform: rotate(169deg); }
+.progress-circle.p48 .value-bar { transform: rotate(173deg); }
+.progress-circle.p49 .value-bar { transform: rotate(176deg); }
+.progress-circle.p50 .value-bar { transform: rotate(180deg); }
+.progress-circle.p51 .value-bar { transform: rotate(184deg); }
+.progress-circle.p52 .value-bar { transform: rotate(187deg); }
+.progress-circle.p53 .value-bar { transform: rotate(191deg); }
+.progress-circle.p54 .value-bar { transform: rotate(194deg); }
+.progress-circle.p55 .value-bar { transform: rotate(198deg); }
+.progress-circle.p56 .value-bar { transform: rotate(202deg); }
+.progress-circle.p57 .value-bar { transform: rotate(205deg); }
+.progress-circle.p58 .value-bar { transform: rotate(209deg); }
+.progress-circle.p59 .value-bar { transform: rotate(212deg); }
+.progress-circle.p60 .value-bar { transform: rotate(216deg); }
+.progress-circle.p61 .value-bar { transform: rotate(220deg); }
+.progress-circle.p62 .value-bar { transform: rotate(223deg); }
+.progress-circle.p63 .value-bar { transform: rotate(227deg); }
+.progress-circle.p64 .value-bar { transform: rotate(230deg); }
+.progress-circle.p65 .value-bar { transform: rotate(234deg); }
+.progress-circle.p66 .value-bar { transform: rotate(238deg); }
+.progress-circle.p67 .value-bar { transform: rotate(241deg); }
+.progress-circle.p68 .value-bar { transform: rotate(245deg); }
+.progress-circle.p69 .value-bar { transform: rotate(248deg); }
+.progress-circle.p70 .value-bar { transform: rotate(252deg); }
+.progress-circle.p71 .value-bar { transform: rotate(256deg); }
+.progress-circle.p72 .value-bar { transform: rotate(259deg); }
+.progress-circle.p73 .value-bar { transform: rotate(263deg); }
+.progress-circle.p74 .value-bar { transform: rotate(266deg); }
+.progress-circle.p75 .value-bar { transform: rotate(270deg); }
+.progress-circle.p76 .value-bar { transform: rotate(274deg); }
+.progress-circle.p77 .value-bar { transform: rotate(277deg); }
+.progress-circle.p78 .value-bar { transform: rotate(281deg); }
+.progress-circle.p79 .value-bar { transform: rotate(284deg); }
+.progress-circle.p80 .value-bar { transform: rotate(288deg); }
+.progress-circle.p81 .value-bar { transform: rotate(292deg); }
+.progress-circle.p82 .value-bar { transform: rotate(295deg); }
+.progress-circle.p83 .value-bar { transform: rotate(299deg); }
+.progress-circle.p84 .value-bar { transform: rotate(302deg); }
+.progress-circle.p85 .value-bar { transform: rotate(306deg); }
+.progress-circle.p86 .value-bar { transform: rotate(310deg); }
+.progress-circle.p87 .value-bar { transform: rotate(313deg); }
+.progress-circle.p88 .value-bar { transform: rotate(317deg); }
+.progress-circle.p89 .value-bar { transform: rotate(320deg); }
+.progress-circle.p90 .value-bar { transform: rotate(324deg); }
+.progress-circle.p91 .value-bar { transform: rotate(328deg); }
+.progress-circle.p92 .value-bar { transform: rotate(331deg); }
+.progress-circle.p93 .value-bar { transform: rotate(335deg); }
+.progress-circle.p94 .value-bar { transform: rotate(338deg); }
+.progress-circle.p95 .value-bar { transform: rotate(342deg); }
+.progress-circle.p96 .value-bar { transform: rotate(346deg); }
+.progress-circle.p97 .value-bar { transform: rotate(349deg); }
+.progress-circle.p98 .value-bar { transform: rotate(353deg); }
+.progress-circle.p99 .value-bar { transform: rotate(356deg); }
+.progress-circle.p100 .value-bar { transform: rotate(360deg); }
+/* Poodll MINI Player END */
 
