@@ -397,7 +397,7 @@ class filter_poodll extends moodle_text_filter {
                 !empty($conf['cpapisecret'])) {
             $lm = new \filter_poodll\licensemanager();
             $tokenobject = $lm->fetch_token($conf['cpapiuser'], $conf['cpapisecret']);
-            if(!isset($tokenobject->token)){
+            if(isset($tokenobject->token)){
                 $token=$tokenobject->token;
             }else{
                 $token = false;

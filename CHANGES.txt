@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.34 (Build 2020061400)
+-fixed issue where cloudpoodlltoken not properly fetched when useing widget/players
+
 Version 3.1.33 (Build 2020061100)
 -added check for adhoc task duplicates on M3.3 and above
 -fail (no retry) if adhoc move task fails to pull a file (because if file already exists locally AND overwriting leads to fail, then wasteful futile recurring retry)

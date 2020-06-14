@@ -468,7 +468,33 @@ class awstools {
     }
 
 
-    function get_presigned_upload_url($mediatype, $minutes = 30, $key, $iosvideo = false) {
+    function get_presigned_upload_url($contenttype, $days = 7, $key, $iosvideo = false) {
+        $s3client = $this->fetch_s3client();
+        //Get bucket
+        $bucket = 'poodll-audioprocessing-out-us-east-1';
+        $key = 'CP/365/olaf/' . $key;
+
+        //options
+        $options = array();
+        $options['Bucket'] = $bucket;
+        $options['Key'] = $key;
+        $options['Body'] = '';
+        $options['ContentType'] = 'application/octet-stream';
+
+        $cmd = $s3client->getCommand('PutObject', $options);
+
+        //this can fail with SDK loading issues we return an error message in that case
+        try {
+           $request = $s3client->createPresignedRequest($cmd, '+' . $days . ' days');
+           $theurl = (string) $request->getUri();
+        } catch (\Exception $e) {
+            print_error($e->getMessage());
+            $theurl = $e->getMessage();
+        }
+        return $theurl;
+    }
+
+    function xget_presigned_upload_url($mediatype, $minutes = 30, $key, $iosvideo = false) {
         $s3client = $this->fetch_s3client();
         //Get bucket
         $bucket = '';
@@ -496,8 +522,8 @@ class awstools {
 
         //this can fail with SDK loading issues we return an error message in that case
         try {
-           $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
-           $theurl = (string) $request->getUri();
+            $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
+            $theurl = (string) $request->getUri();
         } catch (\Exception $e) {
             print_error($e->getMessage());
             $theurl = $e->getMessage();
