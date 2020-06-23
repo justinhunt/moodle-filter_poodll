@@ -74,6 +74,8 @@ function xmldb_filter_poodll_upgrade($oldversion) {
             $currentskin = $CFG->filter_poodll_html5recorder_skinstyle_video;
             set_config('skinstylevideo', $currentskin, 'filter_poodll');
         }
+        //  savepoint reached
+        upgrade_plugin_savepoint(true, 2017082601, 'filter', 'poodll');
     }
     if ($oldversion < 2017092402) {
         if (property_exists($CFG, 'filter_poodll_recorderorder_audio')) {
@@ -82,27 +84,8 @@ function xmldb_filter_poodll_upgrade($oldversion) {
             $currentvideo = $CFG->filter_poodll_recorderorder_video;
             set_config('filter_poodll_recorderorder_video', str_replace('mobile,media,', 'media,mobile,', $currentvideo));
         }
-    }
-
-    if ($oldversion < 2018041002 && version_compare(phpversion(), '5.5.0', '>=')) {
-        if (property_exists($CFG, 'filter_poodll_aws_sdk')) {
-            set_config('filter_poodll_aws_sdk', '3.x');
-        }
-    }
-
-    if ($oldversion < 2018120500) {
-        if (property_exists($CFG, 'filter_poodll_aws_sdk')) {
-            $currentvalue = get_config('filter_poodll_aws_sdk');
-            switch ($currentvalue) {
-                case constants::AWS_NONE:
-                case constants::AWS_V2:
-                    //lets just leave it like that.
-                    //they probably had a reason for this
-                    break;
-                default:
-                    set_config('filter_poodll_aws_sdk', constants::AWS_AUTO);
-            }
-        }
+        //  savepoint reached
+        upgrade_plugin_savepoint(true, 2017092402, 'filter', 'poodll');
     }
 
     return true;

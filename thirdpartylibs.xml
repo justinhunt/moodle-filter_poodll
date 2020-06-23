@@ -1,20 +1,6 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
-        <location>3rdparty/aws-v3</location>
-        <name>AWS SDK for PHP</name>
-        <version>Version 3</version>
-        <license>Apache</license>
-        <licenseversion>2.0</licenseversion>
-    </library>
-    <library>
-        <location>3rdparty/aws-v2</location>
-        <name>AWS SDK for PHP</name>
-        <version>Version 2</version>
-        <license>Apache</license>
-        <licenseversion>2.0</licenseversion>
-    </library>
-    <library>
         <location>3rdparty/flowplayer-6.0.5</location>
         <name>Flowplayer media player</name>
         <version>6.0.5</version>
