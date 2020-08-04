@@ -4470,7 +4470,7 @@ audio.poodll_preview_bmr {
     margin: 0;
     display: inline-block;
     overflow: hidden;
-    transform-origin: top-left;
+    transform-origin: top left;
 }
 
 .mini_player_loading {
