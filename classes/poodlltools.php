@@ -585,6 +585,20 @@ class poodlltools {
 
     }
 
+    //convert a phrase or word to a series of phonetic characters that we can use to compare text/spoken
+    public static function convert_to_phonetic($phrase,$language){
+
+        switch($language){
+            case 'en':
+                $phonetic = metaphone($phrase);
+                break;
+            case 'ja':
+            default:
+                $phonetic = $phrase;
+        }
+        return $phonetic;
+    }
+
 
     //We check if the OS version is too old here,
     //Android 4+ iOS6+

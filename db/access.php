@@ -42,6 +42,15 @@ $capabilities = array(
                         'editingteacher' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
                 )
-        )
+        ),
+        'filter/poodll:comparetext' => array(
+                'captype' => 'read',
+                'contextlevel' => CONTEXT_MODULE,
+                'archetypes' => array(
+                        'user' => CAP_ALLOW,
+                        'guest' => CAP_ALLOW
+                ),
+                'clonepermissionsfrom' => 'mod/label:view'
+        ),
 );
 
