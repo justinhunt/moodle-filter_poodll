@@ -4460,6 +4460,7 @@ audio.poodll_preview_bmr {
 .mini_player_container {
     max-width: 70px;
     min-width: 70px;
+    max-height: 70px;
 }
 .mini_player_holder {
     overflow: hidden;
@@ -4469,7 +4470,6 @@ audio.poodll_preview_bmr {
     padding: 0;
     margin: 0;
     display: inline-block;
-    overflow: hidden;
     transform-origin: top left;
 }
 
