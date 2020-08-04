@@ -4457,6 +4457,10 @@ audio.poodll_preview_bmr {
 /* Poodll Multi Player END */
 
 /* Poodll Mini Player START */
+.mini_player_container {
+    max-width: 70px;
+    min-width: 70px;
+}
 .mini_player_holder {
     overflow: hidden;
     transform: scale(0.5);
@@ -4466,6 +4470,7 @@ audio.poodll_preview_bmr {
     margin: 0;
     display: inline-block;
     overflow: hidden;
+    transform-origin: top-left;
 }
 
 .mini_player_loading {
