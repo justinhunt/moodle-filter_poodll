@@ -104,6 +104,30 @@ class poodlltools {
         }
     }
 
+    public static function call_cloudpoodll($functionname, $params){
+        $conf = get_config('filter_poodll');
+
+        if (!empty($conf->cpapiuser) && !empty($conf->cpapisecret)) {
+            $lm = new \filter_poodll\licensemanager();
+            $tokenobject = $lm->fetch_token($conf->cpapiuser, $conf->cpapisecret);
+            if(isset($tokenobject->token)){
+                $token=$tokenobject->token;
+            }else{
+                return false;
+            }
+            $url = constants::CLOUDPOODLL . "/webservice/rest/server.php";
+            $params["wstoken"]=$token;
+            $params["wsfunction"]=$functionname;
+            $params["moodlewsrestformat"]='json';
+            // $paramstring = http_build_query($params);
+            $resp = self::curl_fetch($url,$params);
+            return json_decode($resp);
+        }else{
+            return false;
+        }
+    }
+
+
 
     //we use curl to fetch transcripts from AWS and Tokens from cloudpoodll
     //this is our helper

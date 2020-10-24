@@ -44,7 +44,8 @@ define(['jquery',
                 this.audioctx = audioctx;
                 this.mediaStream = mediaStream;
                 this.deviceSampleRate = audioctx.sampleRate;
-                this.sampleRate = msr.sampleRate || this.deviceSampleRate;
+                //this.sampleRate = msr.sampleRate || this.deviceSampleRate;
+                this.sampleRate =  this.deviceSampleRate;
                 this.mimeType = msr.mimeType || 'audio/wav';
                 this.isPCM = this.mimeType.indexOf('audio/pcm') > -1;
                 this.numChannels = msr.audioChannels || 2;

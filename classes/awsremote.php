@@ -30,8 +30,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 class awsremote {
 
-    const CLOUDPOODLL = 'https://cloud.poodll.com';
-
     protected $convfolder = 'transcoded/';
 
 
@@ -119,7 +117,7 @@ class awsremote {
             }else{
                 return false;
             }
-            $url = self::CLOUDPOODLL . "/webservice/rest/server.php";
+            $url = constants::CLOUDPOODLL . "/webservice/rest/server.php";
             $params["wstoken"]=$token;
             $params["wsfunction"]=$functionname;
             $params["moodlewsrestformat"]='json';
@@ -141,7 +139,7 @@ class awsremote {
         $params['outfilename']=$outfilename;
         $params['convfolder']=$this->convfolder;
         $params['region']=$this->region;
-        $ret = $this->call_cloudpoodll('local_cpapi_fetch_convfile_details',$params);
+        $ret = poodlltools::call_cloudpoodll('local_cpapi_fetch_convfile_details',$params);
         if(!$ret || !isset($ret->returnCode)) {return 'failed to get aws remote result';}
             if ($ret->returnCode=="0") {
                 $tempfilepath = $CFG->tempdir . "/" . $filename;
@@ -201,7 +199,7 @@ class awsremote {
         $params['sourcemimetype'] = $sourcemimetype;
 
         try {
-            $ret = $this->call_cloudpoodll('local_cpapi_stage_remoteprocess_job',$params);
+            $ret = poodlltools::call_cloudpoodll('local_cpapi_stage_remoteprocess_job',$params);
             if(!$ret || !isset($ret->returnCode)) {return 'failed to get aws remote result';}
             if ($ret->returnCode=="0") {
                 return true;
@@ -259,7 +257,7 @@ class awsremote {
         $params['key'] = $key;
         $params['iosvideo'] = $iosvideo;
         try {
-            $ret = $this->call_cloudpoodll('local_cpapi_fetch_presignedupload_url',$params);
+            $ret = poodlltools::call_cloudpoodll('local_cpapi_fetch_presignedupload_url',$params);
             if(!$ret || !isset($ret->returnCode)) {return 'failed to get aws remote result';}
             if ($ret->returnCode=="0") {
                 return $ret->returnMessage;
@@ -279,7 +277,7 @@ class awsremote {
         $params['filename'] = $filename;
         $params['inout'] = $inout;
         try {
-            $ret = $this->call_cloudpoodll('local_cpapi_does_file_exist',$params);
+            $ret = poodlltools::call_cloudpoodll('local_cpapi_does_file_exist',$params);
             if(!$ret || !isset($ret->returnCode)) {return 'failed to get aws remote result';}
             if ($ret->returnCode=="0") {
                 return $ret->returnMessage == 'true';

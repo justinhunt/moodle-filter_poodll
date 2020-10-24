@@ -11,5 +11,5 @@ namespace filter_poodll;
 class constants {
     const MOD_FRANKY = 'filter_poodll';
     const M_COMP = 'filter_poodll';
-
+    const CLOUDPOODLL = 'https://cloud.poodll.com';
 }

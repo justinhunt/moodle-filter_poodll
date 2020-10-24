@@ -29,7 +29,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 class licensemanager {
 
-    const CLOUDPOODLL = 'https://cloud.poodll.com';
     const FILTER_POODLL_VAL_BY_REGCODE = 1;
     const FILTER_POODLL_VAL_BY_APICREDS = 2;
     const FILTER_POODLL_IS_REGISTERED = 1;
@@ -466,7 +465,7 @@ gQIDAQAB
         }
 
         // Send the request & save response to $resp
-        $token_url = self::CLOUDPOODLL . "/local/cpapi/poodlltoken.php";
+        $token_url = constants::CLOUDPOODLL . "/local/cpapi/poodlltoken.php";
         $postdata = array(
                 'username' => $apiuser,
                 'password' => $apisecret,
