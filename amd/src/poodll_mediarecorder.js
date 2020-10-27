@@ -384,6 +384,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             if (ip.blobs && ip.blobs.length > 0) {
                 log.debug('playing type:' + ip.blobs[0].type);
                 utils.doConcatenateBlobs(ip.blobs, function (concatenatedBlob) {
+                    log.debug(concatenatedBlob);
                     var mediaurl = URL.createObjectURL(concatenatedBlob);
                     preview.src = mediaurl;
                     preview.controls = true;
@@ -572,6 +573,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 // so its created in the init and passed around
                 ip.mediaRecorder.start(ip.timeinterval, ip.audioctx);
                 ip.mediaRecorder.ondataavailable = function (blob) {
+                    log.debug(blob);
                     ip.blobs.push(blob);
                 };
 

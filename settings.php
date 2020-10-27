@@ -61,6 +61,12 @@ if (is_siteadmin()) {
 
     $ADMIN->add($poodll_category_name, $diagnostics_settings);
 
+    ///my subscription
+    $mysubscription_settings = new admin_externalpage('mysubscription', get_string('mysubscription', 'filter_poodll'),
+            $CFG->wwwroot . '/filter/poodll/mysubscription.php');
+
+    $ADMIN->add($poodll_category_name, $mysubscription_settings);
+
     //Mobile app Settings 
     $mobile_settings = new admin_settingpage('filter_poodll_mobile', get_string('mobilesettings', 'filter_poodll'));
     $mobile_items = \filter_poodll\settingstools::fetch_mobile_items($conf);

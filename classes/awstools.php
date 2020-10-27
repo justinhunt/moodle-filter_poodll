@@ -52,6 +52,8 @@ class awstools {
     const REGION_EUW2 = 'eu-west-2'; //EU (London)
     const REGION_SAE1 = 'sa-east-1'; //South America (São Paulo)
 
+    const URLSTUB_POLLYFILE = 'https://pollyfile.poodll.net';
+    const BUCKET_NAME_POLLYFILE = 'amazon-cloudfront-secure-static-site-s3bucketroot-1dw3pilpa7ci3';
     const BUCKET_NAME_VIDEOIN = 'poodll-videoprocessing-in';
     const BUCKET_NAME_VIDEOOUT = 'poodll-videoprocessing-out';
     const BUCKET_NAME_VIDEOTHUMBS = 'poodll-video-thumbs';

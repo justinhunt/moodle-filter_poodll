@@ -421,3 +421,6 @@ $string['awssdkv2'] = 'Use AWS SDK V2';
 $string['awssdkv3'] = 'Use AWS SDK V3';
 $string['awssdklocal'] = 'Use AWS SDK from plugin local_aws';
 $string['awssdkauto'] = 'Auto select AWS SDK';
+
+//My subscription page
+$string['mysubscription'] = "My Subscription.";

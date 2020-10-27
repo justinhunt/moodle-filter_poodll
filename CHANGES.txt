@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.1.37 (Build 2020102400)
+added user report
+
+Version 3.1.36 (Build 20201019XX)
+added caching for Polly files
+
 Version 3.1.35 (Build 2020062400)
 - Removed references to AWS SDK in old upgrade code. Since its not used in latest version
 
