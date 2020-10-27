@@ -473,6 +473,7 @@ gQIDAQAB
                 'service' => 'cloud_poodll'
         );
         $token_response = $this->curl_fetch($token_url, $postdata);
+error_log( $token_response);
         if ($token_response) {
             $resp_object = json_decode($token_response);
             if ($resp_object && property_exists($resp_object, 'token')) {
