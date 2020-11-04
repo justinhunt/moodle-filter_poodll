@@ -493,6 +493,25 @@ class awstools {
             $options['ContentType'] = 'application/octet-stream';
         }
 
+        //we will use accelerated uploads for video in eu-west-1 ap-northeast-1 us-east-1 and ap-southeast-2
+        if($mediatype=='video'){
+            switch($this->region){
+                case self::REGION_EUW1:
+                case self::REGION_EUW2:
+                case self::REGION_APN1:
+                case self::REGION_USE1:
+                case self::REGION_APSE2:
+                case self::REGION_APSE1:
+                case self::REGION_EUC1:
+                case self::REGION_SAE1:
+                case self::REGION_APS1:
+                case self::REGION_CAC1:
+                default:
+                    $options['@use_accelerate_endpoint'] = true;
+                    break;
+            }
+        }
+
         $cmd = $s3client->getCommand('PutObject', $options);
 
         //this can fail with SDK loading issues we return an error message in that case
