@@ -88,20 +88,11 @@ define(['jquery', 'core/log'], function ($, log) {
                             var header = ab.slice(0, 44);
                             var headerview = new DataView(header);
                             headerview.setUint32(40, totalbytes, true);
-                            //allbytes.unshift(header);
-
-                            var mergedbuffers = self.mergeBuffers(allbytes,totalbytes);
-
-                           /* var byteLength = 0;
-                            buffers.forEach(function (buffer) {
-                                byteLength += buffer.byteLength;
-                            });
-                            */
+                            allbytes.unshift(header);
 
                             //make our final binary blob and pass it to callback
-                            //var wavblob = new Blob(allbytes, {type: 'audio/wav'});
-                            var wavblob = new Blob([header,mergedbuffers], {type: 'audio/wav'});
-                            //log.debug(allbytes);
+                            var wavblob = new Blob(allbytes, {type: 'audio/wav'});
+                            log.debug(allbytes);
                             callback(wavblob);
                         }
                     };
@@ -112,75 +103,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
         }, //end of concatenateWavBlobs
 
-        mergeBuffers: function (thebuffers, resultlength) {
-            var result = new Float32Array(resultlength);
-            var offset = 0;
-            var lng = thebuffers.length;
-            for (var i = 0; i < lng; i++) {
-                var buffer = thebuffers[i];
-                result.set(buffer, offset);
-                offset += buffer.length;
-            }
-            return result;
-        },
 
-        _standardConcatenateBlobs: function (blobs, callback) {
-            var buffers = [];
-            var index = 0;
-
-
-            function readAsArrayBuffer() {
-                if (!blobs[index]) {
-                    return concatenateBuffers();
-                }
-                var reader = new FileReader();
-                reader.onload = function (event) {
-                    var result = event.target.result;
-                    if(index==0){
-                        var audioheader = result.slice(0,44);
-                        buffers.push(audioheader);
-                    }
-                    var audiodata = result.slice(44);
-                    buffers.push(audiodata);
-                    index++;
-                    readAsArrayBuffer();
-                };
-                reader.readAsArrayBuffer(blobs[index]);
-            }
-
-            function concatenateBuffers() {
-                var byteLength = 0;
-                buffers.forEach(function (buffer) {
-                    byteLength += buffer.byteLength;
-                });
-
-                var tmp = new Uint16Array(byteLength);
-                var lastOffset = 0;
-                buffers.forEach(function (buffer) {
-                    // BYTES_PER_ELEMENT == 2 for Uint16Array
-                    var reusableByteLength = buffer.byteLength;
-                    if (reusableByteLength % 2 != 0) {
-                        buffer = buffer.slice(0, reusableByteLength - 1);
-                    }
-                    tmp.set(new Uint16Array(buffer), lastOffset);
-                    lastOffset += reusableByteLength;
-                });
-
-                var audiosize = byteLength-44;
-                var alldataview = new DataView(tmp.buffer);
-                alldataview.setUint32(40, audiosize, true);
-                log.debug('concatenating blobs');
-                log.debug(alldataview);
-                var blob = new Blob([alldataview], {
-                    type: 'audio/wav'
-                });
-
-                callback(blob);
-            }
-
-            //commence processing
-            readAsArrayBuffer();
-        }, //end of Concatenate blobs
 
         _simpleConcatenateBlobs: function (blobs, type) {
             return new Blob(blobs, {'type': type});
@@ -193,7 +116,6 @@ define(['jquery', 'core/log'], function ($, log) {
                     // mediastreamrecorder adds a header to each wav blob,
                     // we remove them and combine audiodata and new header
                     this._concatenateWavBlobs(theblobs, thecallback);
-                   // this._standardConcatenateBlobs(theblobs,thecallback);
                     break;
                 case 'audio/ogg':
                 case 'audio/webm':
@@ -202,8 +124,6 @@ define(['jquery', 'core/log'], function ($, log) {
                     var concatenatedBlob = this._simpleConcatenateBlobs(theblobs, theblobs[0].type);
                     thecallback(concatenatedBlob);
                     break;
-                case 'old default':
-                    this._standardConcatenateBlobs(theblobs, theblobs[0].type, thecallback); // end of concatenate blobs
             }// end of switch case
         },
 

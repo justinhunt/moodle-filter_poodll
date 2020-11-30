@@ -391,13 +391,6 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     preview.volume = ip.previewvolume;
                     preview.play();
 
-                    $("<audio></audio>").attr({
-                        'src': mediaurl,
-                        'volume':0.4,
-                        'controls': "true",
-                        'preload': 'auto',
-                    }).appendTo("body");
-
                 });
                 // Click the stop button if playback ends;
                 $(preview).bind('ended', function () {
