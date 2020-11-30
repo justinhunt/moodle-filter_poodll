@@ -200,7 +200,7 @@ define(['jquery',
                 // stereo (2 channels)
                 view.setUint16(22, this.numChannels, true);
                 view.setUint32(24, this.sampleRate, true);
-                view.setUint32(28, this.sampleRate * 4, true); // numChannels * 2 (via #71)
+                view.setUint32(28, this.sampleRate * this.numChannels * 2, true); // numChannels * 2 (via #71)
                 view.setUint16(32, this.numChannels * 2, true);
                 view.setUint16(34, 16, true);
                 // data sub-chunk

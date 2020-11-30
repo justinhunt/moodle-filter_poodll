@@ -390,10 +390,11 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     preview.controls = true;
                     preview.volume = ip.previewvolume;
                     if(ip.blobs[0].type == 'audio/wav'){
-                        preview.load();
-                        log.debug('loading audio wav now');
+                        var preview_audio = new Audio(mediaurl);
+                        preview_audio.play();
+                    }else {
+                        preview.play();
                     }
-                    preview.play();
                 });
                 // Click the stop button if playback ends;
                 $(preview).bind('ended', function () {
