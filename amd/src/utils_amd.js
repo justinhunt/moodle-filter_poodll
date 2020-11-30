@@ -57,6 +57,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
 
             //fetch our header
+            var self=this;
             var allbytes = []; //this will be an array of arraybuffers
             var loadedblobs = 0;
             var totalbytes = 0;
@@ -89,7 +90,7 @@ define(['jquery', 'core/log'], function ($, log) {
                             headerview.setUint32(40, totalbytes, true);
                             //allbytes.unshift(header);
 
-                            var mergedbuffers = this.mergeBuffers(allbytes,totalbytes);
+                            var mergedbuffers = self.mergeBuffers(allbytes,totalbytes);
 
                            /* var byteLength = 0;
                             buffers.forEach(function (buffer) {
