@@ -395,7 +395,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                         'src': mediaurl,
                         'volume':0.4
                     }).appendTo("body");
-                    
+
                 });
                 // Click the stop button if playback ends;
                 $(preview).bind('ended', function () {
