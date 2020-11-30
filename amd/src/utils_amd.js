@@ -75,7 +75,8 @@ define(['jquery', 'core/log'], function ($, log) {
                         //the slice is from(inclusive) to end(exclusive)
                         var audiodata = ab.slice(44);
                         totalbytes += audiodata.byteLength;
-                        allbytes[index] = audiodata;
+                        allbytes.push(audiodata);
+                        //allbytes[index] = audiodata;
                         loadedblobs++;
 
                         //finally add the header and do callback if at end
@@ -88,6 +89,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
                             //make our final binary blob and pass it to callback
                             var wavblob = new Blob(allbytes, {type: 'audio/wav'});
+                            log.debug(allbytes);
                             callback(wavblob);
                         }
                     };
