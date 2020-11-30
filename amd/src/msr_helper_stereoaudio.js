@@ -215,7 +215,7 @@ define(['jquery',
                 // we interleave both channels together
                 if (this.numChannels === 2) {
                     var rightBuffer = this.mergeBuffers(internalRightChannel, internalRecordingLength); // bug fixed via #70,#71
-                    this.interleaved = this.interleave(leftBuffer, rightBuffer);
+                    interleaved = this.interleave(leftBuffer, rightBuffer);
                 }
                 var dataview = this.encodeWAV(interleaved);
                 var audioBlob = new Blob([dataview], {type: 'audio/wav'});
