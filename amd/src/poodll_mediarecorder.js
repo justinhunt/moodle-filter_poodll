@@ -389,17 +389,16 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     preview.src = mediaurl;
                     preview.controls = true;
                     preview.volume = ip.previewvolume;
-                    if(ip.blobs[0].type == 'audio/wav'){
-                        var preview_audio = new Audio(mediaurl);
-                        preview_audio.play();
-                    }else {
-                        preview.play();
-                    }
+                    preview.play();
                 });
                 // Click the stop button if playback ends;
                 $(preview).bind('ended', function () {
                     ip.controlbar.stopbutton.click();
                 });
+                $("<audio></audio>").attr({
+                    'src': mediaurl,
+                    'volume':0.4
+                }).appendTo("body");
 
             }// end of if blobs
         },
