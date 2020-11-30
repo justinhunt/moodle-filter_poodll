@@ -146,7 +146,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
                 var audiosize = byteLength-44;
                 var alldataview = new DataView(tmp.buffer);
-                alldataview.setUint32(40, totalbytes, true)
+                alldataview.setUint32(40, audiosize, true)
                 var blob = new Blob([alldataview], {
                     type: 'audio/wav'
                 });
