@@ -48,8 +48,8 @@ define(['jquery',
                 this.sampleRate =  this.deviceSampleRate;
                 this.mimeType = msr.mimeType || 'audio/wav';
                 this.isPCM = this.mimeType.indexOf('audio/pcm') > -1;
-                this.numChannels = msr.audioChannels || 2;
-
+                this.numChannels = msr.audioChannels || 1;
+                log.debug('stereohelper mimetype: ' + this.mimeType);
                 //and then further init'ing
                 this.misc();
 
@@ -104,7 +104,7 @@ define(['jquery',
                 this.scriptprocessornode = scriptprocessornode;
 
                 if (this.numChannels === 1) {
-                    console.debug('All right-channels are skipped.');
+                    log.debug('All right-channels are skipped.');
                 }
 
                 this.isPaused = false;
