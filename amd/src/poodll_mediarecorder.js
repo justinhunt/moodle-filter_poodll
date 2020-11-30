@@ -393,7 +393,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
                     $("<audio></audio>").attr({
                         'src': mediaurl,
-                        'volume':0.4
+                        'volume':0.4,
+                        'controls': "true",
+                        'preload': 'auto',
                     }).appendTo("body");
 
                 });
