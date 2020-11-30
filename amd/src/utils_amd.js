@@ -54,6 +54,8 @@ define(['jquery', 'core/log'], function ($, log) {
 
         _concatenateWavBlobs: function (blobs, callback) {
 
+
+
             //fetch our header
             var allbytes = []; //this will be an array of arraybuffers
             var loadedblobs = 0;
@@ -100,9 +102,10 @@ define(['jquery', 'core/log'], function ($, log) {
 
         }, //end of concatenateWavBlobs
 
-        _standardConcatenateBlobs: function (blobs, type, callback) {
+        _standardConcatenateBlobs: function (blobs, callback) {
             var buffers = [];
             var index = 0;
+
 
             function readAsArrayBuffer() {
                 if (!blobs[index]) {
@@ -110,7 +113,13 @@ define(['jquery', 'core/log'], function ($, log) {
                 }
                 var reader = new FileReader();
                 reader.onload = function (event) {
-                    buffers.push(event.target.result);
+                    var result = event.target.result;
+                    if(index==0){
+                        var audioheader = result.slice(0,44);
+                        buffers.push(audioheader);
+                    }
+                    var audiodata = result.slice(44);
+                    buffers.push(audiodata);
                     index++;
                     readAsArrayBuffer();
                 };
@@ -135,8 +144,11 @@ define(['jquery', 'core/log'], function ($, log) {
                     lastOffset += reusableByteLength;
                 });
 
-                var blob = new Blob([tmp.buffer], {
-                    type: type
+                var audiosize = byteLength-44;
+                var alldataview = new DataView(tmp.buffer);
+                alldataview.setUint32(40, totalbytes, true)
+                var blob = new Blob([alldataview], {
+                    type: 'audio/wav'
                 });
 
                 callback(blob);
@@ -156,7 +168,8 @@ define(['jquery', 'core/log'], function ($, log) {
                 case 'audio/pcm':
                     // mediastreamrecorder adds a header to each wav blob,
                     // we remove them and combine audiodata and new header
-                    this._concatenateWavBlobs(theblobs, thecallback);
+                    //this._concatenateWavBlobs(theblobs, thecallback);
+                    this._standardConcatenateBlobs(theblobs,thecallback);
                     break;
                 case 'audio/ogg':
                 case 'audio/webm':
