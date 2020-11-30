@@ -219,7 +219,7 @@ define(['jquery',
                 }
                 var dataview = this.encodeWAV(interleaved);
                 var audioBlob = new Blob([dataview], {type: 'audio/wav'});
-                return audioBlob;
+                this.msr.ondataavailable(audioBlob);
             },
 
             xrequestData: function () {
