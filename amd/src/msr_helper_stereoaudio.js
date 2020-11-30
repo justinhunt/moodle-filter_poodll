@@ -171,6 +171,7 @@ define(['jquery',
                 view.setUint32(40, samples.length * 2, true);
 
                 this.floatTo16BitPCM(view, 44, samples);
+                log.debug(samples.length * 2);
 
                 return view;
             },
