@@ -390,11 +390,13 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     preview.controls = true;
                     preview.volume = ip.previewvolume;
                     preview.play();
+
                 });
                 // Click the stop button if playback ends;
                 $(preview).bind('ended', function () {
                     ip.controlbar.stopbutton.click();
                 });
+
 
             }// end of if blobs
         },

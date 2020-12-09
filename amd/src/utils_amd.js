@@ -54,7 +54,10 @@ define(['jquery', 'core/log'], function ($, log) {
 
         _concatenateWavBlobs: function (blobs, callback) {
 
+
+
             //fetch our header
+            var self=this;
             var allbytes = []; //this will be an array of arraybuffers
             var loadedblobs = 0;
             var totalbytes = 0;
@@ -75,6 +78,7 @@ define(['jquery', 'core/log'], function ($, log) {
                         //the slice is from(inclusive) to end(exclusive)
                         var audiodata = ab.slice(44);
                         totalbytes += audiodata.byteLength;
+                        //allbytes.push(audiodata);
                         allbytes[index] = audiodata;
                         loadedblobs++;
 
@@ -88,6 +92,8 @@ define(['jquery', 'core/log'], function ($, log) {
 
                             //make our final binary blob and pass it to callback
                             var wavblob = new Blob(allbytes, {type: 'audio/wav'});
+                            log.debug(totalbytes);
+                            log.debug(allbytes);
                             callback(wavblob);
                         }
                     };
@@ -98,51 +104,7 @@ define(['jquery', 'core/log'], function ($, log) {
 
         }, //end of concatenateWavBlobs
 
-        _standardConcatenateBlobs: function (blobs, type, callback) {
-            var buffers = [];
-            var index = 0;
 
-            function readAsArrayBuffer() {
-                if (!blobs[index]) {
-                    return concatenateBuffers();
-                }
-                var reader = new FileReader();
-                reader.onload = function (event) {
-                    buffers.push(event.target.result);
-                    index++;
-                    readAsArrayBuffer();
-                };
-                reader.readAsArrayBuffer(blobs[index]);
-            }
-
-            function concatenateBuffers() {
-                var byteLength = 0;
-                buffers.forEach(function (buffer) {
-                    byteLength += buffer.byteLength;
-                });
-
-                var tmp = new Uint16Array(byteLength);
-                var lastOffset = 0;
-                buffers.forEach(function (buffer) {
-                    // BYTES_PER_ELEMENT == 2 for Uint16Array
-                    var reusableByteLength = buffer.byteLength;
-                    if (reusableByteLength % 2 != 0) {
-                        buffer = buffer.slice(0, reusableByteLength - 1);
-                    }
-                    tmp.set(new Uint16Array(buffer), lastOffset);
-                    lastOffset += reusableByteLength;
-                });
-
-                var blob = new Blob([tmp.buffer], {
-                    type: type
-                });
-
-                callback(blob);
-            }
-
-            //commence processing
-            readAsArrayBuffer();
-        }, //end of Concatenate blobs
 
         _simpleConcatenateBlobs: function (blobs, type) {
             return new Blob(blobs, {'type': type});
@@ -163,8 +125,6 @@ define(['jquery', 'core/log'], function ($, log) {
                     var concatenatedBlob = this._simpleConcatenateBlobs(theblobs, theblobs[0].type);
                     thecallback(concatenatedBlob);
                     break;
-                case 'old default':
-                    this._standardConcatenateBlobs(theblobs, theblobs[0].type, thecallback); // end of concatenate blobs
             }// end of switch case
         },
 
