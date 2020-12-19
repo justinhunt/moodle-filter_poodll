@@ -83,8 +83,11 @@ $thirty_puser = 0;
 $plugin_types_arr = "[";
 
 foreach($mysubdata->usersubs_details as $subdatadetails){
+
+    $timecreated =new DateTime();
+    $timecreated->setTimestamp($subdatadetails->timecreated);
   
-   if((strtotime($subdatadetails->timecreated) > strtotime('-180 days'))&&(strtotime($subdatadetails->timecreated) <= strtotime('-365 days'))) {
+   if(($timecreated > strtotime('-180 days'))&&($timecreated <= strtotime('-365 days'))) {
        $threesixtyfive_recordtype_video += $subdatadetails->video_file_count;
        $threesixtyfive_recordtype_audio += $subdatadetails->audio_file_count;
        $threesixtyfive_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -92,7 +95,7 @@ foreach($mysubdata->usersubs_details as $subdatadetails){
        $threesixtyfive_puser += $subdatadetails->puser_count;
    }
    
-   if((strtotime($subdatadetails->timecreated) > strtotime('-90 days'))&&(strtotime($subdatadetails->timecreated) <= strtotime('-180 days'))){
+   if(($timecreated > strtotime('-90 days'))&&($timecreated <= strtotime('-180 days'))){
        $oneeighty_recordtype_video += $subdatadetails->video_file_count;
        $oneeighty_recordtype_audio += $subdatadetails->audio_file_count;
        $oneeighty_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -100,7 +103,7 @@ foreach($mysubdata->usersubs_details as $subdatadetails){
        $oneeighty_puser += $subdatadetails->puser_count;
    }
    
-   if((strtotime($subdatadetails->timecreated) > strtotime('-30 days'))&&(strtotime($subdatadetails->timecreated) <= strtotime('-90 days'))){
+   if(($timecreated > strtotime('-30 days'))&&($timecreated <= strtotime('-90 days'))){
        $ninety_recordtype_video += $subdatadetails->video_file_count;
        $ninety_recordtype_audio += $subdatadetails->audio_file_count;
        $ninety_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -108,7 +111,7 @@ foreach($mysubdata->usersubs_details as $subdatadetails){
        $ninety_puser += $subdatadetails->puser_count;
  }
    
-   if(strtotime($subdatadetails->timecreated) <= strtotime('-30 days')){
+   if($timecreated <= strtotime('-30 days')){
      $thirty_recordtype_video += $subdatadetails->video_file_count;
      $thirty_recordtype_audio += $subdatadetails->audio_file_count;
      $thirty_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
