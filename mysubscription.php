@@ -182,6 +182,7 @@ if ($reportdata['subscription_check'] == true){
 echo $OUTPUT->footer();
 
 function count_pusers($pusers){
+    $pusers=trim($pusers);
     return count(array_unique(explode(',',$pusers)));
 
 }
