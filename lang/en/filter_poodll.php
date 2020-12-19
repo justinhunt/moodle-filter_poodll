@@ -466,4 +466,6 @@ $string['ppn_p_chat_standard'] = 'P-Chat (standard)';
 $string['ppn_word_cards_standard'] = 'Word Cards (Standard)';
 $string['ppn_na'] = 'NA';
 $string['no_subscriptions'] = 'No subscriptions.';
+$string['failedfetchsubreport'] = 'Failed to fetch subscription report';
+
 

@@ -1,5 +1,7 @@
 <?php
 
+use filter_poodll\constants;
+
 require_once("../../config.php");
 require_once($CFG->libdir . '/adminlib.php');
 
@@ -15,7 +17,12 @@ echo $OUTPUT->heading(get_string('mysubscription', 'filter_poodll'), 3);
 
 $params=[];
 $result = \filter_poodll\poodlltools::call_cloudpoodll('local_cpapi_fetch_user_report',$params);
-$mysubdata=json_decode($result->returnMessage);
+if(!$result || !isset($result->returnMessage) || !($mysubdata=json_decode($result->returnMessage))){
+    echo get_string('failedfetchsubreport',constants::M_COMP);
+    echo $OUTPUT->footer();
+    return;
+}
+
 
 $reportdata=[];
 
@@ -149,7 +156,11 @@ foreach($mysubdata->usersubs_details as $subdatadetails){
             if(in_array($target_name_translated, $mysubscriptions_names)) {
                 $idx_val = array_search($target_name_translated, $mysubscriptions_names);
                 $val = $json_arr[$key][0]['audio']+$json_arr[$key][0]['video'];
-                $plugin_types_arr[$idx_val] += $val;
+                if(isset($plugin_types_arr[$idx_val])) {
+                    $plugin_types_arr[$idx_val] += $val;
+                }else{
+                    $plugin_types_arr[$idx_val] = $val;
+                }
             } 
         }
 }
