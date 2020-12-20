@@ -13,45 +13,7 @@ use renderable;
 
 class renderer extends \plugin_renderer_base implements renderable {
 
-    /**
-     * Returns the header for the module
-     *
-     * @param mod $instance
-     * @param string $currenttab current tab that is shown.
-     * @param int    $item id of the anything that needs to be displayed.
-     * @param string $extrapagetitle String to append to the page title.
-     * @return string
-     */
-    public function header($moduleinstance, $cm, $currenttab = '', $itemid = null, $extrapagetitle = null) {
-        global $CFG;
 
-        $activityname = format_string($moduleinstance->name, true, $moduleinstance->course);
-        if (!empty($extrapagetitle)) {
-            $title = $this->page->course->shortname.": ".$activityname.": ".$extrapagetitle;
-        }
-
-        // Build the buttons
-        $context = \context_module::instance($cm->id);
-
-        /// Header setup
-        $this->page->set_title($title);
-        $this->page->set_heading($this->page->course->fullname);
-        $output = $this->output->header();
-
-        if (has_capability('mod/cpassignment:manage', $context)) {
-            //   $output .= $this->output->heading_with_help($activityname, 'overview', constants::M_LANG);
-
-            if (!empty($currenttab)) {
-                ob_start();
-                include($CFG->dirroot.'/mod/cpassignment/tabs.php');
-                $output .= ob_get_contents();
-                ob_end_clean();
-            }
-
-        }
-
-        return $output;
-    }
 
     public function display_usage_report($usagedata){
         $reportdata=[];
@@ -151,10 +113,10 @@ class renderer extends \plugin_renderer_base implements renderable {
 
         //calculate report summaries
         $reportdata['pusers']=array_values(array(
-                array('name'=>'30','value'=>count_pusers($thirty_puser)),
-                array('name'=>'90','value'=>count_pusers($ninety_puser)),
-                array('name'=>'180','value'=>count_pusers($oneeighty_puser)),
-                array('name'=>'365','value'=>count_pusers($threesixtyfive_puser))
+                array('name'=>'30','value'=>$this->count_pusers($thirty_puser)),
+                array('name'=>'90','value'=>$this->count_pusers($ninety_puser)),
+                array('name'=>'180','value'=>$this->count_pusers($oneeighty_puser)),
+                array('name'=>'365','value'=>$this->count_pusers($threesixtyfive_puser))
         ));
 
         $reportdata['record']=array_values(array(
