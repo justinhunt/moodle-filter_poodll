@@ -213,4 +213,10 @@ class renderer extends \plugin_renderer_base implements renderable {
 
     }
 
+    public function count_pusers($pusers){
+        $pusers=trim($pusers);
+        return count(array_unique(explode(',',$pusers)));
+
+    }
+
 }
