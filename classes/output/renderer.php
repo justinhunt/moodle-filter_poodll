@@ -14,6 +14,9 @@ use renderable;
 class renderer extends \plugin_renderer_base implements renderable {
 
 
+    /*
+     * Takes data from webservice about usage and renders it on page
+     */
 
     public function display_usage_report($usagedata){
         $reportdata=[];
@@ -73,11 +76,10 @@ class renderer extends \plugin_renderer_base implements renderable {
 
         foreach($usagedata->usersubs_details as $subdatadetails){
 
-            $timecreated =new \DateTime();
-            $timecreated->setTimestamp($subdatadetails->timecreated);
+            $timecreated = $subdatadetails->timecreated;
 
             //if(($timecreated > strtotime('-180 days'))&&($timecreated <= strtotime('-365 days'))) {
-            if(($timecreated <= strtotime('-365 days'))) {
+            if(($timecreated >= strtotime('-365 days'))) {
                 $threesixtyfive_recordtype_video += $subdatadetails->video_file_count;
                 $threesixtyfive_recordtype_audio += $subdatadetails->audio_file_count;
                 $threesixtyfive_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -86,7 +88,7 @@ class renderer extends \plugin_renderer_base implements renderable {
             }
 
             //if(($timecreated > strtotime('-90 days'))&&($timecreated <= strtotime('-180 days'))){
-            if(($timecreated <= strtotime('-180 days'))){
+            if(($timecreated >= strtotime('-180 days'))){
                 $oneeighty_recordtype_video += $subdatadetails->video_file_count;
                 $oneeighty_recordtype_audio += $subdatadetails->audio_file_count;
                 $oneeighty_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -95,7 +97,7 @@ class renderer extends \plugin_renderer_base implements renderable {
             }
 
             //if(($timecreated > strtotime('-30 days'))&&($timecreated <= strtotime('-90 days'))){
-            if(($timecreated <= strtotime('-90 days'))){
+            if(($timecreated >= strtotime('-90 days'))){
                 $ninety_recordtype_video += $subdatadetails->video_file_count;
                 $ninety_recordtype_audio += $subdatadetails->audio_file_count;
                 $ninety_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -103,7 +105,7 @@ class renderer extends \plugin_renderer_base implements renderable {
                 $ninety_puser .= $subdatadetails->pusers;
             }
 
-            if($timecreated <= strtotime('-30 days')){
+            if($timecreated >= strtotime('-30 days')){
                 $thirty_recordtype_video += $subdatadetails->video_file_count;
                 $thirty_recordtype_audio += $subdatadetails->audio_file_count;
                 $thirty_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -170,11 +172,225 @@ class renderer extends \plugin_renderer_base implements renderable {
         }
     }
 
-    //Count the unique users from CSV list of users
+    /*
+    * Count the unique users from CSV list of users. Used by Display usage repor
+    *
+    */
     public function count_pusers($pusers){
         $pusers=trim($pusers);
         return count(array_unique(explode(',',$pusers)));
 
     }
 
+    public function fetchLiterallyCanvas($html) {
+        global $PAGE;
+        //The strings we need for js
+        $PAGE->requires->strings_for_js(array('insert',
+                'cancel',
+                'recui_record',
+                'recui_recordorchoose',
+                'recui_pause',
+                'recui_play',
+                'recui_stop',
+                'recui_save',
+                'recui_upload',
+                'recui_testmic',
+                'recui_recordagain',
+                'recui_readytorecord',
+                'recui_continue',
+                'recui_uploading',
+                'recui_converting',
+                'recui_uploading',
+                'recui_uploadafile',
+                'recui_uploadsuccess',
+                'recui_openrecorderapp',
+                'recui_awaitingconfirmation',
+                'recui_uploaderror',
+                'recui_takesnapshot',
+                'recui_cancelsnapshot',
+                'recui_nothingtosaveerror',
+        ),
+                'filter_poodll');
+        return $html;
+
+    }
+
+    public function fetchDrawingBoard($html) {
+        global $PAGE;
+        //The strings we need for js
+
+        $PAGE->requires->strings_for_js(array('insert',
+                'cancel',
+                'recui_record',
+                'recui_restart',
+                'recui_recordorchoose',
+                'recui_pause',
+                'recui_play',
+                'recui_stop',
+                'recui_save',
+                'recui_continue',
+                'recui_uploading',
+                'recui_converting',
+                'recui_uploading',
+                'recui_uploadafile',
+                'recui_uploadsuccess',
+                'recui_openrecorderapp',
+                'recui_awaitingconfirmation',
+                'recui_uploaderror',
+                'recui_takesnapshot',
+                'recui_cancelsnapshot',
+                'recui_nothingtosaveerror',
+        ),
+                'filter_poodll');
+        return $html;
+
+    }
+
+    public function fetchAudioPlayer($html) {
+        return $html;
+
+    }
+
+    public function fetchVideoPlayer($html) {
+        return $html;
+
+    }
+
+    public function fetchIFrameSWFWidgetCode($widget, $paramsArray, $width, $height, $bgcolor = "#FFFFFF") {
+        global $CFG;
+
+        //There seems to be an internal margin on the iframe
+        //which I could not cancel entirely. So we compensate here to show all the widget
+        $marginadjust = 5;
+        $fwidth = $marginadjust + $width;
+        $fheight = $marginadjust + $height;
+
+        //build the parameter string out of the passed in array
+        $params = "?";
+        foreach ($paramsArray as $key => $value) {
+            $params .= '&' . $key . '=' . $value;
+        }
+
+        //add in any common params
+        $params .= '&debug=false&lzproxied=false';
+
+        //path to our js idgets folder
+        $pathtoSWF = $CFG->wwwroot . '/filter/poodll/flash/';
+
+        $retframe =
+                "<iframe scrolling=\"no\" class=\"fitvidsignore\" frameBorder=\"0\" src=\"{$pathtoSWF}poodlliframe.php?widget={$widget}&paramstring=" .
+                urlencode($params) .
+                "&width={$width}&height={$height}&bgcolor={$bgcolor}\" width=\"{$fwidth}\" height=\"{$fheight}\"></iframe>";
+        return $retframe;
+    }
+
+    public function fetchJSWidgetiFrame($widget, $rawparams, $width, $height, $bgcolor = "#FFFFFF", $usemastersprite = "false") {
+        global $CFG;
+
+        //build the parameter string out of the passed in array
+        $params = "?";
+        foreach ($rawparams as $key => $value) {
+            $params .= '&' . $key . '=' . $value;
+        }
+
+        //add in any common params
+        $params .= '&debug=false&lzproxied=false';
+
+        //path to our js idgets folder
+        $pathtoJS = $CFG->wwwroot . '/filter/poodll/js/';
+        $pathtowidgetfolder = $CFG->wwwroot . '/filter/poodll/js/' . $widget . '/';
+
+        $retframe = "<iframe scrolling=\"no\" frameBorder=\"0\" src=\"{$pathtoJS}poodlliframe.php?widget={$widget}&paramstring=" .
+                urlencode($params) .
+                "&width={$width}&height={$height}&bgcolor={$bgcolor}&usemastersprite={$usemastersprite}\" width=\"{$width}\" height=\"{$height}\"></iframe>";
+        return $retframe;
+    }
+
+    /* TO DO: make this more generic. ie not just poodllrecorder */
+    public function fetchAMDRecorderEmbedCode($widgetopts, $widgetid) {
+        global $CFG, $PAGE;
+
+        $widgetopts->widgetid = $widgetid;
+
+        //The CSS selector string
+        $container = $widgetid . 'Container';
+        $selector = '#' . $container;
+        $widgetopts->selector = $selector;
+
+        //The strings we need for js
+        $PAGE->requires->strings_for_js(array('insert',
+                'cancel',
+                'recui_finished',
+                'recui_ready',
+                'recui_playing',
+                'recui_recording',
+                'recui_record',
+                'recui_restart',
+                'recui_recordorchoose',
+                'recui_pause',
+                'recui_play',
+                'recui_stop',
+                'recui_save',
+                'recui_continue',
+                'recui_uploading',
+                'recui_converting',
+                'recui_uploading',
+                'recui_uploadafile',
+                'recui_downloadfile',
+                'recui_uploadsuccess',
+                'recui_awaitingconversion',
+                'recui_openrecorderapp',
+                'recui_awaitingconfirmation',
+                'recui_uploaderror',
+                'recui_nothingtosaveerror',
+                'recui_takesnapshot',
+                'recui_cancelsnapshot',
+                'recui_pushtospeak',
+                'recui_waitwaitstilluploading',
+                'recui_upload',
+                'recui_testmic',
+                'recui_recordagain',
+                'recui_readytorecord',
+                'recui_clicktofinish',
+            //media errors
+                'recui_mediaaborterror',
+                'recui_medianotallowederror',
+                'recui_medianotfounderror',
+                'recui_medianotreadableerror',
+                'recui_medianotsupportederror',
+                'recui_mediaoverconstrainederror',
+                'recui_mediasecurityerror',
+                'recui_mediatypeerror',
+                'recui_unsupportedbrowser',
+                'recui_choosefile'
+        ),
+                'filter_poodll');
+
+        //convert opts to json
+        $jsonstring = json_encode($widgetopts);
+        //we put the opts in html on the page because moodle/AMD doesn't like lots of opts in js
+        $opts_html = \html_writer::tag('input', '',
+                array('id' => 'amdopts_' . $widgetopts->widgetid, 'type' => 'hidden', 'value' => $jsonstring));
+        $PAGE->requires->js_call_amd("filter_poodll/poodllrecorder", 'init', array(array('widgetid' => $widgetid)));
+        $returnhtml = $opts_html . \html_writer::div('', 'filter_poodll_recorder_placeholder', array('id' => $container));
+        return $returnhtml;
+    }
+
+    //This is used for all the flash widgets
+    public function fetchLazloEmbedCode($widgetopts, $widgetid, $jsmodule) {
+        global $CFG, $PAGE;
+        echo "You should not get here.";
+        die;
+    }
+
+    public function fetchTemplateSelector($conf, $templatecount) {
+        global $CFG, $OUTPUT;
+        $options = Array();
+        for ($i = 1; $i <= $templatecount; $i++) {
+            $options['filter_poodll_templatepage_' . $i] = $conf->{'templatename_' . $i};
+        }
+        // $options = array(1 => 'Page 1', 2 => 'Page 2', 3 => 'Page 3');
+        $select = $OUTPUT->single_select($CFG->wwwroot . '/admin/settings.php', 'section', $options, 'template_selector');
+        echo $select;
+    }
 }
