@@ -76,7 +76,8 @@ class renderer extends \plugin_renderer_base implements renderable {
             $timecreated =new \DateTime();
             $timecreated->setTimestamp($subdatadetails->timecreated);
 
-            if(($timecreated > strtotime('-180 days'))&&($timecreated <= strtotime('-365 days'))) {
+            //if(($timecreated > strtotime('-180 days'))&&($timecreated <= strtotime('-365 days'))) {
+            if(($timecreated <= strtotime('-365 days'))) {
                 $threesixtyfive_recordtype_video += $subdatadetails->video_file_count;
                 $threesixtyfive_recordtype_audio += $subdatadetails->audio_file_count;
                 $threesixtyfive_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -84,7 +85,8 @@ class renderer extends \plugin_renderer_base implements renderable {
                 $threesixtyfive_puser .= $subdatadetails->pusers;
             }
 
-            if(($timecreated > strtotime('-90 days'))&&($timecreated <= strtotime('-180 days'))){
+            //if(($timecreated > strtotime('-90 days'))&&($timecreated <= strtotime('-180 days'))){
+            if(($timecreated <= strtotime('-180 days'))){
                 $oneeighty_recordtype_video += $subdatadetails->video_file_count;
                 $oneeighty_recordtype_audio += $subdatadetails->audio_file_count;
                 $oneeighty_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -92,7 +94,8 @@ class renderer extends \plugin_renderer_base implements renderable {
                 $oneeighty_puser .= $subdatadetails->pusers;
             }
 
-            if(($timecreated > strtotime('-30 days'))&&($timecreated <= strtotime('-90 days'))){
+            //if(($timecreated > strtotime('-30 days'))&&($timecreated <= strtotime('-90 days'))){
+            if(($timecreated <= strtotime('-90 days'))){
                 $ninety_recordtype_video += $subdatadetails->video_file_count;
                 $ninety_recordtype_audio += $subdatadetails->audio_file_count;
                 $ninety_recordmin += ($subdatadetails->audio_min + $subdatadetails->video_min);
@@ -145,36 +148,29 @@ class renderer extends \plugin_renderer_base implements renderable {
         foreach($usagedata->usersubs_details as $subdatadetails){
             $json_arr = json_decode($subdatadetails->file_by_app,TRUE);
             foreach($json_arr as $key => $val) {
-                $target_name = 'ppn_'.$key;
-                $target_name_translated = get_string($target_name,'filter_poodll');
-                if(in_array($target_name_translated, $mysubscriptions_names)) {
-                    $idx_val = array_search($target_name_translated, $mysubscriptions_names);
-                    $val = $json_arr[$key][0]['audio']+$json_arr[$key][0]['video'];
-                    if(isset($plugin_types_arr[$idx_val])) {
-                        $plugin_types_arr[$idx_val] += $val;
-                    }else{
-                        $plugin_types_arr[$idx_val] = $val;
-                    }
+                $label = $key;
+                $val = $json_arr[$key]['audio']+$json_arr[$key]['video'];
+                if(isset($plugin_types_arr[$label])) {
+                    $plugin_types_arr[$label] += $val;
+                }else{
+                    $plugin_types_arr[$label] = $val;
                 }
             }
         }
 
-
         echo $this->output->render_from_template('filter_poodll/mysubscriptionreport', $reportdata);
 
         if ($reportdata['subscription_check'] == true){
-            $plugin_types = new \core\chart_series('Plugin Usage', $plugin_types_arr);
+            $plugin_types = new \core\chart_series('Plugin Usage', array_values($plugin_types_arr));
             $pchart = new \core\chart_pie();
             $pchart->add_series($plugin_types);
-
-            $pchart->set_labels($mysubscriptions_names);
-
+            $pchart->set_labels(array_keys($plugin_types_arr));
             echo $this->output->heading(get_string('per_plugin', 'filter_poodll'), 4);
             echo $this->output->render($pchart);
         }
-
     }
 
+    //Count the unique users from CSV list of users
     public function count_pusers($pusers){
         $pusers=trim($pusers);
         return count(array_unique(explode(',',$pusers)));
