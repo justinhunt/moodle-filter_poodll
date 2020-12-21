@@ -61,11 +61,6 @@ if (is_siteadmin()) {
 
     $ADMIN->add($poodll_category_name, $diagnostics_settings);
 
-    ///my subscription
-    $mysubscription_settings = new admin_externalpage('mysubscription', get_string('mysubscription', 'filter_poodll'),
-            $CFG->wwwroot . '/filter/poodll/mysubscription.php');
-
-    $ADMIN->add($poodll_category_name, $mysubscription_settings);
 
     //Mobile app Settings 
     $mobile_settings = new admin_settingpage('filter_poodll_mobile', get_string('mobilesettings', 'filter_poodll'));
@@ -82,6 +77,11 @@ if (is_siteadmin()) {
         $widget_settings->add($widget_item);
     }
     $ADMIN->add($poodll_category_name, $widget_settings);
+
+    // Account Dashboard
+    $accountdashboard_settings = new admin_externalpage('accountdashboard', get_string('accountdashboard', 'filter_poodll'),
+            $CFG->wwwroot . '/filter/poodll/accountdashboard.php');
+    $ADMIN->add($poodll_category_name, $accountdashboard_settings);
 
     $poodlltemplatesadmin_settings = new admin_externalpage('poodlltemplatesadmin', get_string('templates', 'filter_poodll'),
             $CFG->wwwroot . '/filter/poodll/poodlltemplatesadmin.php');

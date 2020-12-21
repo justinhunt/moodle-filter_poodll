@@ -5,7 +5,7 @@ use filter_poodll\constants;
 require_once("../../config.php");
 require_once($CFG->libdir . '/adminlib.php');
 
-admin_externalpage_setup('mysubscription');
+admin_externalpage_setup('accountdashboard');
 
 //detect if its a CSV or not
 $exportcsv = optional_param('csv', 0, PARAM_INT);
@@ -13,7 +13,7 @@ $exportcsv = optional_param('csv', 0, PARAM_INT);
 
 //if we are exporting html, do that
 echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('mysubscription', 'filter_poodll'), 3);
+echo $OUTPUT->heading(get_string('accountdashboard', 'filter_poodll'), 3);
 
 $params=[];
 $result = \filter_poodll\poodlltools::call_cloudpoodll('local_cpapi_fetch_user_report',$params);

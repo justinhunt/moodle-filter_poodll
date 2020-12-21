@@ -423,7 +423,7 @@ $string['awssdklocal'] = 'Use AWS SDK from plugin local_aws';
 $string['awssdkauto'] = 'Auto select AWS SDK';
 
 //My subscription page
-$string['mysubscription'] = 'My Subscription';
+$string['accountdashboard'] = 'Account Dashboard';
 $string['subscription'] = 'Subscription';
 $string['start'] = 'Start';
 $string['end'] = 'Expiration';
