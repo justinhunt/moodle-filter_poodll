@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.40 (Build 2021011200)
+- Fixed problem with usage report when no usage data
+
 Version 3.1.39 (Build 2020122200)
 - Added My Account dashboard
 - Refactored renderer
