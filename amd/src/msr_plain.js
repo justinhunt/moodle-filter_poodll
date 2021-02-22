@@ -57,31 +57,43 @@ define(['jquery',
                 //lets work out our mime type
                 //if audio
                 if(this.mediaType==='audio') {
-                    var audiotypes = ['ogg','webm','quicktime','mp4','m4a','wav'];
-                    for (var i = 0; i < audiotypes.length; i++) {
-                        var themimetype = 'audio/' + audiotypes[i];
-                        if (MediaRecorder.isTypeSupported(themimetype)) {
-                            this.mimeType = themimetype;
-                            break;
+                    //if its a mediarecorder and does not support 'isTypeSupported' ..it can only be Safari ..
+                    if (!MediaRecorder.isTypeSupported) {
+                        this.mimeType = "audio/mp4";
+                    }else {
+                        var audiotypes = ['ogg', 'webm', 'quicktime', 'mp4', 'm4a', 'wav'];
+                        for (var i = 0; i < audiotypes.length; i++) {
+                            var themimetype = 'audio/' + audiotypes[i];
+                            if (MediaRecorder.isTypeSupported(themimetype)) {
+                                this.mimeType = themimetype;
+                                break;
+                            }
                         }
-                    }
-                    //we make an intelligent choice if required to do so
-                    if(this.mimetype===false){
-                        this.mimeType = utils.is_chrome() ? 'audio/webm' : 'audio/ogg';
+                        //we make an intelligent choice if required to do so
+                        if (this.mimetype === false) {
+                            this.mimeType = utils.is_chrome() ? 'audio/webm' : 'audio/ogg';
+                        }
                     }
                 //else video
                 }else{
-                    var videotypes = ['webm','ogv','quicktime','mp4'];
-                    for (var i = 0; i < videotypes.length; i++) {
-                        var themimetype = 'video/' + videotypes[i];
-                        if (MediaRecorder.isTypeSupported(themimetype)) {
-                            this.mimeType = themimetype;
-                            break;
+                    //if its a mediarecorder and does not support 'isTypeSupported' ..it can only be Safari ..
+                    if (!MediaRecorder.isTypeSupported) {
+                        this.mimeType = "video/mp4";
+                    }else {
+                        var videotypes = ['webm', 'ogv', 'quicktime', 'mp4', 'mpeg'];
+                        for (var i = 0; i < videotypes.length; i++) {
+                            var themimetype = 'video/' + videotypes[i];
+                            if (!MediaRecorder.isTypeSupported)
+                                return "video/mp4";
+                            if (MediaRecorder.isTypeSupported(themimetype)) {
+                                this.mimeType = themimetype;
+                                break;
+                            }
                         }
-                    }
-                    //we make an intelligent choice if required to do so
-                    if(this.mimetype===false){
-                        this.mimeType = 'video/webm';
+                        //we make an intelligent choice if required to do so
+                        if (this.mimetype === false) {
+                            this.mimeType = 'video/webm';
+                        }
                     }
                 }
 
