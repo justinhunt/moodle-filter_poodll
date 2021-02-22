@@ -40,7 +40,7 @@ define(['jquery',
                 var that = this;
 
 
-                if (this.mediaType == 'audio') {
+                if (this.mediaType === 'audio') {
                     if (this.mediaStream.getVideoTracks().length && this.mediaStream.getAudioTracks().length) {
                         var stream;
                         if (!!navigator.mozGetUserMedia) {
@@ -55,6 +55,7 @@ define(['jquery',
                 }
 
                 //lets work out our mime type
+                this.mimeType=false;
                 //if audio
                 if(this.mediaType==='audio') {
                     //if its a mediarecorder and does not support 'isTypeSupported' ..it can only be Safari ..
@@ -70,7 +71,7 @@ define(['jquery',
                             }
                         }
                         //we make an intelligent choice if required to do so
-                        if (this.mimetype === false) {
+                        if (this.mimeType === false) {
                             this.mimeType = utils.is_chrome() ? 'audio/webm' : 'audio/ogg';
                         }
                     }
@@ -83,15 +84,13 @@ define(['jquery',
                         var videotypes = ['webm', 'ogv', 'quicktime', 'mp4', 'mpeg'];
                         for (var i = 0; i < videotypes.length; i++) {
                             var themimetype = 'video/' + videotypes[i];
-                            if (!MediaRecorder.isTypeSupported)
-                                return "video/mp4";
                             if (MediaRecorder.isTypeSupported(themimetype)) {
                                 this.mimeType = themimetype;
                                 break;
                             }
                         }
                         //we make an intelligent choice if required to do so
-                        if (this.mimetype === false) {
+                        if (this.mimeType === false) {
                             this.mimeType = 'video/webm';
                         }
                     }
@@ -109,14 +108,10 @@ define(['jquery',
                     // if someone passed NON_supported mimeType
                     // or if Firefox on Android
                     this.mediaRecorder = new MediaRecorder(this.mediaStream);
-                }
-
-                if ('canRecordMimeType' in this.mediaRecorder && this.mediaRecorder.canRecordMimeType(this.mimeType) === false) {
                     log.debug('MediaRecorder API seems unable to record mimeType:' + this.mimeType);
                 }
 
                 //set the mimetype to whatever the mediarecorder says it is
-                this.mimeType= this.mediaRecorder.mimeType;
                 log.debug("msr_plain using mime type:",this.mimeType);
 
                 // i.e. stop recording when <video> is paused by the user; and auto restart recording
@@ -132,9 +127,7 @@ define(['jquery',
                     }
 
                     var blob = new Blob([e.data], {type: that.mimeType});
-
                     that.msr.ondataavailable(blob);
-
                 };
 
                 this.mediaRecorder.onerror = function (error) {
