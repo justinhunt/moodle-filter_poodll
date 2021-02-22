@@ -355,6 +355,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             // warmup. the preview object
             this.warmup_preview(ip);
 
+            //mute the preview
+            ip.controlbar.preview[0].muted=true;
+
             ip.blobs = [];
             switch (ip.config.mediatype) {
                 case 'audio':
@@ -377,6 +380,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         do_stopplay_audio: function (ip, preview) {
             preview.pause();
+            //unmute the preview
+            preview.muted=false;
         },
 
         do_play_audio: function (ip, preview) {
@@ -389,6 +394,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     preview.src = mediaurl;
                     preview.controls = true;
                     preview.volume = ip.previewvolume;
+                    preview.muted=false;
                     preview.play();
 
                 });
