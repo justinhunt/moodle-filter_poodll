@@ -83,6 +83,10 @@ define(['jquery',
                     log.debug('MediaRecorder API seems unable to record mimeType:' + this.mimeType);
                 }
 
+                //set the mimetype to whatever the mediarecorder says it is
+                this.mimeType= this.mediaRecorder.mimeType;
+                log.debug("msr_plan using mime type:",this.mimeType);
+
                 // i.e. stop recording when <video> is paused by the user; and auto restart recording
                 // when video is resumed. E.g. yourStream.getVideoTracks()[0].muted = true; // it will auto-stop recording.
                 this.mediaRecorder.ignoreMutedMedia = this.ignoreMutedMedia || false;

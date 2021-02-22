@@ -389,15 +389,35 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             if (ip.blobs && ip.blobs.length > 0) {
                 log.debug('playing type:' + ip.blobs[0].type);
                 utils.doConcatenateBlobs(ip.blobs, function (concatenatedBlob) {
+
+                    //stop any track that is going on
+                    if(preview.srcObject){
+                        var tracks = preview.srcObject.getTracks();
+                        if(tracks){
+                            tracks.forEach(track => {
+                                track.stop();
+                            });
+                        }
+                    }
+
                     log.debug(concatenatedBlob);
                     var mediaurl = URL.createObjectURL(concatenatedBlob);
                     preview.src = mediaurl;
                     preview.controls = true;
                     preview.volume = ip.previewvolume;
                     preview.muted=false;
-                    preview.play();
 
+                    var ppromise = preview.play();
+                    if (ppromise !== undefined) {
+                        ppromise.then(function () {
+                            // playback started we do not need to do anything
+                        }).catch(function (error) {
+                            log.debug('location: do_play_audio');
+                            log.debug(error);
+                        });
+                    }
                 });
+
                 // Click the stop button if playback ends;
                 $(preview).bind('ended', function () {
                     ip.controlbar.stopbutton.click();
@@ -509,21 +529,14 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 //audio: {volume: 0.0}
             };
 
-            // this is as good a place as any to force safari to audio/wav
-            if (utils.is_safari() && !ip.useraudiodeviceid && false) {
-                // fix mime type to wav
-                ip.audiomimetype = 'audio/wav';
-            }
 
-            // tried Oh so hard on this but just gave up. Its buggy and flakey and a drag
-            // desktop safari uses first device, not os defailt. its a bug of some sort
-            // sorry Safari. I got it going one day, and then it never worked again ...
+            // tried hard on safari to get the chosen devce, this but just gave up.
             if (utils.is_safari() && !ip.useraudiodeviceid) {
 
                 // fix mime type to wav
                 ip.audiomimetype = 'audio/wav';
 
-//this was code to select first safari audio device
+                //this was code to select first safari audio device
                 /*
                                 // Select final audio device,
                                 navigator.mediaDevices.enumerateDevices()

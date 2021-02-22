@@ -47,11 +47,11 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
         },
 
         fetch_preview_audio: function (skin) {
-            var preview = '<audio class="poodll_preview_' + skin + '" style="display: none;" controls playsinline="playsinline"></audio>';
+            var preview = '<audio class="poodll_preview_' + skin + '" style="display: none;" controls playsinline="playsinline" muted></audio>';
             return preview;
         },
         fetch_preview_video: function (skin) {
-            var preview = '<video class="poodll_preview_' + skin + '" playsinline="playsinline"></video>';
+            var preview = '<video class="poodll_preview_' + skin + '" playsinline="playsinline" muted></video>';
             return preview;
         },
         fetch_resource_audio: function (skin) {

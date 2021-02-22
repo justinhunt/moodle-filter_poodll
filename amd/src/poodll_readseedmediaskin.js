@@ -49,7 +49,7 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
             },
 
             fetch_preview_audio: function (skin) {
-                var preview = '<audio class="poodll_preview_' + skin + ' hide"></audio>';
+                var preview = '<audio class="poodll_preview_' + skin + ' hide" playsInline muted></audio>';
                 return preview;
             },
             fetch_preview_video: function (skin) {

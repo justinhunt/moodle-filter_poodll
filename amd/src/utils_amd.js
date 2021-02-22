@@ -121,6 +121,10 @@ define(['jquery', 'core/log'], function ($, log) {
                 case 'audio/ogg':
                 case 'audio/webm':
                 case 'video/webm':
+                case 'video/mp4':
+                case 'audio/mp4':
+                case 'audio/mp3':
+                case 'audio/m4a':
                 default:
                     var concatenatedBlob = this._simpleConcatenateBlobs(theblobs, theblobs[0].type);
                     thecallback(concatenatedBlob);

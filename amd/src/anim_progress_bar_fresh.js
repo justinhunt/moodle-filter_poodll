@@ -78,30 +78,24 @@ define(['jquery', 'core/log'], function ($, log) {
                 .attr('data-duration', duration);
             stickCount.toFixed();
 
-            var pointsCollection = document.querySelectorAll('.poodll_fresh_point');
-            console.log(pointsCollection);
-
-            for (var i = 0; i < stickCount; i++) {
-                if (pointsCollection[i].children[0]) {
-                    pointsCollection[i].children[0].style.height = '4px';
+            var pointsCollection = $('.poodll_fresh_point');
+            $.each(pointsCollection,function(thepoint){
+                if (pointsCollection[thepoint].children[0]) {
+                    pointsCollection[thepoint].children[0].style.height = '4px';
                 }
-
-            }
+            });
 
             var draw = function () {
-
-
                 var waveData = [];
-                for (var i = 0; i < stickCount; i++) {
+                $.each(pointsCollection,function(thepoint){
                     var sampleData = Math.floor(Math.random() * 50 + 4);
                     waveData.push(sampleData);
                     var pointHeight = waveData[i] || 4;
 
                     // if (i < that.fetchCurrent() * stickCount ) {
-                    pointsCollection[i].children[0].style.height = pointHeight + 'px';
-                    // }
+                    pointsCollection[thepoint].children[0].style.height = pointHeight + 'px';
+                });
 
-                }
 
                 $waveProgress.css('left', that.fetchCurrent() * 100 + '%');
                 var requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame ||

@@ -160,6 +160,7 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                 case "audio/x-mpeg-3":
                     ext = "mp3";
                     break;
+                case "audio/mp4":
                 case "audio/m4a":
                 case "audio/x-m4a":
                     ext = "m4a";
