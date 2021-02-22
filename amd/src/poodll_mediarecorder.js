@@ -380,32 +380,54 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         do_stopplay_audio: function (ip, preview) {
             preview.pause();
-            //unmute the preview
             preview.muted=false;
+
+            switch (ip.config.mediatype) {
+                case 'audio':
+                    //we already did everything we need to
+                    break;
+                case 'video':
+                    //Safari can not reuse the preview player, so we created a 'review' and now dispose of it
+                    if(ip.controlbar.hasOwnProperty('livepreview')){
+                        ip.controlbar.preview.hide();
+                        ip.controlbar.preview = ip.controlbar.livepreview;
+                        ip.controlbar.preview.show();
+                    }
+            }
         },
 
-        do_play_audio: function (ip, preview) {
+        do_play_audio: function (ip, preview_unused) {
 
             if (ip.blobs && ip.blobs.length > 0) {
                 log.debug('playing type:' + ip.blobs[0].type);
                 utils.doConcatenateBlobs(ip.blobs, function (concatenatedBlob) {
 
-                    //stop any track that is going on
-                    if(preview.srcObject){
-                        var tracks = preview.srcObject.getTracks();
-                        if(tracks){
-                            tracks.forEach(track => {
-                                track.stop();
-                            });
-                        }
-                    }
 
                     log.debug(concatenatedBlob);
                     var mediaurl = URL.createObjectURL(concatenatedBlob);
+
+                    //Safari can not reuse the preview player [sigh]
+                    //audio is only used for review, so for video only we create a second video element
+                    switch (ip.config.mediatype) {
+                        case 'audio':
+                            var preview = ip.controlbar.preview[0];
+                            break;
+                        case 'video':
+                            ip.controlbar.livepreview = ip.controlbar.preview;
+                            ip.controlbar.preview = ip.controlbar.preview.clone().insertAfter(ip.controlbar.preview);
+                            var preview = ip.controlbar.preview[0];
+                            ip.controlbar.livepreview.hide();
+
+                    }
                     preview.src = mediaurl;
-                    preview.controls = true;
+                    preview.controls = false;
                     preview.volume = ip.previewvolume;
                     preview.muted=false;
+
+                    // Click the stop button if playback ends;
+                    $(preview).bind('ended', function () {
+                        ip.controlbar.stopbutton.click();
+                    });
 
                     var ppromise = preview.play();
                     if (ppromise !== undefined) {
@@ -416,11 +438,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                             log.debug(error);
                         });
                     }
-                });
 
-                // Click the stop button if playback ends;
-                $(preview).bind('ended', function () {
-                    ip.controlbar.stopbutton.click();
                 });
 
 

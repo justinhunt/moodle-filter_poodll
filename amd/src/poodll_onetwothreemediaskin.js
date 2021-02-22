@@ -383,13 +383,14 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
 
             ip.controlbar.playbutton.click(function () {
 
+                var preview = ip.controlbar.preview.get(0);
+                pmr.do_play_audio(ip, preview);
+
                 ip.controlbar.preview.on('timeupdate', function () {
                     var currentTime = this.currentTime;
                     ip.controlbar.timer.html(ip.timer.fetch_display_time(currentTime));
                 });
 
-                var preview = ip.controlbar.preview.get(0);
-                pmr.do_play_audio(ip, preview);
 
                 //do visuals
                 self.set_visual_mode('previewmode', controlbarid);
