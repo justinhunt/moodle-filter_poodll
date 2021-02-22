@@ -46,19 +46,19 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
         },
 
         fetch_preview_audio: function (skin) {
-            var preview = '<audio class="audio_preview_123 poodll_preview_' + skin + '" style="display: none;" width="100%" height="100%" controls></audio>';
+            var preview = '<audio class="audio_preview_123 poodll_preview_' + skin + '" style="display: none;" width="100%" height="100%" controls playsinline="playsinline"></audio>';
             return preview;
         },
         fetch_preview_video: function (skin) {
-            var preview = '<video class="video_preview_123 poodll_preview_' + skin + '" width="100%" height="300px"></video>';
+            var preview = '<video class="video_preview_123 poodll_preview_' + skin + '" width="100%" height="300px" playsinline="playsinline"></video>';
             return preview;
         },
         fetch_resource_audio: function (skin) {
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + '" style="display: none;"></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + '" style="display: none;" playsinline="playsinline"></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function (skin) {
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;"></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;" playsinline="playsinline"></video>';
             return resourceplayer;
         },
         fetch_uploader_skin: function (controlbarid, element) {

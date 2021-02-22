@@ -5,6 +5,7 @@ $string['filtername'] = 'Poodll Filter';
 $string['pluginname'] = 'Poodll Filter';
 //privacy details
 $string['privacy:metadata'] = 'The Poodll filter plugin does not store any personal data.';
+$string['poodll:comparetext'] = 'Allow text comparison via API.';
 
 $string['settings'] = 'Poodll Filter Settings';
 $string['activate'] = 'Activate Poodll?';

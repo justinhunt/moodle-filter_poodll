@@ -47,19 +47,19 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
             },
 
             fetch_preview_audio: function (skinname) {
-                var preview = '<audio class="poodll_preview_' + skinname + '" style="display: none;"></audio>';
+                var preview = '<audio class="poodll_preview_' + skinname + '" style="display: none;" playsinline="playsinline"></audio>';
                 return preview;
             },
             fetch_preview_video: function (skinname) {
-                var preview = '<video class="poodll_preview_' + skinname + '" style="display: none;"></video>';
+                var preview = '<video class="poodll_preview_' + skinname + '" style="display: none;" playsinline="playsinline"></video>';
                 return preview;
             },
             fetch_resource_audio: function (skinname) {
-                var resourceplayer = '<audio class="poodll_resourceplayer_' + skinname + '" style="display: none;" ></audio>';
+                var resourceplayer = '<audio class="poodll_resourceplayer_' + skinname + '" style="display: none;" playsinline="playsinline"></audio>';
                 return resourceplayer;
             },
             fetch_resource_video: function (skinname) {
-                var resourceplayer = '<video class="poodll_resourceplayer_' + skinname + '" style="display: none;"></video>';
+                var resourceplayer = '<video class="poodll_resourceplayer_' + skinname + '" style="display: none;" playsinline="playsinline"></video>';
                 return resourceplayer;
             },
 

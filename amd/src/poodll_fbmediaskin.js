@@ -44,23 +44,23 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
         },
 
         fetch_preview_audio: function (skin) {
-            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" ></audio>';
+            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" playsinline="playsinline"></audio>';
             return checkplayer;
         },
         fetch_model_audio: function () {
-            var modelplayer = '<audio class="poodll_modelplayer_fluencybuilder hide" src="' + M.cfg.wwwroot + '/filter/poodll/ding.mp3"></audio>';
+            var modelplayer = '<audio class="poodll_modelplayer_fluencybuilder hide" src="' + M.cfg.wwwroot + '/filter/poodll/ding.mp3" playsinline="playsinline"></audio>';
             return modelplayer;
         },
         fetch_preview_video: function (skin) {
-            var checkplayer = '<video class="poodll_checkplayer_' + skin + '" width="320" height="240"></video>';
+            var checkplayer = '<video class="poodll_checkplayer_' + skin + '" width="320" height="240" playsinline="playsinline"></video>';
             return checkplayer;
         },
         fetch_resource_audio: function (skin) {
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="' + M.cfg.wwwroot + '/filter/poodll/ding.mp3" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="' + M.cfg.wwwroot + '/filter/poodll/ding.mp3" playsinline="playsinline"></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function (skin) {
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURLx@@" ></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURLx@@" playsinline="playsinline"></video>';
             return resourceplayer;
         },
         fetch_uploader_skin: function (controlbarid, element) {

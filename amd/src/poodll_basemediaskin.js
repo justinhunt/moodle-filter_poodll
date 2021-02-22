@@ -59,7 +59,7 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
                 return resourceplayer;
             },
             fetch_resource_video: function (skin) {
-                var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;"></video>';
+                var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;" playsinline="playsinline"></video>';
                 return resourceplayer;
             },
             fetch_uploader_skin: function (controlbarid, element) {

@@ -42,19 +42,19 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
         },
 
         fetch_preview_audio: function (skin) {
-            var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
+            var preview = '<audio class="poodll_preview_' + skin + ' hide" controls playsinline="playsinline"></audio>';
             return preview;
         },
         fetch_preview_video: function (skin) {
-            var preview = '<video class="poodll_preview_' + skin + '" width="320" height="240"></video>';
+            var preview = '<video class="poodll_preview_' + skin + '" width="320" height="240" playsinline="playsinline"></video>';
             return preview;
         },
         fetch_resource_audio: function (skin) {
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" ></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" playsinline="playsinline" ></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function (skin) {
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" ></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + ' hide" playsinline="playsinline"></video>';
             return resourceplayer;
         },
 
