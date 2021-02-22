@@ -68,7 +68,6 @@ define(['jquery', 'core/log'], function ($, log) {
 
         playBars: function (currentTime, duration) {
             var that = this;
-            console.log(currentTime, duration, that.fetchCurrent());
             var $waveRoot = $('.poodll_fresh_wave');
             var $waveProgress = $('.poodll_fresh_progress_bar');
             var stickCount = $waveRoot.width() / 4;
