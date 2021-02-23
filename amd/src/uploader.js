@@ -585,37 +585,6 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
             //we use navigator beacon over xhr because there are times believe it or not, when a page load happens and that kills
             //the request. causing lost files
             navigator.sendBeacon(M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', formData);
-            return;
-
-            /*
-                        var xhr = new XMLHttpRequest();
-                        var that = this;
-
-                        //lets do a little error checking
-                        //if its a self signed error or rotten permissions on poodllfilelib.php we might error here.
-                        xhr.onreadystatechange = function(){
-                            if(this.readyState===4){
-                                if(xhr.status!=200){
-                                    that.upskin.showMessage('Post Process s3 Upload Error:' + xhr.status, 'recui_uploaderror');
-                                    $('#' + that.config.widgetid + '_messages').show();
-                                }
-                            }
-                        };
-
-                        //log.debug(params);
-                        var params = "datatype=handles3upload";
-                        params += "&contextid=" + config.p2;
-                        params += "&component=" + config.p3;
-                        params += "&filearea=" + config.p4;
-                        params += "&itemid=" + config.p5;
-                        params += "&filename=" + config.filename;
-                        params += "&mediatype=" + config.mediatype;
-
-                        xhr.open("POST",M.cfg.wwwroot + '/filter/poodll/poodllfilelib.php', true);
-                        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-                        xhr.setRequestHeader("Cache-Control", "no-cache");
-                        xhr.send(params);
-            */
 
         },
 

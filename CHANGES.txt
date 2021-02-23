@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.41 (Build 2021022100)
+- Enabled video recording from mobile safari/safari
+
 Version 3.1.40 (Build 2021011200)
 - Fixed problem with usage report when no usage data
 
