@@ -167,7 +167,7 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
                     filebutton: $('#' + controlbarid + '_poodllfileselect'),
                     startbutton: $('#' + controlbarid + '_p_btn'),
                     uploadcanvas: $('#' + controlbarid + '_uploadcanvas'),
-                    uploadmessages: $('#' + controlbarid + ' .poodll_uploadmessages_once')
+                    uploadmessages: $('#' + controlbarid + ' .poodll_uploadmessages_once'),
                 };
 
                 //settings and error dialogs

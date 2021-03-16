@@ -46,12 +46,12 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_b
         },
 
         fetch_preview_audio: function (skin) {
-            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' hide" controls></audio>';
-            return checkplayer;
+            var preview = '<audio class="poodll_preview_' + skin + ' hide" controls></audio>';
+            return preview;
         },
         fetch_preview_video: function (skin) {
-            var checkplayer = '<video class="poodll_checkplayer_' + skin + '" width="320" height="240" playsinline="playsinline"></video>';
-            return checkplayer;
+            var preview = '<video class="poodll_preview_' + skin + '" width="320" height="240" playsinline="playsinline"></video>';
+            return preview;
         },
         fetch_resource_audio: function (skin) {
             var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + ' hide" src="@@RESOURCEURL@@" playsinline controls></audio>';
@@ -79,7 +79,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_b
 
         onMediaSuccess_audio: function (controlbarid) {
             var ip = this.fetch_instanceprops(controlbarid);
-            ip.controlbar.checkplayer.attr('src', null);
+            ip.controlbar.preview.attr('src', null);
             ip.controlbar.stopbutton.attr('disabled', false);
             ;
             ip.controlbar.savebutton.attr('disabled', false);
@@ -148,18 +148,18 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_b
         },
 
         //insert the control bar and return it to be reused
-        insert_controlbar_video: function (element, controlbarid, checkplayer, resourceplayer) {
-            var controlbar = this.prepare_controlbar(element, controlbarid, checkplayer, resourceplayer, 'video');
+        insert_controlbar_video: function (element, controlbarid, preview, resourceplayer) {
+            var controlbar = this.prepare_controlbar(element, controlbarid, preview, resourceplayer, 'video');
             return controlbar;
         },
         //insert the control bar and return it to be reused
-        insert_controlbar_audio: function (element, controlbarid, checkplayer, resourceplayer) {
-            var controlbar = this.prepare_controlbar(element, controlbarid, checkplayer, resourceplayer, 'audio');
+        insert_controlbar_audio: function (element, controlbarid, preview, resourceplayer) {
+            var controlbar = this.prepare_controlbar(element, controlbarid, preview, resourceplayer, 'audio');
             return controlbar;
         },
 
         //insert the control bar and return it to be reused
-        prepare_controlbar: function (element, controlbarid, checkplayer, resourceplayer, mediatype) {
+        prepare_controlbar: function (element, controlbarid, preview, resourceplayer, mediatype) {
             var ip = this.fetch_instanceprops(controlbarid);
             var skin_style = ip.config.media_skin_style;
 
@@ -176,8 +176,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_b
             controls += '<div class="poodll_mediarecorderbox_split" id="' + controlbarid + '">';
             controls += '<div class="style-holder ' + skin_style + '">';
 
-            controls += checkplayer,
-                controls += resourceplayer,
+          //  controls += preview,
+            controls += resourceplayer,
 
 
                 //this is never displayed
@@ -229,19 +229,22 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_b
             $('.qtext').prepend(divider);
             $('.qtext').prepend(topsplit);
 
+            //prepend the qbody
+            $('.poodll_split_qbody').prepend('<div class="poodll_split_qbody_item poodll_split_qbody_preview">' + preview + '</div>' );
+
 
             var controlbar = {
                 split_progresscanvas: $('#' + controlbarid + ' .split_range'),
                 marker: $('#' + controlbarid + '  .marker'),
                 resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_split'),
-                checkplayer: $('#' + controlbarid + '  .poodll_checkplayer_split'),
+               // preview: $('#' + controlbarid + '  .poodll_preview_split'),
+                preview: $('.qtext .poodll_preview_split'),
                 stopbutton: $('#' + controlbarid + '  .poodll_stop-recording_split'),
                 resourcestopbutton: $('#' + controlbarid + '  .poodll_stop-resource_split'),
                 startbutton: $('#' + controlbarid + '  .poodll_start-recording_split'),
                 playbackbutton: $('#' + controlbarid + '  .poodll_playback-recording_split'),
                 stopplaybackbutton: $('#' + controlbarid + '  .poodll_stopplayback-recording_split'),
                 savebutton: $('#' + controlbarid + '  .poodll_save-recording_split'),
-
 
                 //these are actually outside the control bar above the question text
                 resourceplaybutton: $('.poodll_mediarecorder_button_split.poodll_play-resource_split'),

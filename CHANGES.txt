@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.42 (Build 2021031600)
+-Minor update to support new version of custom timed recording question
+
 Version 3.1.41 (Build 2021022100)
 - Enabled video recording from mobile safari/safari
 
