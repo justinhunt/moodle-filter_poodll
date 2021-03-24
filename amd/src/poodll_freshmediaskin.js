@@ -13,6 +13,7 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
         uploaded: false,
         devsettings: null,
         therecanim: null,
+        canpause: true,
         //for making multiple instances
         clone: function () {
             return $.extend(true, {}, this);
@@ -88,8 +89,8 @@ define(['jquery', 'jqueryui', 'core/log', 'filter_poodll/utils_amd', 'filter_poo
 
         onMediaSuccess_audio: function (controlbarid) {
 
-
             var ip = this.fetch_instanceprops();
+
             //clear messages
             ip.uploader.Output('');
             ip.controlbar.preview.attr('src', null);

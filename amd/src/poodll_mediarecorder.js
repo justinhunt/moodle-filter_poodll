@@ -308,7 +308,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
 
         onMediaError: function (e, ip) {
-            ip.errordialog.open(e);
+            if(ip.hasOwnProperty('errordialog')) {
+                ip.errordialog.open(e);
+            }
             log.error('media error', e);
         },
 

@@ -45,19 +45,19 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
         },
 
         fetch_preview_audio: function (skin) {
-            var checkplayer = '<audio class="poodll_checkplayer_' + skin + ' " style="display: none;" controls></audio>';
-            return checkplayer;
+            var preview = '<audio class="poodll_checkplayer_' + skin + ' " style="display: none;" controls playsinline="playsinline" muted></audio>';
+            return preview;
         },
         fetch_preview_video: function (skin) {
-            var checkplayer = '<video class="poodll_checkplayer_' + skin + '" width="320" height="240" playsinline="playsinline"></video>';
-            return checkplayer;
+            var preview = '<video class="poodll_checkplayer_' + skin + '" width="320" height="240" playsinline="playsinline" muted></video>';
+            return preview;
         },
         fetch_resource_audio: function (skin) {
-            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + '" style="display: none;" src="@@RESOURCEURL@@" playsinline controls></audio>';
+            var resourceplayer = '<audio class="poodll_resourceplayer_' + skin + '" style="display: none;" src="@@RESOURCEURL@@" playsinline="playsinline" controls></audio>';
             return resourceplayer;
         },
         fetch_resource_video: function (skin) {
-            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;" src="@@RESOURCEURL@@"></video>';
+            var resourceplayer = '<video class="poodll_resourceplayer_' + skin + '" style="display: none;" src="@@RESOURCEURL@@" playsinline="playsinline"></video>';
             return resourceplayer;
         },
         fetch_uploader_skin: function (controlbarid, element) {
@@ -69,6 +69,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
 
         onMediaSuccess_video: function (controlbarid) {
             var ip = this.fetch_instanceprops(controlbarid);
+            var self = this;
 
             this.recorded = true;
 
@@ -87,7 +88,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
 
         onMediaSuccess_audio: function (controlbarid) {
             var ip = this.fetch_instanceprops(controlbarid);
-            ip.controlbar.checkplayer.attr('src', null);
+            var self=this;
+            ip.controlbar.preview.attr('src', null);
 
 
             this.recorded = true;
@@ -222,18 +224,18 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
         },
 
         //insert the control bar and return it to be reused
-        insert_controlbar_video: function (element, controlbarid, checkplayer, resourceplayer) {
-            var controlbar = this.prepare_controlbar(element, controlbarid, checkplayer, resourceplayer, 'video');
+        insert_controlbar_video: function (element, controlbarid, preview, resourceplayer) {
+            var controlbar = this.prepare_controlbar(element, controlbarid, preview, resourceplayer, 'video');
             return controlbar;
         },
         //insert the control bar and return it to be reused
-        insert_controlbar_audio: function (element, controlbarid, checkplayer, resourceplayer) {
-            var controlbar = this.prepare_controlbar(element, controlbarid, checkplayer, resourceplayer, 'audio');
+        insert_controlbar_audio: function (element, controlbarid, preview, resourceplayer) {
+            var controlbar = this.prepare_controlbar(element, controlbarid, preview, resourceplayer, 'audio');
             return controlbar;
         },
 
         //insert the control bar and return it to be reused
-        prepare_controlbar: function (element, controlbarid, checkplayer, resourceplayer, mediatype) {
+        prepare_controlbar: function (element, controlbarid, preview, resourceplayer, mediatype) {
             var ip = this.fetch_instanceprops(controlbarid);
             var skin_style = ip.config.media_skin_style;
 
@@ -262,7 +264,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
             controls += '<div class="style-holder ' + skin_style + '">';
             var status = this.fetch_status_bar('shadow');
             controls += status,
-                controls += checkplayer,
+                controls += preview,
                 controls += resourceplayer,
 
                 controls += '<button type="button" class="poodll_mediarecorder_button_shadow poodll_play-resource_shadow">'
@@ -304,7 +306,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
                 marker: $('#' + controlbarid + '  .marker'),
                 status: $('#' + controlbarid + '  .poodll_status_shadow'),
                 resourceplayer: $('#' + controlbarid + '  .poodll_resourceplayer_shadow'),
-                checkplayer: $('#' + controlbarid + '  .poodll_checkplayer_shadow'),
+                preview: $('#' + controlbarid + '  .poodll_checkplayer_shadow'),
                 resourceplaybutton: $('#' + controlbarid + '  .poodll_play-resource_shadow'),
                 resourcestopbutton: $('#' + controlbarid + '  .poodll_stop-resource_shadow'),
                 startbutton: $('#' + controlbarid + '  .poodll_start-recording_shadow'),
@@ -337,9 +339,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
             ip.controlbar.stopbutton.click(function () {
                 pmr.do_stop_audio(ip);
                 self.disable_button(this);
-                var preview = ip.controlbar.resourceplayer;
-                if (preview && preview.get(0)) {
-                    preview.get(0).pause();
+                var resourceplayer = ip.controlbar.resourceplayer;
+                if (resourceplayer && resourceplayer.get(0)) {
+                    resourceplayer.get(0).pause();
                 }
 
                 self.set_visual_mode('allstoppedmode', ip);
@@ -443,9 +445,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd'], function ($, log, util
 
             window.onbeforeunload = function () {
                 self.enable_button(ip.controlbar.startbutton);
-                var checkplayer = ip.controlbar.checkplayer;
-                if (checkplayer && checkplayer.get(0)) {
-                    checkplayer.get(0).pause();
+                var preview = ip.controlbar.preview;
+                if (preview && preview.get(0)) {
+                    preview.get(0).pause();
                 }
             };
 
