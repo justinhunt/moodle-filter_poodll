@@ -748,13 +748,17 @@ class awstools {
         return $this->pollyclient;
     }
 
-    function make_pollyparams($text, $texttype = "text", $voice = "Justin") {
+    function make_pollyparams($text, $texttype = "text", $voice = "Justin",$engine="standard",$output="mp3") {
         $params = [
-                'OutputFormat' => 'mp3',
+                'OutputFormat' => $output,
                 'Text' => $text,
                 'TextType' => $texttype,
                 'VoiceId' => $voice,
+                'Engine' => $engine,
         ];
+        if($output=='json'){
+            $params['SpeechMarkTypes']=['sentence','word'];
+        }
         return $params;
     }
 
