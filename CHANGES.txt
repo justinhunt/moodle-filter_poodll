@@ -1,5 +1,10 @@
 Change List
 =========
+
+Version 3.1.43 (Build 2021032900)
+-Update to speechmarks generator
+-Removed flicker on start of video recording which can cause audio/video sync issues
+
 Version 3.1.42 (Build 2021031600)
 -Minor update to support new version of custom timed recording question
 -Fixes to shadow player

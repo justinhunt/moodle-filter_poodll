@@ -117,6 +117,10 @@ define(['jquery', 'core/log', 'filter_poodll/dlg_poodll'], function ($, log, dia
             var constraints = pmr.fetch_video_constraints(ip);
 
             //We always tidy up old streams before calling getUserMedia
+            //if we do not do this, we can get issues of the front or back camera being sticky
+            //but it causes a visible flicker and also an audio/video sync issue.
+            //so we removed the same call from poodll_mediarecorder.js doStartAudio
+            //but left it here
             pmr.tidy_old_stream(ip.controlbarid);
 
             //get a new mediastream based on those constraints and update PMR accordingly

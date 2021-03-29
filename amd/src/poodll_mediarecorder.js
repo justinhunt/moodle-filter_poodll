@@ -370,7 +370,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             }
 
             //We always tidy up old streams before calling getUserMedia
-            this.tidy_old_stream(ip.controlbarid);
+            //this.tidy_old_stream(ip.controlbarid);
             this.captureUserMedia(mediaConstraints, onMediaSuccess, function (e) {
                 that.onMediaError(e, ip);
             });
