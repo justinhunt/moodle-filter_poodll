@@ -1,5 +1,7 @@
 Change List
 =========
+Version 3.1.43a (Build 2021032901)
+-Zip file corrupt on Moodle org. This is a fresh attempt at a release
 
 Version 3.1.43 (Build 2021032900)
 -Update to speechmarks generator
