@@ -81,6 +81,12 @@ define(['jquery',
                             this.mimeType = utils.is_chrome() ? 'audio/webm' : 'audio/ogg';
                         }
                     }
+                    var rec_options = {
+                        //videoBitsPerSecond : this.videoBitsPerSecond,
+                        audioBitsPerSecond: this.audioBitsPerSecond, //Firefox needs this
+                        mimeType: this.mimeType
+                    };
+
                 //else video
                 }else{
                     //if its a mediarecorder and does not support 'isTypeSupported' ..it can only be Safari ..
@@ -100,12 +106,14 @@ define(['jquery',
                             this.mimeType = 'video/webm';
                         }
                     }
+
+                    var rec_options = {
+                        //videoBitsPerSecond : this.videoBitsPerSecond,
+                        //audioBitsPerSecond: this.audioBitsPerSecond,
+                        mimeType: this.mimeType
+                    };
                 }
-                var rec_options = {
-                    //videoBitsPerSecond : this.videoBitsPerSecond,
-                    audioBitsPerSecond: this.audioBitsPerSecond,
-                    mimeType: this.mimeType
-                };
+
 
                 try {
                     this.mediaRecorder = new MediaRecorder(this.mediaStream, rec_options);
@@ -132,9 +140,9 @@ define(['jquery',
                     //var blob = new Blob([e.data], {type: that.mimeType});
                     var blob = e.data; //in firefox this leaves hints about the codec
                     that.msr.ondataavailable(blob);
-                    log.debug('e.data.size:' + e.data);
-                    log.debug('abr:' + that.mediaRecorder.audioBitsPerSecond);
-                    log.debug('vbr:' + that.mediaRecorder.videoBitsPerSecond);
+                 //   log.debug('e.data.size:' + e.data);
+                 //   log.debug('abr:' + that.mediaRecorder.audioBitsPerSecond);
+                 //   log.debug('vbr:' + that.mediaRecorder.videoBitsPerSecond);
 
                 };
 
