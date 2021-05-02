@@ -378,7 +378,11 @@ class settingstools {
 
                 awsremote::REGION_USE1 => get_string('REGION_USE1', 'filter_poodll'),
                 awsremote::REGION_CAC1 => get_string('REGION_CAC1', 'filter_poodll'),
-                awsremote::REGION_SAE1 => get_string('REGION_SAE1', 'filter_poodll'));
+                awsremote::REGION_SAE1 => get_string('REGION_SAE1', 'filter_poodll'),
+                awsremote::REGION_AFS1 => get_string('REGION_AFS1', 'filter_poodll'),
+                awsremote::REGION_MES1 => get_string('REGION_MES1', 'filter_poodll')
+
+        );
         return $options;
     }
 

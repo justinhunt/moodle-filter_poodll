@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.46 (Build 2021050200)
+-Added capetown and bahrain regions
+
 Version 3.1.44 (Build 2021040900)
 -Firefox 87 requires audioBitsPerSecond to be set in mediarecorder options
 -See https://github.com/justinhunt/moodle-qtype_poodllrecording/issues/8
