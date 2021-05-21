@@ -654,7 +654,31 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     // log.debug(URL.createObjectURL(blob));
                 };
 
-                //publish recording start event
+                //We want to publish a "started" recording event.
+                //----------------------------------
+                //but non-iframe (Classic) and in-iframe (Cloud) events work a bit different
+                //this is for non-iframe (Classic)
+                if (!ip.config.iframeembed) {
+                    if (ip.config.callbackjs && ip.config.callbackjs != '') {
+
+                        //publish recording started event to non-iframe
+                        //For callbackjs and for postmessage we need an array of stuff
+                        var callbackObject = new Array();
+                        callbackObject[0] = ip.config.widgetid;
+                        callbackObject[1] = "started";
+                        callbackObject[2] = ip.config.filename;
+                        callbackObject[3] = ip.config.updatecontrol;
+                        callbackObject[4] = ip.config.s3filename;
+
+                        if (typeof(ip.config.callbackjs) === 'function') {
+                            ip.config.callbackjs(callbackObject);
+                        } else {
+                            uploader.executeFunctionByName(ip.config.callbackjs, window, callbackObject);
+                        }
+                    }
+                }
+
+                //this is for in-iframe (Cloud)
                 var messageObject = {};
                 messageObject.type = "recording";
                 messageObject.action = 'started';
