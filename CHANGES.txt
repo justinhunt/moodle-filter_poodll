@@ -3,6 +3,7 @@ Change List
 Version 3.1.47 (Build 2021061100)
 -updated native video template
 -tweaked the file extension parser in uploader.js
+-fixed issue with corrupt direct uploads (not bouncing off s3)
 
 Version 3.1.46 (Build 2021052000)
 -Added capetown and bahrain regions
