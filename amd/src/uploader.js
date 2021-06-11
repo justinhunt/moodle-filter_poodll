@@ -131,7 +131,12 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
 
         //fetch file extension from the filetype
         fetchFileExtension: function (filetype) {
-            var ext = "";
+            var ext = "mp3";
+            //in the case of a string like this:
+            // "audio/webm;codecs=opus" we do not the codecs
+            if(filetype.indexOf(';')>0){
+                filetype = filetype.split(';')[0];
+            }
             switch (filetype) {
                 case "image/jpeg":
                     ext = "jpg";

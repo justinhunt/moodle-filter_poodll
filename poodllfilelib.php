@@ -240,6 +240,8 @@ function filter_poodll_uploadfile($filedata, $fileextension, $mediatype, $action
         case "3g2":
         case "aac":
         case "wma":
+        case "m4a":
+        case "m4v":
         case "wmv":
         case "smf":
         case "amr":
