@@ -396,6 +396,7 @@ class settingstools {
                 $items['onetwothree'] = get_string('onetwothree_recorder', 'filter_poodll');
                 $items['once'] = get_string('once_recorder', 'filter_poodll');
                 $items['upload'] = get_string('upload_recorder', 'filter_poodll');
+                $items['screen'] = get_string('screen_recorder', 'filter_poodll');
                 break;
 
             case "audio":

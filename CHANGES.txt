@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.48 (Build 2021062800)
+- added screen recorder
+
 Version 3.1.47 (Build 2021061100)
 -updated native video template
 -tweaked the file extension parser in uploader.js

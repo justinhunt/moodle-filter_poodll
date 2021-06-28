@@ -160,8 +160,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
                     this.register_events_video(controlbarid);
 
-                    //if this is the uploader skin, then we do not bother to get mediaDevices
-                    if (ip.config.media_skin == 'upload' || ip.config.media_skin == 'warning') {
+                    //if this is any of the uploader/warning/screen skins, then we do not bother to get mediaDevices
+                    if (ip.config.media_skin == 'upload' || ip.config.media_skin == 'warning' || ip.config.media_skin == 'screen') {
                         break;
                     }
 
@@ -279,6 +279,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         },
 
+
         warmup_context: function (ip) {
             var ctx = ip.audioctx;
             //for chrome oct 2018
@@ -336,6 +337,49 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             });
 
         },
+
+
+        do_start_screen: function (ip, onMediaSuccess) {
+
+            var that = this;
+            // we warm up the context object
+            this.warmup_context(ip);
+
+            // warmup. the preview object
+            this.warmup_preview(ip);
+
+            //mute the preview
+            ip.controlbar.preview[0].muted=true;
+
+            ip.blobs = [];
+            //get media constraints
+            var mediaConstraints = {
+                audio: {'echoCancellation': true},
+                video: {cursor: "motion"}
+            };
+
+            //set aspect ratio and I think the "exact" below should be "ideal"
+            //  mediaConstraints.video = {aspectRatio: 1920/1080};
+
+
+            //do all our stream stuff
+            navigator.mediaDevices.getDisplayMedia(mediaConstraints)
+                .then(async function(displayStream){
+                    // check for a user audio selected device
+                    if (ip.useraudiodeviceid) {
+                        var audiodeviceid = ip.useraudiodeviceid.valueOf();
+                        mediaConstraints.audio.deviceId = audiodeviceid ? {exact: audiodeviceid} : undefined;
+                    }
+                    var voiceStream = await navigator.mediaDevices.getUserMedia({ audio: mediaConstraints.audio, video: false });
+                    var tracks = [...displayStream.getTracks(), ...voiceStream.getAudioTracks()]
+                    var stream = new MediaStream(tracks);
+                    onMediaSuccess(stream);
+                })
+                .catch(function (e) {
+                    that.onMediaError(e, ip);
+            });
+        },
+
         do_start_video: function (ip, onMediaSuccess) {
 
         },
@@ -448,7 +492,10 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             ip.config.hermes.postMessage(messageObject);
         },
         do_stop_video: function (ip) {
-
+            //just use do_stop_audio
+        },
+        do_stop_screen: function (ip) {
+         //just use do_stop_audio
         },
         do_pause_audio: function (ip) {
             //if its paused we need to resume it before pausing again.
@@ -466,8 +513,35 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         },
 
-        /* fetch the audio constraints for passing to mediastream */
+        /* fetch the video constraints for passing to mediastream */
         fetch_video_constraints: function (ip) {
+            var mediaConstraints = {
+                audio: !utils.is_opera() && !utils.is_edge(),
+                video: true
+            };
+
+            //set aspect ratio and I think the "exact" below should be "ideal"
+            //  mediaConstraints.video = {aspectRatio: 1920/1080};
+            //alert('set');
+
+            // check for a user video selected device
+            if (ip.uservideodeviceid) {
+                var videodeviceid = ip.uservideodeviceid.valueOf();
+                var constraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined};
+
+                mediaConstraints.video = constraints;
+            }
+            // check for a user audio selected device
+            if (ip.useraudiodeviceid) {
+                var audiodeviceid = ip.useraudiodeviceid.valueOf();
+                var constraints = {deviceId: audiodeviceid ? {exact: audiodeviceid} : undefined};
+                mediaConstraints.audio = constraints;
+            }
+            return mediaConstraints;
+        },
+
+        /* fetch the screen constraints for passing to mediastream */
+        fetch_screen_constraints: function (ip) {
             var mediaConstraints = {
                 audio: !utils.is_opera() && !utils.is_edge(),
                 video: true
