@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.54 (Build 2022042300)
+- fixed broken mime type handling, manifested if remote or ffmpeg conversion was not turned on
+
 Version 3.1.53 (Build 2022041300)
 - fixed warning message from logs of adhoc tasks
 
