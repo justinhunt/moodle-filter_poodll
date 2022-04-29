@@ -1,6 +1,24 @@
 Change List
 =========
-Version 3.1.50 (Build XXX)
+Version 3.1.55 (Build 2022042300)
+- removed JQuery UI from Poodll code so would not break M4.0 dock
+
+Version 3.1.54 (Build 2022042300)
+- fixed broken mime type handling, manifested if remote or ffmpeg conversion was not turned on
+
+Version 3.1.53 (Build 2022041300)
+- fixed warning message from logs of adhoc tasks
+
+Version 3.1.52 (Build 2022032400)
+- added custom course fields to filter variables
+- added highest month to usage report
+
+Version 3.1.51 (Build 2021122200)
+- added some more modern diagnostics
+- moved recorder order and some player settings from general to legacy
+- added credential fetching
+
+Version 3.1.50 (Build 2021120900)
 - Fixed issues causing errors in php 8 on poodlltools
 
 Version 3.1.49 (Build 2021082700)
