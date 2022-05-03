@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.56 (Build 2022050300)
+- tweak to audio recording for an odd case where 2 x each 1s of recording get written to the audio file
+
 Version 3.1.55 (Build 2022042300)
 - removed JQuery UI from Poodll code so would not break M4.0 dock
 
