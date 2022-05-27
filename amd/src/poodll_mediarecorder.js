@@ -370,7 +370,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                         var audiodeviceid = ip.useraudiodeviceid.valueOf();
                         mediaConstraints.audio.deviceId = audiodeviceid ? {exact: audiodeviceid} : undefined;
                     }
-               
+
                     navigator.mediaDevices.getUserMedia({ audio: mediaConstraints.audio, video: false }).then(
                         function(voiceStream) {
                             var tracks = displayStream.getTracks().concat(voiceStream.getAudioTracks());
