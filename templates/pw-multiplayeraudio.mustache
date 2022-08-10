@@ -52,7 +52,7 @@ aplayer.attr('src',details.mediaurl); // mediaurl, subtitlesurl, sources
  var cookiename = details.mediaurl + '_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
  console.log(cookiename);
  console.log(getCookie(cookiename));
- if("{{quizstrictmode}}"=="true" && "{{URLPARAM:attempt}}" !=""){
+ if("{{quiz_strict_mode}}"=="true" && "{{URLPARAM:attempt}}" !=""){
    var prevplaycount = getCookie(cookiename);
    if(prevplaycount!==null){
     playtimer.data('playtime',prevplaycount);
@@ -89,7 +89,7 @@ $('#' + "{{AUTOID}}" + '_vol-down').click(function(){
      var currentplaycount = playtimer.data('playtime');
        currentplaycount--;
       //if cookies are enabled set the play count in the cookie
-     if("{{quizstrictmode}}"=="true" && "{{URLPARAM:attempt}}" !="" ){
+     if("{{quiz_strict_mode}}"=="true" && "{{URLPARAM:attempt}}" !="" ){
          setCookie(cookiename,currentplaycount,1);
      }
 
