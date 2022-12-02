@@ -36,7 +36,7 @@ var thestate =$('#' + "{{AUTOID}}" + '_state');
 var thetime = $('#' + "{{AUTOID}}" + '_time');
 var playtimer = $('#' + "{{AUTOID}}");
 var lastseconds = 0;
-var position_update_interval = 2;
+var position_update_interval = 1;//each X seconds do the cookie update
 var is_strict_quiz = "{{quiz_strict_mode}}"=="true" && "{{URLPARAM:attempt}}" !="";
 var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="true";
 
