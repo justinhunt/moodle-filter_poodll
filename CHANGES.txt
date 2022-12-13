@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.62 (Build 2022121300)
+- shortened strict multiplayer remember play position time to 1s
+
 Version 3.1.61 (Build 2022120200)
 - shortened strict multiplayer remember play position time to 1s
 
