@@ -128,6 +128,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     self.enable_button(ip.controlbar.stoprecbutton);
                     ip.controlbar.stoprecbutton.show();
                     ip.controlbar.startbutton.hide();
+                    self.disable_button(ip.controlbar.settingsicon);
 
 
                     break;
@@ -144,6 +145,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('hide');
+                    self.enable_button(ip.controlbar.settingsicon);
 
 
                     ip.controlbar.status.addClass('hide');
@@ -172,6 +174,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
                     ip.controlbar.stoprecbutton.hide();
+                    self.enable_button(ip.controlbar.settingsicon);
 
 
                     ip.controlbar.timer.html('00:00:00');
@@ -203,6 +206,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.startbutton.show();
                     self.enable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.stopbutton);
+                    self.enable_button(ip.controlbar.settingsicon);
                     break;
 
                 case 'uploadmode':
@@ -210,6 +214,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     self.disable_button(ip.controlbar.startbutton);
                     ip.controlbar.progresscanvas.removeClass('hide');
                     ip.controlbar.progresscanvas.show();
+                    self.enable_button(ip.controlbar.settingsicon);
 
                     break;
 
@@ -218,6 +223,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     self.disable_button(ip.controlbar.savebutton);
                     ip.controlbar.stepthree.empty();
                     ip.controlbar.stepthree.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
+                    self.enable_button(ip.controlbar.settingsicon);
                     break;
             }
 

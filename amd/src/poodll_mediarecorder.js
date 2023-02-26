@@ -620,6 +620,14 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             var onMediaSuccess = function (stream) {
 
+                //There is an occasion where the start recording event fires twice
+                //We hope to stop it here.. 2023-02-26
+                if(ip.mediaRecorder !== null && ip.mediaRecorder.state==='started'){
+                    return;
+                }else{
+                    log.debug("register_events_audio - onmediasuccess");
+                }
+
 
                 //stop any playing tracks of the current stream
                 //DONT call this. caused problems
@@ -665,6 +673,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                         callbackObject[1] = "started";
                         callbackObject[2] = ip.config.filename;
                         callbackObject[3] = ip.config.updatecontrol;
+                        callbackObject[4] = ip.config.s3filename;
                         callbackObject[4] = ip.config.s3filename;
 
                         if (typeof(ip.config.callbackjs) === 'function') {

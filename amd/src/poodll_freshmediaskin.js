@@ -164,6 +164,9 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     self.disable_button(ip.controlbar.savebutton);
                     self.disable_button(ip.controlbar.recordAgain);
 
+                    //disable settings button
+                    self.disable_button(ip.controlbar.settingsicon);
+
                     ip.controlbar.preview.addClass('poodll_recording');
                     ip.controlbar.status.addClass('poodll_recording');
 
@@ -191,6 +194,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     self.disable_button(ip.controlbar.startbutton);
                     self.enable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.pausebutton);
+                    self.enable_button(ip.controlbar.settingsicon);
 
                     //reset timer button
                     ip.controlbar.status.html(ip.timer.fetch_display_time(ip.timer.finalSeconds));
@@ -247,6 +251,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
 
                     self.disable_button(ip.controlbar.savebutton);
                     self.disable_button(ip.controlbar.recordAgain);
+                    self.enable_button(ip.controlbar.settingsicon);
 
                     self.show_element(ip.controlbar.bmr_progresscanvas);
 
@@ -277,6 +282,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     self.enable_button(ip.controlbar.resumebutton);
                     self.enable_button(ip.controlbar.savebutton);
                     //self.enable_button(ip.controlbar.playbutton);
+                    self.enable_button(ip.controlbar.settingsicon);
 
                     ip.controlbar.preview.removeClass('poodll_recording');
                     ip.controlbar.status.removeClass('poodll_recording');
@@ -299,6 +305,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     self.disable_button(ip.controlbar.recordAgain);
                     self.disable_button(ip.controlbar.startbutton);
                     self.show_element(ip.controlbar.bmr_progresscanvas);
+                    self.enable_button(ip.controlbar.settingsicon);
 
                     ip.controlbar.root.removeClass('poodll_controllbar_playmode poodll_controllbar_pausemode');
                     break;

@@ -134,6 +134,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
 
                         ip.controlbar.status.show();
                         self.enable_button(ip.controlbar.startbutton);
+                        self.enable_button(ip.controlbar.settingsicon);
                         self.disable_button(ip.controlbar.finishedbutton);
                         self.disable_button(ip.controlbar.stopbutton);
                         ip.controlbar.uploadcanvas.hide();
@@ -152,6 +153,8 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
                         //when testing(timer off) we do not want the stop button. Just really recording and allowearlyexit
                         self.enable_button(ip.controlbar.stopbutton);
                         self.disable_button(ip.controlbar.startbutton);
+                        self.disable_button(ip.controlbar.settingsicon);
+
                         if (ip.config.mediatype == 'video') {
                             ip.controlbar.playcanvas.hide();
                             ip.controlbar.preview.show();
@@ -169,6 +172,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
                     case 'aftermode':
                         self.disable_button(ip.controlbar.startbutton);
                         self.disable_button(ip.controlbar.stopbutton);
+                        self.enable_button(ip.controlbar.settingsicon);
                         self.therecanim.setDrawParam('wavColor', '#CCCCCC');
                         self.therecanim.clear();
                         ip.controlbar.playcanvas.hide();

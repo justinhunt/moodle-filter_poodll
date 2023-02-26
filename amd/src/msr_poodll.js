@@ -16,6 +16,7 @@ define(['jquery',
             therecorder: null,
             audioctx: null,
             audioanalyser: null,
+            state: 'stopped',
 
             //for making multiple instances
             clone: function () {
@@ -66,21 +67,25 @@ define(['jquery',
                 this.therecorder.start(timeinterval);
                 //start audio analyser which generates events for wav/freq visualisations
                 this.audioanalyser.start();
+                this.state='started';
             },
 
             stop: function () {
                 this.therecorder.stop();
                 this.audioanalyser.clear();
+                this.state='stopped';
             },
 
             pause: function () {
                 this.therecorder.pause();
                 this.audioanalyser.clear();
+                this.state='stopped';
             },
 
             resume: function () {
                 this.therecorder.resume();
                 this.audioanalyser.start();
+                this.state='started';
             },
 
             ondataavailable: function (blob) {

@@ -147,6 +147,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     self.enable_button(ip.controlbar.stoprecbutton);
                     ip.controlbar.stoprecbutton.show();
                     ip.controlbar.startbutton.hide();
+                    self.disable_button(ip.controlbar.settingsicon);
 
 
                     break;
@@ -179,6 +180,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                         ip.controlbar.steptwo.empty();
                         ip.controlbar.steptwo.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
                     }
+                    self.enable_button(ip.controlbar.settingsicon);
 
 
                     break;
@@ -205,6 +207,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.stepone.append('<i class="fa fa-check" aria-hidden="true"></i>').hide().fadeIn(1000);
 
                     self.disable_button(ip.controlbar.stoprecbutton);
+                    self.enable_button(ip.controlbar.settingsicon);
 
                     break;
 
@@ -225,6 +228,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.startbutton.show();
                     self.enable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.stopbutton);
+                    self.enable_button(ip.controlbar.settingsicon);
                     break;
 
                 case 'uploadmode':
