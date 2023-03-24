@@ -471,6 +471,40 @@ class filter_poodll extends moodle_text_filter {
             }//end of for each
         }//end of if we have@@URLPARAM
 
+        //if we have string variables e.g @@STRING:name@@
+        if (strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $alternate_content . ' ' . $js_custom_script, '@@STRING:') !==
+        false) { 
+            $strstubs = explode('@@STRING:', $poodlltemplate);
+
+            //STRING Props
+            $count = 0;
+            foreach ($strstubs as $propstub) {
+                //we don't want the first one, its junk
+                $count++;
+                if ($count == 1) {
+                    continue;
+                }
+                //init our prop value
+                $propvalue = false;
+
+                //fetch the property name
+                //user can use any case, but we work with lower case version
+                $end = strpos($propstub, '@@');
+                $strprop = substr($propstub, 0, $end);
+                if (empty($strprop)) {
+                    continue;
+                }
+
+                //check if str exists and set it.
+                $propvalue = get_string($strprop, 'filter_poodll');
+                $poodlltemplate = str_replace('@@STRING:' . $strprop . '@@', $propvalue, $poodlltemplate);
+                $dataset_vars = str_replace('@@STRING:' . $strprop . '@@', $propvalue, $dataset_vars);
+                $alternate_content = str_replace('@@STRING:' . $strprop . '@@', $propvalue, $alternate_content);
+                //stash this for passing to js
+                $filterprops['STRING:' . $strprop] = $propvalue;
+            }//end of for each
+        }//end of if we have @@STRING.
+
         //if we have course variables e.g @@COURSE:ID@@
         if (strpos($poodlltemplate . ' ' . $dataset_vars . ' ' . $alternate_content . ' ' . $js_custom_script, '@@COURSE:') !==
                 false) {
