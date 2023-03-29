@@ -543,7 +543,7 @@ class filter_poodll extends moodle_text_filter {
                     }
                 }
                 //if we have a propname and a propvalue, do the replace
-                if (!empty($courseprop) && !empty($propvalue)) {
+                if (!empty($courseprop) && !is_null($propvalue)) {
                     $poodlltemplate = str_replace('@@COURSE:' . $courseprop_allcase . '@@', $propvalue, $poodlltemplate);
                     $dataset_vars = str_replace('@@COURSE:' . $courseprop_allcase . '@@', $propvalue, $dataset_vars);
                     $alternate_content = str_replace('@@COURSE:' . $courseprop_allcase . '@@', $propvalue, $alternate_content);
@@ -619,7 +619,7 @@ class filter_poodll extends moodle_text_filter {
                 }
 
                 //if we have a propname and a propvalue, do the replace
-                if (!empty($userprop) && !empty($propvalue)) {
+                if (!empty($userprop) && !is_null($propvalue)) {
                     //echo "userprop:" . $userprop . '<br/>propvalue:' . $propvalue;
                     $poodlltemplate = str_replace('@@USER:' . $userprop_allcase . '@@', $propvalue, $poodlltemplate);
                     $dataset_vars = str_replace('@@USER:' . $userprop_allcase . '@@', $propvalue, $dataset_vars);
