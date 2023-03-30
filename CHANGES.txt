@@ -1,9 +1,12 @@
 Change List
 =========
-Version 3.1.63 (Build 202212xxxx)
+Version 3.1.63 (Build 2023033000)
 - fixed tabs and accordians widgets for Moodle4.x
 - fixed custom course field fetching in filter using @@COURSE:customfieldshortname@@
 - fixed display of course/user profile fields that were empty (had been returning the unparsed var name)
+- added right to left support for interactive transcript widgets
+- added nl-BE lang support for some widgets
+- added lang string support for players and widgets
 
 Version 3.1.62 (Build 2022121300)
 - tightened up strict player so its more robust

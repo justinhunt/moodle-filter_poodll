@@ -478,6 +478,7 @@ class filter_poodll extends moodle_text_filter {
 
             //STRING Props
             $count = 0;
+            $stringmanager = get_string_manager();
             foreach ($strstubs as $propstub) {
                 //we don't want the first one, its junk
                 $count++;
@@ -496,7 +497,13 @@ class filter_poodll extends moodle_text_filter {
                 }
 
                 //check if str exists and set it.
-                $propvalue = get_string($strprop, 'filter_poodll');
+                if ($stringmanager->string_exists($strprop, 'filter_poodll')) {
+                    $propvalue = get_string($strprop, 'filter_poodll');
+                } else {
+                    $propvalue = ucwords(str_replace(['-','_'], " ", $strprop));
+                }
+
+
                 $poodlltemplate = str_replace('@@STRING:' . $strprop . '@@', $propvalue, $poodlltemplate);
                 $dataset_vars = str_replace('@@STRING:' . $strprop . '@@', $propvalue, $dataset_vars);
                 $alternate_content = str_replace('@@STRING:' . $strprop . '@@', $propvalue, $alternate_content);
