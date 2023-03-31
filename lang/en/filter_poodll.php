@@ -479,5 +479,10 @@ $string['memberdashboard_desc'] = "";
 $string['fillcredentials']="Set API user and secret with existing credentials";
 $string['maxmonth']="Highest Month";
 
-// Select to Read.
+// Audio and Video Player Strings
 $string['select-text-and-click-me'] = 'Select Text and Click Me';
+$string['remainingplays'] = "Remaining plays";
+$string['playing'] = "playing";
+$string['ready'] = "ready";
+$string['finished'] = "finished";
+$string['paused'] = "paused";

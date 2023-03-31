@@ -1,41 +1,46 @@
 
 <!-- HTML from template body goes goes here  -->
-<div id='{{AUTOID}}_container_pmp' class='poodll_multiplayer'>
+<figure id='{{AUTOID}}' class='poodll_multivideoplayer' data-fullscreen="false">
+    <video id='{{AUTOID}}_player' class="poodll_multivideoplayer_video nomediaplugin"  preload="metadata" ></video>
+    <div id='{{AUTOID}}_controlbar' class='poodll_multivideoplayer_controlbar'>
+        <div class="button-wrapper">
+            <button type='button'  id='{{AUTOID}}_playbutton' class='poodll_multivideoplayer_button'>
+                <i class="fa fa-play fa-2x" aria-hidden="true"></i>
+            </button>
+        </div>
+        <div class="state-wrapper">
+            <div id='{{AUTOID}}_time' class='poodll_multivideoplayer_time'></div>
+            <!--<div id='{{AUTOID}}_state' class='poodll_multivideoplayer_state'></div>-->
+            <div id='{{AUTOID}}_playtime' class="poodll_multivideoplayer_playtime"></div>
+        </div>
+        <div class="volume-control">
+            <button type="button" id="{{AUTOID}}_vol-up" class="vol-up vol-but"></button>
+            <div class="meter">
+                <div id="{{AUTOID}}_indicator" class="indicator"></div>
+            </div>
+            <button type="button" id="{{AUTOID}}_vol-down" class="vol-down vol-but"></button>
+        </div>
+    </div><!-- end of controlbar -->
+</figure>
 
-  <div class="button-wrapper">
-    <button type='button' id='{{AUTOID}}' class='poodll_multiplayer_button'>
-		<i class="fa fa-play fa-2x" aria-hidden="true"></i></button>
-  </div>
-  <div class="state-wrapper">
-    <div id='{{AUTOID}}_time' class='poodll_onceplayer_time'></div>
-    <div id='{{AUTOID}}_playtime' class="poodll_multiplayer_playtime"></div>
-  </div>
-  <div class="volume-control">
-    <button type="button" id="{{AUTOID}}_vol-up" class="vol-up vol-but"></button>
-    <div class="meter">
-      <div id="{{AUTOID}}_indicator" class="indicator"></div>
-    </div>
-    <button type="button" id="{{AUTOID}}_vol-down" class="vol-down vol-but"></button>
-  </div>
-</div>
 
 <!-- Custom JS from template  goes goes here  -->
 {{#js}}
     //<script>
- require(['jquery','filter_poodll/mediaparser'], function($,parser) {
+require(['jquery','filter_poodll/mediaparser'], function($,parser) {
 
 //The template seems to run this code twice, possibly because of the end tag. So we check for data attr as a flag to prevent 2x running
 if($('#{{AUTOID}}').data('playtime')!==undefined){return;}
+//video url
+var details = parser.parse('{{AUTOID}}_original', 'video');
 //set playtime attribute
 $('#{{AUTOID}}').data('playtime', {{canplaycount}});
       
 //set our player
-var playertemplate = "<audio id='{{AUTOID}}_player' class='onceplayerjs nomediaplugin' src='@mediaurl@' preload='auto'></audio>";
-var details = parser.parse('{{AUTOID}}_original', 'audio');
-$('#' + "{{AUTOID}}").prepend(playertemplate.replace('@mediaurl@',details.mediaurl));
+$('#' + "{{AUTOID}}" + '_player').attr('src',details.mediaurl);
 
 //get our player
-var aplayer = $('#' + "{{AUTOID}}").children().first();
+var aplayer = $('#' + "{{AUTOID}}" + '_player');
 var fa = $('#' + "{{AUTOID}}" + ' .fa');
 var thestate =$('#' + "{{AUTOID}}" + '_state'); 
 var thetime = $('#' + "{{AUTOID}}" + '_time');

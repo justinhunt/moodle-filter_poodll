@@ -4836,3 +4836,113 @@ audio.poodll_preview_bmr {
 @keyframes filterpoodllshimmer {
     100% {-webkit-mask-position:left}
 }
+
+figure.poodll_multivideoplayer {
+    max-width:400px;
+    max-width:25rem;
+    width:100%;
+    height:100%;
+    padding:20px;
+    padding:1.051%;
+    background-color:#666;
+    resize: both;
+    overflow: auto;
+}
+
+video.poodll_multivideoplayer_video {
+    width:100%;
+}
+
+.poodll_multivideoplayer_controlbar {
+    overflow:hidden;
+    background:transparent;
+    width:100%;
+    height:50px;
+    position:relative;
+}
+.poodll_multivideoplayer  .skin{
+    height: 200px;
+    background-repeat: no-repeat;
+    background-size: 100%;
+}
+.poodll_multivideoplayer   .poodll_multivideoplayer_button{
+    border: none;
+    width: 50px;
+    height: 42px;
+}
+.poodll_multivideoplayer .custom-pause:before{
+    content: "\f04b";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+
+
+}
+.poodll_multivideoplayer .vol-but{
+    width: 25px;
+    float: right;
+    padding: 0px;
+}
+.poodll_multivideoplayer .volume-control .vol-up:before{
+    content: "\f028";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}
+.poodll_multivideoplayer .volume-control .vol-down:before{
+    content: "\f027";
+    font-family: FontAwesome;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}
+.poodll_multivideoplayer .meter{
+    width: 80px;
+    height: 15px;
+    border: 1px solid #333;
+    margin-top: 5px;
+    float: right;
+    margin-left: 5px;
+}
+.poodll_multivideoplayer .indicator{
+    height: 100%;
+    width: 20%;
+    background-color: red;
+    min-width: 0%;
+    max-width: 100%;
+}
+.poodll_multivideoplayer .button-wrapper{
+    padding: 3px;
+    width: 20%;
+    float: left;
+}
+.poodll_multivideoplayer .state-wrapper{
+    width: 40%;
+    float: left;
+    text-align: center;
+    color: cyan;
+    font-size: small;
+}
+.poodll_multivideoplayer .volume-control{
+    text-align: center;
+    float: right;
+}
+
+@media screen and (max-width:64em) {
+    figure.poodll_multivideoplayer {
+        padding-left:0;
+        padding-right:0;
+        height:auto;
+    }
+}
+@media screen and (max-width:42.5em) {
+    .poodll_multivideoplayer .state-wrapper {
+        width: 80%;
+    }
+
+    .poodll_multivideoplayer .volume-control {
+        display: none;
+    }
+}

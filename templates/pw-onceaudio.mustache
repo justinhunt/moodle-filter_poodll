@@ -12,6 +12,7 @@
 
 
 {{#js}}
+    //<script>
  require(['jquery','filter_poodll/mediaparser'], function($,parser) {
 
     //time display function
@@ -45,7 +46,7 @@
     thetime.text(poodll_op_fetchtime(aplayer));
 
     //set status
-    thestate.text('- ready -');
+    thestate.text('- {{#str}}ready,filter_poodll{{/str}} -');
     
     //fetch the media url
     var details = parser.parse('{{AUTOID}}_original', 'audio');
@@ -59,7 +60,7 @@
       $(fa).removeClass('fa-spin');
       $(fa).removeClass('{{play}}');
       $(fa).addClass('{{over}}');
-      thestate.text('- finished -');
+      thestate.text('- {{#str}}finished,filter_poodll{{/str}} -');
     });
 
     //player clicked event
@@ -69,7 +70,7 @@
       }
       if(!aplayer[0].paused && {{canpause}} != '0'){
         aplayer[0].pause();
-        thestate.text('- paused -');
+        thestate.text('- {{#str}}paused,filter_poodll{{/str}} -');
         $(fa).removeClass('{{playing}}');
         $(fa).removeClass('fa-spin');
         $(fa).addClass('{{play}}');
