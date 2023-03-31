@@ -171,6 +171,15 @@
             app.loadVTT(app.options.vtt, function(captions) {
               app.captions = captions;
             });
+            //set right to left if necessary
+            switch(app.options.lang){
+                case 'ar-AE':
+                case 'ar-SA':
+                case 'fa-IR':
+                case 'he-IL':
+                    $("#{{AUTOID}}_poodll-super-player-captions").addClass('filter_poodll_rtl');
+                    break;
+            }
           } else {
             $("#{{AUTOID}}_poodll-super-player-captions").hide();
           }
@@ -302,6 +311,7 @@
      options.hasVtt = mediadetails.subtitlesurl ? true : false;
      options.vtt= mediadetails.subtitlesurl; //"https://s3.amazonaws.com/poodll-audioprocessing-out-us-east-1/CP/365/jjustin/misc.poodll.com/21232f297a57a5a743894a0e4a801fc3/poodllfile5ec34af9814891.mp3.vtt",
      options.audio= mediadetails.mediaurl;//"https://s3.amazonaws.com/poodll-audioprocessing-out-us-east-1/CP/365/jjustin/misc.poodll.com/21232f297a57a5a743894a0e4a801fc3/poodllfile5ec34af9814891.mp3",
+     options.lang=mediadetails.lang;
      options.captions= [];
      options.waveform= true;
      options.hasImage= mediadetails.imgurl ? true : false;

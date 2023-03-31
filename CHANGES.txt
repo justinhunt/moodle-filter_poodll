@@ -1,5 +1,10 @@
 Change List
 =========
+Version 3.1.64 (Build 2023033001)
+- Support for Arabic and Hebrew on Text to Audio (cloud) and Passage Reader (cloud) widgets
+- Support for Arabic and Hebrew on Poodll Audio Player widget
+- Added multi speed player widget
+
 Version 3.1.63 (Build 2023033000)
 - fixed tabs and accordians widgets for Moodle4.x
 - fixed custom course field fetching in filter using @@COURSE:customfieldshortname@@

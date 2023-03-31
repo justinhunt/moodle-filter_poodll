@@ -4946,3 +4946,8 @@ video.poodll_multivideoplayer_video {
         display: none;
     }
 }
+
+.filter_poodll_rtl {
+    direction: rtl;
+    /* text-align: right; */
+}
