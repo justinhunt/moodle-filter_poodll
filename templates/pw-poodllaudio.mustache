@@ -34,10 +34,11 @@
 
     <div class="poodll-super-player-speed-controls">
         <div tabindex="0" id="{{AUTOID}}_poodll-super-player-speed-down" class="poodll-super-player-speed-down poodll-super-player-ctrl-small">
-            <i class="fa fa-angle-double-left"></i>
+            <img src="{{WWWROOT}}/filter/poodll/3rdparty/adamplayer/slowspeed.png" alt="80% (Turtle)" style="max-width:100%;max-height:100%;-webkit-transform: scaleX(-1);
+  transform: scaleX(-1);">
         </div>
         <div tabindex="0" id="{{AUTOID}}_poodll-super-player-speed-up" class="poodll-super-player-speed-up poodll-super-player-ctrl-small">
-            <i class="fa fa-angle-double-right"></i>
+            <img src="{{WWWROOT}}/filter/poodll/3rdparty/adamplayer/fastspeed.png" alt="80% (Turtle)" style="max-width:90%;max-height:90%;">
         </div>
     </div>
 
@@ -49,7 +50,7 @@
  require(['jquery', 'filter_poodll/soundtouch', 'filter_poodll/wavesurfer', 'filter_poodll/mediaparser'], function($, soundtouch, WaveSurfer, parser) {
 
       var app = {
-
+        options: {},
         captions: {},
         strToSecs: function(str) {
           var elements = str.split(/[:.]/);
@@ -141,8 +142,13 @@
         },
         init: function(options) {
 
-          app.options = options;
+          //The template seems to run this code twice, possibly because of the end tag.
+          // So we check/set a flag to prevent 2x running
+            if($('#{{AUTOID}}_poodll-super-player').data('inited')!==undefined){return;}
+            $('#{{AUTOID}}_poodll-super-player').data('inited', true);
 
+          //set options
+          app.options = options;
           if (app.options.hasImage) {
             $("#{{AUTOID}}_poodll-super-player-image").css("background-image", "url(" + app.options.image + ")");
           } else {
