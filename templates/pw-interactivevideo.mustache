@@ -1,0 +1,645 @@
+<div id="{{AUTOID}}_widget" class="filterpoodll_siv_transcriptmain_container fpv_flexcol" >
+    <!-- video player will go above here -->
+    <div id="{{AUTOID}}_splitter" class="splitter ui-resizable-handle ui-resizable-e" style="display: none"></div>
+    <div id="{{AUTOID}}_transcriptcontainer" class="filterpoodll_siv_transcriptcontainer">
+        <div class="filterpoodll_siv_transcripttoolbar">
+            <span class="filterpoodll_siv_transcripttitle"></span>
+            <span class="filterpoodll_siv_transcripttools" style="display: none">
+                    <a class="btn btn-secondary filterpoodll_siv_transcriptlayout" href="#">
+                             <i class="fa fa-th-large" aria-hidden="true"></i></a>
+                     <a class="btn btn-secondary filterpoodll_siv_transcriptshowtime" href="#">
+                             <i class="fa fa-list" aria-hidden="true"></i></a>
+                     <a class="btn btn-secondary filterpoodll_siv_transcriptdownload" href="#">
+                             <i class="fa fa-download" aria-hidden="true"></i></a>
+                </span>
+        </div>
+        <div id="{{AUTOID}}_transcriptscrollable" class="filterpoodll_siv_transcriptscrollable"></div>
+    </div>
+</div>
+
+
+<!-- Custom JS from template  goes goes here  -->
+{{#js}}
+//<script>
+ require(['jquery','core/log','filter_poodll/mediaparser'], function($,log,parser) {
+
+     //Define interactive_transcript (it) see cloud poodll submission amd/src/interactivetranscript.js
+     var it={
+         init: function(itoptions){
+             var config={};
+             var that =this;
+             config.settings ={};
+             if(itoptions['theplayer']) {
+                 config.prefix = itoptions['cssprefix'];
+                 config.theplayer =  itoptions['theplayer'];
+                 config.title =  itoptions['title'];
+                 config.containerid = itoptions['containerid'];
+                 config.scrollingthing = itoptions['scrollingthing'];
+                 config.currentTrack = 0;
+                 config.theduration= itoptions['duration'];
+                 config.textTranscript='';
+
+                 var transcript = this.transcript(config);
+                 $('#' + itoptions['scrollcontainerid']).append(transcript.el());
+
+                 //unregisgter old, then register download transcript event
+                 $('#' + itoptions.containerid + ' .' +
+                         itoptions.cssprefix + 'download').off('click');
+
+                 $('#' + itoptions.containerid + ' .' +
+                         itoptions.cssprefix + 'download').on('click',function(){
+                     that.downloadTranscript(config);
+                     return false;
+                 });
+
+             }//end of if player
+
+         },
+
+         downloadTranscript: function(config){
+             var element = document.createElement('a');
+             element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(config.textTranscript));
+             element.setAttribute('download', config.title + '.txt');
+             element.style.display = 'none';
+             document.body.appendChild(element);
+             element.click();
+             document.body.removeChild(element);
+         },
+
+         // Defaults
+         defaults: {
+             autoscroll: true,
+             clickArea: 'line', //the clickable part of line text,line,timestamp, none
+             followPlayerTrack: true,
+             scrollToCenter: false, //show current text in center
+             stopScrollWhenInUse: false, //stop scrolling when user interacting
+         },
+
+         /*global */
+         utils: {
+             prefix: 'transcript',
+             secondsToTime: function (timeInSeconds) {
+                 var hour = Math.floor(timeInSeconds / 3600);
+                 var min = Math.floor(timeInSeconds % 3600 / 60);
+                 var sec = Math.floor(timeInSeconds % 60);
+                 sec = (sec < 10) ? '0' + sec : sec;
+                 min = (hour > 0 && min < 10) ? '0' + min : min;
+                 if (hour > 0) {
+                     return hour + ':' + min + ':' + sec;
+                 }
+                 return min + ':' + sec;
+             },
+             localize: function (string) {
+                 return string; // TODO: do something here;
+             },
+             createEl: function (elementName, className) {
+                 className = className || '';
+                 var el = document.createElement(elementName);
+                 el.className = className;
+                 return el;
+             },
+             extend: function(obj) {
+                 var type = typeof obj;
+                 if (!(type === 'function' || type === 'object' && !!obj)) {
+                     return obj;
+                 }
+                 var source, prop;
+                 for (var i = 1, length = arguments.length; i < length; i++) {
+                     source = arguments[i];
+                     for (prop in source) {
+                         obj[prop] = source[prop];
+                     }
+                 }
+                 return obj;
+             }
+
+         },
+
+         eventEmitter: {
+             handlers_: [],
+             on: function on (object, eventtype, callback) {
+                 if (typeof callback === 'function') {
+                     this.handlers_.push([object, eventtype, callback]);
+                 } else {
+                     throw new TypeError('Callback is not a function.');
+                 }
+             },
+             trigger: function trigger (object, eventtype) {
+                 this.handlers_.forEach( function(h) {
+                     if (h[0] === object &&
+                             h[1] === eventtype) {
+                         h[2].apply();
+                     }
+                 });
+             }
+         },
+
+         scrollerProto: function(config) {
+
+             var initHandlers = function (el) {
+                 var self = this;
+                 // The scroll event. We want to keep track of when the user is scrolling the transcript.
+                 el.addEventListener('scroll', function () {
+                     if (self.isAutoScrolling) {
+
+                         // If isAutoScrolling was set to true, we can set it to false and then ignore this event.
+                         // It wasn't the user.
+                         self.isAutoScrolling = false; // event handled
+                     } else {
+
+                         // We only care about when the user scrolls. Set userIsScrolling to true and add a nice class.
+                         self.userIsScrolling = true;
+                         el.classList.add('is-inuse');
+                     }
+                 });
+
+                 // The mouseover event.
+                 el.addEventListener('mouseenter', function () {
+                     self.mouseIsOverTranscript = true;
+                 });
+                 el.addEventListener('mouseleave', function () {
+                     self.mouseIsOverTranscript = false;
+
+                     // Have a small delay before deciding user as done interacting.
+                     setTimeout(function () {
+
+                         // Make sure the user didn't move the pointer back in.
+                         if (!self.mouseIsOverTranscript) {
+                             self.userIsScrolling = false;
+                             el.classList.remove('is-inuse');
+                         }
+                     }, 1000);
+                 });
+             };
+
+             // Init instance variables
+             var init = function (element) {
+                 this.element = element;
+                 this.userIsScrolling = false;
+
+                 //default to true in case user isn't using a mouse;
+                 this.mouseIsOverTranscript = true;
+                 this.isAutoScrolling = true;
+                 initHandlers.call(this, this.element);
+                 return this;
+             };
+
+             // Easing function for smoothness.
+             var easeOut = function (time, start, change, duration) {
+                 return start + change * Math.sin(Math.min(1, time / duration) * (Math.PI / 2));
+             };
+
+             // Animate the scrolling.
+             var scrollTo = function (element, newPos, duration) {
+                 var startTime = Date.now();
+                 var startPos = element.scrollTop;
+                 var self = this;
+
+                 // Don't try to scroll beyond the limits. You won't get there and this will loop forever.
+                 newPos = Math.max(0, newPos);
+                 newPos = Math.min(element.scrollHeight - element.clientHeight, newPos);
+                 var change = newPos - startPos;
+
+                 //if not animating
+                 if(true){
+                     element.scrollTop= newPos;
+                     //if animating ... which doesn't work
+                 }else{
+                     // This inner function is called until the elements scrollTop reaches newPos.
+                     var updateScroll = function () {
+                         var now = Date.now();
+                         var time = now - startTime;
+                         self.isAutoScrolling = true;
+                         element.scrollTop = easeOut(time, startPos, change, duration);
+                         if (element.scrollTop !== newPos) {
+                             window.requestAnimationFrame(updateScroll, element);
+                         }
+                     };//end of update scroll
+                     window.requestAnimationFrame(updateScroll, element);
+                 }
+             };
+
+             // Scroll an element's parent so the element is brought into view.
+             var scrollToElement = function (element) {
+                 if (this.canScroll()) {
+                     //elem="line" parent="body" parent.parent="scrolling" parent.parent.parent.scrollable
+                     var parent = element.parentElement.parentElement.parentElement;
+                     var parentOffsetBottom = parent.offsetTop + parent.clientHeight;
+                     var elementOffsetBottom = element.offsetTop + element.clientHeight;
+                     var relTop = element.offsetTop;
+                     var relBottom = (element.offsetTop + element.clientHeight);
+                     var centerPosCorrection = 0;
+                     var newPos;
+                     /*
+                                         console.log('element.offsetTop: ' + element.offsetTop );
+                                         console.log('element.clientHeight: ' + element.clientHeight );
+                                         console.log('parent.offsetTop: ' + parent.offsetTop );
+                                         console.log('parent.scrollTop: ' + parent.scrollTop );
+                                         console.log('parent.clientHeight: ' + parent.clientHeight );
+                                         console.log(element);
+                                         console.log(parent);
+                     */
+
+                     //scroll to center if we must
+                     if (config.settings.scrollToCenter){
+                         centerPosCorrection = Math.round(parent.clientHeight/2 - element.clientHeight/2);
+                     }
+                     // If the top of the line is above the top of the parent view, were scrolling up,
+                     // so we want to move the top of the element downwards to match the top of the parent.
+                     if (relTop < parent.scrollTop + centerPosCorrection) {
+                         newPos = element.offsetTop  -centerPosCorrection;
+
+                         // If the bottom of the line is below the parent view, we're scrolling down, so we want the
+                         // bottom edge of the line to move up to meet the bottom edge of the parent.
+                     } else if (relBottom > (parent.scrollTop + parent.clientHeight) - centerPosCorrection) {
+                         newPos = elementOffsetBottom + centerPosCorrection;
+                     }
+
+                     // Don't try to scroll if we haven't set a new position.  If we didn't
+                     // set a new position the line is already in view (i.e. It's not above
+                     // or below the view)
+                     // And don't try to scroll when the element is already in position.
+                     if (newPos !== undefined && parent.scrollTop !== newPos) {
+                         scrollTo(parent, newPos, 400);
+                     }
+                 }
+             };
+
+
+             // Return whether the element is scrollable.
+             var canScroll = function () {
+                 var el = this.element;
+                 //console.log(el.scrollHeight + ' ' + el.offsetHeight);
+                 return true;//el.scrollHeight > el.offsetHeight;
+             };
+
+             // Return whether the user is interacting with the transcript.
+             var inUse = function () {
+                 return this.userIsScrolling;
+             };
+
+             return {
+                 init: init,
+                 to : scrollToElement,
+                 canScroll : canScroll,
+                 inUse : inUse
+             }
+         },
+
+         scroller:  function(element,config) {
+             return Object.create(this.scrollerProto(config)).init(element);
+         },
+
+
+         /*global config*/
+         trackList: function(config) {
+             var activeTrack;
+             return {
+                 get: function () {
+                     var validTracks = [];
+                     var i, track;
+
+                     //here removed dummy player and using regular player (FF did not load vtt from it)
+                     config.tracks = config.theplayer.textTracks;
+                     for (i = 0; i < config.tracks.length; i++) {
+                         track = config.tracks[i];
+                         if (track.kind === 'captions' || track.kind === 'subtitles') {
+                             validTracks.push(track);
+                         }
+                     }
+                     return validTracks;
+                 },
+                 active: function (tracks) {
+                     var i, track;
+                     for (i = 0; i < config.tracks.length; i++) {
+                         track = config.tracks[i];
+                         if (track.mode === 'showing') {
+                             activeTrack = track;
+                             return track;
+                         }
+                     }
+                     // fallback to first track
+                     return activeTrack || tracks[0];
+                 },
+             };
+         },
+
+         /*globals utils, eventEmitter,scrollable*/
+
+         widget:  function(config) {
+             var that = this;
+             var thewidget = {};
+             thewidget.element = {};
+             thewidget.body = {};
+             var on = function (event, callback) {
+                 eventEmitter.on(that, event, callback);
+             };
+             var trigger = function (event) {
+                 eventEmitter.trigger(that, event);
+             };
+             var initToolbar = function () {
+                 $('#' + config.containerid + ' .' + config.prefix + 'title').text(config.title);
+             };
+
+             var clickToSeekHandler = function (event) {
+                 var clickedClasses = event.target.classList;
+                 var clickedTime = event.target.getAttribute('data-begin') || event.target.parentElement.getAttribute('data-begin');
+                 if (clickedTime !== undefined && clickedTime !== null) { // can be zero
+                     if ((config.settings.clickArea === 'line') || // clickArea: 'line' activates on all elements
+                             (config.settings.clickArea === 'timestamp' && clickedClasses.contains(config.prefix + '-timestamp')) ||
+                             (config.settings.clickArea === 'text' && clickedClasses.contains(config.prefix + '-text'))) {
+                         config.theplayer.currentTime= clickedTime;
+                     }
+                 }
+             };
+             var createLine = function (cue) {
+                 var line = that.utils.createEl('div', config.prefix +'-line');
+                 var timestamp = that.utils.createEl('span',config.prefix + '-timestamp');
+                 var text = that.utils.createEl('span', config.prefix + '-text');
+                 line.setAttribute('data-begin', cue.startTime);
+                 line.setAttribute('tabindex', thewidget._options.tabIndex || 0);
+                 timestamp.textContent = that.utils.secondsToTime(cue.startTime);
+                 text.innerHTML = cue.text;
+                 line.appendChild(timestamp);
+                 line.appendChild(text);
+                 return line;
+             };
+
+             var createTranscriptBody = function (track,trackCreated) {
+                 if (typeof track !== 'object') {
+                     track = config.theplayer.textTracks()[track];
+                 }
+                 var body = that.utils.createEl('div', config.prefix + '-body');
+                 var line, i;
+                 var fragment = document.createDocumentFragment();
+                 // activeCues returns null when the track isn't loaded (for now?)
+                 if (!track.activeCues) {
+                     // If cues aren't loaded, set mode to hidden, wait, and try again.
+                     // But don't hide an active track. In that case, just wait and try again.
+                     if (track.mode !== 'showing') {
+                         track.mode = 'hidden';
+                     }
+                     window.setTimeout(function() {
+                         createTranscriptBody(track);
+                     }, 100);
+                 } else {
+
+                     var cues = track.cues;
+                     if(!track.cues || track.cues.length==0){
+                         window.setTimeout(function() {
+                             createTranscriptBody(track);
+                         }, 100);
+                         return;
+                     }
+                     var textTranscript =[];
+                     for (i = 0; i < cues.length; i++) {
+                         line = createLine(cues[i]);
+                         if(!(cues[i].text==='')){
+                             textTranscript.push(cues[i].text);
+                         }
+                         fragment.appendChild(line);
+                     }
+                     //prepare text transcript
+                     config.textTranscript=textTranscript.join(' ');
+
+                     //build body of transcript
+                     body.innerHTML = '';
+                     body.appendChild(fragment);
+                     body.setAttribute('lang', track.language);
+                     body.scroll = that.scroller(thewidget.element,config);
+                     body.addEventListener('click', clickToSeekHandler);
+                     thewidget.element.replaceChild(body, thewidget.body);
+                     thewidget.body = body;
+                 }
+
+             };
+             var create = function (options) {
+                 initToolbar();
+                 var el = document.createElement('div');
+                 thewidget._options = options;
+                 thewidget.element = el;
+                 el.setAttribute('id', config.scrollingthing);
+
+                 thewidget.body = that.utils.createEl('div',config.prefix + '-body');
+                 el.appendChild(thewidget.body);
+                 setTrack(config.currentTrack);
+                 return this;
+             };
+             var setTrack = function (track, trackCreated) {
+                 createTranscriptBody(track, trackCreated);
+             };
+             var setCue = function (time) {
+                 var active, i, line, begin, end;
+                 var lines = thewidget.body.children;
+                 for (i = 0; i < lines.length; i++) {
+                     line = lines[i];
+                     begin = line.getAttribute('data-begin');
+                     if (i < lines.length - 1) {
+                         end = lines[i + 1].getAttribute('data-begin');
+                     } else {
+                         end = config.theduration;
+                     }
+                     if (time > begin && time < end) {
+                         if (!line.classList.contains('is-active')) { // don't update if it hasn't changed
+                             line.classList.add('is-active');
+                             if (config.settings.autoscroll && !(config.settings.stopScrollWhenInUse && thewidget.body.scroll.inUse())) {
+                                 thewidget.body.scroll.to(line);
+                             }
+                         }
+                     } else {
+                         line.classList.remove('is-active');
+                     }
+                 }
+             };
+             var el = function () {
+                 return thewidget.element;
+             };
+             return {
+                 create: create,
+                 setTrack: setTrack,
+                 setCue: setCue,
+                 el : el,
+                 on: on,
+                 trigger: trigger,
+             };
+         },
+
+         transcript: function(config){
+             var that=this;
+             var options=this.defaults;
+             this.utils.prefix='transcript';
+
+             config.validTracks = this.trackList(config).get();
+             config.currentTrack = this.trackList(config).active(config.validTracks);
+
+             //   if(!config.currentTrack){return false;}
+             //        if(!config.currentTrack.activeCues){return false;}
+
+
+             config.settings = options;
+             config.widget = this.widget(config).create(options);
+
+             var timeUpdate = function (eventdata) {
+                 config.widget.setCue(config.theplayer.currentTime);
+             };
+             var updateTrack = function () {
+                 config.currentTrack = that.trackList(config).active(config.validTracks);
+                 config.widget.setTrack(config.currentTrack);
+             };
+             if (config.validTracks.length > 0) {
+                 config.theplayer.ontimeupdate =timeUpdate;
+             } else {
+                 throw new Error('transcript: No tracks found!');
+             }
+             return {
+                 el: function () {
+                     return config.widget.el();
+                 },
+                 setTrack: config.widget.setTrack
+             };
+         }
+     };//end of interactive transcript
+
+     var processNewVideo = function(player, itoptions){
+         //first of all clear the existing transcript if we have one
+         $('#{{AUTOID}}_transcriptscrollable').empty();
+         itoptions.title=''; //Set player TITLE here
+         itoptions.theduration=player.duration;
+         //finally load interactive transcript
+         it.init(itoptions);
+
+
+     }// end of processNewVideo
+
+
+//Insert or configure our player
+     var createPlayer = function(){
+         //do we have a player?
+         var originalplayer = $('#{{AUTOID}}_original video').first();
+         if(originalplayer.length===1){
+             var mediaurl=false;
+             var lang = $('#{{AUTOID}}_original video track[kind="captions"]').first().attr('srclang');
+             var subtitlesurl = $('#{{AUTOID}}_original video track[kind="captions"]').first().attr('src');
+             //make sure moodle and poodll leave it alone from here on
+             originalplayer.addClass('nomediaplugin');
+             originalplayer.addClass('nopoodll');
+         }else{
+
+             //hopefully we have data attributes in the a link
+             var originallink = $('#{{AUTOID}}_original a').first();
+             var mediaurl = originallink.attr('href');
+             var lang = originallink.attr('data-lang');
+             var subtitlesurl = originallink.attr('data-subtitles');
+
+             //but we might be in the old form where they were params on the url
+             if(subtitlesurl===undefined && mediaurl.split('?').length>0){
+                 var urlParams = new URLSearchParams(mediaurl.split('?')[1] );
+                 subtitlesurl = urlParams.get('data-subtitles');
+                 lang = urlParams.get('data-language');
+                 mediaurl = mediaurl.split('?')[0]
+             }
+
+             //make sure moodle and poodll leave it alone from here on
+             originallink.addClass('nomediaplugin');
+             originallink.addClass('nopoodll');
+         }
+
+//the  player template
+         var atemplate = '<video id="{{AUTOID}}_player" class="poodllmediacontainer sivvideo nomediaplugin nopoodll" controls="true" preload="metadata"  crossorigin="anonymous" style="max-width: 100%"><track src="@subtitlesurl@" kind="captions" srclang="@lang@" label="@lang@" default="true" width="640" height="480" ></video>';
+
+         var aplayer = atemplate.replace(/@lang@/g, lang);
+         aplayer = aplayer.replace(/@subtitlesurl@/g, subtitlesurl);
+         aplayer = aplayer.replace(/@AUTOID@/g, '{{AUTOID}}');
+         $('#{{AUTOID}}_widget').prepend(aplayer);
+
+         //move any source tracks over if we had a full html5 player as source
+         if(originalplayer.length===1){
+             $('#{{AUTOID}}_original source').clone().appendTo('#{{AUTOID}}_player');
+             var mediaurl = originalplayer.attr('src');
+             if(mediaurl !==undefined){
+                 $('#{{AUTOID}}_player').attr('src', mediaurl);
+             }
+         }else{
+             //otherwise the media source is from the a link href
+             $('#{{AUTOID}}_player').attr('src', mediaurl);
+             var captiontrack =  $('#{{AUTOID}}_player track[kind="captions"]').first();
+         }
+
+
+
+     }
+
+     // Processing Starts here
+     //ie From here we start running all the functions we declared above
+
+     //just quit if this was called twice which totally happens!!! (prob because Moodle adds JS to header twice)
+     if($('#{{AUTOID}}_player').length>0){return;}
+
+    //Set up our player
+     createPlayer();
+     var theplayer = $('#{{AUTOID}}_player')[0];
+
+
+     //init our interactive transcript options  (IT)
+     var itoptions = {};
+     itoptions.containerid = '{{AUTOID}}_transcriptcontainer';
+     itoptions.scrollcontainerid = '{{AUTOID}}_transcriptscrollable';
+     itoptions.scrollingthing = '{{AUTOID}}_transcriptscrolling';
+     itoptions.splitter = '{{AUTOID}}_splitter';
+     itoptions.playerid = '{{AUTOID}}_player';
+     itoptions.theplayer = theplayer;
+     itoptions.cssprefix = 'filterpoodll_siv_transcript';
+
+
+//window stuff for resizing
+     if ($(window).width() >= 992 && $.fn.resizable) {
+         $('#{{AUTOID}}_player').resizable({
+             handles: {'e' : $('#{{AUTOID}}_splitter')},
+             resizeHeight: false
+         });
+     }
+
+//display toolbar buttons (they appear too soon otherwise)
+     $('#' + itoptions.containerid + ' .' +
+             itoptions.cssprefix + 'toolbar .' + itoptions.cssprefix + 'tools').show();
+
+//Toggle time stamp
+     $('#' + itoptions.containerid + ' .' +
+             itoptions.cssprefix + 'showtime').on('click',function(){
+
+         $('#' + itoptions.containerid + ' .' +
+                 itoptions.cssprefix + '-body').toggleClass('notimestamp');
+         return false;
+
+     });
+
+//Toggle layout
+     $('#' + itoptions.containerid + ' .' +
+             itoptions.cssprefix + 'layout').on('click',function(){
+
+         var maincontainer =  $('.filterpoodll_siv_transcriptmain_container');
+         var sivvideo =  $('.sivvideo') ;
+         if(maincontainer.hasClass('fpv_flexrow')){
+             maincontainer.removeClass('fpv_flexrow');
+             maincontainer.addClass('fpv_flexcol');
+             $('#' + itoptions.splitter).hide();
+             //clear any resized widths
+             sivvideo.css('width','');
+         }else{
+             maincontainer.removeClass('fpv_flexcol');
+             maincontainer.addClass('fpv_flexrow');
+             sivvideo.css('width','50%');
+             $('#' + itoptions.splitter).show();
+
+         }
+         return false;
+
+     });
+
+
+    //kick it all off
+     processNewVideo(theplayer,itoptions);
+
+
+ });
+{{/js}}

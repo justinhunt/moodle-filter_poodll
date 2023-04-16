@@ -47,8 +47,24 @@ class filter_poodll extends moodle_text_filter {
         //get config
         $this->adminconfig = get_config('filter_poodll');
 
-        //if text has links, lets parse them
-        if ($havelinks) {
+        //text links and poodll curlies can occasionally clash if they both attack the same link
+        //since curlys generally use js, it will happen after exts, and we can not easily tell from php that they will clash
+        //it's mostly handled ok now by cutting out ?params in mediaparser.js which deals with cors issues caused by params
+        //but it would be cooler if we did not have to do that because then we could use Polly URLs in mediaparser templates
+
+        //if text has poodll curly brackets, lets parse
+        if ($have_poodll_curlys) {
+            //check for poodll curly brackets notation
+            $search = '/{POODLL:.*?}/is';
+            if (!is_string($text)) {
+                // non string data can not be filtered anyway
+                return $text;
+            }
+            $newtext = preg_replace_callback($search, 'self::filter_poodll_process', $newtext);
+        }
+
+            //if text has links
+            if ($havelinks) {
             //get handle extensions
             $exts = \filter_poodll\filtertools::fetch_extensions();
             $handleexts = array();
@@ -76,17 +92,6 @@ class filter_poodll extends moodle_text_filter {
                 $newtext = preg_replace_callback($search, 'self::filter_poodll_youtube_callback', $newtext);
             }
         }// end of if $havelinks
-
-        //if text has poodll curly brackets, lets parse
-        if ($have_poodll_curlys) {
-            //check for poodll curly brackets notation
-            $search = '/{POODLL:.*?}/is';
-            if (!is_string($text)) {
-                // non string data can not be filtered anyway
-                return $text;
-            }
-            $newtext = preg_replace_callback($search, 'self::filter_poodll_process', $newtext);
-        }//end of if has poodl curlys
 
         //return the correct thing to wherever called us
         if (is_null($newtext) or $newtext === $text) {

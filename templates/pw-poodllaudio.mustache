@@ -45,9 +45,12 @@
 </div>
 
 <!-- Custom JS from template  goes goes here  -->
+{{^element.frozen}}
 {{#js}}
     //<script>
- require(['jquery', 'filter_poodll/soundtouch', 'filter_poodll/wavesurfer', 'filter_poodll/mediaparser'], function($, soundtouch, WaveSurfer, parser) {
+ require(['jquery','core/log', 'filter_poodll/soundtouch', 'filter_poodll/wavesurfer', 'filter_poodll/mediaparser'], function($, log, soundtouch, WaveSurfer, parser) {
+
+     log.debug('running js in poodllaudio temlate');
 
       var app = {
         options: {},
@@ -307,6 +310,8 @@
 
      //fetch the media url
      var mediadetails = parser.parse('{{AUTOID}}_original', 'audio');
+
+
      var options={};
      options.hasVtt = mediadetails.subtitlesurl ? true : false;
      options.vtt= mediadetails.subtitlesurl; //"https://s3.amazonaws.com/poodll-audioprocessing-out-us-east-1/CP/365/jjustin/misc.poodll.com/21232f297a57a5a743894a0e4a801fc3/poodllfile5ec34af9814891.mp3.vtt",
@@ -322,6 +327,5 @@
 
  }); //end of script
 
-
-
 {{/js}}
+{{/element.frozen}}

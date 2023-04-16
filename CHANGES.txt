@@ -1,5 +1,11 @@
 Change List
 =========
+Version 3.1.66(Build 2023041600)
+- changes to make widget/player templates work more nicely together
+
+Version 3.1.65 (Build 2023033001)
+- Fixed bugs that caused player widgets to fail if mp3 (or mp4) handling was also enabled
+
 Version 3.1.64 (Build 2023033001)
 - Support for Arabic and Hebrew on Text to Audio (cloud) and Passage Reader (cloud) widgets
 - Support for Arabic and Hebrew on Poodll Audio Player widget
