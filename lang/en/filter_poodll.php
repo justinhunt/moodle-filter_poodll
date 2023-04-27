@@ -486,3 +486,4 @@ $string['playing'] = "playing";
 $string['ready'] = "ready";
 $string['finished'] = "finished";
 $string['paused'] = "paused";
+$string['nosubtitlesyet'] = "Subtitles are not available (yet)";

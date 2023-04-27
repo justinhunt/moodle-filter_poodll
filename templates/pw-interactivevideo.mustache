@@ -1,7 +1,7 @@
 <div id="{{AUTOID}}_widget" class="filterpoodll_siv_transcriptmain_container fpv_flexcol" >
     <!-- video player will go above here -->
     <div id="{{AUTOID}}_splitter" class="splitter ui-resizable-handle ui-resizable-e" style="display: none"></div>
-    <div id="{{AUTOID}}_transcriptcontainer" class="filterpoodll_siv_transcriptcontainer">
+    <div id="{{AUTOID}}_transcriptcontainer" class="filterpoodll_siv_transcriptcontainer" hidden>
         <div class="filterpoodll_siv_transcripttoolbar">
             <span class="filterpoodll_siv_transcripttitle"></span>
             <span class="filterpoodll_siv_transcripttools" style="display: none">
@@ -14,6 +14,7 @@
                 </span>
         </div>
         <div id="{{AUTOID}}_transcriptscrollable" class="filterpoodll_siv_transcriptscrollable"></div>
+        <div id="{{AUTOID}}_nosubtitlesyet" class="alert alert-warning" hidden >{{#str}}nosubtitlesyet, filter_poodll{{/str}}</div>
     </div>
 </div>
 
@@ -389,7 +390,22 @@
                          window.setTimeout(function() {
                              createTranscriptBody(track);
                          }, 100);
+
+                         log.debug('cues==0');
+                         log.debug(mediadetails.subtitlesurl);
+                         if (mediadetails.subtitlesurl !== undefined) { // We have subtitles.
+                            log.debug('It hasnt loaded the subtitles. Show message');
+                            $('#{{AUTOID}}_nosubtitlesyet').removeAttr('hidden');
+                         }
                          return;
+                     } else {
+                        log.debug('cues');
+                        log.debug(mediadetails.subtitlesurl);
+                        if (mediadetails.subtitlesurl !== undefined) { // We have subtitles.
+                            log.debug('It has loaded the subtitles. Show container, hide message');
+                            $('.filterpoodll_sia_transcriptcontainer').removeAttr('hidden');
+                            $('#{{AUTOID}}_nosubtitlesyet').attr('hidden', true); // Transcript now showing so hide message again just to be sure.
+                         }
                      }
                      var textTranscript =[];
                      for (i = 0; i < cues.length; i++) {
