@@ -2,6 +2,7 @@ Change List
 =========
 Version 3.1.66(Build 2023041600)
 - changes to make widget/player templates work more nicely together
+- more tweaks to audio and video players
 
 Version 3.1.65 (Build 2023033001)
 - Fixed bugs that caused player widgets to fail if mp3 (or mp4) handling was also enabled

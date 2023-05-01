@@ -28,7 +28,7 @@ define(['jquery', 'core/log'], function ($, log) {
                }
                ret.sources = $('#' + containerid + ' ' + mediatype + ' source');
 
-               log.debug(JSON.stringify(ret));
+             /*  log.debug(JSON.stringify(ret)); */
                //make sure moodle and poodll leave it alone from here on
                originalplayer.addClass('nomediaplugin');
                originalplayer.addClass('nopoodll');

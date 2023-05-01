@@ -232,6 +232,8 @@ class filtertools {
         $proparray['AUTOPNGFILENAME'] = $autopngfilename;
         $proparray['AUTOJPGFILENAME'] = $autojpgfilename;
         $proparray['RAWVIDEOURL'] = !empty($paramstring) ? $videourl . '?' . $paramstring : $videourl;
+        $proparray['DATAATTRIBUTES'] = self::extract_data_attributes($link[0]);
+
         if ($is_webservice) {
             $proparray['VIDEOURL'] = $videourl;
         } else {
@@ -248,7 +250,33 @@ class filtertools {
         return $proparray;
     }//end of function
 
-    public static function fetch_filter_properties($filterstring) {
+    public static function extract_data_attributes($html_element) {
+      // Create a DOMDocument object from the HTML element string
+      $dom = new \DOMDocument();
+      // Wrap the HTML element string in a dummy div element
+      $html = '<div>' . $html_element . '</div>';
+      $dom->loadHTML($html);
+      $attributes_string="";
+
+      // Get the first (and only) element from the DOMDocument object
+      $element = $dom->getElementsByTagName('a')->item(0);
+
+
+      // Loop through each attribute of the element
+      foreach ($element->attributes as $attr) {
+        // Check if the attribute starts with "data-"
+        if (strpos($attr->name, 'data-') === 0) {
+          // If it does, add it to the data attributes array
+            $attributes_string .= " " . $attr->name .'="' . $attr->value .'"';
+        }
+    }
+
+    // Return the data attributes array
+    return $attributes_string;
+}
+
+
+public static function fetch_filter_properties($filterstring) {
         //lets do a general clean of all input here
         //see: https://github.com/justinhunt/moodle-filter_generico/issues/7
         $filterstring = clean_param($filterstring, PARAM_TEXT);
