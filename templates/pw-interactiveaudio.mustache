@@ -1,6 +1,6 @@
 <div id="{{AUTOID}}_widget" class="filterpoodll_sia_transcriptmain_container fpv_flexcol" >
     <!-- media player goes here -->
-    <div id="{{AUTOID}}_transcriptcontainer" class="filterpoodll_sia_transcriptcontainer">
+    <div id="{{AUTOID}}_transcriptcontainer" class="filterpoodll_sia_transcriptcontainer" hidden >
         <div class="filterpoodll_sia_transcripttoolbar">
             <span class="filterpoodll_sia_transcripttitle"></span>
             <span class="filterpoodll_sia_transcripttools" style="display: none">
@@ -12,6 +12,7 @@
         </div>
         <div id="{{AUTOID}}_transcriptscrollable" class="filterpoodll_sia_transcriptscrollable"></div>
     </div>
+    <div id="{{AUTOID}}_nosubtitlesyet" class="alert alert-warning" hidden >{{#str}}nosubtitlesyet, filter_poodll{{/str}}</div>
 </div>
 
 
@@ -368,6 +369,8 @@
                  var body = that.utils.createEl('div', config.prefix + '-body');
                  var line, i;
                  var fragment = document.createDocumentFragment();
+                 var mediadetails =  parser.parse('{{AUTOID}}_original', 'audio');
+
                  // activeCues returns null when the track isn't loaded (for now?)
                  log.debug(track.activeCues);
                  if (!track.activeCues) {
@@ -375,12 +378,6 @@
                      // But don't hide an active track. In that case, just wait and try again.
                      if (track.mode !== 'showing') {
                          track.mode = 'hidden';
-
-                        // When there is a subtitle track, but it fails to load.
-                        if (track.kind === 'subtitles') {
-                            $('#{{AUTOID}}_container').append('<div class="alert alert-warning">Subtitles are not available (yet)</div>');
-                            $('.filterpoodll_sia_transcriptcontainer').remove();
-                        }
                      }
 
                      window.setTimeout(function() {
@@ -391,8 +388,23 @@
                      if(cues && cues.length==0){
                          window.setTimeout(function() {
                              createTranscriptBody(track);
-                         }, 100);
+                         }, 500);
+
+                         log.debug('cues==0');
+                         log.debug(mediadetails.subtitlesurl);
+                         if (mediadetails.subtitlesurl !== undefined) { // We have subtitles.
+                            log.debug('It hasnt loaded the subtitles. Show message');
+                            $('#{{AUTOID}}_nosubtitlesyet').removeAttr('hidden');
+                         }
                          return;
+                     } else {
+                        log.debug('cues');
+                        log.debug(mediadetails.subtitlesurl);
+                        if (mediadetails.subtitlesurl !== undefined) { // We have subtitles.
+                            log.debug('It has loaded the subtitles. Show container, hide message');
+                            $('.filterpoodll_sia_transcriptcontainer').removeAttr('hidden');
+                            $('#{{AUTOID}}_nosubtitlesyet').attr('hidden', true); // Transcript now showing so hide message again just to be sure.
+                         }
                      }
 
 
@@ -520,7 +532,7 @@
          log.debug('mediadetails.mediaurl',mediadetails.mediaurl);
 
         //the audio player template
-         var atemplate ='<audio id="{{AUTOID}}_player" class="poodllmediacontainer nomediaplugin nopoodll" controls="true" preload="metadata" crossorigin="anonymous"><track src="@subtitlesurl@" kind="subtitles" srclang="@lang@" label="@lang@" default="true" width="640" height="480" ></audio>';
+         var atemplate ='<audio id="{{AUTOID}}_player" class="poodllmediacontainer nomediaplugin nopoodll" controls="true" preload="metadata" crossorigin="anonymous"><track src="@subtitlesurl@" kind="captions" srclang="@lang@" label="@lang@" default="true" width="640" height="480" ></audio>';
 
          var aplayer = atemplate.replace(/@lang@/g, mediadetails.lang);
          aplayer = aplayer.replace(/@subtitlesurl@/g, mediadetails.subtitlesurl);
