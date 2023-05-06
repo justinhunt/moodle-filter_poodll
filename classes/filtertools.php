@@ -325,4 +325,58 @@ public static function fetch_filter_properties($filterstring) {
         return $props;
     }
 
+    /*
+     *
+     */
+    public static function add_nomediaplugin_class_to_playerwidgets($html) {
+        // Create a new DOMDocument object
+        $doc = new \DOMDocument();
+
+        // Load the HTML string into the DOMDocument
+        $doc->loadHTML($html,LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+
+
+        $finder = new \DomXPath($doc);
+        $classname="poodllplayerwidgetnoshow";
+        $nodes = $finder->query("//div[contains(@class, '$classname')]");
+        if(!$nodes || $nodes->length == 0) {
+            // If the div with id "poodllplayerwidgetnoshow" is not found, return the original HTML string
+            return $html;
+        }else{
+            foreach ($nodes as $poodll_player_div) {
+                // Get all HTML5 audio and video elements
+                $audio_players = $poodll_player_div->getElementsByTagName('audio');
+                $video_players = $poodll_player_div->getElementsByTagName('video');
+
+                // Get all links with an MP3 or MP4 file extension
+                $links = $poodll_player_div->getElementsByTagName('a');
+                $media_links= array();
+                foreach ($links as $link) {
+                    $url = $link->getAttribute('href');
+                    if (preg_match('/\.(mp3|mp4)$/i', $url)) {
+                        $media_links[]= $link;
+                    }
+                }
+
+                // Loop through each media player element and add the CSS class
+                $playerslist=[$audio_players,$video_players,$media_links];
+                foreach($playerslist as $media_players){
+                    foreach ($media_players as $player) {
+                        $class = $player->getAttribute('class');
+                        if (empty($class)) {
+                            $player->setAttribute('class', 'nomediaplugin nopoodll');
+                        } else {
+                            $player->setAttribute('class', $class . ' nomediaplugin nopoodll');
+                        }
+
+                    }
+                }
+
+
+            }//end of for each
+            // Save the updated HTML to a string and return it
+            $updated_html = $doc->saveHTML(); //$doc->saveHTML($poodll_player_div);
+            return $updated_html;
+        }//end of if nodes
+    }//end of function
 }//end of class

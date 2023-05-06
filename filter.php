@@ -63,8 +63,16 @@ class filter_poodll extends moodle_text_filter {
             $newtext = preg_replace_callback($search, 'self::filter_poodll_process', $newtext);
         }
 
-            //if text has links
-            if ($havelinks) {
+        //if the text has a poodll player widget we want to  prevent other filters from messing with it
+        //so we will add class/es that tell the filters to ignore media in between a div containing poodllplayerwidgetnoshow
+        if (preg_match('/class\s*=\s*[\'"](?:[^\'"]*\s+)?poodllplayerwidgetnoshow(?:\s+[^\'"]*)?[\'"]/i', $newtext)) {
+            $newtext = \filter_poodll\filtertools::add_nomediaplugin_class_to_playerwidgets($newtext);
+        }
+
+
+
+        //if text has links
+        if ($havelinks) {
             //get handle extensions
             $exts = \filter_poodll\filtertools::fetch_extensions();
             $handleexts = array();
@@ -92,6 +100,14 @@ class filter_poodll extends moodle_text_filter {
                 $newtext = preg_replace_callback($search, 'self::filter_poodll_youtube_callback', $newtext);
             }
         }// end of if $havelinks
+
+        //add nomediaplugin or nopoodll tags if we need to
+        //} else if (preg_match('/<(a|video|audio)\s[^>]*/', $tag, $tagmatches) && $sizeofmatches > 1 &&
+        //                    (empty($validtag) || $tagname === strtolower($tagmatches[1]))) {
+        //                // Looking for a starting tag. Ignore tags embedded into each other.
+        //                $validtag = $tag;
+        //                $tagname = strtolower($tagmatches[1]);
+        //            } else {
 
         //return the correct thing to wherever called us
         if (is_null($newtext) or $newtext === $text) {
@@ -227,7 +243,7 @@ class filter_poodll extends moodle_text_filter {
     }
 
     /*
-    *	Main callback function , exists outside of class definition(because its a callback ...)
+    *	Main callback function
     *
     */
     function filter_poodll_process(array $link, $ext = false) {
