@@ -29,10 +29,12 @@ defined('MOODLE_INTERNAL') || die();
  */
 function xmldb_filter_poodll_install() {
     $presets = \filter_poodll\poodllpresets::fetch_presets();
-    $forinstall = array('fff', 'flowplayer', 'mediaelementvideo', 'videojs', 'nativevideo', 'audiojs_shim', 'mediaelementaudio',
-            'nativeaudio', 'youtubeplayer', 'youtube','pw-onceaudio', 'pw-multiplayeraudio','pw-poodllaudio','superinteractiveaudio','superinteractivevideo',
+    $forinstall = array('fff', 'mediaelementvideo', 'videojs','mediaelementaudio', 'nativevideo',
+            'nativeaudio', 'youtubeplayer', 'youtube','pw-onceaudio','pw-miniplayeraudio', 'pw-multiplayeraudio',
+        'pw-multiplayervideo','pw-multispeedplayer','pw-poodllaudio','pwtinyaudioplayer','superinteractiveaudiowidget','superinteractivevideowidget',
+        'videoembed', 'videolightbox_w',
             'tabs', 'tabitem', 'accordian', 'accordianitem',
-            'Button-Maker','countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards',
+            'countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards',
             'textblockreader','tta','selecttoread');
     $templateindex = 0;
     foreach ($presets as $preset) {
@@ -47,8 +49,8 @@ function xmldb_filter_poodll_install() {
     set_config('handlemp4', 1, 'filter_poodll');
     set_config('handlemp3', 1, 'filter_poodll');
     set_config('handleyoutube', 1, 'filter_poodll');
-    set_config('useplayermp4', 'fff', 'filter_poodll');
-    set_config('useplayermp3', 'mediaelementaudio', 'filter_poodll');
+    set_config('useplayermp4', 'nativevideo', 'filter_poodll');
+    set_config('useplayermp3', 'nativeaudio', 'filter_poodll');
     set_config('useplayeryoutube', 'youtubeplayer', 'filter_poodll');
     set_config('useplayerwebm', 'nativevideo', 'filter_poodll');
     set_config('useplayerflv', 'fff', 'filter_poodll');
