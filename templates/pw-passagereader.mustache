@@ -1,0 +1,317 @@
+<button type='button' id='{{AUTOID}}' data-currentsentence="0" class="roundmini-audio-player" >
+    <audio id='{{AUTOID}}_player' class="roundminiaudio nomediaplugin">
+    </audio>
+    <i class="fa fa-volume-up" aria-hidden="true"></i>
+</button>
+
+{{#js}}
+    //<script>
+ require(['jquery','core/log'], function($,log) {
+
+
+      var passagereader = function(PASSAGEID){
+
+            //DECLARATIONS and INITs ...........................
+          var thesentence_number =0;
+          var lettered= false;
+
+           //audio player declarations
+          var aplayer = $('#' + PASSAGEID + '_player');
+          var fa = $('#' + PASSAGEID + ' .fa');
+
+        //text to audio preparation
+          var format = "text";
+
+        //determine the voice
+          var mf="{{speaker}}";
+          switch("{{language}}"){
+              case "English(US)": voice = mf=='Male'?'Joey':'Kendra';break;
+              case "English(GB)": voice = mf=='Male'?'Brian':'Amy';break;
+              case "English(AU)": voice = mf=='Male'?'Russell':'Nicole';break;
+              case "English(IN)": voice = mf=='Male'?'Aditi':'Raveena';break;
+              case "English(WELSH)": voice = mf=='Male'? 'Geraint':'Geraint';break;
+              case "Arabic": voice = mf=='Male'?'ar-XA-Wavenet-B':'Zeina';break;
+              case "Danish": voice = mf=='Male'?'Mads':'Naja';break;
+              case "Dutch": voice = mf=='Male'?'Ruben':'Lotte';break;
+              case "Dutch(BE)": voice = mf=='Male'?'nl-BE-Wavenet-B':'nl-BE-Wavenet-A';break;
+              case "French(FR)": voice = mf=='Male'?'Mathieu':'Celine';break;
+              case "French(CA)": voice = mf=='Male'?'Chantal':'Chantal';break;
+              case "German": voice = mf=='Male'?'Hans':'Marlene';break;
+              case "Hebrew": voice = mf=='Male'?'he-IL-Wavenet-B':'he-IL-Wavenet-A';break;
+              case "Icelandic": voice = mf=='Male'?'Karl':'Dora';break;
+              case "Italian": voice = mf=='Male'?'Carla':'Giorgio';break;
+              case "Japanese": voice = mf=='Male'?'Takumi':'Mizuki';break;
+              case "Korean": voice = mf=='Male'?'Seoyan':'Seoyan';break;
+              case "Norwegian": voice = mf=='Male'?'Liv':'Liv';break;
+              case "Polish": voice = mf=='Male'?'Jacek':'Ewa';break;
+              case "Portugese(BR)": voice = mf=='Male'?'Ricardo':'Vitoria';break;
+              case "Portugese(PT)": voice = mf=='Male'?'Cristiano':'Ines';break;
+              case "Romanian": voice = mf=='Male'?'Carmen':'Carmen';break;
+              case "Russian": voice = mf=='Male'?'Maxim':'Tatyana';break;
+              case "Spanish(ES)": voice = mf=='Male'?'Enrique':'Conchita';break;
+              case "Spanish(US)": voice = mf=='Male'?'Miguel':'Penelope';break;
+              case "Swedish": voice = mf=='Male'?'Astrid':'Astrid';break;
+              case "Turkish": voice = mf=='Male'?'Filiz':'Filiz';break;
+              case "Welsh": voice = mf=='Male'?'Gwyneth':'Gwyneth';break;
+              default: voice = mf=='Male'?'Brian':'Amy';
+          }
+
+
+        //fetch the text to read
+          var useblock = $('#' + PASSAGEID + '_textblock');
+          var usetext = useblock.text();
+        //if its right to left we need to massage it a bit
+          switch("{{language}}"){
+              case 'Arabic':
+              case 'Hebrew':
+              case 'Farsi':
+                  useblock.addClass('filter_poodll_passageplayer_rtl');
+                  $(useblock).find('p').removeAttr('dir');
+          }
+
+        //some common selectors
+          var wordselector = '#' + PASSAGEID+ '_textblock span.tbr_word';
+          var sentenceselector = '#' + PASSAGEID+ '_textblock span.tbr_sentence';
+
+            //FUNCTIONS ...........................
+            //FUNCTION fetch polly url
+          var fetch_polly_url = function(speaktext, voice, callback) {
+
+              //The REST API we are calling
+              var functionname = 'local_cpapi_fetch_polly_url';
+
+              //fetch the Posturl. We need this.
+              //set up our ajax request
+              var xhr = new XMLHttpRequest();
+              var that = this;
+
+              //set up our handler for the response
+              xhr.onreadystatechange = function (e) {
+                  if (this.readyState === 4) {
+                      if (xhr.status == 200) {
+
+                          //get a yes or forgetit or tryagain
+                          var payload = xhr.responseText;
+                          var payloadobject = JSON.parse(payload);
+                          if (payloadobject) {
+                              //returnCode > 0  indicates an error
+                              if (payloadobject.returnCode > 0) {
+                                  console.log(payloadobject.returnMessage);
+                                  return false;
+                                  //if all good, then lets do the embed
+                              } else if (payloadobject.returnCode === 0){
+                                  var pollyurl = payloadobject.returnMessage;
+                                  callback(pollyurl);
+                              } else {
+                                  console.log('Polly Signed URL Request failed:');
+                                  console.log(payloadobject);
+                              }
+                          } else {
+                              console.log('Polly Signed URL Request something bad happened');
+                          }
+                      } else {
+                          console.log('Polly Signed URL Request Not 200 response:' + xhr.status);
+                      }
+                  }
+              };
+
+              //make our request
+              var xhrparams = "wstoken={{CLOUDPOODLLTOKEN}}"
+                      + "&wsfunction=" + functionname
+                      + "&moodlewsrestformat=" + 'json'
+                      + "&text=" + encodeURIComponent(speaktext)
+                      + '&texttype=text'
+                      + '&voice=' + voice
+                      + '&appid=' + 'filter_poodll'
+                      + '&owner=poodll'
+                      + '&region=useast1';
+
+              var serverurl = 'https://cloud.poodll.com' + "/webservice/rest/server.php";
+              xhr.open("POST", serverurl, true);
+              xhr.setRequestHeader("Cache-Control", "no-cache");
+              xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+              xhr.send(xhrparams);
+          };
+
+        //FUNCTION: determine if the string is text or HTML
+          var isHTML = function (testString) {
+              var htmlRegex = new RegExp("<([A-Za-z][A-Za-z0-9]*)\\b[^>]*>(.*?)</\\1>");
+              return htmlRegex.test(testString);
+          };
+
+        //FUNCTION: split a text passage into words
+          var split_into_words= function(thetext){
+              thetext = thetext.replace(/\s+/g,' ').trim();
+              if(thetext==''){return[]};
+              return thetext.split(' ');
+          };
+
+        //FUNCTION: split a text passage into sentences
+          var split_into_sentences = function(thetext){
+              thetext = thetext.replace(/\s+/g,' ').trim();
+              if(thetext ==''){return[]};
+              return thetext.match(/([^\.!\?]+[\.!\?"']+)|([^\.!\?"']+$)/g);
+          };
+
+        //FUNCTION: break a text passage into words/sentences, and surround the words with marker tags
+          var spanify_text_passage = function(){
+              //the itemcount er
+              var itemcount = -1;
+
+              //get all the text nodes in the useblock
+              var textnodes = useblock.find('*').contents().filter(function(){ return this.nodeType == 3; });
+              //wrap sentence or words in text block with spans
+              textnodes.each(function(){
+                  var retpieces = '';
+                  if("{{highlightmode}}"=='word'){
+                      //for words
+                      var thewords = split_into_words($(this).text());
+                      for (var theword=0; theword < thewords.length; theword++){
+                          itemcount++;
+                          retpieces =  retpieces + '<span class="tbr_word" data-wordindex="'+ itemcount +'">' + thewords[theword] + '</span> ';
+                      }//end of for loop
+                  }else{
+                      //for sentences
+                      var thesentences = split_into_sentences($(this).text());
+                      for (var thesentence=0; thesentence < thesentences.length; thesentence++){
+                          itemcount++;
+                          retpieces =  retpieces + '<span class="tbr_sentence" data-sentenceindex="'+ itemcount +'">' + thesentences[thesentence] + '</span>&nbsp;';
+                      }//end of for loop
+                  }
+                  $(this).replaceWith(retpieces);
+              });//end of textnodes each
+          };
+
+        //FUNCTION:  unhighlight a sentence as active
+          var dehighlight_all = function(){
+              switch("{{highlightmode}}"){
+                  case 'word':
+                      $(wordselector,useblock).removeClass('activesentence');
+                      break;
+                  case 'sentence':
+                      $(sentenceselector).removeClass('activesentence');
+                      break;
+                  case 'none':
+                  default:
+                      //do nothing
+              }
+          }
+
+          //FUNCTION:  highlight a sentence as active
+          var highlight_sentence = function(thesentence){
+              switch("{{highlightmode}}"){
+                  case 'word':
+                      $(wordselector,useblock).removeClass('activesentence');
+                      $(wordselector,useblock).slice(wordstarts[thesentence],
+                              wordstarts[thesentence] +
+                              wordcounts[thesentence]).addClass('activesentence');
+                      break;
+                  case 'sentence':
+                      $(sentenceselector).removeClass('activesentence');
+                      $(sentenceselector + '[data-sentenceindex=' + thesentence + ']').addClass('activesentence');
+                      break;
+                  case 'none':
+                  default:
+                      //do nothing
+              }
+          }
+
+        //FUNCTION: play a single sentence and mark it active for display purposes
+          var doplayaudio = function(thesentence){
+              highlight_sentence(thesentence);
+              aplayer.attr('src',sentenceURLs[thesentence]);
+              aplayer[0].load();
+              aplayer[0].play();
+          };
+
+
+        //AUDIO PLAYER events
+          aplayer[0].addEventListener('ended', function(){
+              if(thesentence_number< sentences.length -1){
+                  thesentence_number++;
+                  doplayaudio(thesentence_number);
+              }else{
+                  dehighlight_all();
+                  $(fa).removeClass('fa-stop');
+                  $(fa).addClass('fa-volume-up');
+                  thesentence_number=0;
+                  aplayer.removeAttr('src');
+              }
+          });
+
+        //handle audio player button clicks
+          $('#' + PASSAGEID).click(function(){
+              if(!aplayer[0].paused && !aplayer[0].ended){
+                  aplayer[0].pause();
+                  if("{{stoporpause}}"=='stop'){
+                      thesentence_number=0;
+                  }
+                  $(fa).removeClass('fa-stop');
+                  $(fa).addClass('fa-volume-up');
+
+                  //if paused and not in limbo no src state
+              }else if(aplayer[0].paused && aplayer.attr('src')){
+                  doplayaudio(thesentence_number);
+                  $(fa).removeClass('fa-volume-up');
+                  $(fa).addClass('fa-stop');
+            //play
+              }else{
+                  log.debug("stoporpause: " + "{{stoporpause}}");
+                  if(!lettered){
+                      spanify_text_passage();
+                      lettered=true;
+                  }//end of if lettered
+                  if("{{stoporpause}}"=='stop'){
+                      thesentence_number=0;
+                  }
+                  doplayaudio(thesentence_number);
+                  $(fa).removeClass('fa-volume-up');
+                  $(fa).addClass('fa-stop');
+              }//end of if paused ended
+          });
+
+            //handle sentence clicks
+          $('#' + PASSAGEID + '_textblock  .tbr_innerdiv').on('click', '.tbr_sentence',function(){
+              aplayer[0].pause();
+              var sentenceindex = $(this).attr('data-sentenceindex');
+              $(fa).removeClass('fa-volume-up');
+              $(fa).addClass('fa-stop');
+              thesentence_number = sentenceindex;
+              doplayaudio(sentenceindex );
+          });
+
+        //PROCEDURAL stuff ...........................
+        //break it into sentences, and fetch data + TTS URL for each sentence
+          var sentences = split_into_sentences(usetext);
+          var wordstarts=[];
+          var wordcounts=[];
+          var sentenceURLs=[];
+          var previousend=0;
+          for (var currentsentence=0;currentsentence<sentences.length;currentsentence++){
+              wordstarts[currentsentence]= previousend;
+              wordcounts[currentsentence]= split_into_words(sentences[currentsentence]).length;
+              previousend = previousend + wordcounts[currentsentence];
+
+              var speaktext = sentences[currentsentence];
+              fetch_polly_url(speaktext,voice,
+                      function(sentenceindex){return function(pollyurl){sentenceURLs[sentenceindex]= pollyurl;}}(currentsentence)
+              );
+
+          }
+
+//end of instance wrapper
+      };
+
+     //Moodle seems to run the JS twice so we just ignore it if its the second run (otherwise the event handlers register twice etc)
+     var theaudioplayer = $('#{{AUTOID}}_player');
+     if(theaudioplayer.length>0 && theaudioplayer.attr('data-init')==='done'){
+         return;
+     }else{
+         theaudioplayer.attr('data-init','done');
+         passagereader("{{AUTOID}}");
+     }
+
+
+
+});
+{{/js}}
