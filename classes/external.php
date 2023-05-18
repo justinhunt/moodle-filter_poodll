@@ -11,6 +11,9 @@ use filter_poodll\poodlltools;
 use filter_poodll\constants;
 use filter_poodll\diff;
 
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
 /**
  * External class.
  *
