@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.67(Build 2023051900)
+- Moodle 4.2 support
+- Better passage reading and other widgets
+
 Version 3.1.66(Build 2023041600)
 - changes to make widget/player templates work more nicely together
 - more tweaks to audio and video players
