@@ -1,0 +1,239 @@
+<div class="filterpoodll_selecttoread_inner">
+    <p class="h5 text-center">{{#str}}select-text-and-click-me, filter_poodll{{/str}}</p>
+    <div class="control-container">
+        <div class="track-progress-bar">
+            <div id="track-slider">
+                <div id="track-progress"></div>
+            </div>
+            <div class="ml-2" id="track-time">0:00 / 0:00</div>
+        </div>
+        <div class="track-buttons">
+            <button id="step-backward" class="btn btn-outline-light" type="button" title="Step back">
+                <i class="fa fa-step-backward"></i>
+            </button>
+
+            <button type='button' id='{{AUTOID}}' data-currentsentence="0" class="btn btn-light" title="Play/Pause">
+                <audio id='{{AUTOID}}_player' class="nomediaplugin nopoodll">
+                </audio>
+                <i class="fa fa-play" aria-hidden="true"></i>
+            </button>
+
+            <button id="step-forward" class="btn btn-outline-light" type="button" title="Step forward">
+                <i class="fa fa-step-forward"></i>
+            </button>
+            <button id="track-stop" class="btn btn-outline-light" type="button" title="Stop">
+                <i class="fa fa-stop"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+{{#js}}
+    //<script>
+ require(['jquery','core/log', 'filter_poodll/pollyhelper'], function($, log, pollyhelper) {
+
+    var wordselector = '#{{AUTOID}}_textblock span.tbr_word';
+    var sentenceselector = '#{{AUTOID}}_textblock span.tbr_sentence';
+
+    var str = {
+        voice: 'Amy',
+        usetext: '',
+        sentences: [],
+        thesentence_number: 0,
+        lettered: false,
+        theplayer: false,
+        textblock:  [],
+        itemid: '',
+        fa: [],
+        pollyhelper: false,
+        activeEl: '',
+        activeElTagName: '',
+
+        init: function() {
+            // Moodle seems to run the JS twice so we just ignore it if its the second run (otherwise the event handlers register twice etc).
+            this.theplayer = $('#{{AUTOID}}_player');
+            if (this.theplayer.attr('data-init')==='done'){
+                return;
+            } else {
+                //get the DOM elements we need to work with
+                this.itemid = "{{AUTOID}}";
+                this.textblock = $('#{{AUTOID}}_textblock');
+                this.fa = $('#{{AUTOID}} .fa');
+                this.theplayer.attr('data-init','done');
+
+                //set up passage reader specific stuff
+                this.select_to_read();
+
+                //set up our event handlers
+                this.register_events();
+                //set up Polly URLs, sentence naviagation and highlighting on the passage
+                //we clone pollyhelper so that multiple instances of the reader can run at once
+                //AMD modules share the instances they declare in the module, so we need to clone
+                //or they would all play the passage for the finally declared reader instance
+                this.pollyhelper = pollyhelper.clone();
+                this.pollyhelper.init(this.theplayer,this.itemid, this.textblock, this.voice,sentenceselector,wordselector,'{{highlightmode}}', '{{CLOUDPOODLLTOKEN}}');
+                this.sentences = $(sentenceselector);
+            }
+        },
+
+        select_to_read: function(){
+
+            // Fetch the text to read.
+            this.usetext = this.textblock.text();
+            // this.usetext = this.textblock;
+
+            // If its right to left we need to massage it a bit.
+            switch("{{language}}"){
+                case 'Arabic':
+                case 'Hebrew':
+                case 'Farsi':
+                    this.textblock.addClass('filter_poodll_passageplayer_rtl');
+                    $(this.textblock).find('p').removeAttr('dir');
+            }
+
+            // Determine the voice.
+            var mf = "{{speaker}}";
+            switch("{{language}}"){
+                case "English(US)": voice = mf=='Male'?'Joey':'Kendra';break;
+                case "English(GB)": voice = mf=='Male'?'Brian':'Amy';break;
+                case "English(AU)": voice = mf=='Male'?'Russell':'Nicole';break;
+                case "English(IN)": voice = mf=='Male'?'Aditi':'Raveena';break;
+                case "English(WELSH)": voice = mf=='Male'? 'Geraint':'Geraint';break;
+                case "Arabic": voice = mf=='Male'?'ar-XA-Wavenet-B':'Zeina';break;
+                case "Danish": voice = mf=='Male'?'Mads':'Naja';break;
+                case "Dutch": voice = mf=='Male'?'Ruben':'Lotte';break;
+                case "Dutch(BE)": voice = mf=='Male'?'nl-BE-Wavenet-B':'nl-BE-Wavenet-A';break;
+                case "French(FR)": voice = mf=='Male'?'Mathieu':'Celine';break;
+                case "French(CA)": voice = mf=='Male'?'Chantal':'Chantal';break;
+                case "German": voice = mf=='Male'?'Hans':'Marlene';break;
+                case "Hebrew": voice = mf=='Male'?'he-IL-Wavenet-B':'he-IL-Wavenet-A';break;
+                case "Icelandic": voice = mf=='Male'?'Karl':'Dora';break;
+                case "Italian": voice = mf=='Male'?'Carla':'Giorgio';break;
+                case "Japanese": voice = mf=='Male'?'Takumi':'Mizuki';break;
+                case "Korean": voice = mf=='Male'?'Seoyan':'Seoyan';break;
+                case "Norwegian": voice = mf=='Male'?'Liv':'Liv';break;
+                case "Polish": voice = mf=='Male'?'Jacek':'Ewa';break;
+                case "Portugese(BR)": voice = mf=='Male'?'Ricardo':'Vitoria';break;
+                case "Portugese(PT)": voice = mf=='Male'?'Cristiano':'Ines';break;
+                case "Romanian": voice = mf=='Male'?'Carmen':'Carmen';break;
+                case "Russian": voice = mf=='Male'?'Maxim':'Tatyana';break;
+                case "Spanish(ES)": voice = mf=='Male'?'Enrique':'Conchita';break;
+                case "Spanish(US)": voice = mf=='Male'?'Miguel':'Penelope';break;
+                case "Swedish": voice = mf=='Male'?'Astrid':'Astrid';break;
+                case "Turkish": voice = mf=='Male'?'Filiz':'Filiz';break;
+                case "Welsh": voice = mf=='Male'?'Gwyneth':'Gwyneth';break;
+                default: voice = mf=='Male'?'Brian':'Amy';
+            }
+
+        },
+
+        register_events: function() {
+            var that = this;
+            /*
+            *
+            * AUDIO PLAYER events.
+            *
+            */
+            that.theplayer[0].addEventListener('ended', function () {
+                if (that.thesentence_number < that.sentences.length - 1) {
+                    that.thesentence_number++;
+                    that.pollyhelper.doplayaudio(that.thesentence_number);
+                } else {
+                    that.pollyhelper.dehighlight_all();
+                    $(that.fa).removeClass('fa-pause');
+                    $(that.fa).addClass('fa-play');
+                    that.thesentence_number = 0;
+                    that.theplayer.removeAttr('src');
+                }
+            });
+
+            // Handle audio player button clicks.
+            $('#' + that.itemid).click(function () {
+                if (!that.theplayer[0].paused && !that.theplayer[0].ended) {
+                    that.theplayer[0].pause();
+                    if ("{{stoporpause}}" == 'stop') {
+                        that.thesentence_number = 0;
+                    }
+                    $(that.fa).removeClass('fa-pause');
+                    $(that.fa).addClass('fa-play');
+
+                    // If paused and not in limbo no src state.
+                } else if (that.theplayer[0].paused && that.theplayer.attr('src')) {
+                    that.pollyhelper.doplayaudio(that.thesentence_number);
+                    $(that.fa).removeClass('fa-play');
+                    $(that.fa).addClass('fa-pause');
+                    // Play.
+                } else {
+                    log.debug("stoporpause: " + "{{stoporpause}}");
+                    if ("{{stoporpause}}" == 'stop') {
+                        that.thesentence_number = 0;
+                    }
+                    that.pollyhelper.doplayaudio(that.thesentence_number);
+                    $(that.fa).removeClass('fa-play');
+                    $(that.fa).addClass('fa-pause');
+                } // End of if paused ended.
+            });
+
+            // Stop the track and restart from beginning of selection.
+            $('#track-stop').click(function () {
+                if (!that.theplayer[0].paused && !that.theplayer[0].ended) {
+                    that.theplayer[0].pause();
+                    that.thesentence_number = 0;
+                    $(that.fa).removeClass('fa-pause');
+                    $(that.fa).addClass('fa-play');
+                    that.theplayer.removeAttr('src');
+                }
+            });
+
+            // Step back to previous sentence.
+            $('#step-backward').click(function () {
+                if (that.thesentence_number > 0) {
+                    that.thesentence_number--;
+                    that.pollyhelper.doplayaudio(that.thesentence_number);
+                } else {
+                    that.pollyhelper.dehighlight_all();
+                    $(that.fa).removeClass('fa-pause');
+                    $(that.fa).addClass('fa-play');
+                    that.thesentence_number = 0;
+                    that.theplayer.removeAttr('src');
+                }
+            });
+
+            // Step forward to next sentence.
+            $('#step-forward').click(function () {
+                if (that.thesentence_number < that.sentences.length - 1) {
+                    that.thesentence_number++;
+                    that.pollyhelper.doplayaudio(that.thesentence_number);
+                } else {
+                    that.pollyhelper.dehighlight_all();
+                    $(that.fa).removeClass('fa-pause');
+                    $(that.fa).addClass('fa-play');
+                    that.thesentence_number = 0;
+                    that.theplayer.removeAttr('src');
+                }
+            });
+
+            that.theplayer[0].addEventListener('timeupdate', function () {
+                var currentSeconds = (Math.floor(that.theplayer[0].currentTime % 60) < 10 ? '0' : '') + Math.floor(that.theplayer[0].currentTime % 60);
+                var currentMinutes = Math.floor(that.theplayer[0].currentTime / 60);
+
+                var trackTime = '0:00 / 0:00';
+                var duration = 'NaN:NaN';
+
+                if (!isNaN(that.theplayer[0].duration) && isFinite(that.theplayer[0].duration)) {
+                    trackTime = currentMinutes + ":" + currentSeconds + ' / ' + Math.floor(that.theplayer[0].duration / 60) + ":" + (Math.floor(that.theplayer[0].duration % 60) < 10 ? '0' : '') + Math.floor(that.theplayer[0].duration % 60);
+                }
+
+                $('#track-time').html(trackTime);
+
+                var percentageOfTrack = (that.theplayer[0].currentTime / that.theplayer[0].duration);
+                var percentageOfSlider = $('#track-slider').outerWidth() * percentageOfTrack;
+
+                $('#track-progress').css('width', Math.round(percentageOfSlider) + "px");
+            });
+
+        }//end of register events
+    };
+    str.init();
+});
+{{/js}}
