@@ -10,6 +10,7 @@
 
     var wordselector = '#{{AUTOID}}_textblock span.tbr_word';
     var sentenceselector = '#{{AUTOID}}_textblock span.tbr_sentence';
+     var passagecssclass = 'filterpoodll_pr_polly_cont';
 
     var pr = {
         voice: 'Amy',
@@ -45,7 +46,7 @@
                 //AMD modules share the instances they declare in the module, so we need to clone
                 //or they would all play the passage for the finally declared reader instance
                 this.pollyhelper = pollyhelper.clone();
-                this.pollyhelper.init(this.theplayer,this.itemid, this.textblock, this.voice,sentenceselector,wordselector,'{{highlightmode}}', '{{CLOUDPOODLLTOKEN}}');
+                this.pollyhelper.init(this.theplayer,this.itemid, this.textblock, this.voice,sentenceselector,wordselector,passagecssclass,'{{highlightmode}}', '{{CLOUDPOODLLTOKEN}}');
                 this.sentences = $(sentenceselector);
             }
         },
@@ -68,35 +69,35 @@
             // Determine the voice.
             var mf = "{{speaker}}";
             switch("{{language}}"){
-                case "English(US)": voice = mf=='Male'?'Joey':'Kendra';break;
-                case "English(GB)": voice = mf=='Male'?'Brian':'Amy';break;
-                case "English(AU)": voice = mf=='Male'?'Russell':'Nicole';break;
-                case "English(IN)": voice = mf=='Male'?'Aditi':'Raveena';break;
-                case "English(WELSH)": voice = mf=='Male'? 'Geraint':'Geraint';break;
-                case "Arabic": voice = mf=='Male'?'ar-XA-Wavenet-B':'Zeina';break;
-                case "Danish": voice = mf=='Male'?'Mads':'Naja';break;
-                case "Dutch": voice = mf=='Male'?'Ruben':'Lotte';break;
-                case "Dutch(BE)": voice = mf=='Male'?'nl-BE-Wavenet-B':'nl-BE-Wavenet-A';break;
-                case "French(FR)": voice = mf=='Male'?'Mathieu':'Celine';break;
-                case "French(CA)": voice = mf=='Male'?'Chantal':'Chantal';break;
-                case "German": voice = mf=='Male'?'Hans':'Marlene';break;
-                case "Hebrew": voice = mf=='Male'?'he-IL-Wavenet-B':'he-IL-Wavenet-A';break;
-                case "Icelandic": voice = mf=='Male'?'Karl':'Dora';break;
-                case "Italian": voice = mf=='Male'?'Carla':'Giorgio';break;
-                case "Japanese": voice = mf=='Male'?'Takumi':'Mizuki';break;
-                case "Korean": voice = mf=='Male'?'Seoyan':'Seoyan';break;
-                case "Norwegian": voice = mf=='Male'?'Liv':'Liv';break;
-                case "Polish": voice = mf=='Male'?'Jacek':'Ewa';break;
-                case "Portugese(BR)": voice = mf=='Male'?'Ricardo':'Vitoria';break;
-                case "Portugese(PT)": voice = mf=='Male'?'Cristiano':'Ines';break;
-                case "Romanian": voice = mf=='Male'?'Carmen':'Carmen';break;
-                case "Russian": voice = mf=='Male'?'Maxim':'Tatyana';break;
-                case "Spanish(ES)": voice = mf=='Male'?'Enrique':'Conchita';break;
-                case "Spanish(US)": voice = mf=='Male'?'Miguel':'Penelope';break;
-                case "Swedish": voice = mf=='Male'?'Astrid':'Astrid';break;
-                case "Turkish": voice = mf=='Male'?'Filiz':'Filiz';break;
-                case "Welsh": voice = mf=='Male'?'Gwyneth':'Gwyneth';break;
-                default: voice = mf=='Male'?'Brian':'Amy';
+                case "English(US)": this.voice = mf=='Male'?'Joey':'Kendra';break;
+                case "English(GB)": this.voice = mf=='Male'?'Brian':'Amy';break;
+                case "English(AU)": this.voice = mf=='Male'?'Russell':'Nicole';break;
+                case "English(IN)": this.voice = mf=='Male'?'Aditi':'Raveena';break;
+                case "English(WELSH)": this.voice = mf=='Male'? 'Geraint':'Geraint';break;
+                case "Arabic": this.voice = mf=='Male'?'ar-XA-Wavenet-B':'Zeina';break;
+                case "Danish": this.voice = mf=='Male'?'Mads':'Naja';break;
+                case "Dutch": this.voice = mf=='Male'?'Ruben':'Lotte';break;
+                case "Dutch(BE)": this.voice = mf=='Male'?'nl-BE-Wavenet-B':'nl-BE-Wavenet-A';break;
+                case "French(FR)": this.voice = mf=='Male'?'Mathieu':'Celine';break;
+                case "French(CA)": this.voice = mf=='Male'?'Chantal':'Chantal';break;
+                case "German": this.voice = mf=='Male'?'Hans':'Marlene';break;
+                case "Hebrew": this.voice = mf=='Male'?'he-IL-Wavenet-B':'he-IL-Wavenet-A';break;
+                case "Icelandic": this.voice = mf=='Male'?'Karl':'Dora';break;
+                case "Italian": this.voice = mf=='Male'?'Carla':'Giorgio';break;
+                case "Japanese": this.voice = mf=='Male'?'Takumi':'Mizuki';break;
+                case "Korean": this.voice = mf=='Male'?'Seoyan':'Seoyan';break;
+                case "Norwegian": this.voice = mf=='Male'?'Liv':'Liv';break;
+                case "Polish": this.voice = mf=='Male'?'Jacek':'Ewa';break;
+                case "Portugese(BR)": this.voice = mf=='Male'?'Ricardo':'Vitoria';break;
+                case "Portugese(PT)": this.voice = mf=='Male'?'Cristiano':'Ines';break;
+                case "Romanian": this.voice = mf=='Male'?'Carmen':'Carmen';break;
+                case "Russian": this.voice = mf=='Male'?'Maxim':'Tatyana';break;
+                case "Spanish(ES)": this.voice = mf=='Male'?'Enrique':'Conchita';break;
+                case "Spanish(US)": this.voice = mf=='Male'?'Miguel':'Penelope';break;
+                case "Swedish": this.voice = mf=='Male'?'Astrid':'Astrid';break;
+                case "Turkish": this.voice = mf=='Male'?'Filiz':'Filiz';break;
+                case "Welsh": this.voice = mf=='Male'?'Gwyneth':'Gwyneth';break;
+                default: this.voice = mf=='Male'?'Brian':'Amy';
             }
 
         },

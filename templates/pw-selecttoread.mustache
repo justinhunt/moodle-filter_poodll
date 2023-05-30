@@ -1,29 +1,25 @@
+<p class="h5 text-center">{{#str}}select-text-and-click-me, filter_poodll{{/str}}</p>
 <div class="filterpoodll_selecttoread_inner">
-    <p class="h5 text-center">{{#str}}select-text-and-click-me, filter_poodll{{/str}}</p>
     <div class="control-container">
-        <div class="track-progress-bar">
-            <div id="track-slider">
-                <div id="track-progress"></div>
-            </div>
-            <div class="ml-2" id="track-time">0:00 / 0:00</div>
-        </div>
         <div class="track-buttons">
-            <button id="step-backward" class="btn btn-outline-light" type="button" title="Step back">
-                <i class="fa fa-step-backward"></i>
-            </button>
-
-            <button type='button' id='{{AUTOID}}' data-currentsentence="0" class="btn btn-light" title="Play/Pause">
-                <audio id='{{AUTOID}}_player' class="nomediaplugin nopoodll">
-                </audio>
-                <i class="fa fa-play" aria-hidden="true"></i>
-            </button>
-
-            <button id="step-forward" class="btn btn-outline-light" type="button" title="Step forward">
-                <i class="fa fa-step-forward"></i>
-            </button>
-            <button id="track-stop" class="btn btn-outline-light" type="button" title="Stop">
-                <i class="fa fa-stop"></i>
-            </button>
+            <div class="tb-upper">
+                <button id="step-backward" class="btn btn-outline-light" type="button" title="Step back">
+                    <i class="fa fa-step-backward"></i>
+                </button>
+                <button type='button' id='{{AUTOID}}' data-currentsentence="0" class="btn btn-light" title="Play/Pause">
+                    <audio id='{{AUTOID}}_player' class="nomediaplugin nopoodll">
+                    </audio>
+                    <i class="fa fa-play" aria-hidden="true"></i>
+                </button>
+                <button id="step-forward" class="btn btn-outline-light" type="button" title="Step forward">
+                    <i class="fa fa-step-forward"></i>
+                </button>
+            </div>
+            <div class="tb-lower">
+                <button id="track-stop" class="btn btn-outline-light" type="button" title="Stop">
+                    <i class="fa fa-stop"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -32,8 +28,9 @@
     //<script>
  require(['jquery','core/log', 'filter_poodll/pollyhelper'], function($, log, pollyhelper) {
 
-    var wordselector = '#{{AUTOID}}_textblock span.tbr_word';
-    var sentenceselector = '#{{AUTOID}}_textblock span.tbr_sentence';
+    var wordselector = 'span.tbr_word';
+    var sentenceselector = 'span.tbr_sentence';
+    var passagecssclass = 'filterpoodll_str_polly_cont';
 
     var str = {
         voice: 'Amy',
@@ -46,8 +43,7 @@
         itemid: '',
         fa: [],
         pollyhelper: false,
-        activeEl: '',
-        activeElTagName: '',
+        minchars_for_karaoke: 100,
 
         init: function() {
             // Moodle seems to run the JS twice so we just ignore it if its the second run (otherwise the event handlers register twice etc).
@@ -57,11 +53,11 @@
             } else {
                 //get the DOM elements we need to work with
                 this.itemid = "{{AUTOID}}";
-                this.textblock = $('#{{AUTOID}}_textblock');
+                this.textblock = false;
                 this.fa = $('#{{AUTOID}} .fa');
                 this.theplayer.attr('data-init','done');
 
-                //set up passage reader specific stuff
+                //set up selecttoread specific stuff
                 this.select_to_read();
 
                 //set up our event handlers
@@ -71,7 +67,7 @@
                 //AMD modules share the instances they declare in the module, so we need to clone
                 //or they would all play the passage for the finally declared reader instance
                 this.pollyhelper = pollyhelper.clone();
-                this.pollyhelper.init(this.theplayer,this.itemid, this.textblock, this.voice,sentenceselector,wordselector,'{{highlightmode}}', '{{CLOUDPOODLLTOKEN}}');
+                this.pollyhelper.init(this.theplayer,this.itemid, this.textblock, this.voice,sentenceselector,wordselector,passagecssclass,'{{highlightmode}}', '{{CLOUDPOODLLTOKEN}}');
                 this.sentences = $(sentenceselector);
             }
         },
@@ -79,8 +75,9 @@
         select_to_read: function(){
 
             // Fetch the text to read.
-            this.usetext = this.textblock.text();
-            // this.usetext = this.textblock;
+            // this.usetext = textblock.text();
+            // We cannot do this on page load for select-to-read. It must be done on button click.
+
 
             // If its right to left we need to massage it a bit.
             switch("{{language}}"){
@@ -124,7 +121,6 @@
                 case "Welsh": voice = mf=='Male'?'Gwyneth':'Gwyneth';break;
                 default: voice = mf=='Male'?'Brian':'Amy';
             }
-
         },
 
         register_events: function() {
@@ -134,8 +130,62 @@
             * AUDIO PLAYER events.
             *
             */
+            $('#' + that.itemid).click(function () {
+
+                //handle the selected text
+                var selectedText = window.getSelection().toString().trim();
+                if (selectedText.length > that.minchars_for_karaoke) {
+                    var textblock = $(window.getSelection().anchorNode.parentElement).closest('div');
+                    selectedText = textblock.text();
+                    if(that.pollyhelper.textblock!==textblock){
+                        that.pollyhelper.set_textblock(textblock);
+                        that.thesentence_number = 0;
+                    }
+                    //clear the selection (we will highlight it ourselves)
+                    window.getSelection().removeAllRanges();
+
+                }else if(selectedText.length > 0){
+                    if(that.pollyhelper.textstring!==selectedText){
+                        that.pollyhelper.set_text(selectedText);
+                        that.thesentence_number = 0;
+                    }
+                }
+
+
+                //take player actions depending on the player state
+                if (!that.theplayer[0].paused && !that.theplayer[0].ended) {
+                    //log.debug('not paused and not ended');
+                    that.theplayer[0].pause();
+                    if ("{{stoporpause}}" == 'stop') {
+                        that.thesentence_number = 0;
+                    }
+                    $(that.fa).removeClass('fa-pause');
+                    $(that.fa).addClass('fa-play');
+
+                    // If paused and not in limbo no src state.
+                } else if (that.theplayer[0].paused && that.theplayer.attr('src')) {
+                   // log.debug('paused and src');
+                        that.pollyhelper.doplayaudio(that.thesentence_number);
+                        $(that.fa).removeClass('fa-play');
+                        $(that.fa).addClass('fa-pause');
+
+                } else {
+                   // log.debug("stoporpause: " + "{{stoporpause}}");
+                    if ("{{stoporpause}}" == 'stop') {
+                        that.thesentence_number = 0;
+                    }
+
+                    that.pollyhelper.doplayaudio(that.thesentence_number);
+                    $(that.fa).removeClass('fa-play');
+                    $(that.fa).addClass('fa-pause');
+
+                }
+              //  log.debug('selecttext: ' + selectedText);
+               // log.debug('currenttext index: ' + that.thesentence_number);
+            });
+
             that.theplayer[0].addEventListener('ended', function () {
-                if (that.thesentence_number < that.sentences.length - 1) {
+                if (that.thesentence_number < that.pollyhelper.sentenceURLs.length - 1) {
                     that.thesentence_number++;
                     that.pollyhelper.doplayaudio(that.thesentence_number);
                 } else {
@@ -147,42 +197,18 @@
                 }
             });
 
-            // Handle audio player button clicks.
-            $('#' + that.itemid).click(function () {
-                if (!that.theplayer[0].paused && !that.theplayer[0].ended) {
-                    that.theplayer[0].pause();
-                    if ("{{stoporpause}}" == 'stop') {
-                        that.thesentence_number = 0;
-                    }
-                    $(that.fa).removeClass('fa-pause');
-                    $(that.fa).addClass('fa-play');
-
-                    // If paused and not in limbo no src state.
-                } else if (that.theplayer[0].paused && that.theplayer.attr('src')) {
-                    that.pollyhelper.doplayaudio(that.thesentence_number);
-                    $(that.fa).removeClass('fa-play');
-                    $(that.fa).addClass('fa-pause');
-                    // Play.
-                } else {
-                    log.debug("stoporpause: " + "{{stoporpause}}");
-                    if ("{{stoporpause}}" == 'stop') {
-                        that.thesentence_number = 0;
-                    }
-                    that.pollyhelper.doplayaudio(that.thesentence_number);
-                    $(that.fa).removeClass('fa-play');
-                    $(that.fa).addClass('fa-pause');
-                } // End of if paused ended.
-            });
-
             // Stop the track and restart from beginning of selection.
             $('#track-stop').click(function () {
                 if (!that.theplayer[0].paused && !that.theplayer[0].ended) {
                     that.theplayer[0].pause();
-                    that.thesentence_number = 0;
-                    $(that.fa).removeClass('fa-pause');
-                    $(that.fa).addClass('fa-play');
-                    that.theplayer.removeAttr('src');
                 }
+
+                $(that.fa).removeClass('fa-pause');
+                $(that.fa).addClass('fa-play');
+                that.theplayer.removeAttr('src');
+                that.pollyhelper.dehighlight_all();
+                that.pollyhelper.reset();
+
             });
 
             // Step back to previous sentence.
@@ -190,6 +216,8 @@
                 if (that.thesentence_number > 0) {
                     that.thesentence_number--;
                     that.pollyhelper.doplayaudio(that.thesentence_number);
+                    $(that.fa).removeClass('fa-play');
+                    $(that.fa).addClass('fa-pause');
                 } else {
                     that.pollyhelper.dehighlight_all();
                     $(that.fa).removeClass('fa-pause');
@@ -201,9 +229,12 @@
 
             // Step forward to next sentence.
             $('#step-forward').click(function () {
-                if (that.thesentence_number < that.sentences.length - 1) {
+                if (that.thesentence_number < that.pollyhelper.sentenceURLs.length - 1) {
                     that.thesentence_number++;
+                    log.debug('sentence playing:' + that.thesentence_number);
                     that.pollyhelper.doplayaudio(that.thesentence_number);
+                    $(that.fa).removeClass('fa-play');
+                    $(that.fa).addClass('fa-pause');
                 } else {
                     that.pollyhelper.dehighlight_all();
                     $(that.fa).removeClass('fa-pause');
@@ -213,23 +244,13 @@
                 }
             });
 
-            that.theplayer[0].addEventListener('timeupdate', function () {
-                var currentSeconds = (Math.floor(that.theplayer[0].currentTime % 60) < 10 ? '0' : '') + Math.floor(that.theplayer[0].currentTime % 60);
-                var currentMinutes = Math.floor(that.theplayer[0].currentTime / 60);
-
-                var trackTime = '0:00 / 0:00';
-                var duration = 'NaN:NaN';
-
-                if (!isNaN(that.theplayer[0].duration) && isFinite(that.theplayer[0].duration)) {
-                    trackTime = currentMinutes + ":" + currentSeconds + ' / ' + Math.floor(that.theplayer[0].duration / 60) + ":" + (Math.floor(that.theplayer[0].duration % 60) < 10 ? '0' : '') + Math.floor(that.theplayer[0].duration % 60);
-                }
-
-                $('#track-time').html(trackTime);
-
-                var percentageOfTrack = (that.theplayer[0].currentTime / that.theplayer[0].duration);
-                var percentageOfSlider = $('#track-slider').outerWidth() * percentageOfTrack;
-
-                $('#track-progress').css('width', Math.round(percentageOfSlider) + "px");
+            // Handle sentence clicks.
+            $(document).on('click', '.' + passagecssclass + ' ' + sentenceselector, function () {
+                var sentenceindex = $(this).attr('data-sentenceindex');
+                that.thesentence_number = parseInt(sentenceindex);
+                that.pollyhelper.doplayaudio(that.thesentence_number);
+                $(that.fa).removeClass('fa-play');
+                $(that.fa).addClass('fa-pause');
             });
 
         }//end of register events

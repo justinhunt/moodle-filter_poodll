@@ -3,55 +3,117 @@ define(['jquery', 'core/log'], function ($, log) {
 
     "use strict"; // jshint ;_;
 
-    log.debug('Polly Url: initialising');
+    log.debug('Polly Helper: initialising');
 
     return {
         sentenceURLs: [],
+        sentencetexts: [],
         wordstarts: [],
         wordcounts: [],
         textblock: false,
+        textstring: false,
         wordselector: '',
         sentenceselector: '',
+        passagecssclass: 'filterpoodll_pollytextblock_cont',
         cloudpoodlltoken: '',
         voice: '',
         highlightmode: '',
         theplayer: false,
+        pendingurls: 0,
 
         //for making multiple instances
         clone: function () {
             return $.extend(true, {}, this);
         },
 
-        init: function (theplayer,itemid, textblock, voice,sentenceselector,wordselector,highlightmode, cloudpoodlltoken) {
+        reset: function(){
+            this.unspanify_text_passage();
+            this.textblock = false;
+            this.textstring = false;
+            this.sentenceURLs= [];
+            this.sentencetexts= [];
+            this.wordstarts= [];
+            this.wordcounts= [];
+        },
+
+        set_textblock: function(textblock){
             var that = this;
-            var usetext = textblock.text();
+
+            //if we are already set to this textblock, then do nothing
+            if(textblock===this.textblock){
+                log.debug('it was the same textblock');
+                return;
+            }
+            //remove the previous spans if we had them
+            if(this.textblock!==false) {
+                    this.reset();
+            }
+            //set our new textblock
             this.textblock= textblock;
+            var usetext = textblock.text();
+
+            // Break text into sentences, and fetch data + TTS URL for each sentence.
+            this.spanify_text_passage();
+            this.sentencetexts = this.get_sentences_from_spanified_text();
+            this.pendingurls=this.sentencetexts.length;
+            var previousend = 0;
+
+            for (var currentsentence = 0; currentsentence < this.sentencetexts.length; currentsentence++){
+                this.wordstarts[currentsentence]= previousend;
+                this.wordcounts[currentsentence]= this.split_into_words(this.sentencetexts[currentsentence]).length;
+                previousend = previousend + this.wordcounts[currentsentence];
+
+                var speaktext = this.sentencetexts[currentsentence];
+                this.fetch_polly_url(speaktext,
+                    function(sentenceindex) {
+                        return function(pollyurl) {
+                            that.sentenceURLs[sentenceindex] = pollyurl;
+                            log.debug(sentenceindex + ' ' + pollyurl);
+                            that.pendingurls--;
+                        }
+                    }(currentsentence)
+                );
+            }
+        },
+
+        set_text: function(textstring){
+            var that = this;
+            //if we already have this one, return
+            if(textstring===this.textstring) {
+                log.debug('it was the same textstring');
+                return;
+            }
+            //remove the previous spans if we had them
+            if(this.textblock!==false) {
+                this.reset();
+            }
+
+            //remember this for next time
+            this.textstring= textstring;
+            this.sentencetexts[0]=textstring;
+            this.pendingurls=1;
+            this.fetch_polly_url(textstring,
+                function(pollyurl){
+                    that.sentenceURLs[0] = pollyurl;
+                    log.debug('0' + ' ' + pollyurl);
+                    that.pendingurls--;
+                }
+            );
+
+        },
+
+        init: function (theplayer,itemid, textblock, voice,sentenceselector,wordselector,passagecssclass,highlightmode, cloudpoodlltoken) {
+            var that = this;
             this.sentenceselector= sentenceselector;
             this.wordselector= wordselector;
+            this.passagecssclass= passagecssclass;
             this.cloudpoodlltoken = cloudpoodlltoken;
             this.highlightmode=highlightmode;
             this.voice = voice;
             this.theplayer = theplayer;
 
-            // Break text into sentences, and fetch data + TTS URL for each sentence.
-            this.spanify_text_passage();
-            var sentences = this.split_into_sentences(usetext);
-            var previousend = 0;
+            this.set_textblock(textblock);
 
-            for (var currentsentence = 0; currentsentence < sentences.length; currentsentence++){
-                this.wordstarts[currentsentence]= previousend;
-                this.wordcounts[currentsentence]= this.split_into_words(sentences[currentsentence]).length;
-                previousend = previousend + this.wordcounts[currentsentence];
-
-                var speaktext = sentences[currentsentence];
-                this.fetch_polly_url(speaktext,
-                    function(sentenceindex) {
-                        return function(pollyurl) {
-                            that.sentenceURLs[sentenceindex] = pollyurl;
-                        }
-                    }(currentsentence)
-                );
-            }
         },
 
         // FUNCTION: Split a text passage into sentences.
@@ -134,12 +196,29 @@ define(['jquery', 'core/log'], function ($, log) {
             return htmlRegex.test(testString);
         },
 
+        unspanify_text_passage: function(){
+
+            //remove select to read class to container
+            this.textblock.removeClass(this.passagecssclass);
+
+           // remove previously set up spans
+            if(this.highlightmode==='word'){
+                this.textblock.find('.tbr_word').contents().unwrap();
+            } else {
+            // For sentences.
+                this.textblock.find('.tbr_sentence').contents().unwrap();
+            }// End of for loop.
+        },
+
         // FUNCTION: Break a text passage into words/sentences, and surround the words with marker tags.
         spanify_text_passage: function(){
             var that = this;
 
             // The itemcount er.
             var itemcount = -1;
+
+            //add select to read class to container
+            this.textblock.addClass(this.passagecssclass);
 
             // Get all the text nodes in the textblock.
             var textnodes = this.textblock.find('*').contents().filter(function(){ return this.nodeType === 3; });
@@ -163,6 +242,15 @@ define(['jquery', 'core/log'], function ($, log) {
                 }
                 $(this).replaceWith(retpieces);
             });// End of textnodes each
+        },
+
+        get_sentences_from_spanified_text: function(){
+            var sentences = [];
+            var spans = this.textblock.find('span.tbr_sentence');
+            spans.each(function(){
+                sentences.push($(this).text());
+            });
+            return sentences
         },
 
         // FUNCTION: Unhighlight a sentence as active.
@@ -200,12 +288,27 @@ define(['jquery', 'core/log'], function ($, log) {
         },
 
         // FUNCTION: Play a single sentence and mark it active for display purposes.
-        doplayaudio: function(thesentence){
-            this.dehighlight_all();
-            this.highlight_sentence(thesentence);
-            this.theplayer.attr('src',this.sentenceURLs[thesentence]);
+        doplayaudio: function(thesentence) {
+            var that=this;
+            if(this.pendingurls>0){
+                setTimeout(function(){that.doplayaudio(thesentence);},100);
+                return;
+            }
+            if (typeof thesentence === 'number') {
+                // If thesentence is a number.
+                this.dehighlight_all();
+                this.highlight_sentence(thesentence);
+                this.theplayer.attr('src', this.sentenceURLs[thesentence]);
+            //    log.debug('sentenceurl:' + this.sentenceURLs[thesentence]);
+            //    log.debug('sentencenumber:' + thesentence);
+            //    log.debug('sentencetext:' + this.sentencetexts[thesentence]);
+            } else {
+                if(this.sentenceURLs.length > 0) {
+                    this.theplayer.attr('src', this.sentenceURLs[0]);
+                }
+            }
             this.theplayer[0].load();
             this.theplayer[0].play();
-        },
+        }
     }
 });
