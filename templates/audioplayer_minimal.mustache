@@ -1,0 +1,170 @@
+
+<div id="{{UNIQID}}_fpminimal_audioplayer" class="fpminimal_audioplayer">
+    <button type="button" class="fpminimal_audioplayer_play_button"></button>
+    <div class="fpminimal_audioplayer_skip_buttons">
+        <button type="button" class="fpminimal_audioplayer_skip_button_back">15</button>
+        <button type="button" class="fpminimal_audioplayer_skip_button_forward">15</button>
+    </div>
+    <div class="fpminimal_audioplayer_bar">
+        <div class="fpminimal_audioplayer_bar_behind"></div>
+        <div class="fpminimal_audioplayer_bar_front"></div>
+    </div>
+    <div class="fpminimal_audioplayer_time">00:45</div>
+</div>
+
+{{#js}}
+    //<script>
+        require(['jquery','core/log'], function($, log) {
+            var selectors ={
+                hiddenplayer: '#{{UNIQID}}_fpminimal_hiddenaudioplayer',
+                player: '#{{UNIQID}}_fpminimal_audioplayer',
+                ppbutton: '#{{UNIQID}}_fpminimal_audioplayer .fpminimal_audioplayer_play_button',
+                bar_front: '#{{UNIQID}}_fpminimal_audioplayer .fpminimal_audioplayer_bar_front',
+                backbutton: '#{{UNIQID}}_fpminimal_audioplayer .fpminimal_audioplayer_skip_button_back',
+                forwardbutton: '#{{UNIQID}}_fpminimal_audioplayer .fpminimal_audioplayer_skip_button_forward',
+                timedisplay: '#{{UNIQID}}_fpminimal_audioplayer .fpminimal_audioplayer_time'
+            }
+            var play_icon_url = require.toUrl('mod/solo/pix/play.png');
+            var pause_icon_url = require.toUrl('mod/solo/pix/play.png');
+            var skipinterval =15;
+
+            var pr = {
+                init: function(){
+                    this.hplayer = $('{{{player_element}}}')[0];
+                    //init can be called twice, why why
+                    if($(this.hplayer).data('init')==1){
+                        return;
+                    }else{
+                        $(this.hplayer).data('init',1);
+                    }
+
+                    this.vplayer= $(selectors.player);
+                    this.ppbutton = $(selectors.ppbutton);
+                    this.bar_front = $(selectors.bar_front);
+                    this.backbutton = $(selectors.backbutton);
+                    this.forwardbutton = $(selectors.forwardbutton);
+                    this.timedisplay = $(selectors.timedisplay);
+
+                    this.duration = this.hplayer.duration;
+                    log.debug('duration is '+this.duration);
+
+                    this.register_events();
+                    this.update_time();
+                },
+                register_events: function(){
+                    var that = this;
+                    $(this.ppbutton).on('click',function(){
+                        that.toggle_play();
+                    });
+                    $(this.backbutton).on('click',function(){
+                        that.skip_back();
+                    });
+                    $(this.forwardbutton).on('click',function(){
+                        that.skip_forward();
+                    });
+                    $(this.hplayer).on('timeupdate',function(){
+                        that.update_time();
+                    });
+                    $(this.hplayer).on('ended',function(){
+                        $(that.ppbutton).css('background-image', play_icon_url);
+                        //reset the time display
+                        $(that.timedisplay).text(that.formatAudioTime(that.duration));
+                    });
+                    $(this.hplayer).on('loadeddata',function(){
+                        console.log("loadeddata", that.hplayer.duration);
+                        if(that.hplayer.duration === Infinity){
+                            //blobs dont do duration very well, so if its infinity use the time we stashed when recording
+                            that.duration=$(that.hplayer).data('duration');
+                        }else {
+                            that.duration = that.hplayer.duration;
+                        }
+                        that.update_time();
+                    });
+                    $(this.hplayer).on('canplaythrough',function(){
+                        //if we get the real duration here, set it
+                        if(that.hplayer.duration !== Infinity) {
+                            that.duration = that.hplayer.duration;
+                        }
+                    });
+
+                },
+                toggle_play: function(){
+                    var that = this;
+                    if(this.hplayer.paused){
+                        this.hplayer.muted=false;
+                        console.log(this.hplayer);
+                        this.hplayer.play().then(function(){
+                            log.debug('play promise resolved');
+                            $(that.ppbutton).css('background-image',pause_icon_url);
+                        }).catch(function(e){
+                            log.debug(e,'play promise rejected');
+                        });
+                    }else{
+                        this.hplayer.pause();
+                        $(this.ppbutton).css('background-image:', play_icon_url);
+                    }
+                },
+                update_time: function(){
+                    //update the progress bar
+                    var percent=0;
+                    if(parseInt(this.duration) > 0){
+                        percent = (this.hplayer.currentTime/this.duration)*100;
+                    }else{
+                        this.duration=0;
+                    }
+
+                    $(this.bar_front).css('width', percent+'%');
+                    //update the time display
+                    switch(percent) {
+                        case 0:
+                            $(this.timedisplay).text(this.formatAudioTime(this.duration));
+                            break;
+                        case 100:
+                            $(this.timedisplay).text(this.formatAudioTime(this.duration));
+                            break;
+                        default:
+                            $(this.timedisplay).text(this.formatAudioTime(this.hplayer.currentTime) + '/' + this.formatAudioTime(this.duration));
+                    }
+
+
+                    //handle back and forward buttons
+                    if(this.hplayer.currentTime < skipinterval) {
+                        $(this.backbutton).css('opacity', '50%');
+                    }else{
+                        $(this.backbutton).css('opacity', '0%');
+                    }
+
+                    if(this.hplayer.currentTime > (this.duration - skipinterval)) {
+                        $(this.forwardbutton).css('opacity', '50%');
+                    }else{
+                        $(this.forwardbutton).css('opacity', '0%');
+                    }
+                },
+                skip_back: function(){
+                    if(this.hplayer.currentTime > skipinterval) {
+                        this.hplayer.currentTime = this.hplayer.currentTime - skipinterval;
+                    }else{
+                        this.hplayer.currentTime = 0;
+                    }
+                },
+                skip_forward: function(){
+                    if(this.hplayer.currentTime < (this.duration - skipinterval)) {
+                        this.hplayer.currentTime = this.hplayer.currentTime + skipinterval;
+                    }else{
+                        this.hplayer.currentTime = this.duration;
+                    }
+                },
+                formatAudioTime: function (currentTime) {
+                    const minutes = Math.floor(currentTime / 60);
+                    const seconds = Math.floor(currentTime % 60);
+                    const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                    return formattedTime;
+                }
+
+            };
+
+            //init the player
+            pr.init();
+        });
+
+{{/js}}
