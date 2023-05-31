@@ -1,7 +1,7 @@
 /* jshint ignore:start */
-define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filter_poodll/upskin_cssradial',
-    'filter_poodll/speech_poodll', 'filter_poodll/dlg_devicesettings'],
-    function ($, log,templates, utils, upskin, speechrecognition, settings) {
+define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_cssradial',
+    'filter_poodll/speech_poodll', 'filter_poodll/dlg_devicesettings', 'filter_poodll/audioplayer_minimal'],
+    function ($, log, utils, upskin, speechrecognition, settings,audioplayer_minimal) {
 
     "use strict"; // jshint ;_;
 
@@ -34,9 +34,9 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
 
 
         onUploadSuccess: function (controlbarid) {
-            $('#' + controlbarid + ' > .poodll_save-recording').hide();
-            // $('#' + controlbarid  + '_messages').hide();
-            $('#' + controlbarid + ' > .poodll_savedsuccessfully').show();
+            //playback mode
+            this.set_visual_mode('playbackmode', controlbarid);
+            log.debug('now playback mode');
         },
 
         onUploadFailure: function (controlbarid) {
@@ -111,7 +111,11 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
         update_status: function (controlbarid) {
             var ip = this.fetch_instanceprops(controlbarid);
             ip.controlbar.status.html(ip.timer.fetch_display_time());
-            ip.controlbar.preview.data('duration', ip.timer.seconds);
+            if(ip.config.timelimit > 0){
+                ip.controlbar.preview.data('duration', ip.config.timelimit - ip.timer.seconds);
+            }else {
+                ip.controlbar.preview.data('duration', ip.timer.seconds);
+            }
         },
 
         //set visuals for different states (ie recording or playing)
@@ -123,6 +127,7 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
             switch (mode) {
 
                 case 'startmode':
+                    self.enable_button(ip.controlbar.status);
                     self.enable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.stopbutton);
@@ -133,6 +138,7 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
 
 
                 case 'recordingmode':
+                    self.enable_button(ip.controlbar.status);
                     self.enable_button(ip.controlbar.stopbutton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
@@ -143,6 +149,7 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
                     break;
 
                 case 'uploadmode':
+                    self.enable_button(ip.controlbar.status);
                     self.enable_button(ip.controlbar.uploadbutton);
                     self.disable_button(ip.controlbar.stopbutton);
                     self.disable_button(ip.controlbar.startbutton);
@@ -153,7 +160,7 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
                     break;
 
                 case 'playbackmode':
-
+                    self.disable_button(ip.controlbar.status);
                     self.disable_button(ip.controlbar.uploadbutton);
                     self.disable_button(ip.controlbar.stopbutton);
                     self.disable_button(ip.controlbar.startbutton);
@@ -172,6 +179,7 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
 
                 case 'playingmode':
 
+                    self.disable_button(ip.controlbar.status);
                     self.disable_button(ip.controlbar.stopbutton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
@@ -229,11 +237,11 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
             controls += status;
             controls += preview;
             controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-            controls += '<button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_start_button"><i class="fa fa-microphone" aria-hidden="true"></i></button>';
-            controls += '<button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_stop_button"><i class="fa fa-stop" aria-hidden="true"></i></button>';
-            controls += ' <button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_upload_button">u</button>';
+            controls += '<button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_start_button"></button>';
+            controls += '<button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_stop_button"></button>';
+            controls += ' <button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_upload_button"></button>';
             controls += ' <button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_play_button"><i class="fa fa-play" aria-hidden="true"></i></button>';
-            controls += ' <div class="poodll_playback_minimal"><audio controls></audio></div>';
+            controls += ' <div class="poodll_playback_minimal"></div>';
             controls += '<div class="minimal-restart-button-wrapper"><a class="poodll_restart_minimal " ><i class="fa fa-repeat fa-flip-horizontal" aria-hidden="true"></i></a></div>';
             controls += '</div></div></div>';
 
@@ -260,13 +268,21 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
             this.devsettings.set_dialogue_box(controlbar.settingsdialog);
 
             //set up audio player
-            var opts ={'player_element': '#' + controlbarid + ' .poodll_preview_minimal'};
-            templates.render('filter_poodll/audioplayer_minimal',opts).then(function(html, js) {
-                // The templates object has append, prepend and replace functions.
-                templates.replaceNodeContents('#' + controlbarid + ' .poodll_playback_minimal', html, js);
-            }).fail(function(ex) {
-                // What could possibly go wrong?
-            });
+            var opts ={'player_element': '#' + controlbarid + ' .poodll_preview_minimal', 'autoid': controlbarid};
+            var playerhtml='<div id="' + controlbarid + '_fpminimal_audioplayer" class="fpminimal_audioplayer">\n' +
+                '    <button type="button" class="fpminimal_audioplayer_play_button"></button>\n' +
+                '    <div class="fpminimal_audioplayer_skip_buttons">\n' +
+                '        <button type="button" class="fpminimal_audioplayer_skip_button_back">15</button>\n' +
+                '        <button type="button" class="fpminimal_audioplayer_skip_button_forward">15</button>\n' +
+                '    </div>\n' +
+                '    <div class="fpminimal_audioplayer_bar">\n' +
+                '        <div class="fpminimal_audioplayer_bar_behind"></div>\n' +
+                '        <div class="fpminimal_audioplayer_bar_front"></div>\n' +
+                '    </div>\n' +
+                '    <div class="fpminimal_audioplayer_time">00:45</div>\n' +
+                '</div>';
+            $('#' + controlbarid + ' .poodll_playback_minimal').html(playerhtml);
+            audioplayer_minimal.init(opts);
 
             return controlbar;
         }, //end of fetch_control_bar_minimal
@@ -309,6 +325,8 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
             ip.controlbar.restartbutton.click(function () {
                 //visuals
                 self.set_visual_mode('startmode', controlbarid);
+                ip.timer.reset();
+                self.update_status(controlbarid);
             });
 
             //Stop button click
@@ -335,17 +353,23 @@ define(['jquery',  'core/log','core/templates', 'filter_poodll/utils_amd', 'filt
                 ip.timer.stop();
                 self.update_status(controlbarid);
 
-                //if uploading ...
-                if (self.uploading) {
-                    //set visuals
-                    self.set_visual_mode('uploadingmode', controlbarid);
-                    log.debug('now uploading mode');
-                    saveaudio();
-                }
 
-                //playback mode
-                self.set_visual_mode('playbackmode', controlbarid);
-                log.debug('now playback mode');
+                //call upload right away
+                self.set_visual_mode('uploadmode', controlbarid);
+                log.debug('now uploading mode');
+                //but we have to do it this lame deferred way because some mediastreamrecorders return a single
+                //blob shortly after we stop. We init like that too, to make sure we do not truncate a users recording
+                //if the mini blobs did not arrive
+                var doDeferredUpload = function () {
+                    if (ip.blobs && ip.blobs.length > 0) {
+                        pmr.do_save_audio(ip);
+                        ip.uploaded = true;
+                        self.disable_button(ip.controlbar.startbutton);
+                    } else {
+                        setTimeout(doDeferredUpload, 200);
+                    }
+                }
+                setTimeout(doDeferredUpload, 200);
 
             });
 

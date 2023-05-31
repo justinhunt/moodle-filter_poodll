@@ -340,6 +340,24 @@ Base Media skin Setting Integration
     color: #333 !important;
 }
 
+.poodll_mediarecorderholder_minimal .settingsicon {
+    position: absolute;
+    bottom: 0px;
+    right: 0px;
+    z-index: 1;
+}
+
+.poodll_mediarecorderbox_minimal .poodll_playback_minimal {
+    width: 280px;
+}
+.poodll_mediarecorderbox_minimal .minimal-restart-button-wrapper {
+    text-align: center;
+}
+.poodll_mediarecorderbox_minimal {
+    width: 280px;
+    position: relative;
+}
+
 .poodll_mediarecorderholder_minimal .settingsicon button:focus {
     border: none;
     background: transparent;
@@ -348,7 +366,6 @@ Base Media skin Setting Integration
 .poodll_mediarecorderholder_minimal .settingsicon button i:hover {
     cursor: pointer;
 }
-.poodll_mediarecorderbox_minimal
 
 .poodll_mediarecorderbox_minimal {
     display: flex;
@@ -385,18 +402,23 @@ Base Media skin Setting Integration
     background-position: center;
     border-radius: 100%;
     margin-bottom: 36px;
+    margin-left: auto;
+    margin-right: auto;
     cursor: pointer;
-    position: absolute;
     z-index: 2;
     top: 129px;
+    display: block;
 }
 
 .poodll_mediarecorder_minimal_start_button {
-    background-image: url([[pix:mod_solo|poodll-solo-microphone-icon]]);
+    background-image: url([[pix:filter_poodll|fpminimal-mic]]);
 }
 
 .poodll_mediarecorder_minimal_start_button:hover {
     background: #5943c6;
+    background-image: url([[pix:filter_poodll|fpminimal-mic]]);
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 .poodll_mediarecorder_minimal_start_button:active {
@@ -413,7 +435,7 @@ Base Media skin Setting Integration
 }
 
 .poodll_mediarecorder_minimal_stop_button {
-    background-image: url([[pix:mod_solo|poodll-solo-stop-recording-icon]]);
+    background-image: url([[pix:filter_poodll|fpminimal-stop]]);
 }
 
 .poodll_mediarecorder_minimal_stop_button.button_inactive {
@@ -422,21 +444,26 @@ Base Media skin Setting Integration
 }
 
 .poodll_mediarecorder_minimal_upload_button {
-    background-image: url([[pix:mod_solo|poodll-solo-stop-recording-icon]]);
+   /* background-image: url([[pix:filter_poodll|fpminimal-stop]]);*/
+    color: white;
+    font-size: 11px;
 }
 
 .poodll_mediarecorder_minimal_animation.animation_running {
     width: 64px;
     height: 64px;
     background-color: #DCD4FF;
-    position: absolute;
+    display: block;
     top: 129px;
+    margin-left: auto;
+    margin-right: auto;
     border-radius: 100%;
     animation-name: pmr-recording-waves;
     animation-duration: 2s;
     animation-iteration-count:infinite;
     transform: scale(1);
     opacity: 1;
+
 }
 
 
@@ -5089,12 +5116,12 @@ video.poodll_multivideoplayer_video {
 /* Audio player */
 
 .fpminimal_audioplayer {
-    background-color: #EFF1FF;
+    /*background-color: #EFF1FF;*/
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 42px 12px 32px 12px;
-    margin-bottom: 48px;
+  /*  margin-bottom: 48px; */
     position: relative;
 }
 
@@ -5109,7 +5136,7 @@ video.poodll_multivideoplayer_video {
     height: 48px;
     background-color: #6F58DE;
     color: #fff;
-    background-image: url([[pix:fpminimal|poodll-solo-audioplayer-play-icon]]);
+    background-image: url([[pix:filter_poodll|fpminimal-play]]);
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 100%;
@@ -5178,11 +5205,11 @@ video.poodll_multivideoplayer_video {
 }
 
 .fpminimal_audioplayer_skip_button_back::before {
-    background-image: url([[pix:fpminimal|poodll-solo-audioplayer-back-icon]]);
+    background-image: url([[pix:filter_poodll|fpminimal-back]]);
 }
 
 .fpminimal_audioplayer_skip_button_forward::before {
-    background-image: url([[pix:fpminimal|poodll-solo-audioplayer-forward-icon]]);
+    background-image: url([[pix:filter_poodll|fpminimal-forward]]);
 }
 
 .fpminimal_audioplayer_time {

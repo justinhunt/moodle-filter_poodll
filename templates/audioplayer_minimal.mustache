@@ -24,8 +24,8 @@
                 forwardbutton: '#{{UNIQID}}_fpminimal_audioplayer .fpminimal_audioplayer_skip_button_forward',
                 timedisplay: '#{{UNIQID}}_fpminimal_audioplayer .fpminimal_audioplayer_time'
             }
-            var play_icon_url = require.toUrl('mod/solo/pix/play.png');
-            var pause_icon_url = require.toUrl('mod/solo/pix/play.png');
+            var play_icon_url = require.toUrl('filter/poodll/pix/fpminimal_play.png');
+            var pause_icon_url = require.toUrl('filter/poodll/pix/fpminimal_stop.png');
             var skipinterval =15;
 
             var pr = {
@@ -131,13 +131,13 @@
                     if(this.hplayer.currentTime < skipinterval) {
                         $(this.backbutton).css('opacity', '50%');
                     }else{
-                        $(this.backbutton).css('opacity', '0%');
+                        $(this.backbutton).css('opacity', '100%');
                     }
 
                     if(this.hplayer.currentTime > (this.duration - skipinterval)) {
                         $(this.forwardbutton).css('opacity', '50%');
                     }else{
-                        $(this.forwardbutton).css('opacity', '0%');
+                        $(this.forwardbutton).css('opacity', '100%');
                     }
                 },
                 skip_back: function(){

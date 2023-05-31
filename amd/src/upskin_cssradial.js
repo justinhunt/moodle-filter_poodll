@@ -44,7 +44,7 @@ define(['jquery', 'core/log'], function ($, log) {
             xhr.upload.addEventListener("progress", function (e) {
                 if (e.lengthComputable) {
                     self.percent = e.loaded / e.total;
-                    self.showMessage(uploadingmessage + '(' + Math.floor(self.percent * 100) + '%)');
+                    self.showMessage(Math.floor(self.percent * 100) + '%');
                 }
             });
          //   this.progressradial.start();
