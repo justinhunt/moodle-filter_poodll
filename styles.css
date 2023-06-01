@@ -401,6 +401,7 @@ Base Media skin Setting Integration
     background-repeat: no-repeat;
     background-position: center;
     border-radius: 100%;
+    border-width: 0px;
     margin-bottom: 36px;
     margin-left: auto;
     margin-right: auto;
@@ -436,6 +437,7 @@ Base Media skin Setting Integration
 
 .poodll_mediarecorder_minimal_stop_button {
     background-image: url([[pix:filter_poodll|fpminimal-stop]]);
+    position: sticky;
 }
 
 .poodll_mediarecorder_minimal_stop_button.button_inactive {
@@ -449,20 +451,17 @@ Base Media skin Setting Integration
     font-size: 11px;
 }
 
-.poodll_mediarecorder_minimal_animation.animation_running {
-    width: 64px;
-    height: 64px;
-    background-color: #DCD4FF;
-    display: block;
+.poodll_mediarecorder_minimal_animaton.animation_running {
+    position: absolute;
+    left: 108px;
     top: 129px;
-    margin-left: auto;
-    margin-right: auto;
-    border-radius: 100%;
+    background-color: #DCD4FF;;
     animation-name: pmr-recording-waves;
     animation-duration: 2s;
     animation-iteration-count:infinite;
     transform: scale(1);
     opacity: 1;
+    z-index: 1;
 
 }
 

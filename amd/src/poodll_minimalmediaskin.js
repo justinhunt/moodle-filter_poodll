@@ -89,7 +89,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
             ip.uploader.Output('');
 
             //wave animation
-            ip.controlbar.stopbutton.addClass('animation_running');
+            ip.controlbar.animaton.addClass('animation_running');
 
             //timer and status bar
             ip.timer.reset();
@@ -131,6 +131,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                     self.enable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.stopbutton);
+                    self.disable_button(ip.controlbar.animaton);
                     self.disable_button(ip.controlbar.restartbutton);
                     self.disable_button(ip.controlbar.uploadbutton);
                     ip.controlbar.playback.hide();
@@ -140,6 +141,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                 case 'recordingmode':
                     self.enable_button(ip.controlbar.status);
                     self.enable_button(ip.controlbar.stopbutton);
+                    self.enable_button(ip.controlbar.animaton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.restartbutton);
@@ -152,6 +154,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                     self.enable_button(ip.controlbar.status);
                     self.enable_button(ip.controlbar.uploadbutton);
                     self.disable_button(ip.controlbar.stopbutton);
+                    self.disable_button(ip.controlbar.animaton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.restartbutton);
@@ -163,6 +166,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                     self.disable_button(ip.controlbar.status);
                     self.disable_button(ip.controlbar.uploadbutton);
                     self.disable_button(ip.controlbar.stopbutton);
+                    self.disable_button(ip.controlbar.animaton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
                     self.enable_button(ip.controlbar.restartbutton);
@@ -181,6 +185,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
 
                     self.disable_button(ip.controlbar.status);
                     self.disable_button(ip.controlbar.stopbutton);
+                    self.disable_button(ip.controlbar.animaton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.restartbutton);
@@ -238,6 +243,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
             controls += preview;
             controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
             controls += '<button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_start_button"></button>';
+            controls += '<button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_animaton"></button>';
             controls += '<button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_stop_button"></button>';
             controls += ' <button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_upload_button"></button>';
             controls += ' <button type="button" class="poodll_mediarecorder_button_minimal poodll_mediarecorder_minimal_play_button"><i class="fa fa-play" aria-hidden="true"></i></button>';
@@ -256,6 +262,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                 playback: $('#' + controlbarid + ' .poodll_playback_minimal'),
                 startbutton: $('#' + controlbarid + ' .poodll_mediarecorder_minimal_start_button'),
                 stopbutton: $('#' + controlbarid + ' .poodll_mediarecorder_minimal_stop_button'),
+                animaton: $('#' + controlbarid + ' .poodll_mediarecorder_minimal_animaton'),
                 stopplayingbutton: $('#' + controlbarid + ' .poodll_stop-playing_minimal'),
                 uploadbutton: $('#' + controlbarid + ' .poodll_mediarecorder_minimal_upload_button'),
                 playbutton: $('#' + controlbarid + ' .poodll_mediarecorder_minimal_play_button'),
@@ -327,6 +334,9 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                 self.set_visual_mode('startmode', controlbarid);
                 ip.timer.reset();
                 self.update_status(controlbarid);
+                //fetch new uploader url
+                ip.uploader.fetchNewUploadDetails();
+                self.uploaded=false;
             });
 
             //Stop button click
@@ -347,7 +357,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                 */
 
                 //wave animation
-                ip.controlbar.stopbutton.removeClass('animation_running');
+                ip.controlbar.animaton.removeClass('animation_running');
 
                 //timer and status bar
                 ip.timer.stop();
@@ -413,10 +423,6 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_
                 }//end of if self.blobs
             }
 
-            window.onbeforeunload = function () {
-                self.enable_button(ip.controlbar.startbutton);
-
-            };
         }, //end of register_control_bar_events_minimal
 
         enable_button: function (button) {
