@@ -209,7 +209,6 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
 
                 var ss = this.pmr.fetch_strings();
                 var ss_startlabel = ss['recui_record'];
-                var ss_testlabel = ss['recui_testmic'];
                 var ss_stoplabel = ss['recui_stop'];
 
                 var status = this.fetch_status_bar('once');
@@ -221,11 +220,11 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
                 controls += ip.downloaddialog.fetch_dialogue_box();
                 controls += ip.errordialog.fetch_dialogue_box();
                 controls += '<div class="style-holder ' + skin_style + '">';
-                controls += preview,
-                    controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn-poodllsettings" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+                controls += preview;
+                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn-poodllsettings" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50" class="poodll_mediarecorder_playcanvas_once"></canvas>';
-                controls += status,
-                    controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_start-recording_once">' + ss_startlabel + '</button>';
+                controls += status;
+                controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_start-recording_once">' + ss_startlabel + '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_stop-recording_once">' + ss_stoplabel + '</button>';
                 if (mediatype == 'audio') {
                     controls += '<canvas id="' + controlbarid + '_uploadcanvas" width="250" height="50" class="poodll_mediarecorder_uploadcanvas_once"></canvas>';

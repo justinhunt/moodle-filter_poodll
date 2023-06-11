@@ -92,7 +92,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
 
             handle_timer_update: function (controlbarid) {
                 var ip = this.fetch_instanceprops(controlbarid);
-                ip.controlbar.status.html(ip.timer.fetch_display_time());
+                var displaytime = ip.timer.fetch_display_time();
+                this.therecanim.displaytime =displaytime;
+                ip.controlbar.status.html(displaytime);
                 if (ip.timer.seconds == 0 && ip.timer.initseconds > 0) {
                     ip.controlbar.stopbutton.click();
                 }
@@ -107,6 +109,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 var ip = this.fetch_instanceprops(controlbarid);
                 var upskin = upskin_radial.clone();
                 upskin.init(ip.config, element, ip.controlbar.playcanvas, ip.controlbar.status);
+                upskin.setDrawParam('lineWidth', 2);
+                upskin.setDrawParam('font', '14px Arial');
                 return upskin;
             },
 
@@ -120,14 +124,29 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                     case 'startmode':
 
                         ip.controlbar.status.hide();
-                        self.disable_button(ip.controlbar.startbutton);
-                        self.enable_button(ip.controlbar.testbutton);
+                        if(ip.config.juststart == "1"){
+                            self.disable_button(ip.controlbar.testbutton);
+                            self.enable_button(ip.controlbar.startbutton);
+                        }else{
+                            self.enable_button(ip.controlbar.testbutton);
+                            self.disable_button(ip.controlbar.startbutton);
+                        }
                         self.disable_button(ip.controlbar.placeholderbutton);
                         self.disable_button(ip.controlbar.stopbutton);
                         self.therecanim.clear();
                         break;
 
                     case 'testingmode':
+
+                        ip.controlbar.status.hide();
+                        self.disable_button(ip.controlbar.startbutton);
+                        self.disable_button(ip.controlbar.testbutton);
+                        self.enable_button(ip.controlbar.placeholderbutton);
+                        self.disable_button(ip.controlbar.stopbutton);
+
+                        break;
+
+                    case 'countdownmode':
 
                         ip.controlbar.status.hide();
                         self.disable_button(ip.controlbar.startbutton);
@@ -143,6 +162,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                         self.disable_button(ip.controlbar.testbutton);
                         self.disable_button(ip.controlbar.placeholderbutton);
                         self.disable_button(ip.controlbar.stopbutton);
+                        self.therecanim.setDrawParam('wavColor', '#CCCCCC');
                         self.therecanim.clear();
                         break;
 
@@ -150,17 +170,28 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                         //when testing(timer off) we do not want the stop button. Just really recording and allowearlyexit
                         if (ip.config.allowearlyexit == "1" && ip.timer.enabled) {
                             self.enable_button(ip.controlbar.stopbutton);
+                        }
+                        if ( ip.timer.enabled) {
+                            ip.controlbar.status.show();
+                            self.therecanim.setDrawParam('wavColor', '#FF0000');
+                            self.therecanim.clear();
+                            self.disable_button(ip.controlbar.placeholderbutton);
                         }else{
+                            self.therecanim.setDrawParam('wavColor', '#0000FF');
+                            self.therecanim.clear();
                             self.enable_button(ip.controlbar.placeholderbutton);
                         }
+                        self.disable_button(ip.controlbar.testbutton);
                         self.disable_button(ip.controlbar.startbutton);
-                        ip.controlbar.status.hide();
+
                         break;
 
                     case 'aftermode':
                         self.disable_button(ip.controlbar.startbutton);
                         self.disable_button(ip.controlbar.stopbutton);
                         self.disable_button(ip.controlbar.placeholderbutton);
+                        self.therecanim.setDrawParam('wavColor', '#CCCCCC');
+                        self.therecanim.clear();
                         ip.controlbar.status.show();
 
                         break;
@@ -188,7 +219,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 var size_class = 'poodll_mediarecorder_size_auto';
 
                 var ss = this.pmr.fetch_strings();
-                var ss_startlabel = M.util.get_string('recui_startactivity', 'filter_poodll');
+                var ss_startlabel = M.util.get_string('recui_start', 'filter_poodll');
                 var ss_testlabel = M.util.get_string('recui_testmic', 'filter_poodll');
                 var ss_stoplabel = M.util.get_string('recui_stop', 'filter_poodll');
 
@@ -201,15 +232,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 controls += ip.downloaddialog.fetch_dialogue_box();
                 controls += ip.errordialog.fetch_dialogue_box();
                 controls += '<div class="style-holder ' + skin_style + '">';
-                controls += preview,
-                    controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-                controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="120"></canvas>';
+                controls += preview;
+                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+                controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50"></canvas>';
+                controls += status;
                 controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_start-recording_readaloud">' + ss_startlabel + '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_test-recording_readaloud">' + ss_testlabel + '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_testing-placeholder_readaloud" style="background-color: #CCCCCC;">' + ss_testlabel  + '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_stop-recording_readaloud">' + ss_stoplabel + '</button>';
-                controls += status,
-                    controls += '</div></div></div>';
+                controls += '</div></div></div>';
                 $(element).prepend(controls);
                 //<i class="fa fa-stop" aria-hidden="true"></i>
                 var controlbar = {
