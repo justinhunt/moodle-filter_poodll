@@ -1017,98 +1017,108 @@ button.poodll_mediarecorder_button_readseed {
 	The Read Aloud Audio Recorders
 */
 
-.poodll_mediarecorderholder_readaloud {
-    position: relative;
+/*
+	The Read Aloud Audio Recorders
+*/
+
+
+
+.poodll_mediarecorderbox_readaloud .poodll_status_readaloud {
+    font-size: 1em;
+    font-family: georgia;
+    margin-top: 2px;
+    margin-bottom: 20px;
 }
 
-.poodll_mediarecorderholder_readaloud .settingsicon {
+.poodll_mediarecorderholder_readaloud{
+    position:relative;
+}
+
+.poodll_mediarecorderholder_readaloud .settingsicon{
     position: absolute;
     bottom: 75px;
     right: 250px;
 }
-
-.poodll_mediarecorderholder_readaloud .settingsicon button {
+.poodll_mediarecorderholder_readaloud .settingsicon button{
     border: none !important;
     background: transparent !important;
 }
-
-.poodll_mediarecorderholder_readaloud .settingsicon button i {
+.poodll_mediarecorderholder_readaloud .settingsicon button i{
     font-size: 18px !important;
     color: #333 !important;
 }
-
-.poodll_mediarecorderholder_readaloud .settingsicon button:focus {
+.poodll_mediarecorderholder_readaloud .settingsicon button:focus{
     border: none;
     background: transparent;
 }
-
-.poodll_mediarecorderholder_readaloud .settingsicon button i:hover {
+.poodll_mediarecorderholder_readaloud .settingsicon button i:hover{
     cursor: pointer;
 }
 
-.poodll_mediarecorder_audio .poodll_mediarecorderbox_readaloud {
+.poodll_mediarecorder_audio .poodll_mediarecorderbox_readaloud{
     text-align: center;
+    border: 1px solid #CCCCCC;
+    border-radius: 5px;
+    padding: 5px;
+    max-width: 200px;
+    min-width: 200px;
 }
 
-.poodll_mediarecorderbox_readaloud button:hover {
+.poodll_mediarecorderbox_readaloud button:hover{
     cursor: pointer;
     filter: brightness(120%);
 }
-
-.poodll_mediarecorderbox_readaloud .poodll_start-recording_readaloud {
-    background-color: #93c47d;
+.poodll_mediarecorderbox_readaloud .poodll_start-recording_readaloud{
+    background-color: #FBB040;
+    color: black;
 }
-
-.poodll_mediarecorderbox_readaloud .poodll_stop-recording_readaloud {
+.poodll_mediarecorderbox_readaloud .poodll_stop-recording_readaloud{
     background-color: #ea9999;
 }
-
-.poodll_mediarecorderbox_readaloud .poodll_test-recording_readaloud {
+.poodll_mediarecorderbox_readaloud .poodll_test-recording_readaloud{
     background-color: #9fc5f8;
 }
 
-.poodll_mediarecorderbox_readaloud canvas {
+.poodll_mediarecorderbox_readaloud canvas{
     margin-bottom: 5px;
 }
 
-button.poodll_mediarecorder_button_readaloud {
 
-    transition: filter 0.5s ease;
-    margin: auto;
-    width: 200px;
-    color: #fff;
-    background-color: #00acdf;
-    border-color: #00acdf;
-    background-image: none;
-    display: inline-block;
-    font-weight: 400;
-    line-height: 1.25;
-    text-align: center;
-    white-space: nowrap;
-    vertical-align: middle;
+.poodll_mediarecorder_button_readaloud {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    color: #000;
+    font-size: 26px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: 5px;
+    margin-left: auto;
+    margin-right: auto;
+    border: none;
+    outline: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     cursor: pointer;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none;
-    border: 1px solid transparent;
-    padding: .5rem 1rem;
-    font-size: 1rem;
-    border-radius: .25rem;
+    background-color: red;
 }
 
-.poodll_mediarecorderholder_readaloud .poodll_mediarecorderbox_readaloud {
+
+.poodll_mediarecorderholder_readaloud .poodll_mediarecorderbox_readaloud{
     position: relative;
 }
-
-.poodll_mediarecorderholder_readaloud .poodll_mediarecorderbox_readaloud .pmr_disabled {
+.poodll_mediarecorderholder_readaloud .poodll_mediarecorderbox_readaloud .pmr_disabled{
     display: none;
 }
 
 .poodll_mediarecorderholder_readaloud .poodll_mediarecorderbox_readaloud button:focus {
     outline-style: none;
 }
-
 /*********************************************END****************************************/
 
 /*
