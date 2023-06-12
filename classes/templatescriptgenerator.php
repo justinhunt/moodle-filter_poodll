@@ -185,7 +185,7 @@ class templatescriptgenerator {
         $jquery_shimconfig->exports = '$';
         $jquery_shimkey = 'shim-jquery';
         $shim->{$jquery_shimkey} = $jquery_shimconfig;
-        $paths->{$jquery_shimkey} = $CFG->wwwroot . '/filter/poodll/3rdparty/jquery/jquery-1.12.4.min';
+        $paths->{$jquery_shimkey} = $CFG->wwwroot . '/filter/poodll/3rdparty/jquery/jquery-3.7.0.min';
 
 
         //add a path for the required js ibrary
