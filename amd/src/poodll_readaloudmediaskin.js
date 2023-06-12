@@ -43,7 +43,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
             },
 
             fetch_status_bar: function (skin) {
-                var status = '<div class="poodll_status_' + skin + '" width="320" height="50">00:00:00</div>';
+                var status = '<div class="poodll_status_' + skin + '" width="100%" height="50">00:00:00</div>';
                 return status;
             },
 
@@ -219,9 +219,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 var size_class = 'poodll_mediarecorder_size_auto';
 
                 var ss = this.pmr.fetch_strings();
-                var ss_startlabel = M.util.get_string('recui_start', 'filter_poodll');
-                var ss_testlabel = M.util.get_string('recui_testmic', 'filter_poodll');
-                var ss_stoplabel = M.util.get_string('recui_stop', 'filter_poodll');
+                var ss_startlabel = '<i class="fa fa-microphone"></i>'; //M.util.get_string('recui_start', 'filter_poodll');
+                var ss_testlabel = '<i class="fa fa-microphone"></i>';//M.util.get_string('recui_testmic', 'filter_poodll');
+                var ss_stoplabel = '<i class="fa fa-stop">';//M.util.get_string('recui_stop', 'filter_poodll');
 
                 var status = this.fetch_status_bar('readaloud');
                 var controls = '<div class="poodll_mediarecorderholder_readaloud '
@@ -234,7 +234,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 controls += '<div class="style-holder ' + skin_style + '">';
                 controls += preview;
                 controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-                controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50"></canvas>';
+                controls += '<canvas id="' + controlbarid + '_playcanvas" width="180" height="50"></canvas>';
                 controls += status;
                 controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_start-recording_readaloud">' + ss_startlabel + '</button>';
                 controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_test-recording_readaloud">' + ss_testlabel + '</button>';
