@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.68(Build 2023061600)
+- Changes to select to read widget
+- fix for player widgets with new player widget templates sometimes messing up HTML on page
+
 Version 3.1.67(Build 2023051900)
 - Moodle 4.2 support
 - Better passage reading and other widgets
