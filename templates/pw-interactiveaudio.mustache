@@ -548,8 +548,9 @@
      //just quit if this was called twice which totally happens!!! (prob because Moodle adds JS to header twice)
      if($('#{{AUTOID}}_player').length>0){return;}
 
-    //Set up our player
+     //Set up our player
      createPlayer();
+
      var theplayer = $('#{{AUTOID}}_player')[0];
 
 
@@ -587,7 +588,7 @@
      });
 
     //kick it all off
-     log.debug('processnewvideo');
+     log.debug('processnewvideo 2');
      processNewVideo(theplayer,itoptions);
 
  

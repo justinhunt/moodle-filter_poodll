@@ -333,7 +333,8 @@ public static function fetch_filter_properties($filterstring) {
         $doc = new \DOMDocument();
 
         // Load the HTML string into the DOMDocument
-        $doc->loadHTML($html,LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+        $doc->loadHTML($html, LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
+        return $doc->saveHTML();
 
 
         $finder = new \DomXPath($doc);

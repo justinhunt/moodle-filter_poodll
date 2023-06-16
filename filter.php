@@ -70,7 +70,6 @@ class filter_poodll extends moodle_text_filter {
         }
 
 
-
         //if text has links
         if ($havelinks) {
             //get handle extensions
