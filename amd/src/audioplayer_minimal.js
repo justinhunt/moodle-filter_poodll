@@ -9,8 +9,7 @@ define(['jquery','core/log'], function($, log) {
         forwardbutton: '_fpminimal_audioplayer .fpminimal_audioplayer_skip_button_forward',
         timedisplay: '_fpminimal_audioplayer .fpminimal_audioplayer_time'
     }
-    var play_icon_url = require.toUrl('filter/poodll/pix/fpminimal_play.png');
-    var pause_icon_url = require.toUrl('filter/poodll/pix/fpminimal_stop.png');
+
     var skipinterval =15;
 
     var pr = {
@@ -55,9 +54,16 @@ define(['jquery','core/log'], function($, log) {
                 that.update_time();
             });
             $(this.hplayer).on('ended',function(){
-                $(that.ppbutton).css('background-image', play_icon_url);
+                $(that.ppbutton).attr('data-state','ended');
                 //reset the time display
                 $(that.timedisplay).text(that.formatAudioTime(that.duration));
+            });
+            $(this.hplayer).on('pause play', function(e) {
+                if (e.currentTarget.paused) {
+                    $(that.ppbutton).attr('data-state','paused');
+                } else {
+                    $(that.ppbutton).attr('data-state','playing');
+                }
             });
             $(this.hplayer).on('loadeddata',function(){
                 console.log("loadeddata", that.hplayer.duration);
@@ -67,6 +73,7 @@ define(['jquery','core/log'], function($, log) {
                 }else {
                     that.duration = that.hplayer.duration;
                 }
+                $(that.ppbutton).attr('data-state','paused');
                 that.update_time();
             });
             $(this.hplayer).on('canplaythrough',function(){
@@ -84,13 +91,13 @@ define(['jquery','core/log'], function($, log) {
                 console.log(this.hplayer);
                 this.hplayer.play().then(function(){
                     log.debug('play promise resolved');
-                    $(that.ppbutton).css('background-image',pause_icon_url);
+                    $(that.ppbutton).attr('data-state','playing');
                 }).catch(function(e){
                     log.debug(e,'play promise rejected');
                 });
             }else{
                 this.hplayer.pause();
-                $(this.ppbutton).css('background-image:', play_icon_url);
+                $(that.ppbutton).attr('data-state','paused');
             }
         },
         update_time: function(){

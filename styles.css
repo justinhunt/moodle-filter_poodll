@@ -5154,6 +5154,10 @@ video.poodll_multivideoplayer_video {
     top: 36px;
 }
 
+.fpminimal_audioplayer_play_button[data-state="playing"] {
+    background-image: url([[pix:filter_poodll|fpminimal-pause]]);
+}
+
 .fpminimal_audioplayer_skip_buttons {
     display: flex;
     width: 100%;

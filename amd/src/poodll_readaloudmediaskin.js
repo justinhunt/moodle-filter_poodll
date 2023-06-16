@@ -146,13 +146,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
 
                         break;
 
+                        //not implemented
                     case 'countdownmode':
 
-                        ip.controlbar.status.hide();
-                        self.disable_button(ip.controlbar.startbutton);
-                        self.disable_button(ip.controlbar.testbutton);
-                        self.enable_button(ip.controlbar.placeholderbutton);
-                        self.disable_button(ip.controlbar.stopbutton);
                         break;
 
                     case 'readymode':
