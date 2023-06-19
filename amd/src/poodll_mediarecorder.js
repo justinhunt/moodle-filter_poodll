@@ -579,35 +579,42 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         fetch_audio_constraints: function (ip) {
 
             // really we need to deal with preferences properly
-            // this will get the available media constraints that need to be set like deviceid above
+            //  var sc = navigator.mediaDevices.getSupportedConstraints();
+            //  log.debug(sc);
+            var audioconstraints = {};
+            var customised = false;
 
-              //  var sc = navigator.mediaDevices.getSupportedConstraints();
-              //  log.debug(sc);
-
-
-            // init return object
-            var mediaConstraints = {
-                audio: true
-                //audio: {volume: 0.0}
-            };
 
 
             // tried hard on safari to get the chosen devce, this but just gave up.
             if (utils.is_safari() && !ip.useraudiodeviceid) {
-
-                // fix mime type to wav
                 ip.audiomimetype = 'audio/wav';
-
-
             }// end of if Safari
 
             // check for a user selected device
             if (ip.useraudiodeviceid) {
-                var constraints = {"deviceId": ip.useraudiodeviceid};
-                mediaConstraints.audio = constraints;
+                audioconstraints.deviceID = ip.useraudiodeviceid;
+                customised=true;
             }
-            // log.debug(mediaConstraints);
 
+            //if shadowing we want to turn off echo cancellation and noise suppression
+            if(ip.config.shadowing){
+                audioconstraints.echoCancellation = false;
+                audioconstraints.noiseSuppression = false;
+                customised=true;
+            }
+
+            //if we have not customised the audio constraints, then just set to true
+            if(!customised){
+                audioconstraints = true;
+            }
+
+            // init return object
+            var mediaConstraints = {
+                audio: audioconstraints
+            };
+            log.debug('mediaConstraints');
+            log.debug(mediaConstraints);
             return mediaConstraints;
         },
 
