@@ -404,25 +404,57 @@ gQIDAQAB
         $cache = \cache::make_from_params(\cache_store::MODE_APPLICATION, constants::MOD_FRANKY, 'token');
         $tokenobject = $cache->get('recentpoodlltoken');
 
-        //if we have no token object the creds were wrong ... or something
+        $isauthorised=true;
+        $message ="";
+
+        //if we have no token object the creds were wrong ... or cache was purged
+        //we dont refresh automatically because we don't want to affect Moodle performance if they have connectivity issues to Cloud Poodll
+
         if (!($tokenobject)) {
-            $message = get_string('notokenincache', constants::MOD_FRANKY);
-            //if we have an object but its no good, creds werer wrong ..or something
-        } else if (!property_exists($tokenobject, 'token') || empty($tokenobject->token)) {
-            $message = get_string('credentialsinvalid', constants::MOD_FRANKY);
+            $message .= get_string('notokenincache', constants::MOD_FRANKY);
+            return $refresh . $message;
+        }
+
+
+
+        //if we got a token and its less than expiry time
+        if ($tokenobject->validuntil < time()) {
+            $message .= get_string('thetokenisold', constants::MOD_FRANKY);
+            return $refresh . $message;
+        }
+
+
+
+        //if we have an object but its no good, creds were wrong ..or something
+        if (!property_exists($tokenobject, 'token') || empty($tokenobject->token)) {
+            $message .= get_string('credentialsinvalid', constants::MOD_FRANKY);
+            $isauthorised=false;
+
             //if we do not have subs, then we are on a very old token or something is wrong, just get out of here.
         } else if (!property_exists($tokenobject, 'subs')) {
-            $message = 'No subscriptions found at all';
+            $message .= 'No subscriptions found at all';
+            $isauthorised=false;
         }
-        if (!empty($message)) {
+
+        if (!$isauthorised) {
+            $message .= get_string('appnotauthorised', constants::MOD_FRANKY) . '<br>';
             return $refresh . $message;
         }
 
         //we have enough info to display a report. Lets go.
+        $validsubs=0;
         foreach ($tokenobject->subs as $sub) {
-            $sub->expiredate = date('d/m/Y', $sub->expiredate);
+            $sub->displayexpiredate = date('d/m/Y', $sub->expiredate);
             $message .= get_string('displaysubs', constants::MOD_FRANKY, $sub) . '<br>';
+            if($sub->expiredate > time()){
+                $validsubs++;
+            }
         }
+        if($validsubs==0){
+            $isauthorised=false;
+            $message .= get_string('novalidsubscription', constants::MOD_FRANKY) . '<br>';
+        }
+
         //Is site authorised
         $haveauthsite = false;
         foreach ($tokenobject->sites as $site) {
@@ -432,17 +464,22 @@ gQIDAQAB
             }
         }
         if (!$haveauthsite) {
-            $message .= get_string('appnotauthorised', constants::MOD_FRANKY) . '<br>';
+            $isauthorised=false;
+            $message .= get_string('sitenotvalid', constants::MOD_FRANKY) . '<br>';
         } else {
 
             //Is app authorised
-            if (in_array(constants::MOD_FRANKY, $tokenobject->apps)) {
-                $message .= get_string('appauthorised', constants::MOD_FRANKY) . '<br>';
-            } else {
-                $message .= get_string('appnotauthorised', constants::MOD_FRANKY) . '<br>';
+            if (!in_array(constants::MOD_FRANKY, $tokenobject->apps)) {
+                $isauthorised=false;
+                $message .= get_string('appitselfnotauthorised', constants::MOD_FRANKY) . '<br>';
             }
         }
 
+        if (!$isauthorised) {
+            $message .= get_string('appnotauthorised', constants::MOD_FRANKY) . '<br>';
+        }else{
+            $message .= get_string('appauthorised', constants::MOD_FRANKY) . '<br>';
+        }
         return $refresh . $message;
 
     }
@@ -503,11 +540,15 @@ gQIDAQAB
             } else {
                 $tokenobject = false;
                 if ($resp_object && property_exists($resp_object, 'error')) {
-                    //ERROR = $resp_object->error
+                    //let's clear the cache
+                    if($force){
+                        $cache->delete('recentpoodlltoken');
+                    }
                 }
             }
         } else {
             $tokenobject = false;
+
         }
         return $tokenobject;
     }
