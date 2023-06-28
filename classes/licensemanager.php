@@ -540,11 +540,13 @@ gQIDAQAB
             } else {
                 //In the case of a connection fail, we are better to continue using old token
                 if(!$tokenobject){ $tokenobject = false;}
-                if ($resp_object && property_exists($resp_object, 'error')) {
-                    //let's NOT clear the cache
-                   // if($force){
-                   //     $cache->delete('recentpoodlltoken');
-                   // }
+                if ($tokenobject) {
+                    if($resp_object && property_exists($resp_object, 'error')) {
+                        $tokenobject->errormessage = $resp_object->error;
+                    }else{
+                        $tokenobject->errormessage =  get_string('invalidresponse', constants::M_COMPONENT);
+                    }
+
                 }
             }
         } else {

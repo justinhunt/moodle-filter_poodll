@@ -39,8 +39,15 @@ if (has_capability('moodle/site:config', $systemcontext)) {
     if ($apiuser && $apisecret) {
         $lm = new \filter_poodll\licensemanager();
         $tokenobject = $lm->fetch_token($apiuser, $apisecret, $force);
-        if (!($tokenobject && isset($tokenobject->token))) {
-            $message = get_string('tokenfetchfailed', constants::M_COMPONENT);
+        if (!$tokenobject || isset($tokenobject->errormessage)) {
+            if(isset($tokenobject->errormessage)){
+                $message = get_string('tokenfetchfailedwitherror', constants::M_COMPONENT,$tokenobject->errormessage);
+                if(isset($tokenobject->token)){
+                    $message .= get_string('usingoldtoken', constants::M_COMPONENT);
+                }
+            }else{
+                $message = get_string('tokenfetchfailed', constants::M_COMPONENT);
+            }
         }
     }
 }
