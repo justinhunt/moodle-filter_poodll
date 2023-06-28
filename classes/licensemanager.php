@@ -501,13 +501,16 @@ gQIDAQAB
                 $cache->set('recentpoodlluser', $apiuser);
 
             } else {
-                $tokenobject = false;
+                //In the case of a connection fail, we are better to continue using old token
+                if(!$tokenobject){ $tokenobject = false;}
                 if ($resp_object && property_exists($resp_object, 'error')) {
                     //ERROR = $resp_object->error
                 }
             }
         } else {
-            $tokenobject = false;
+            //we used set tokenobject to false here, but in the case of a connection fail, we are better to continue using old token
+            //so if its truthy, its likely an old token, and we will just use it. Otherwise we make sure its false and not null
+            if(!$tokenobject){ $tokenobject = false;}
         }
         return $tokenobject;
     }

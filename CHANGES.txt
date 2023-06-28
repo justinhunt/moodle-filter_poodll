@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.69(Build 2023062800)
+- Made license manager tolerant of curl failures, and will reuse old license info until new info shows up
+
 Version 3.1.68(Build 2023061600)
 - Changes to select to read widget
 - fix for player widgets with new player widget templates sometimes messing up HTML on page
