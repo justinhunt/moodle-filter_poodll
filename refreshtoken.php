@@ -30,14 +30,18 @@ use \filter_poodll\constants;
 
 require_login(0, false);
 $systemcontext = context_system::instance();
-
+$token=false;
+$message='';
 if (has_capability('moodle/site:config', $systemcontext)) {
     $apiuser = get_config(constants::MOD_FRANKY, 'cpapiuser');
     $apisecret = get_config(constants::MOD_FRANKY, 'cpapisecret');
     $force = true;
     if ($apiuser && $apisecret) {
         $lm = new \filter_poodll\licensemanager();
-        $lm->fetch_token($apiuser, $apisecret, $force);
+        $tokenobject = $lm->fetch_token($apiuser, $apisecret, $force);
+        if (!($tokenobject && isset($tokenobject->token))) {
+            $message = get_string('tokenfetchfailed', constants::M_COMPONENT);
+        }
     }
 }
-redirect($CFG->wwwroot . '/admin/settings.php?section=filter_poodll_general');
+    redirect($CFG->wwwroot . '/admin/settings.php?section=filter_poodll_general',$message);

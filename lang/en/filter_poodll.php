@@ -412,7 +412,7 @@ $string['cpapisecret'] = 'Poodll API Secret';
 $string['cpapisecret_details'] = "This can be obtained from the API creds tab on your members area at Poodll.com. ";
 
 //API summary display info
-$string['displaysubs'] = '{$a->subscriptionname} : expires {$a->expiredate}';
+$string['displaysubs'] = '{$a->subscriptionname} : expires {$a->displayexpiredate}';
 $string['noapiuser'] = "No API username entered.";
 $string['noapisecret'] = "No API secret entered.";
 $string['credentialsinvalid'] = "The API username and secret entered could not be used to get access. Please check them.";
@@ -487,3 +487,9 @@ $string['ready'] = "ready";
 $string['finished'] = "finished";
 $string['paused'] = "paused";
 $string['nosubtitlesyet'] = "Subtitles are not available (yet)";
+
+$string['sitenotvalid'] = "Site URL does not match the registered site URL for this API user.";
+$string['novalidsubscription'] = "No valid subscription.";
+$string['appitselfnotauthorised'] = "No valid subscription contains access to the plugin: filter_poodll";
+$string['thetokenisold'] = "The authentication token is old. Please refresh. If refreshing fails, you have a connection problem. Contact Poodll Support.";
+$string['tokenfetchfailed']='Failed to fetch token. Are your API user and secret correct?';
