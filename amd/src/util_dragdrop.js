@@ -30,7 +30,9 @@ define(['jquery', 'core/log'], function ($, log) {
             return $.extend(true, {}, this);
         },
         supports_dragdrop: function (element) {
-            return ('draggable' in element) || ('ondragstart' in element && 'ondrop' in element)
+            //it seems this works without jqueryui
+            return true;
+            //return ('draggable' in element) || ('ondragstart' in element && 'ondrop' in element)
         },
 
         do_visuals: function () {
