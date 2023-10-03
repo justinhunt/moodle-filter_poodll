@@ -1,5 +1,7 @@
 Change List
 =========
+-- added more langs to passage reader and select to read
+
 Version 3.1.69(Build 2023062800)
 - Made license manager tolerant of curl failures, and will reuse old license info until new info shows up
 
