@@ -333,9 +333,7 @@ public static function fetch_filter_properties($filterstring) {
         $doc = new \DOMDocument();
 
         // Load the HTML string into the DOMDocument
-        $doc->loadHTML($html, LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
-        return $doc->saveHTML();
-
+        $doc->loadHTML('<?xml version="1.0" encoding="UTF-8"?>' . $html, LIBXML_HTML_NODEFDTD | LIBXML_NOERROR | LIBXML_NOWARNING);
 
         $finder = new \DomXPath($doc);
         $classname="poodllplayerwidgetnoshow";
