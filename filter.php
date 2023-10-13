@@ -60,7 +60,7 @@ class filter_poodll extends moodle_text_filter {
                 // non string data can not be filtered anyway
                 return $text;
             }
-            $newtext = preg_replace_callback($search, 'self::filter_poodll_process', $newtext);
+            $newtext = preg_replace_callback($search, '\filter_poodll::filter_poodll_process', $newtext);
         }
 
         //if the text has a poodll player widget we want to  prevent other filters from messing with it
@@ -85,18 +85,18 @@ class filter_poodll extends moodle_text_filter {
                 $handleextstring = implode('|', $handleexts);
                 //$oldsearch = '/<a\s[^>]*href="([^"#\?]+\.(' .  $handleextstring. '))(\?d=([\d]{1,4})x([\d]{1,4}))?"[^>]*>([^>]*)<\/a>/is';
                 $search = '/<a\s[^>]*href="([^"#\?]+\.(' . $handleextstring . '))(.*?)"[^>]*>([^>]*)<\/a>/is';
-                $newtext = preg_replace_callback($search, 'self::filter_poodll_allexts_callback', $newtext);
+                $newtext = preg_replace_callback($search, '\filter_poodll::filter_poodll_allexts_callback', $newtext);
             }
 
             //check for legacy pdl links
             $search = '/<a\s[^>]*href="([^"#\?]+\.(pdl))(.*?)"[^>]*>([^>]*)<\/a>/is';
-            $newtext = preg_replace_callback($search, 'self::filter_poodll_pdl_callback', $newtext);
+            $newtext = preg_replace_callback($search, '\filter_poodll::filter_poodll_pdl_callback', $newtext);
 
             //check for youtube
             if ($this->fetchconf('handleyoutube')) {
                 $search =
                         '/<a\s[^>]*href="(?:https?:\/\/)?(?:www\.)?youtu(?:\.be|be\.com)\/(?:watch\?v=|v\/)?([\w-]{10,})(?:.*?)<\/a>/is';
-                $newtext = preg_replace_callback($search, 'self::filter_poodll_youtube_callback', $newtext);
+                $newtext = preg_replace_callback($search, '\filter_poodll::filter_poodll_youtube_callback', $newtext);
             }
         }// end of if $havelinks
 
