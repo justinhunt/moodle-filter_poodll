@@ -13,9 +13,7 @@ use filter_poodll\poodlltools;
 use filter_poodll\constants;
 use filter_poodll\diff;
 
-use external_api;
-use external_function_parameters;
-use external_value;
+
 /**
  * External class.
  *
