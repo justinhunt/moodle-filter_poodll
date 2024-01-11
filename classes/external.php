@@ -6,6 +6,8 @@
  * @author  Justin Hunt - poodll.com
  */
 
+namespace filter_poodll;
+
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
 
@@ -22,7 +24,7 @@ use external_value;
  * @package mod_poodlltime
  * @author  Justin Hunt - poodll.com
  */
-class filter_poodll_external extends external_api {
+class external extends external_api {
 
     public static function check_by_phonetic_parameters(){
         return new external_function_parameters(
