@@ -6,6 +6,8 @@
  * @author  Justin Hunt - poodll.com
  */
 
+namespace filter_poodll;
+
 global $CFG;
 
 //This is for pre M4.0 and post M4.0 to work on same code base
@@ -28,7 +30,7 @@ use filter_poodll\diff;
  * @package filter_poodll
  * @author  Justin Hunt - poodll.com
  */
-class filter_poodll_external extends external_api {
+class external extends external_api {
 
     public static function check_by_phonetic_parameters(){
         return new external_function_parameters(
