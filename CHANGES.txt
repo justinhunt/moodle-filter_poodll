@@ -1,8 +1,12 @@
 Change List
 =========
+Version 3.1.71(2023101300)
+ - removed debugger statement
+ - removed deprecated calback call which php8.2 complained about
+
 Version 3.1.70(Build 2023100400)
 -- added more langs to passage reader and select to read
--- fixed bug wih player widgets which garbled non ascii text on the page!!
+-- fixed bug with player widgets which garbled non ascii text on the page!!
 
 Version 3.1.69(Build 2023062800)
 - Made license manager tolerant of curl failures, and will reuse old license info until new info shows up
