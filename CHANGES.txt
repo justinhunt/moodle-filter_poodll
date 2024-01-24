@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.72(Build 2024012400)
+- Added a template and code to support it, that allows you to call a renderer function from a template
+
 Version 3.1.71(2023101300)
  - removed debugger statement
  - removed deprecated calback call which php8.2 complained about

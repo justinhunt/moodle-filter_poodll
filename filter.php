@@ -426,10 +426,18 @@ class filter_poodll extends moodle_text_filter {
         }
 
         //If this is a renderer call, lets do it
-        if(isset($filterprops['component']) && isset($filterprops['function']) && isset($filterprops['cmid'])){
+        //it will be a function in a renderer with a name that begins with "embed_" .. e.g "embed_something"
+        //the args filterprops will be a pipe delimited string of args, eg {POODLL:type="mod_ogte",function="embed_table",args="arg1|arg2|arg3"}
+        //if the args string contains "cloudpoodlltoken" it will be replaced with the actual cloud poodll token.
+        if(isset($filterprops['renderer']) && isset($filterprops['function']) && strpos($filterprops['function'],'embed_')===0){
             if(!isset($token)){$token=false;}
-            $somerenderer = $PAGE->get_renderer($filterprops['component']);
-            $renderedcontent=call_user_func_array([$somerenderer, $filterprops['function']], [$filterprops['cmid'],$token]);
+            $somerenderer = $PAGE->get_renderer($filterprops['renderer']);
+            $args=[];
+            if(isset($filterprops['args'])){
+                $args_string =str_replace('cloudpoodlltoken',$token,$filterprops['args']);
+                $args_array = explode('|',$args_string);
+            }
+            $renderedcontent=call_user_func_array([$somerenderer, $filterprops['function']], $args_array);
             $poodlltemplate = str_replace('@@renderedcontent@@',$renderedcontent, $poodlltemplate);
         }
 
