@@ -63,6 +63,8 @@ class licensemanager {
     private $api_expire_date = '';
     private $api_license_type = 0;
 
+    private $curl = null;
+
     /**
      * Check the registration key is valid
      *
@@ -369,9 +371,11 @@ gQIDAQAB
     protected function curl_fetch($url, $postdata = false) {
         global $CFG;
         require_once($CFG->libdir . '/filelib.php');
-        $curl = new \curl();
+        if($this->curl==null){
+            $this->curl = new \curl();
+        }
 
-        $result = $curl->get($url, $postdata);
+        $result = $this->curl->get($url, $postdata);
         return $result;
     }
 
@@ -493,13 +497,27 @@ gQIDAQAB
         $apiuser = trim($apiuser);
         $apisecret = trim($apisecret);
 
+        $debuginfo = [];
+        $debuginfo['apiuser']=$apiuser;
+        $debuginfo['apisecret']=$apisecret;
+        $debuginfo['fromcachetokenobject']=$tokenobject;
+        $debuginfo['fromcachetokenuser']=$tokenuser;
+        $debuginfo['messages']=[];
+        $debuginfo['messages'][]="fetched from cache";
+
+
         //if we got a token and its less than expiry time
         // use the cached one
         if ($tokenobject && $tokenuser && $tokenuser == $apiuser && !$force) {
+            $debuginfo['messages'][]="from cache token exists and apiuser matches";
+            $debuginfo['messages'][]="checking validity: validuntil: " .$tokenobject->validuntil . " time: " . time();
             if ($tokenobject->validuntil == 0 || $tokenobject->validuntil > time()) {
+                $debuginfo['messages'][]="from cache token is valid. returning it" ;
                 return $tokenobject;
             }
         }
+
+        $debuginfo['messages'][]="from cache token did not exist or was no longer valid";
 
         // Send the request & save response to $resp
         $token_url = constants::CLOUDPOODLL . "/local/cpapi/poodlltoken.php";
@@ -508,11 +526,18 @@ gQIDAQAB
                 'password' => $apisecret,
                 'service' => 'cloud_poodll'
         );
+        $debuginfo['messages'][]="fetching new token from cloudpoodll";
         $token_response = $this->curl_fetch($token_url, $postdata);
 //error_log( $token_response);
         if ($token_response) {
+
             $resp_object = json_decode($token_response);
+
+            $debuginfo['messages'][]="token received from cloudpoodll";
+            $debuginfo['newtokenresponse']=$resp_object;
+
             if ($resp_object && property_exists($resp_object, 'token')) {
+
                 //store the expiry timestamp and adjust it for diffs between our server times
                 if ($resp_object->validuntil) {
                     $validuntil = $resp_object->validuntil - ($resp_object->poodlltime - time());
@@ -521,6 +546,7 @@ gQIDAQAB
                 } else {
                     $validuntil = 0;
                 }
+                $debuginfo['messages'][]="setting validuntil: " . $validuntil;
 
                 //make sure the token has all the bits in it we expect before caching it
                 $tokenobject = $resp_object;//new \stdClass();
@@ -537,23 +563,62 @@ gQIDAQAB
                 $cache->set('recentpoodlltoken', $tokenobject);
                 $cache->set('recentpoodlluser', $apiuser);
 
+                $debuginfo['messages'][]="caching token object";
+                $debuginfo['tocacheobject']= $tokenobject;
+
+
             } else {
                 //In the case of a connection fail, we are better to continue using old token
-                if(!$tokenobject){ $tokenobject = false;}
+                if(!$tokenobject){
+                    $tokenobject = false;
+                    $debuginfo['messages'][]="curl failure 1: " . $this->curl->errorno . " " . $this->curl->error;
+                }
+
                 if ($tokenobject) {
                     if($resp_object && property_exists($resp_object, 'error')) {
                         $tokenobject->errormessage = $resp_object->error;
+                        $debuginfo['messages'][]="cloudpoodll error message: " . $resp_object->error;
                     }else{
                         $tokenobject->errormessage =  get_string('invalidresponse', constants::M_COMPONENT);
+                        $debuginfo['messages'][]="no cloudpoodll error message but failed ";
                     }
 
                 }
             }
         } else {
+
             //we used set tokenobject to false here, but in the case of a connection fail, we are better to continue using old token
-            //so if its truthy, its likely an old token, and we will just use it. Otherwise we make sure its false and not null
+            //so if its truthy, it's likely an old token, and we will just use it. Otherwise we make sure its false and not null
             if(!$tokenobject){ $tokenobject = false;}
+            $debuginfo['messages'][]="curl failure 2: " . $this->curl->errorno . " " . $this->curl->error;
+        }
+        $debuginfo['finaltokenobject']=$tokenobject;
+        if($force){
+            $this->send_debug_data('fetchtoken', $debuginfo);
         }
         return $tokenobject;
+    }
+
+    private function send_debug_data($type, $debuginfo) {
+        global $CFG, $USER;
+        //only log if is on in Poodll settings
+        if (!$CFG->filter_poodll_debug) {
+            return;
+        }
+
+        //extract messages and put them in a string.
+        $messages = implode(' --> ',$debuginfo['messages']);
+        unset($debuginfo['messages']);
+
+        $messages .= " | " . json_encode($debuginfo);
+
+
+        $debugdata = new \stdClass();
+        $debugdata->userid = $USER->id;
+        $debugdata->contextid = \context_system::instance()->id;
+        $debugdata->type = $type;
+        $debugdata->source = 'licencemanager.php';
+        $debugdata->message = $messages;
+        \filter_poodll\event\debug_log::create_from_data($debugdata)->trigger();
     }
 }

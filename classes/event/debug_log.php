@@ -27,7 +27,7 @@ namespace filter_poodll\event;
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * The filter_poodll adhoc_registered class.
+ * The filter_poodll debug log class.
  *
  * @package    filter_poodll
  * @since      Moodle 3.1

@@ -425,6 +425,14 @@ class filter_poodll extends moodle_text_filter {
             $filterprops['CLOUDPOODLLTOKEN'] = $token;
         }
 
+        //If this is a renderer call, lets do it
+        if(isset($filterprops['component']) && isset($filterprops['function']) && isset($filterprops['cmid'])){
+            if(!isset($token)){$token=false;}
+            $somerenderer = $PAGE->get_renderer($filterprops['component']);
+            $renderedcontent=call_user_func_array([$somerenderer, $filterprops['function']], [$filterprops['cmid'],$token]);
+            $poodlltemplate = str_replace('@@renderedcontent@@',$renderedcontent, $poodlltemplate);
+        }
+
         //If template requires a MOODLEPAGEID lets give them one
         //this is a bit redundant now it can be done now with @@URLPARAM:id@@ 
         $moodlepageid = optional_param('id', 0, PARAM_INT);
