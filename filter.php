@@ -351,9 +351,6 @@ class filter_poodll extends moodle_text_filter {
             $alternate_content = $conf['templatealternate_end_' . $tempindex];
         }
 
-        //fetch alternate content
-        $alternate_content = $conf['templatealternate_' . $tempindex];
-
         //fetch dataset info
         $dataset_body = $conf['dataset_' . $tempindex];
         $dataset_vars = $conf['datasetvars_' . $tempindex];
