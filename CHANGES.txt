@@ -1,7 +1,8 @@
 Change List
 =========
-Version 3.1.73 (Build 202401xxxx)
+Version 3.1.73 (Build 2024013000)
  - Added a try/catch to renderedcontent filter processing
+ - Added Loom and Canva and NoTranslate presets
 
 Version 3.1.72(Build 2024012400)
 - Added a template and code to support it, that allows you to call a renderer function from a template

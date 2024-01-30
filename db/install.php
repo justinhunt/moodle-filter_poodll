@@ -34,7 +34,7 @@ function xmldb_filter_poodll_install() {
         'pw-multiplayervideo','pw-multispeedplayer','pw-poodllaudio','pwtinyaudioplayer','superinteractiveaudiowidget','superinteractivevideowidget',
         'videoembed', 'videolightbox_w',
             'tabs', 'tabitem', 'accordian', 'accordianitem',
-            'countdown','dice','flipclock','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards',
+            'countdown','dice','loom','icontoggle','lightbox2','poodllcalc','popover','popuprecorder','speechcards',
             'textblockreader','tta','selecttoread');
     $templateindex = 0;
     foreach ($presets as $preset) {
