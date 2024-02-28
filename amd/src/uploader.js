@@ -502,6 +502,15 @@ define(['jquery', 'core/log', 'filter_poodll/upskin_plain'], function ($, log, u
                     };//end of fileread on load end
                 }//end of if blob
             }//end of if using_s3
+
+            //now we post a message that an upload has begun
+            var messageObject = {};
+            messageObject.type = "uploadcommenced";
+            messageObject.sourcefilename = this.config.sourcefilename;
+            messageObject.sourcemimetype = this.config.sourcemimetype;
+            messageObject.id = this.config.id;
+            this.config.hermes.postMessage(messageObject);
+
         },
 
         // upload Media file to wherever
