@@ -53,7 +53,7 @@ var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="tr
  thestate.text('- ready -');
 
  // setting base volume for audio player
- aplayer[0].volume = 0.2;
+ aplayer[0].volume = 0.4;
 
  //cookies if in strict mode
 //trim the cache killer or the cookiename would be different each pay load if cachekiller was in the url
@@ -62,6 +62,7 @@ var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="tr
  useurl = useurl.replace('?','');
  var cookiename_playcount = useurl + '_pc_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
  var cookiename_position = useurl + '_pos_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
+ var cookiename_audiovol = 'audiovol_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
 
 /*
  console.log(cookiename_playcount);
@@ -72,12 +73,20 @@ var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="tr
 */
 
  if(is_strict_quiz){
+   //get previous play count
    var prevplaycount = getCookie(cookiename_playcount);
    if(prevplaycount!==null){
     playtimer.data('playtime',prevplaycount);
     if(prevplaycount==="0"){
        disableSubsequentPlays();
     }
+   }
+
+   //get previous audio vol
+   var prevaudiovol = getCookie(cookiename_audiovol);
+   if(prevaudiovol!==null){
+     aplayer[0].volume = prevaudiovol;
+     $('#' + "{{AUTOID}}" + '_indicator').css("width",(aplayer[0].volume * $('.meter').width()));
    }
  }
 
@@ -92,11 +101,13 @@ $('#' + "{{AUTOID}}" + '_vol-up').click(function(){
     if(aplayer[0].volume +0.1 > 1){return;}
 	$('#' + "{{AUTOID}}" + '_indicator').css("width", '+=' + (0.1 * $('.meter').width()));
 	aplayer[0].volume+=0.1;
+    setCookie(cookiename_audiovol, aplayer[0].volume, 1);
 });
 $('#' + "{{AUTOID}}" + '_vol-down').click(function(){
     if(aplayer[0].volume - 0.1 < 0){return;}
 	$('#' + "{{AUTOID}}" + '_indicator').css("width", '-=' + (0.1 * $('.meter').width()));
 	aplayer[0].volume-=0.1;
+    setCookie(cookiename_audiovol, aplayer[0].volume, 1);
 });
 
 //can play through event
