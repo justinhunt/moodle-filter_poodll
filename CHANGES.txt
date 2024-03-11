@@ -1,8 +1,9 @@
 Change List
 =========
-Version 3.1.74 (Build 202402XXXX)
+Version 3.1.74 (Build 2024031100)
  - Added a recorder upload commenced event
- - Added a strict audio remember volume event
+ - Added feature to set default strict audio volume and remember state
+ - Changed from cookie to local storage for strict audio/video player state
 
 Version 3.1.73 (Build 2024013000)
  - Added a try/catch to renderedcontent filter processing

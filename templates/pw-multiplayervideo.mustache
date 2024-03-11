@@ -68,14 +68,6 @@ var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="tr
  var cookiename_playcount = useurl + '_pc_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
  var cookiename_position = useurl + '_pos_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
 
-/*
- console.log(cookiename_playcount);
- console.log(getCookie(cookiename_playcount));
- console.log(cookiename_position);
- console.log(getCookie(cookiename_position));
- console.log('is_remember_pos',is_remember_pos);
-*/
-
  if(is_strict_quiz){
    var prevplaycount = getCookie(cookiename_playcount);
    if(prevplaycount!==null){
@@ -154,21 +146,13 @@ $('#' + "{{AUTOID}}").click(function(){
   $('#' + "{{AUTOID}}").data("disabled", true);
  }
 
- function setCookie(key, value, expiry) {
-   var expires = new Date();
-   expires.setTime(expires.getTime() + (expiry * 24 * 60 * 60 * 1000));
-   document.cookie = key + '=' + value + ';expires=' + expires.toUTCString() + '; SameSite=Lax';
- }
+function setCookie(key, value, oldkey) {
+    localStorage.setItem(key, value);
+}
 
- function getCookie(key) {
-   var keyValue = document.cookie.match(`(?:(?:^|.*; *)${key} *= *([^;]*).*$)|^.*$`)[1]
-     if (keyValue){
-         return decodeURIComponent(keyValue);
-     } else{
-         return null;
-     }
- }
-
+function getCookie(key) {
+    return localStorage.getItem(key);
+}
 
 function play_audio(){
      //if playing just continue

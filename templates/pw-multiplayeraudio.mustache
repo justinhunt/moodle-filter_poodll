@@ -39,6 +39,10 @@ var aplayer = $('#' + "{{AUTOID}}").children().first();
 var fa = $('#' + "{{AUTOID}}" + ' .fa');
 var thestate =$('#' + "{{AUTOID}}" + '_state'); 
 var thetime = $('#' + "{{AUTOID}}" + '_time');
+var playcount = $('#' + "{{AUTOID}}" + '_playtime')
+var volumeindicator =    $('#' + "{{AUTOID}}" + '_indicator');
+var volumeupbtn=$('#' + "{{AUTOID}}" + '_vol-up');
+var volumedownbtn=$('#' + "{{AUTOID}}" + '_vol-down');
 var playtimer = $('#' + "{{AUTOID}}");
 var lastseconds = 0;
 var canplaythrough=aplayer[0].readyState===4; //can play through
@@ -46,14 +50,6 @@ var position_update_interval = 1;//each X seconds do the cookie update
 var is_strict_quiz = "{{quiz_strict_mode}}"=="true" && "{{URLPARAM:attempt}}" !="";
 var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="true";
 
-
- $(fa).removeClass('fa-minus');
-
- //set status
- thestate.text('- ready -');
-
- // setting base volume for audio player
- aplayer[0].volume = 0.4;
 
  //cookies if in strict mode
 //trim the cache killer or the cookiename would be different each pay load if cachekiller was in the url
@@ -64,13 +60,34 @@ var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="tr
  var cookiename_position = useurl + '_pos_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
  var cookiename_audiovol = 'audiovol_' + "{{URLPARAM:attempt}}"+ '_' + "{{URLPARAM:cmid}}";
 
-/*
- console.log(cookiename_playcount);
- console.log(getCookie(cookiename_playcount));
- console.log(cookiename_position);
- console.log(getCookie(cookiename_position));
- console.log('is_remember_pos',is_remember_pos);
-*/
+  var setPlayerVolume = function(newvolume){
+     aplayer[0].volume = newvolume;
+     volumeindicator.css("width",(aplayer[0].volume * $('.meter').width()));
+ }
+
+  var get_last_pos =function(){
+     var lastpos = getCookie(cookiename_position);
+     if(lastpos && lastpos > 0 && $.isNumeric(lastpos)){
+       return lastpos;
+     }
+     return 0;
+  }
+
+   // setting base volume for audio player
+   var basevolume = '{{volume}}';
+   if(basevolume!=='' && basevolume>=0 && basevolume<=1){
+     setPlayerVolume(basevolume);
+   }else{
+     setPlayerVolume(0.4);
+   }
+
+ //---------------------------------------------------------------
+//The main code runs from here
+//---------------------------------------------------------------
+
+   $(fa).removeClass('fa-minus');
+   //set status
+   thestate.text('- ready -');
 
  if(is_strict_quiz){
    //get previous play count
@@ -85,28 +102,25 @@ var is_remember_pos =  is_strict_quiz &&  "{{quiz_remember_play_position}}"=="tr
    //get previous audio vol
    var prevaudiovol = getCookie(cookiename_audiovol);
    if(prevaudiovol!==null){
-     aplayer[0].volume = prevaudiovol;
-     $('#' + "{{AUTOID}}" + '_indicator').css("width",(aplayer[0].volume * $('.meter').width()));
+     setPlayerVolume(prevaudiovol);
    }
  }
 
 // Append Playtime text
-$('#' + "{{AUTOID}}" + '_playtime').empty();
- var remainingplays = playtimer.data('playtime');
-$('#' + "{{AUTOID}}" + '_playtime').append('{{#str}}remainingplays,filter_poodll{{/str}}: '+remainingplays +'x');
+playcount.empty();
+var remainingplays = playtimer.data('playtime');
+playcount.append('{{#str}}remainingplays,filter_poodll{{/str}}: '+remainingplays +'x');
 
 
 //volume buttons
-$('#' + "{{AUTOID}}" + '_vol-up').click(function(){
+volumeupbtn.click(function(){
     if(aplayer[0].volume +0.1 > 1){return;}
-	$('#' + "{{AUTOID}}" + '_indicator').css("width", '+=' + (0.1 * $('.meter').width()));
-	aplayer[0].volume+=0.1;
+    setPlayerVolume(aplayer[0].volume+0.1);
     setCookie(cookiename_audiovol, aplayer[0].volume, 1);
 });
-$('#' + "{{AUTOID}}" + '_vol-down').click(function(){
+volumedownbtn.click(function(){
     if(aplayer[0].volume - 0.1 < 0){return;}
-	$('#' + "{{AUTOID}}" + '_indicator').css("width", '-=' + (0.1 * $('.meter').width()));
-	aplayer[0].volume-=0.1;
+    setPlayerVolume(aplayer[0].volume-0.1);
     setCookie(cookiename_audiovol, aplayer[0].volume, 1);
 });
 
@@ -119,7 +133,7 @@ $('#' + "{{AUTOID}}" + '_vol-down').click(function(){
 
  //ended event
  aplayer[0].addEventListener('ended', function(){
-     $('#' + "{{AUTOID}}" + '_playtime').empty();
+     playcount.empty();
      var currentplaycount = playtimer.data('playtime');
        currentplaycount--;
       //if cookies are enabled set the play count in the cookie
@@ -138,12 +152,11 @@ $('#' + "{{AUTOID}}" + '_vol-down').click(function(){
 
 
      if(currentplaycount > 0){
-         $('#' + "{{AUTOID}}" + '_playtime').append('{{#str}}remainingplays,filter_poodll{{/str}}: '+currentplaycount+'x');
+         playcount.append('{{#str}}remainingplays,filter_poodll{{/str}}: '+currentplaycount+'x');
          $(fa).addClass('fa-play');
      }else{
         disableSubsequentPlays();
      }//end of if currentplaycount > 0
-
  });//end of ended listener
 
 //player clicked event
@@ -154,6 +167,40 @@ $('#' + "{{AUTOID}}").click(function(){
 		play_audio();
 });//end of click event
 
+
+
+   aplayer.bind('durationchange',function(){
+     if(is_remember_pos) {
+       var lastpos = get_last_pos();
+       var currentpos = aplayer[0].currentTime;
+       if (currentpos < lastpos && currentpos > 0) {
+         aplayer[0].pause();
+         aplayer[0].currentTime = lastpos;
+         aplayer[0].play();
+       }
+     }
+     thetime.text(poodll_mp_fetchtime(aplayer));
+   });
+
+   //The timer display
+   aplayer.on('timeupdate',function(e){
+     if(is_remember_pos) {
+       var currentseconds = poodll_mp_fetchseconds(aplayer);
+       if (currentseconds - lastseconds > position_update_interval) {
+         setCookie(cookiename_position, currentseconds, 1);
+         lastseconds = currentseconds;
+       }
+     }
+     var displaytime = poodll_mp_fetchtime(aplayer)
+     thetime.text(displaytime);
+   });
+
+//show current time
+ thetime.text(poodll_mp_fetchtime(aplayer));
+
+ //---------------------------------------------------------------
+// function declarations start here ------------------------------
+//---------------------------------------------------------------
  function disableSubsequentPlays(){
   $('#' + "{{AUTOID}}" + '_playtime').append('{{#str}}remainingplays,filter_poodll{{/str}}: 0');
   $(fa).addClass('fa-minus');
@@ -161,18 +208,11 @@ $('#' + "{{AUTOID}}").click(function(){
  }
 
  function setCookie(key, value, expiry) {
-   var expires = new Date();
-   expires.setTime(expires.getTime() + (expiry * 24 * 60 * 60 * 1000));
-   document.cookie = key + '=' + value + ';expires=' + expires.toUTCString() + '; SameSite=Lax';
+   localStorage.setItem(key, value);
  }
 
  function getCookie(key) {
-   var keyValue = document.cookie.match(`(?:(?:^|.*; *)${key} *= *([^;]*).*$)|^.*$`)[1]
-     if (keyValue){
-         return decodeURIComponent(keyValue);
-     } else{
-         return null;
-     }
+   return localStorage.getItem(key);
  }
 
 
@@ -180,7 +220,7 @@ function play_audio(){
      //if playing just continue
     if(!aplayer[0].paused){return;}
 
-    //change visible state to playing
+  //change visible state to playing
     thestate.text('- {{#str}}playing,filter_poodll{{/str}} -');
     $(fa).removeClass('fa-play');
     $(fa).addClass('fa-circle-o-notch');
@@ -194,41 +234,24 @@ function play_audio(){
             aplayer[0].currentTime = lastpos;
 
             //if we can not playthrough yet ..wait .. till we can canplaythrough
+          console.log('canplaythrough?: ');
             if(!canplaythrough) {
+              console.log('cantplaythrough: ');
                 aplayer[0].addEventListener('canplaythrough',
                         function(){
+                          console.log('nowcanplaythrough: ');
                             aplayer[0].play();
                         }
                 );
+              console.log('loadaudio: ');
                 aplayer[0].load();
                 return;
             }//end of if can play through
         } //end of if last pos
     }
+  console.log('callingplay: ');
 	aplayer[0].play();
 }
-
- function get_last_pos(){
-     var lastpos = getCookie(cookiename_position);
-     if(lastpos && lastpos > 0 && $.isNumeric(lastpos)){
-         return lastpos;
-     }
-     return 0;
- }
-
-
-aplayer.bind('durationchange',function(){
-    if(is_remember_pos) {
-        var lastpos = get_last_pos();
-        var currentpos = aplayer[0].currentTime;
-        if (currentpos < lastpos && currentpos > 0) {
-            aplayer[0].pause();
-            aplayer[0].currentTime = lastpos;
-            aplayer[0].play();
-        }
-    }
-    thetime.text(poodll_mp_fetchtime(aplayer));
- });
 
 
 //time display function
@@ -255,7 +278,6 @@ function poodll_mp_fetchtime(theplayer){
         }
      }
 
-
      var a_duration= isNaN(theplayer[0].duration) ? 0 : theplayer[0].duration;
      var currenttime = poodll_mp_sec2time(Math.floor(a_currenttime));
      var totaltime = poodll_mp_sec2time(Math.floor(a_duration)); 
@@ -263,22 +285,5 @@ function poodll_mp_fetchtime(theplayer){
     return displaytime;
 }
 
-//The timer display
-aplayer.on('timeupdate',function(e){
-    if(is_remember_pos) {
-        var currentseconds = poodll_mp_fetchseconds(aplayer);
-        if (currentseconds - lastseconds > position_update_interval) {
-            setCookie(cookiename_position, currentseconds, 1);
-            lastseconds = currentseconds;
-        }
-    }
- var displaytime = poodll_mp_fetchtime(aplayer)
- thetime.text(displaytime);
-});
-
-//show current time
- thetime.text(poodll_mp_fetchtime(aplayer));
-
- 
  });
 {{/js}}
