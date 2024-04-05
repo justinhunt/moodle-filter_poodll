@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.76 (Build 2024040501)
+ - Delayed adhoc task temp file download until after we have fetched placeholder file records
+
 Version 3.1.75 (Build 2024040500)
  - Fixed missing ad-hoc task duplicate detection
 

@@ -47,9 +47,21 @@ class adhoc_s3_move extends \core\task\adhoc_task {
 
         //get passed in data we need to perform conversion
         $cd = $this->get_custom_data();
-        $awsremote = new \filter_poodll\awsremote();
 
+        //fetch any file records, that currently hold the placeholder file
+        //usually just one, but occasionally there will be two (1 in draft, and 1 in perm)
+        //if there are none. The user may just not have saved yet
+        $placeholder_file_recs = \filter_poodll\poodlltools::fetch_placeholder_file_record($cd->mediatype, $cd->filename);
+        if (!$placeholder_file_recs) {
+            $giveup = false;
+            $message = 'could not find placeholder file:' . $cd->filename;
+            $this->handle_s3_error(self::LOG_PLACEHOLDER_NOT_FOUND, $message, $cd, $giveup, $trace);
+            return;
+        }
+
+        //fetch the file
         try {
+            $awsremote = new \filter_poodll\awsremote();
             $ret = $awsremote->fetch_s3_converted_file($cd->mediatype, $cd->infilename, $cd->outfilename, $cd->filename);
 
         } catch (\Exception $e) {
@@ -79,17 +91,7 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             $tempfilepath = $ret;
         }
 
-        //fetch any file records, that currently hold the placeholder file
-        //usually just one, but occasionally there will be two (1 in draft, and 1 in perm)
-        $placeholder_file_recs = \filter_poodll\poodlltools::fetch_placeholder_file_record($cd->mediatype, $cd->filename);
-        //do the replace, if it succeeds yay. If it fails ... try again. The user may just not have saved yet
-        if (!$placeholder_file_recs) {
-            $giveup = false;
-            $message = 'could not find placeholder file:' . $cd->filename;
-            $this->handle_s3_error(self::LOG_PLACEHOLDER_NOT_FOUND, $message, $cd, $giveup, $trace);
-            return;
-        }
-
+        //do the replace
         try {
             foreach ($placeholder_file_recs as $file_rec) {
                 \filter_poodll\poodlltools::replace_placeholderfile_in_moodle($cd->filerecord, $file_rec, $tempfilepath);
