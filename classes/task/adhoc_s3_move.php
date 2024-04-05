@@ -153,7 +153,8 @@ class adhoc_s3_move extends \core\task\adhoc_task {
         //if we do not set the next run time it can extend the current cron job indef with a recurring task
         $s3_task->set_next_run_time(time()+$delay);
         // queue it
-        \core\task\manager::queue_adhoc_task($s3_task);
+        $checkforduplicates=true;
+        \core\task\manager::queue_adhoc_task($s3_task,$checkforduplicates);
     }
 
     protected function do_forever_fail($reason, $trace) {

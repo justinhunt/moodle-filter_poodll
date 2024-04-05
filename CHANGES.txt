@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.75 (Build 2024040500)
+ - Fixed missing ad-hoc task duplicate detection
+
 Version 3.1.74 (Build 2024031100)
  - Added a recorder upload commenced event
  - Added feature to set default strict audio volume and remember state
