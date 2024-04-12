@@ -22,7 +22,7 @@ require_once($CFG->libdir . '/cronlib.php');
 
 /**
  *
- * This is a class for working with AWS
+ * This is a class for running adhoc tasks immediately (because sometimes cron is not on)
  *
  * @package   filter_poodll
  * @since      Moodle 2.7
@@ -191,7 +191,7 @@ class taskrunner {
             get_mailer('buffer');
             $thetask->execute();
             if ($DB->is_transaction_started()) {
-                throw new coding_exception("Poodll Task Runner: Task left transaction open");
+                throw new \coding_exception("Poodll Task Runner: Task left transaction open");
             }
             if (isset($predbqueries)) {
                 mtrace("... used " . ($DB->perf_get_queries() - $predbqueries) . " dbqueries");
@@ -199,7 +199,7 @@ class taskrunner {
             }
             mtrace("Poodll task runner Adhoc task complete: " . get_class($thetask));
             \core\task\manager::adhoc_task_complete($thetask);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if ($DB && $DB->is_transaction_started()) {
                 $DB->force_transaction_rollback();
             }
