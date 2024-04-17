@@ -31,7 +31,7 @@ define(['jquery'],
         /**
          * Add accordion function to jQuery. Initial header and panel setup.
          */
-        $.fn.accordion = function() {
+        $.fn.accordion = function(opts) {
             var headers = null;
             var panels = null;
             var active = null;
@@ -179,7 +179,7 @@ define(['jquery'],
                         "aria-expanded": "false"
                     });
                 } else if (toShow.length) {
-                    headers.attributeFilter(function() {
+                    headers.filter(function() {
                         return parseInt($(this).attr("tabIndex"), 10) === 0;
                     }).attr("tabIndex", -1);
                 }
@@ -201,15 +201,23 @@ define(['jquery'],
             var eventHandler = function(event) {
                 var clicked = $(event.currentTarget);
                 var clickedIsActive = clicked[0] === active[0];
-                var oldActive = active;
                 var toShowElement = clickedIsActive ? $() : clicked.next();
-                var toHideElement = active.next();
+                var oldActive = active;
+
                 var data = {
-                    oldHeader: oldActive,
-                    oldPanel: toHideElement,
                     newHeader: clickedIsActive ? $() : clicked,
-                    newPanel: toShowElement
+                    newPanel: toShowElement,
                 };
+
+                //if we have an old active header, prepare to toggle it closed
+                if(oldActive.length>0){
+                    data.oldHeader = oldActive;
+                    data.oldPanel = oldActive.next();
+                }else{
+                    //this just means toggles will silently fail (but not throw an error) if there is no active header
+                    data.oldHeader = oldActive;
+                    data.oldPanel = oldActive
+                }
 
                 event.preventDefault();
 
@@ -224,8 +232,11 @@ define(['jquery'],
                 toggle(data);
 
                 // Switch CSS classes.
-                oldActive.removeClass(['ui-accordion-header-active', 'ui-state-active']);
-                oldActive.children('.ui-accordion-header-icon').removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
+                //De activate old active header
+                if(oldActive.length>0) {
+                    oldActive.removeClass(['ui-accordion-header-active', 'ui-state-active']);
+                    oldActive.children('.ui-accordion-header-icon').removeClass('ui-icon-triangle-1-s').addClass('ui-icon-triangle-1-e');
+                }
                 if (!clickedIsActive) {
                     clicked.removeClass('ui-accordion-header-collapsed').addClass(['ui-accordion-header-active', 'ui-state-active']);
                     clicked.children('.ui-accordion-header-icon').removeClass('ui-icon-triangle-1-e').addClass('ui-icon-triangle-1-s');
@@ -247,10 +258,12 @@ define(['jquery'],
             var refresh = function() {
                 // Find active header, show content.
                 active = findActive(activeIndex);
-                active.addClass(['ui-accordion-header-active', 'ui-state-active']);
-                active.removeClass('ui-accordion-header-collapsed');
-                active.next().addClass('ui-accordion-content-active');
-                active.next().show();
+                if(active.length > 0) {
+                    active.addClass(['ui-accordion-header-active', 'ui-state-active']);
+                    active.removeClass('ui-accordion-header-collapsed');
+                    active.next().addClass('ui-accordion-content-active');
+                    active.next().show();
+                }
 
                 headers.attr("role", "tab")
                     .each(function() {
@@ -307,6 +320,12 @@ define(['jquery'],
                 $(elem).addClass(['ui-accordion-content', 'ui-helper-reset', 'ui-widget-content']);
             });
 
+            //set the active index
+            if($.isNumeric(opts.active)) {
+                activeIndex =  parseInt(opts.active);
+            }else{
+                activeIndex = 99999;//this is just a random number to indicate no active index
+            }
             refresh();
         };
     }

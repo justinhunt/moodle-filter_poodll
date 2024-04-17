@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.77 (Build 202404xxxx)
+ - Fixed accordian active param so active accordian item can be set, or all closed
+
 Version 3.1.76 (Build 2024040501)
  - Delayed adhoc task temp file download until after we have fetched placeholder file records
 
