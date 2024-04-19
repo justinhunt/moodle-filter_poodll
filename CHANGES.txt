@@ -1,6 +1,6 @@
 Change List
 =========
-Version 3.1.77 (Build 202404xxxx)
+Version 3.1.77 (Build 2024041900)
  - Fixed accordian active param so active accordian item can be set, or all closed
 
 Version 3.1.76 (Build 2024040501)
