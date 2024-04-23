@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.78 (Build 2024042300)
+ -  Added logging to taskrunner, and created a 3 minute window before trashing ad hoc tasks that fail. To give task runner a chance at them.
+
 Version 3.1.77 (Build 2024041900)
  - Fixed accordian active param so active accordian item can be set, or all closed
 
