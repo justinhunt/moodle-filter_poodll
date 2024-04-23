@@ -183,7 +183,10 @@ class taskrunner {
             $starttime = microtime();
 
             //turn on logging
-            \core\task\logmanager::start_logging($thetask);
+            //if Moodle 37 and above
+            if($CFG->version>=2019052000) {
+                \core\task\logmanager::start_logging($thetask);
+            }
 
             // Start output log
             $timenow = time();
