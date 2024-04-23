@@ -18,7 +18,10 @@ namespace filter_poodll;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->libdir . '/cronlib.php');
+//pre Moodle 4.2 incl cronlib
+if($CFG->version<2023042400) {
+    require_once($CFG->libdir . '/cronlib.php');
+}
 
 /**
  *
