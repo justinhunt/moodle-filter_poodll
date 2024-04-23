@@ -179,11 +179,19 @@ class taskrunner {
             \core_php_time_limit::raise();
             $starttime = microtime();
 
+            //turn on logging
+            \core\task\logmanager::start_logging($thetask);
+
             // Start output log
             $timenow = time();
             mtrace("Server Time: " . date('r', $timenow) . "\n\n");
             mtrace("Poodll task runner Execute adhoc task: " . get_class($thetask));
-            cron_trace_time_and_memory();
+            //pre-moodle 4.2 we use cron_trace_time_and_memory
+            if($CFG->version<2023042400) {
+                cron_trace_time_and_memory();
+            }else{
+                \core\cron::trace_time_and_memory();
+            }
             $predbqueries = null;
             $predbqueries = $DB->perf_get_queries();
             $pretime = microtime(1);

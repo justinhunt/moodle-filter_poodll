@@ -65,9 +65,11 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             $ret = $awsremote->fetch_s3_converted_file($cd->mediatype, $cd->infilename, $cd->outfilename, $cd->filename);
 
         } catch (\Exception $e) {
-            //we ought to give up here. We used to try again. But if we get unrecoverable error here we will download
-            //multiple times until task expiry. This causes S3 blowout. So changing to giveup=true 20200603
-            $giveup = true;
+            //we want to give up here, because if we retry until task expiry (6 hours). We could download the file 200 times
+            //but under cases where task runner might succeed where cron fails, its worth keeping it around for a few mins
+            $task_age = $this->get_task_age($cd);
+            $giveup=false;
+            if($task_age > MINSECS * 3){$giveup = true;}
             $message = 'could not fetch:' . $cd->filename . ':' . $e->getMessage();
             $this->handle_s3_error(self::LOG_FETCH_FILE_FAIL, $message, $cd, $giveup, $trace);
             return;
@@ -115,10 +117,8 @@ class adhoc_s3_move extends \core\task\adhoc_task {
 
         //we do not retry indefinitely
         //if we are well beyond the timestamp then we just cancel out of here.
-        $nowdatetime = new \DateTime();
-        $savedatetime = new \DateTime($cd->isodate);
-        $diffInSeconds = $nowdatetime->getTimestamp() - $savedatetime->getTimestamp();
-        if ($diffInSeconds > (60 * 60 * 6) || $giveup) {
+        $taskAge= $this->get_task_age($cd);
+        if ($taskAge > (HOURSECS * 6) || $giveup) {
             //we do not retry after 6 hours, we just report an error and return quietly
             $errorstring .= ' :will not retry';
             $trace->output('s3file:' . $errorstring);
@@ -130,8 +130,8 @@ class adhoc_s3_move extends \core\task\adhoc_task {
             //forever fail this task
             $this->do_forever_fail($errorstring, $trace);
 
-            //if its greater than 5 mins we do a delayed retry thing
-        } else if ($diffInSeconds > (MINSECS * 5)) {
+            //if it's greater than 5 mins we do a delayed retry thing
+        } else if ($taskAge > (MINSECS * 5)) {
             $this->do_retry($errorstring, $trace, $cd,(MINSECS * 5));
 
         } else {
@@ -146,6 +146,13 @@ class adhoc_s3_move extends \core\task\adhoc_task {
 
         }//end of if/else
     }//end of function handle_S3_error
+
+    private function get_task_age($customdata){
+        $nowdatetime = new \DateTime();
+        $savedatetime = new \DateTime($customdata->isodate);
+        $diffInSeconds = $nowdatetime->getTimestamp() - $savedatetime->getTimestamp();
+        return $diffInSeconds;
+    }
 
     protected function do_retry($reason, $trace, $customdata, $delay) {
         $trace->output($reason . ": will try again next cron after $delay seconds");
