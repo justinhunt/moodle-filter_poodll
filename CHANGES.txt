@@ -1,8 +1,11 @@
 Change List
 =========
+Version 3.1.80
+- Tweaks to External API calls
+
 Version 3.1.79 (Build 2024042301)
  - Removed check-for-duplicates in adhoc_s3_move task, as it was not working as intended, and causing files to not be retrieved
- 
+
 Version 3.1.78 (Build 2024042300)
  -  Added logging to taskrunner, and created a 3 minute window before trashing ad hoc tasks that fail. To give task runner a chance at them.
 
