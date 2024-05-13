@@ -8,14 +8,14 @@
 
 global $CFG;
 require_once($CFG->libdir . '/externallib.php');
+use core_external\external_api;
+use core_external\external_function_parameters;
+use core_external\external_value;
 
 use filter_poodll\poodlltools;
 use filter_poodll\constants;
 use filter_poodll\diff;
 
-use external_api;
-use external_function_parameters;
-use external_value;
 /**
  * External class.
  *
@@ -51,7 +51,7 @@ class filter_poodll_external extends external_api {
                 array('transcript' => new external_value(PARAM_TEXT, 'The spoken phrase'),
                         'passage' => new external_value(PARAM_TEXT, 'The correct phrase'),
                         'language' => new external_value(PARAM_TEXT, 'The language eg en-US'),
-                        'alternatives' => new external_value(PARAM_TEXT, 'list of alternatives',false,'')
+                        'alternatives' => new external_value(PARAM_TEXT, 'list of alternatives',VALUE_DEFAULT,'')
                 )
         );
     }
