@@ -4727,35 +4727,13 @@ audio.poodll_preview_bmr {
     width: 50px;
     height: 42px;
 }
-.poodll_multiplayer .custom-pause:before {
 
-    content: "\f04b";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-
-
-}
 .poodll_multiplayer .vol-but {
     width: 25px;
     float: right;
     padding: 0px;
 }
-.poodll_multiplayer .volume-control .vol-up:before {
-    content: "\f028";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-}
-.poodll_multiplayer .volume-control .vol-down:before {
-    content: "\f027";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-}
+
 .poodll_multiplayer .meter {
     width: 130px;
     height: 15px;
@@ -5039,34 +5017,13 @@ video.poodll_multivideoplayer_video {
     width: 50px;
     height: 42px;
 }
-.poodll_multivideoplayer .custom-pause:before{
-    content: "\f04b";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
 
-
-}
 .poodll_multivideoplayer .vol-but{
     width: 25px;
     float: right;
     padding: 0px;
 }
-.poodll_multivideoplayer .volume-control .vol-up:before{
-    content: "\f028";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-}
-.poodll_multivideoplayer .volume-control .vol-down:before{
-    content: "\f027";
-    font-family: FontAwesome;
-    font-style: normal;
-    font-weight: normal;
-    text-decoration: inherit;
-}
+
 .poodll_multivideoplayer .meter{
     width: 80px;
     height: 15px;
