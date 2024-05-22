@@ -14,11 +14,13 @@
             <div id='{{AUTOID}}_playtime' class="poodll_multivideoplayer_playtime"></div>
         </div>
         <div class="volume-control">
-            <button type="button" id="{{AUTOID}}_vol-up" class="vol-up vol-but"></button>
+            <button type="button" id="{{AUTOID}}_vol-up" class="vol-up vol-but">
+                <i class="fa fa-volume-up fa-1x" aria-hidden="true"></i></button>
             <div class="meter">
                 <div id="{{AUTOID}}_indicator" class="indicator"></div>
             </div>
-            <button type="button" id="{{AUTOID}}_vol-down" class="vol-down vol-but"></button>
+            <button type="button" id="{{AUTOID}}_vol-down" class="vol-down vol-but">
+                <i class="fa fa-volume-down fa-1x" aria-hidden="true"></i></button>
         </div>
     </div><!-- end of controlbar -->
 </figure>
@@ -41,7 +43,7 @@ $('#' + "{{AUTOID}}" + '_player').attr('src',details.mediaurl);
 
 //get our player
 var aplayer = $('#' + "{{AUTOID}}" + '_player');
-var fa = $('#' + "{{AUTOID}}" + ' .fa');
+var fa = $('#' + "{{AUTOID}}_playbutton" + ' .fa');
 var thestate =$('#' + "{{AUTOID}}" + '_state'); 
 var thetime = $('#' + "{{AUTOID}}" + '_time');
 var playtimer = $('#' + "{{AUTOID}}");
@@ -133,7 +135,7 @@ $('#' + "{{AUTOID}}" + '_vol-down').click(function(){
  });//end of ended listener
 
 //player clicked event
-$('#' + "{{AUTOID}}").click(function(){
+$('#' + "{{AUTOID}}_playbutton").click(function(){
         var playtimer = $('#' + "{{AUTOID}}");
         var currentplaycount = playtimer.data('playtime');
         if(currentplaycount==0){return;}
