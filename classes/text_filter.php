@@ -31,7 +31,13 @@ namespace filter_poodll;
  * __________________________________________________________________________
  */
 
-class text_filter extends \core_filters\text_filter {
+ if (class_exists('\core_filters\text_filter')) {
+    class_alias('\core_filters\text_filter', 'poodll_base_text_filter');
+} else {
+    class_alias('\moodle_text_filter', 'poodll_base_text_filter');
+}
+
+class text_filter extends \poodll_base_text_filter {
 
     protected $adminconfig = null;
     protected $courseconfig = null;
