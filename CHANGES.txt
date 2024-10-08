@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.82 (Build 2024100701)
+- PHP 8.2 8.3 fix
+
 Version 3.1.81 (Build 2024100700)
 - Moodle 4.5 support
 
