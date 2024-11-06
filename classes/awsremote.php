@@ -32,6 +32,8 @@ class awsremote {
 
     protected $convfolder = 'transcoded/';
 
+    public $region = false;
+
 
     const REGION_APS1 = 'ap-south-1'; //Asia Pacific (Mumbai)
     const REGION_APN2 = 'ap-northeast-2'; //Asia Pacific (Seoul)
