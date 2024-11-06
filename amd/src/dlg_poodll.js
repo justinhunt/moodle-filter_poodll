@@ -42,7 +42,7 @@ define(['jquery', 'core/log'], function ($,  log) {
             log.debug('hio');
         },
         fetch_dialogue_box: function (dialogtype) {
-            var ret = '<div class="poodll_dialogue_box poodll_dialogue_box_' + dialogtype + ' hide"><div class="poodll_close_modal">';
+            var ret = '<div class="poodll_dialogue_box poodll_dialogue_box_' + dialogtype + ' hide"><div class="poodll_close_modal" aria-label="close dialog" tabindex="0">';
             ret += '<i class="fa fa-window-close" aria-hidden="true"></div></i>';
             ret += '<div class="poodll_dialogue_content"><strong>' + this.headertext + '</strong></div>';
             ret += '<div class="will_be_cleared"></div></div>';

@@ -864,7 +864,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         fetch_strings: function () {
             var ss = [];
-            var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save', 'restart', 'testmic', 'upload', 'recordagain', 'readytorecord', 'downloadfile'];
+            var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save', 'restart', 'testmic',
+                 'upload', 'recordagain', 'readytorecord', 'downloadfile','takesnapshot','cancelsnapshot','pushtospeak',
+                 'settings','audiodevice','videodevice','soundtest','soundtesting','resume'];
             $.each(keys, function (index, key) {
                 ss['recui_' + key] = M.util.get_string('recui_' + key, 'filter_poodll');
                 //log.debug(key + ':' + ss['recui_' + key]);
@@ -874,6 +876,5 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             });
             return ss;
         }
-
     };// end of returned object
 });// total end

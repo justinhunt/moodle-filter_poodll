@@ -127,6 +127,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.savebutton.show();
                     self.enable_button(ip.controlbar.stoprecbutton);
                     ip.controlbar.stoprecbutton.show();
+                    self.focus_button(ip.controlbar.stoprecbutton);
                     ip.controlbar.startbutton.hide();
                     self.disable_button(ip.controlbar.settingsicon);
 
@@ -137,6 +138,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.playbutton.hide();
                     self.enable_button(ip.controlbar.stopbutton);
                     ip.controlbar.stopbutton.show();
+                    self.focus_button(ip.controlbar.stopbutton);
                     self.disable_button(ip.controlbar.startbutton);
                     ip.controlbar.startbutton.show();
                     self.disable_button(ip.controlbar.resumebutton);
@@ -167,6 +169,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
 
                     self.enable_button(ip.controlbar.startbutton);
                     ip.controlbar.startbutton.show();
+                    self.focus_button(ip.controlbar.startbutton);
                     self.enable_button(ip.controlbar.playbutton);
                     ip.controlbar.playbutton.show();
                     self.disable_button(ip.controlbar.savebutton);
@@ -205,6 +208,7 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                     ip.controlbar.playbutton.show();
                     ip.controlbar.startbutton.show();
                     self.enable_button(ip.controlbar.playbutton);
+                    self.focus_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.stopbutton);
                     self.enable_button(ip.controlbar.settingsicon);
                     break;
@@ -263,14 +267,14 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
                 controls += '<div class="hp_slide" id="slide_' + controlbarid + '">';
             controls += '<div class="hp_timer"></div><canvas class="hp_range"></canvas></div>';
             controls += preview,
-                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_start-recording_screen"><i class="fa fa-desktop" aria-hidden="true"></i></button> ';
-            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_stop-recording_screen pmr_disabled" style="display: none;" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
-            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_pause-recording_screen pmr_disabled" style="display: none;" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
-            controls += ' <button type="button" class="poodll_mediarecorder_button_screen poodll_resume-recording_screen pmr_disabled" style="display: none;" disabled><i class="fa fa-microphone" aria-hidden="true"></i></button>';
-            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_play-recording_screen pmr_disabled" disabled><i class="fa fa-play" aria-hidden="true"></i></button> ';
-            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_stop-playing_screen pmr_disabled" style="display: none;" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
-            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_save-recording_screen pmr_disabled" disabled><i class="fa fa-upload" aria-hidden="true"></i></button>';
+                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" aria-label="' + ss['recui_settings'] + '"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_start-recording_screen" aria-label="' + ss['recui_record'] + '"  tabindex="0"><i class="fa fa-desktop" aria-hidden="true"></i></button> ';
+            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_stop-recording_screen pmr_disabled" aria-label="' + ss['recui_stop'] + '"  tabindex="0" style="display: none;" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
+            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_pause-recording_screen pmr_disabled" aria-label="' + ss['recui_pause'] + '"  tabindex="0" style="display: none;" disabled><i class="fa fa-pause" aria-hidden="true"></i></button>';
+            controls += ' <button type="button" class="poodll_mediarecorder_button_screen poodll_resume-recording_screen pmr_disabled" aria-label="' + ss['recui_resume'] + '"  tabindex="0" style="display: none;" disabled><i class="fa fa-microphone" aria-hidden="true"></i></button>';
+            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_play-recording_screen pmr_disabled" aria-label="' + ss['recui_play'] + '"  tabindex="0" disabled><i class="fa fa-play" aria-hidden="true"></i></button> ';
+            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_stop-playing_screen pmr_disabled"  aria-label="' + ss['recui_stop'] + '"  tabindex="0" style="display: none;" disabled><i class="fa fa-stop" aria-hidden="true"></i></button>';
+            controls += '<button type="button" class="poodll_mediarecorder_button_screen poodll_save-recording_screen pmr_disabled" aria-label="' + ss['recui_upload'] + '"  tabindex="0" disabled><i class="fa fa-upload" aria-hidden="true"></i></button>';
             controls += '<div style="clear:both;">';
             controls += '<div class="task-helper">';
             controls += '<p class="step-1">' + ss['recui_record'] + '</p>';
@@ -415,7 +419,9 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
 
         }, //end of register_control_bar_events_screen
 
-
+        focus_button: function (button) {
+            $(button).focus();
+        },
         enable_button: function (button) {
             $(button).attr('disabled', false);
             $(button).removeClass('pmr_disabled');
@@ -428,4 +434,3 @@ define(['jquery',  'core/log', 'filter_poodll/utils_amd', 'filter_poodll/anim_pr
     };//end of returned object
 
 });//total end
-

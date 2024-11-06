@@ -130,6 +130,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                         self.disable_button(ip.controlbar.playbutton);
                         ip.controlbar.resumebutton.hide();
                         self.enable_button(ip.controlbar.stopbutton);
+                        self.focus_button(ip.controlbar.stopbutton);
                         self.disable_button(ip.controlbar.savebutton);
                         ip.controlbar.pausebutton.show();
                         self.enable_button(ip.controlbar.pausebutton);
@@ -145,6 +146,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     case 'playingmode':
                         self.disable_button(ip.controlbar.playbutton);
                         self.enable_button(ip.controlbar.stopbutton);
+                        self.focus_button(ip.controlbar.stopbutton);
                         self.disable_button(ip.controlbar.startbutton);
                         self.disable_button(ip.controlbar.savebutton);
                         ip.controlbar.progresscanvas.show();
@@ -152,6 +154,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
 
                     case 'previewmode':
                         self.enable_button(ip.controlbar.playbutton);
+                        self.focus_button(ip.controlbar.playbutton);
                         self.disable_button(ip.controlbar.pausebutton);
                         self.disable_button(ip.controlbar.stopbutton);
                         if (!self.uploaded) {
@@ -170,6 +173,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
 
                     case 'pausedmode':
                         self.enable_button(ip.controlbar.resumebutton);
+                        self.focus_button(ip.controlbar.resumebutton);
                         self.enable_button(ip.controlbar.savebutton);
                         ip.controlbar.preview.removeClass('poodll_recording');
                         ip.controlbar.status.removeClass('poodll_recording');
@@ -232,13 +236,13 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                 controls += '<canvas class="hp_range"></canvas>';
                 controls += '</div>';
                 controls += preview,
-                    controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_start-recording_standard">' + ss['recui_record'] + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_stop-recording_standard pmr_disabled" disabled>' + ss['recui_stop'] + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_pause-recording_standard pmr_disabled" disabled>' + ss['recui_pause'] + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard pmr_disabled" style="display: none;" disabled>' + ss['recui_continue'] + '</button>';
-                controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_play-recording_standard pmr_disabled" disabled>' + ss['recui_play'] + '</button>';
-                controls += '<button type="button" class="poodll_save-recording_standard pmr_disabled" style="display: ' + hideshowupload + ';" disabled>' + ss['recui_save'] + '</button>';
+                    controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" aria-label="' + ss['recui_settings'] + '"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_start-recording_standard" aria-label="' + ss['recui_record'] + '"  tabindex="0">' + ss['recui_record'] + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_stop-recording_standard pmr_disabled" aria-label="' + ss['recui_stop'] + '"  tabindex="0" disabled>' + ss['recui_stop'] + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_standard poodll_pause-recording_standard pmr_disabled" aria-label="' + ss['recui_pause'] + '"  tabindex="0" disabled>' + ss['recui_pause'] + '</button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_resume-recording_standard pmr_disabled" aria-label="' + ss['recui_resume'] + '"  tabindex="0" style="display: none;" disabled>' + ss['recui_continue'] + '</button>';
+                controls += ' <button type="button" class="poodll_mediarecorder_button_standard poodll_play-recording_standard pmr_disabled" aria-label="' + ss['recui_play'] + '"  tabindex="0" disabled>' + ss['recui_play'] + '</button>';
+                controls += '<button type="button" class="poodll_save-recording_standard pmr_disabled" aria-label="' + ss['recui_upload'] + '"  tabindex="0" style="display: ' + hideshowupload + ';" disabled>' + ss['recui_save'] + '</button>';
                 controls += '</div>';
                 controls += '</div>';
                 controls += '</div>';
@@ -408,7 +412,10 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
             disable_button: function (button) {
                 $(button).attr('disabled', true);
                 $(button).addClass('pmr_disabled');
-            }
+            },
+            focus_button: function (button) {
+                $(button).focus();
+            },
 
         };//end of returned object
     });//total end

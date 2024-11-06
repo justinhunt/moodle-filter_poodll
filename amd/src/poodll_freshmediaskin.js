@@ -150,6 +150,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     ip.controlbar.statusText.text('Recording..');
                     self.enable_button(ip.controlbar.startbutton);
                     self.show_element(ip.controlbar.startbutton);
+                    self.focus_button(ip.controlbar.startbutton);
 
                     self.hide_element(ip.controlbar.bmr_progresscanvas);
 
@@ -193,6 +194,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     self.disable_button(ip.controlbar.stoprecbutton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.enable_button(ip.controlbar.playbutton);
+                    self.focus_button(ip.controlbar.playbutton);
                     self.disable_button(ip.controlbar.pausebutton);
                     self.enable_button(ip.controlbar.settingsicon);
 
@@ -246,6 +248,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
 
                     self.enable_button(ip.controlbar.stoprecbutton);
                     self.enable_button(ip.controlbar.pausebutton);
+                    self.focus_button(ip.controlbar.stoprecbutton);
                     self.disable_button(ip.controlbar.startbutton);
                     self.disable_button(ip.controlbar.resumebutton);
 
@@ -280,6 +283,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                     //self.hide_element(ip.controlbar.startbutton);
                     self.show_element(ip.controlbar.resumebutton);
                     self.enable_button(ip.controlbar.resumebutton);
+                    self.focus_button(ip.controlbar.resumebutton);
                     self.enable_button(ip.controlbar.savebutton);
                     //self.enable_button(ip.controlbar.playbutton);
                     self.enable_button(ip.controlbar.settingsicon);
@@ -365,15 +369,15 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                 '</div>' +
                 '<div class="poodll_fresh_control">' +
                 '<div class="poodll_fresh_txt_control">' + ss['recui_readytorecord'] + '</div>' +
-                '<div class="poodll_fresh_settings_btn settingsicon" data-toggle="modal" data-target="#myModal id="settingsicon_' + controlbarid + '"></div>' +
-                '<div class="poodll_start-recording_fresh poodll_fresh_main_btn"></div>' +
-                '<div class="poodll_stop-playing-recording_fresh" style="display: none;"></div>' +
-                '<div class="poodll_pause-recording_fresh poodll_fresh_pause_btn bmr_disabled"></div>' +
-                '<div class="poodll_play-recording_fresh poodll_fresh_play_btn bmr_disabled"></div>' +
+                '<div class="poodll_fresh_settings_btn settingsicon" data-toggle="modal" data-target="#myModal" aria-label="' + ss['recui_settings'] + '" tabindex="0" id="settingsicon_' + controlbarid + '"></div>' +
+                '<div class="poodll_start-recording_fresh poodll_fresh_main_btn" aria-label="' + ss['recui_record'] + '"  tabindex="0"></div>' +
+                '<div class="poodll_stop-playing-recording_fresh" aria-label="' + ss['recui_stop'] + '"  tabindex="0" style="display: none;"></div>' +
+                '<div class="poodll_pause-recording_fresh poodll_fresh_pause_btn bmr_disabled" aria-label="' + ss['recui_pause'] + '"  tabindex="0"></div>' +
+                '<div class="poodll_play-recording_fresh poodll_fresh_play_btn bmr_disabled" aria-label="' + ss['recui_play'] + '"  tabindex="0"></div>' +
                 '</div>' +
                 '<div class="poodll_fresh_bottom_btns">' +
-                '<a class="poodll_save-recording_fresh poodll_fresh_upload_btn bmr_disabled" href="#">' + ss['recui_upload'] + '</a>' +
-                '<a class="poodll_fresh_record_btn bmr_disabled" href="#">' + ss['recui_recordagain'] + '</a>' +
+                '<a class="poodll_save-recording_fresh poodll_fresh_upload_btn bmr_disabled" aria-label="' + ss['recui_upload'] + '"  tabindex="0" href="#">' + ss['recui_upload'] + '</a>' +
+                '<a class="poodll_fresh_record_btn bmr_disabled" aria-label="' + ss['recui_recordagain'] + '"  tabindex="0" href="#">' + ss['recui_recordagain'] + '</a>' +
                 '</div>';
 
             controls += preview;
@@ -675,6 +679,17 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
                 }
             };
 
+            // Add keydown event listeners to the div elements
+            var buttons=[ip.controlbar.startbutton, ip.controlbar.stoprecbutton, ip.controlbar.pausebutton, ip.controlbar.resumebutton, ip.controlbar.playbutton, ip.controlbar.savebutton, ip.controlbar.recordAgain, ip.controlbar.settingsicon];
+            buttons.forEach(function($button) {
+                $button.on('keydown', function(event) {
+                    if (event.key === ' ' || event.key === 'Enter') {
+                        event.preventDefault(); // Prevent default behavior for space key
+                        $(this).click(); // Trigger click event
+                    }
+                });
+            });
+
         }, //end of register_control_bar_events_bmr
 
         show_element: function (element) {
@@ -690,6 +705,9 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/dlg_devic
         disable_button: function (button) {
             $(button).attr('disabled', true);
             $(button).addClass('bmr_disabled');
+        },
+        focus_button: function (button) {
+            $(button).focus();
         },
 
     };//end of returned object

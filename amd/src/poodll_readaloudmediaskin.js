@@ -127,8 +127,10 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                         if(ip.config.juststart == "1"){
                             self.disable_button(ip.controlbar.testbutton);
                             self.enable_button(ip.controlbar.startbutton);
+                            self.focus_button(ip.controlbar.startbutton);
                         }else{
                             self.enable_button(ip.controlbar.testbutton);
+                            self.focus_button(ip.controlbar.testbutton);
                             self.disable_button(ip.controlbar.startbutton);
                         }
                         self.disable_button(ip.controlbar.placeholderbutton);
@@ -155,6 +157,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
 
                         ip.controlbar.status.hide();
                         self.enable_button(ip.controlbar.startbutton);
+                        self.focus_button(ip.controlbar.startbutton);
                         self.disable_button(ip.controlbar.testbutton);
                         self.disable_button(ip.controlbar.placeholderbutton);
                         self.disable_button(ip.controlbar.stopbutton);
@@ -229,13 +232,13 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 controls += ip.errordialog.fetch_dialogue_box();
                 controls += '<div class="style-holder ' + skin_style + '">';
                 controls += preview;
-                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" aria-label="' + ss['recui_settings'] + '"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls += '<canvas id="' + controlbarid + '_playcanvas" width="180" height="50"></canvas>';
                 controls += status;
-                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_start-recording_readaloud">' + ss_startlabel + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_test-recording_readaloud">' + ss_testlabel + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_testing-placeholder_readaloud" style="background-color: #CCCCCC;">' + ss_testlabel  + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_stop-recording_readaloud">' + ss_stoplabel + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_start-recording_readaloud" aria-label="' + ss['recui_record'] + '"  tabindex="0">' + ss_startlabel + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_test-recording_readaloud" aria-label="' + ss['recui_soundtest'] + '"  tabindex="0">' + ss_testlabel + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_testing-placeholder_readaloud" aria-label="' + ss['recui_soundtesting'] + '"  tabindex="0" style="background-color: #CCCCCC;">' + ss_testlabel  + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_readaloud poodll_stop-recording_readaloud" aria-label="' + ss['recui_stop'] + '"  tabindex="0">' + ss_stoplabel + '</button>';
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
                 //<i class="fa fa-stop" aria-hidden="true"></i>
@@ -367,7 +370,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 };
             }, //end of register_control_bar_events_readaloud
 
-
+            focus_button: function (button) {
+                $(button).focus();
+            },
             enable_button: function (button) {
                 $(button).attr('disabled', false);
                 $(button).removeClass('pmr_disabled');

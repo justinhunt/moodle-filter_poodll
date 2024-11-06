@@ -242,16 +242,11 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 controls += ip.errordialog.fetch_dialogue_box();
                 controls += '<div class="style-holder ' + skin_style + '">';
                 controls += preview,
-                    controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+                    controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" aria-label="' + ss['recui_settings'] + '"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls += '<canvas id="' + controlbarid + '_playcanvas" class="poodll_mediarecorder_playcanvas_readseed" width="180" height="50"></canvas>';
                 controls += '<span id="' + controlbarid + '_caption" class="poodll_mediarecorder_caption_readseed"></span>';
                 controls += '<span id="' + controlbarid + '_bogusstartbutton" class="poodll_mediarecorder_bogusstartbutton_readseed"></span>';
                 controls += '<span id="' + controlbarid + '_bogusstopbutton" class="poodll_mediarecorder_bogusstopbutton_readseed"></span>';
-                /*
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_readseed poodll_start-recording_readseed">' + ss_startlabel + '</button>';
-                controls +=  '<button type="button" class="poodll_mediarecorder_button_readseed poodll_test-recording_readseed">' + ss_testlabel +  '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_readseed poodll_stop-recording_readseed">' +  ss_stoplabel +  '</button>';
-                */
                 controls += status;
                 controls += '</div></div></div>';
                 $(element).prepend(controls);
@@ -452,7 +447,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_r
                 //set visuals
                 self.set_visual_mode('uploading', controlbarid);
             },
-
+            focus_button: function (button) {
+                $(button).focus();
+            },
             enable_button: function (button) {
                 $(button).attr('disabled', false);
                 $(button).removeClass('pmr_disabled');

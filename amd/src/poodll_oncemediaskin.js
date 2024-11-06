@@ -152,6 +152,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
                     case 'recordingmode':
                         //when testing(timer off) we do not want the stop button. Just really recording and allowearlyexit
                         self.enable_button(ip.controlbar.stopbutton);
+                        self.focus_button(ip.controlbar.stopbutton);
                         self.disable_button(ip.controlbar.startbutton);
                         self.disable_button(ip.controlbar.settingsicon);
 
@@ -210,6 +211,7 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
                 var ss = this.pmr.fetch_strings();
                 var ss_startlabel = ss['recui_record'];
                 var ss_stoplabel = ss['recui_stop'];
+                var ss_settingslabel = ss['recui_settings'];
 
                 var status = this.fetch_status_bar('once');
                 var controls = '<div class="poodll_mediarecorderholder_once '
@@ -221,11 +223,11 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
                 controls += ip.errordialog.fetch_dialogue_box();
                 controls += '<div class="style-holder ' + skin_style + '">';
                 controls += preview;
-                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn-poodllsettings" data-toggle="modal" data-target="#myModal"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
+                controls += '<div class="settingsicon" id="settingsicon_' + controlbarid + '"><button type="button" class="btn-poodllsettings" data-toggle="modal" data-target="#myModal" aria-label="' + ss_settingslabel + '"><i class="fa fa-cogs" aria-hidden="true"></i></button></div>';
                 controls += '<canvas id="' + controlbarid + '_playcanvas" width="250" height="50" class="poodll_mediarecorder_playcanvas_once"></canvas>';
                 controls += status;
-                controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_start-recording_once">' + ss_startlabel + '</button>';
-                controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_stop-recording_once">' + ss_stoplabel + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_start-recording_once" aria-label="' + ss_startlabel + '"  tabindex="0">' + ss_startlabel + '</button>';
+                controls += '<button type="button" class="poodll_mediarecorder_button_once poodll_stop-recording_once" aria-label="' + ss_stoplabel + '"  tabindex="0">' + ss_stoplabel + '</button>';
                 if (mediatype == 'audio') {
                     controls += '<canvas id="' + controlbarid + '_uploadcanvas" width="250" height="50" class="poodll_mediarecorder_uploadcanvas_once"></canvas>';
                 } else {
@@ -348,6 +350,9 @@ define(['jquery','core/log', 'filter_poodll/utils_amd', 'filter_poodll/upskin_ra
             disable_button: function (button) {
                 $(button).attr('disabled', true);
                 $(button).addClass('pmr_disabled');
+            },
+            focus_button: function (button) {
+                $(button).focus();
             },
 
         };//end of returned object

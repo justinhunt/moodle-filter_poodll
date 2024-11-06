@@ -1,9 +1,25 @@
-<?PHP // $Id: filter_poodll.php ,v 1.3 2012/05/16 12:47:13 Justin Hunt Exp $ 
+<?PHP
+// This file is part of Moodle - https://moodle.org/
+//
+// Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Moodle.  If not, see <https://www.gnu.org/licenses/>.
+// $Id: filter_poodll.php ,v 1.3 2012/05/16 12:47:13 Justin Hunt Exp $
 // PoodLl Filter
+
 $string['filtername'] = 'Poodll Filter';
-//officially its not needed, but "new version available" email doesn't know to look for filtername
+// officially its not needed, but "new version available" email doesn't know to look for filtername
 $string['pluginname'] = 'Poodll Filter';
-//privacy details
+// privacy details
 $string['privacy:metadata'] = 'The Poodll filter plugin does not store any personal data.';
 $string['poodll:comparetext'] = 'Allow text comparison via API.';
 
@@ -14,7 +30,7 @@ $string['generalsettings'] = 'General Settings';
 $string['legacysettings'] = 'Legacy Settings';
 $string['advancedsettings'] = 'Advanced Settings';
 
-//headings
+// headings
 $string['filter_poodll_network_heading'] = 'Poodll Red5 Server Settings';
 $string['filter_poodll_audioplayer_heading'] = 'Audio Player Settings';
 $string['filter_poodll_mic_heading'] = 'Microphone Settings (Flash only)';
@@ -84,7 +100,7 @@ $string['wboardheight'] = 'Whiteboard Default Height';
 $string['wboardautosave'] = 'Autosave(milliseconds)';
 $string['wboardautosave_details'] = 'Saves the drawing when the user has paused drawing after X milliseconds. 0 = no autosave';
 
-//video capture settings
+// video capture settings
 $string['capturewidth'] = 'Video Recorder Capture Size';
 $string['captureheight'] = 'Video Recorder Capture Height';
 $string['capturefps'] = 'Video Recorder Capture FPS';
@@ -92,7 +108,7 @@ $string['studentcam'] = 'Preferred device name for camera';
 $string['bandwidth'] = 'Student connection. bytes/second. Affects webcam qual. ';
 $string['picqual'] = 'Target webcam qual. 1 - 10 ';
 
-//audio capture settings 
+// audio capture settings
 $string['studentmic'] = 'Preferred  device name for microphone';
 $string['micrate'] = 'Mic. Rate';
 $string['micgain'] = 'Mic. Gain';
@@ -103,14 +119,14 @@ $string['miccanpause'] = 'Allow pause (MP3 recorder only)';
 $string['mp3skin'] = 'MP3 Skin';
 $string['mp3skin_details'] = 'If you want to use a recorder skin, ala theme, enter its name here. Otherwise enter: none.';
 
-//mp3 recorder settings
+// mp3 recorder settings
 $string['size'] = 'Size';
 $string['tiny'] = 'Tiny';
 $string['normal'] = 'Normal';
 $string['mp3_nocloud'] = 'No Cloud';
 $string['mp3_nocloud_details'] = 'Do not submit Flash mp3 recordings to cloud for transcode and copyback.';
 
-//transcode settings
+// transcode settings
 $string['transcode_heading'] = 'Audio/Video File Conversion Settings (FFMPEG)';
 $string['transcode_heading_desc'] =
         'The settings in this section are for FFMPEG and Red5, and do not apply when using remote conversions';
@@ -191,6 +207,12 @@ $string['recui_unsupportedbrowser'] = 'This browser can not record here. Sorry.<
 $string['recui_pushtospeak'] = 'Push to Speak';
 $string['recui_waitwaitstilluploading'] = 'Your file is still uploading. Do you really want to leave this page?';
 $string['recui_clicktofinish'] = 'Click to Stop';
+$string['recui_settings'] = 'Settings';
+$string['recui_resume'] = 'Resume';
+$string['recui_audiodevice'] = 'Audio Device';
+$string['recui_videodevice'] = 'Video Device';
+$string['recui_soundtest'] = 'Sound Test';
+$string['recui_soundtesting'] = 'Sound Testing';
 
 $string['insert'] = 'Insert';
 $string['cancel'] = 'Cancel';
@@ -200,11 +222,11 @@ $string['mobileonly'] = 'Mobile devices only';
 $string['mobileandwebkit'] = 'Mobile + Webkit browsers(Safari,Chrome etc)';
 $string['alwayshtml5'] = 'Always use HTML5';
 
-//extensions handling and local filter settings
+// extensions handling and local filter settings
 $string['sitedefault'] = "Site Default";
 $string['player'] = 'Player {$a}';
 
-//template strings
+// template strings
 $string['templatepageheading'] = '(T): {$a}';
 $string['templatepagewidgetheading'] = '(W): {$a}';
 $string['templatepageplayerheading'] = '(P): {$a}';
@@ -281,7 +303,7 @@ $string['datasetvars_desc'] =
         'Put a comma separated list of variables that make up the vars for the SQL. You can and probably will want to use variables here.';
 $string['value'] = 'value';
 
-//Settings tree headings
+// Settings tree headings
 $string['templates'] = 'Templates';
 $string['type'] = 'Type';
 $string['playertype'] = 'player';
@@ -292,7 +314,7 @@ $string['jumpcat_explanation'] = 'The full set of Poodll filter settings can be 
 $string['poodllsupportinfo'] = 'Poodll Support Information';
 $string['exportdiagnostics'] = "Export";
 
-//html5 recorder
+// html5 recorder
 $string['plain_recorder'] = "Plain";
 $string['burntrose_recorder'] = "Burnt Rose";
 $string['onetwothree_recorder'] = "One Two Three";
@@ -319,7 +341,7 @@ $string['html5ondsafaridetails'] =
         "Desktop Safari may not select the correct audio device and there is no option to select a different one. In most cases its ok, but on Mac Mini it may not detect a working audio device at all.";
 $string['filter_poodll_html5recorder_heading'] = "HTML5 Recorder Settings";
 
-//events
+// events
 $string['event_adhoc_registered'] = 'Poodll Adhoc task registered';
 $string['event_adhoc_move_registered'] = 'Poodll Adhoc move task registered';
 $string['event_adhoc_convert_registered'] = 'Poodll Adhoc convert task registered';
@@ -328,28 +350,28 @@ $string['event_adhoc_move_completed'] = 'Poodll Adhoc move task completed';
 $string['event_adhoc_convert_completed'] = 'Poodll Adhoc convert task completed';
 $string['event_debug_log'] = 'Poodll debug note';
 
-//debug settings
+// debug settings
 $string['debug_heading'] = 'Poodll Debugging';
 $string['debug_enable'] = 'Enable Debugging';
 $string['debug_enable_details'] =
         'If enabled, information about recordings will be stored in the Moodle logs. These are intended to assist in troubleshooting and support from the Poodll helpdesk. Turn off when not needed or you will have useless junk in your Moodle log.';
 
-//ajax media query responses
+// ajax media query responses
 $string['have_task'] = 'Found a waiting move/convert task for: {$a}';
 $string['have_recent_event'] = 'Found a recently fired move-completed event for: {$a}';
 $string['no_event_or_task'] = 'Found neither a waiting move task, nor move-completed event for: {$a}';
 
-//cloud notifications
+// cloud notifications
 $string['usecloudnotifications'] = 'Remote conversion notification';
 $string['usecloudnotifications_desc'] =
         'If true, Poodll will send a message to your server that remote file conversion is complete so it can retrieve it as soon as possible.';
 
-//flash on android
+// flash on android
 $string['flashonandroid'] = 'Use Flash on Android';
 $string['flashonandroid_desc'] =
         'It is possible to use Flash on Android, though in many cases its not available and difficult to communicate to students what to do. So by default this is off.';
 
-//diable whiteboard zoom
+// diable whiteboard zoom
 $string['wboardnozoom'] = 'Disable Zoom ';
 $string['wboardnozoom_details'] =
         'Only applies to LiterallyCanvas. If checked sets the max and min zoom to 1.0, effectively disabling the zoom feature.';
@@ -374,14 +396,14 @@ $string['REGION_SAE1'] = 'South America (São Paulo)';
 $string['REGION_AFS1'] = 'Africa (Capetown)';
 $string['REGION_MES1'] = 'Middle East (Bahrain)';
 
-//updated templates message
+// updated templates message
 $string['templateupdated'] = '{$a} Poodll Templates Updated.';
 $string['updatetoversion'] = 'Update to {$a}';
 $string['updateall'] = 'Update all.';
 $string['poodlltemplatesadmin'] = 'Poodll Filter Templates Admin';
 $string['cleartemplate'] = 'Clear template';
 
-//Placeholder settings
+// Placeholder settings
 $string['placeholder_heading'] = "Custom Audio and Video Placeholder File Settings";
 $string['placeholder_heading_desc'] =
         "Audio and video placeholder files are used in Poodll while files are converted to MP3 or MP4. If the default ones don't appeal you can upload custom ones here. See <a href='https://support.poodll.com/support/solutions/articles/19000083252-custom-audio-and-video-placeholders'>here</a> for more details on how to do this.";
@@ -394,7 +416,7 @@ $string['placeholderaudiosecs_details'] = "Duration in seconds to at least one d
 $string['placeholdervideosecs'] = "Video Duration(secs)";
 $string['placeholdervideosecs_details'] = "Duration in seconds to at least one decimal place of placeholder video";
 
-//HTML5 audio video errors
+// HTML5 audio video errors
 $string['recui_mediaaborterror'] = 'Something strange happened which prevented the webcam/microphone from being used';
 $string['recui_medianotallowederror'] = 'The user must allow the browser access to the webcam/microphone';
 $string['recui_medianotfounderror'] = 'There is no recording device connected or enabled';
@@ -404,14 +426,14 @@ $string['recui_mediaoverconstrainederror'] = 'The current webcam/microphone can 
 $string['recui_mediasecurityerror'] = 'Your browser type does not support recording over an HTTP connection.';
 $string['recui_mediatypeerror'] = 'Failed to get stream because no media type was specified.';
 
-//Cloud Poodll API
+// Cloud Poodll API
 $string['cpapi_heading'] = 'Poodll API Settings';
 $string['cpapiuser'] = 'Poodll API Username';
 $string['cpapiuser_details'] = 'This is the same as your username at Poodll.com.';
 $string['cpapisecret'] = 'Poodll API Secret';
 $string['cpapisecret_details'] = "This can be obtained from the API creds tab on your members area at Poodll.com. ";
 
-//API summary display info
+// API summary display info
 $string['displaysubs'] = '{$a->subscriptionname} : expires {$a->displayexpiredate}';
 $string['noapiuser'] = "No API username entered.";
 $string['noapisecret'] = "No API secret entered.";
@@ -426,7 +448,7 @@ $string['awssdkv3'] = 'Use AWS SDK V3';
 $string['awssdklocal'] = 'Use AWS SDK from plugin local_aws';
 $string['awssdkauto'] = 'Auto select AWS SDK';
 
-//My subscription page
+// My subscription page
 $string['accountdashboard'] = 'Account Dashboard';
 $string['subscription'] = 'Subscription';
 $string['start'] = 'Start';
@@ -443,24 +465,24 @@ $string['per_recording_type'] = 'Per recording type';
 $string['video'] = 'Video';
 $string['audio'] = 'Audio';
 $string['per_plugin'] = 'Per Plugin (Last Yr)';
-$string['ppn_filter_poodll'] = 'Poodll Filter';	
-$string['ppn_assignsubmission_onlinepoodll'] = 'Poodll Submission';	
-$string['ppn_assignfeedback_onlinepoodll'] = 'Poodll Feedback';	
-$string['ppn_qtype_poodllrecording'] = 'Poodll Question';	
-$string['ppn_data_field_poodll'] = 'Poodll DB Field';	
-$string['ppn_atto_poodll'] = 'Atto Poodll';	
-$string['ppn_tinymce_poodll'] = 'TinyMCE Poodll';	
-$string['ppn_repository_poodll'] = 'Poodll Repository';		
-$string['ppn_filter_generico'] = 'Generico Filter';	
-$string['ppn_filter_videoeasy'] = 'VideoEasy Filter';	
-$string['ppn_atto_generico'] = 'Atto Generico';	
-$string['ppn_atto_subtitle'] = 'Atto Subtitle';	
+$string['ppn_filter_poodll'] = 'Poodll Filter';
+$string['ppn_assignsubmission_onlinepoodll'] = 'Poodll Submission';
+$string['ppn_assignfeedback_onlinepoodll'] = 'Poodll Feedback';
+$string['ppn_qtype_poodllrecording'] = 'Poodll Question';
+$string['ppn_data_field_poodll'] = 'Poodll DB Field';
+$string['ppn_atto_poodll'] = 'Atto Poodll';
+$string['ppn_tinymce_poodll'] = 'TinyMCE Poodll';
+$string['ppn_repository_poodll'] = 'Poodll Repository';
+$string['ppn_filter_generico'] = 'Generico Filter';
+$string['ppn_filter_videoeasy'] = 'VideoEasy Filter';
+$string['ppn_atto_generico'] = 'Atto Generico';
+$string['ppn_atto_subtitle'] = 'Atto Subtitle';
 $string['ppn_atto_snippet'] = 'Atto Snippet';
-$string['ppn_portfolio_blogexport'] = 'BlogExport';	
-$string['ppn_local_trigger'] = 'Trigger';		
-$string['ppn_mod_readaloud'] = 'ReadAloud';	
-$string['ppn_mod_englishcentral'] = 'EnglishCentral';	
-$string['ppn_mod_wordcards'] = 'Wordcards';	
+$string['ppn_portfolio_blogexport'] = 'BlogExport';
+$string['ppn_local_trigger'] = 'Trigger';
+$string['ppn_mod_readaloud'] = 'ReadAloud';
+$string['ppn_mod_englishcentral'] = 'EnglishCentral';
+$string['ppn_mod_wordcards'] = 'Wordcards';
 $string['ppn_mod_pchat'] = 'PChat';
 $string['ppn_mod_voicestudio'] = 'Voice Studio';
 $string['ppn_voice_studio'] = 'Voice Studio';
@@ -476,8 +498,8 @@ $string['freetrial'] = "Get Cloud Poodll API Credentials and a Free Trial";
 $string['freetrial_desc'] = "A dialog should appear that allows you to register for a free trial with Poodll. After registering you should login to the members dashboard to get your API user and secret. And to register your site URL.";
 $string['memberdashboard'] = "Member Dashboard";
 $string['memberdashboard_desc'] = "";
-$string['fillcredentials']="Set API user and secret with existing credentials";
-$string['maxmonth']="Highest Month";
+$string['fillcredentials'] = "Set API user and secret with existing credentials";
+$string['maxmonth'] = "Highest Month";
 
 // Audio and Video Player Strings
 $string['select-text-and-click-me'] = 'Select Text and Click Me';
@@ -492,7 +514,13 @@ $string['sitenotvalid'] = "Site URL does not match the registered site URL for t
 $string['novalidsubscription'] = "No valid subscription.";
 $string['appitselfnotauthorised'] = "No valid subscription contains access to the plugin: filter_poodll";
 $string['thetokenisold'] = "The authentication token is old. Please refresh. If refreshing fails, you have a connection problem. Contact Poodll Support.";
-$string['tokenfetchfailed']='Failed to refresh token. Are your API user and secret correct?';
-$string['tokenfetchfailedwitherror']='Failed to refresh token: {$a}';
+$string['tokenfetchfailed'] = 'Failed to refresh token. Are your API user and secret correct?';
+$string['tokenfetchfailedwitherror'] = 'Failed to refresh token: {$a}';
 $string['usingoldtoken'] = ". Recycling old authentication token.";
 $string['invalidresponse'] = "Invalid response or connection failure";
+
+$string['fa-button-settings']="Settings Dialog";
+$string['fa-button-record']="Record";
+$string['fa-button-stop']="Stop";
+$string['fa-button-playrecording']="Play Recording";
+$string['fa-button-uploadrecording']="Upload Recording";
