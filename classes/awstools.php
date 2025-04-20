@@ -53,9 +53,12 @@ class awstools {
     const REGION_SAE1 = 'sa-east-1'; //South America (São Paulo)
     const REGION_AFS1 = 'af-south-1'; //South Africa
     const REGION_MES1 = 'me-south-1'; //Middle East (Bahrain)
+    const REGION_CNNW1 = 'cn-northwest-1'; // China (Ningxia)
 
     const URLSTUB_POLLYFILE = 'https://pollyfile.poodll.net';
     const BUCKET_NAME_POLLYFILE = 'amazon-cloudfront-secure-static-site-s3bucketroot-1dw3pilpa7ci3';
+    const URLSTUB_POLLYFILE_CHINA = 'https://pollyfile.poodll.cn';
+    const BUCKET_NAME_POLLYFILE_CHINA = 'amazon-cloudfront-secure-static-site-s3bucketroot-1dw3pilpa7ci3';
     const BUCKET_NAME_VIDEOIN = 'poodll-videoprocessing-in';
     const BUCKET_NAME_VIDEOOUT = 'poodll-videoprocessing-out';
     const BUCKET_NAME_VIDEOTHUMBS = 'poodll-video-thumbs';
@@ -156,6 +159,7 @@ class awstools {
             case self::REGION_EUC1:
             case self::REGION_AFS1:
             case self::REGION_MES1:
+            case self::REGION_CNNW1:
             default:
                 $this->pipeline_video ='ffmpegtranscoder';
                 $this->pipeline_audio ='ffmpegtranscoder';
@@ -219,6 +223,8 @@ class awstools {
                 break;
             case 'bahrain':
                 $ret = self::REGION_MES1;
+            case 'ningxia':
+                $ret = self::REGION_CNNW1;
                 break;
             default:
                 //the region might already be good
@@ -504,12 +510,13 @@ class awstools {
             $options['ContentType'] = 'application/octet-stream';
         }
 
-        //we will use accelerated uploads for video in eu-west-1 ap-northeast-1 us-east-1 and ap-southeast-2
-        if($mediatype=='video'){
+        // We will use accelerated uploads for video in eu-west-1 ap-northeast-1 us-east-1 and ap-southeast-2
+        if ($mediatype == 'video') {
             switch($this->region){
                 //some regions do not support accelerated upload ...sad
                 case self::REGION_AFS1:
                 case self::REGION_MES1:
+                case self::REGION_CNNW1:
                     $options['@use_accelerate_endpoint'] = false;
                     break;
 

@@ -395,6 +395,7 @@ $string['REGION_EUW2'] = 'EU (London)';
 $string['REGION_SAE1'] = 'South America (São Paulo)';
 $string['REGION_AFS1'] = 'Africa (Capetown)';
 $string['REGION_MES1'] = 'Middle East (Bahrain)';
+$string['REGION_CNNW1'] = 'China (Ningxia)';
 
 // updated templates message
 $string['templateupdated'] = '{$a} Poodll Templates Updated.';
