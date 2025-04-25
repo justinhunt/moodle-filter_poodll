@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.84 (Build 2025042500)
+- Removed flame skin from the Poodll filter
+- Added support for custom Cloud Poodll server
+
 Version 3.1.83 (Build 2025041800)
 - PHP 8.4 fixes
 - New AWS Region China (Ningxia)

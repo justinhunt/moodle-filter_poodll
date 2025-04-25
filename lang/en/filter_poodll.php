@@ -525,3 +525,6 @@ $string['fa-button-record']="Record";
 $string['fa-button-stop']="Stop";
 $string['fa-button-playrecording']="Play Recording";
 $string['fa-button-uploadrecording']="Upload Recording";
+
+$string['cloudpoodllserver'] = 'Cloud Poodll Server';
+$string['cloudpoodllserver_details'] = 'The server to use for Cloud Poodll. Only change this if Poodll has provided a different one.';

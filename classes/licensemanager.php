@@ -520,7 +520,7 @@ gQIDAQAB
         $debuginfo['messages'][]="from cache token did not exist or was no longer valid";
 
         // Send the request & save response to $resp
-        $token_url = constants::CLOUDPOODLL . "/local/cpapi/poodlltoken.php";
+        $token_url = \filter_poodll\poodlltools::get_cloud_poodll_server() . "/local/cpapi/poodlltoken.php";
         $postdata = array(
                 'username' => $apiuser,
                 'password' => $apisecret,
