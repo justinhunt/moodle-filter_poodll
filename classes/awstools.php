@@ -57,7 +57,7 @@ class awstools {
 
     const URLSTUB_POLLYFILE = 'https://pollyfile.poodll.net';
     const BUCKET_NAME_POLLYFILE = 'amazon-cloudfront-secure-static-site-s3bucketroot-1dw3pilpa7ci3';
-    const URLSTUB_POLLYFILE_CHINA = 'https://pollyfile.poodll.cn';
+    const URLSTUB_POLLYFILE_CHINA = 'https://d1zc7wao8z3pqb.cloudfront.cn'; //'https://pollyfile.poodll.cn';
     const BUCKET_NAME_POLLYFILE_CHINA = 'poodll-pollyfile-cn-northwest-1';
     const BUCKET_NAME_VIDEOIN = 'poodll-videoprocessing-in';
     const BUCKET_NAME_VIDEOOUT = 'poodll-videoprocessing-out';
