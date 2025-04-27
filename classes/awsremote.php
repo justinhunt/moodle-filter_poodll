@@ -131,7 +131,7 @@ class awsremote {
             }else{
                 return false;
             }
-            $url = constants::CLOUDPOODLL . "/webservice/rest/server.php";
+            $url = \filter_poodll\poodlltools::get_cloud_poodll_server() . "/webservice/rest/server.php";
             $params["wstoken"]=$token;
             $params["wsfunction"]=$functionname;
             $params["moodlewsrestformat"]='json';

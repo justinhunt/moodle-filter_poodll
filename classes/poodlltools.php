@@ -45,6 +45,16 @@ class poodlltools {
     const AUDIO_PLACEHOLDER_HASH_OLD = 'e118549e4fc88836f418b6da6028f1fec571cd43';
     const VIDEO_PLACEHOLDER_HASH_OLD = 'c2a342a0a664f2f1c4ea5387554a67caf3dd158e';
 
+    // Get the Cloud Poodll Server URL
+    public static function get_cloud_poodll_server() {
+        $conf = get_config(constants::M_COMPONENT);
+        if (isset($conf->cloudpoodllserver) && !empty($conf->cloudpoodllserver)) {
+            return 'https://' . $conf->cloudpoodllserver;
+        } else {
+            return 'https://' . constants::M_DEFAULT_CLOUDPOODLL;
+        }
+    }
+
     /**
      * Returns URL to file from the poodll filter admin settings
      * (probably a custom placeholder file)
@@ -115,7 +125,7 @@ class poodlltools {
             }else{
                 return false;
             }
-            $url = constants::CLOUDPOODLL . "/webservice/rest/server.php";
+            $url = \filter_poodll\poodlltools::get_cloud_poodll_server() . "/webservice/rest/server.php";
             $params["wstoken"]=$token;
             $params["wsfunction"]=$functionname;
             $params["moodlewsrestformat"]='json';
