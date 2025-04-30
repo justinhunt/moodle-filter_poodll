@@ -1,4 +1,4 @@
-define([], function() {
+define(['jquery'], function($) {
 
 // -- Original code starts here
 /* drawingboard.js v0.4.2 - https://github.com/Leimi/drawingboard.js
