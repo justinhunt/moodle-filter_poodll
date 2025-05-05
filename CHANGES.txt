@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.85 (Build 2025050500)
+- Fixed player widget templates which can break on Moodle 4.5 and 5.0
+
 Version 3.1.84 (Build 2024100703)
 - Fixed broken drawingboard whiteboard
 
