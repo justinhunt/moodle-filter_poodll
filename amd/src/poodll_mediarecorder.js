@@ -537,6 +537,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 var videoconstraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined};
                 videoconstraints.width={ideal: 640};
                 videoconstraints.height={ideal: 480};
+                videoconstraints.frameRate = { ideal: 30, max: 60 };
                 mediaConstraints.video = videoconstraints;
             }
             // check for a user audio selected device
