@@ -349,8 +349,8 @@ gQIDAQAB
         foreach ($tokenobject->apps as $app) {
             if ($app == constants::MOD_FRANKY) {
                 foreach ($tokenobject->sites as $site) {
-                    $reg_status = $this->check_registered_url($site, true);
-                    if ($reg_status == self::FILTER_POODLL_IS_REGISTERED) {
+                    $regstatus = $this->check_registered_url($site, true);
+                    if ($regstatus == self::FILTER_POODLL_IS_REGISTERED) {
                         //update our reg info for later
                         $this->api_registered_url = $site;
                         $this->api_cloud_access_key = $tokenobject->awsaccessid;
