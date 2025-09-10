@@ -537,6 +537,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 var videoconstraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined};
                 videoconstraints.width={ideal: 640};
                 videoconstraints.height={ideal: 480};
+                videoconstraints.frameRate = { ideal: 30, max: 60 };
                 mediaConstraints.video = videoconstraints;
             }
             // check for a user audio selected device
@@ -555,9 +556,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 video: true
             };
 
-            //set aspect ratio and I think the "exact" below should be "ideal"
-            //  mediaConstraints.video = {aspectRatio: 1920/1080};
-            //alert('set');
+            //set aspect ratio
+            // we try to get it right here, so we do not have to rely on re-orienting the video later
+            mediaConstraints.video = {aspectRatio: window.innerWidth > window.innerHeight ? 16/9 : 9/16 };
 
             // check for a user video selected device
             if (ip.uservideodeviceid) {
