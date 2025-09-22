@@ -443,9 +443,17 @@ class text_filter extends \poodll_base_text_filter {
             }
             if(!$token){$token = 'NO_TOKEN RETRIEVED';
             }
+            // Do the replace and store the token in filter props
             $poodlltemplate = str_replace('@@CLOUDPOODLLTOKEN@@', $token, $poodlltemplate);
-            // stash this for passing to js
             $filterprops['CLOUDPOODLLTOKEN'] = $token;
+
+            // we also need the cloudpoodll server url and aws region if we need the cloud poodll token
+            $filterprops['CLOUDPOODLLURL'] = poodlltools::get_cloud_poodll_server();
+            $poodlltemplate = str_replace('@@CLOUDPOODLLURL@@', $filterprops['CLOUDPOODLLURL'], $poodlltemplate);
+
+            $filterprops['AWSREGION'] = $CFG->filter_poodll_aws_region;
+            $poodlltemplate = str_replace('@@AWSREGION@@', $filterprops['AWSREGION'], $poodlltemplate);
+
         }
 
         // If this is a renderer call, lets do it
@@ -464,7 +472,7 @@ class text_filter extends \poodll_base_text_filter {
                 }
                 $renderedcontent = call_user_func_array([$somerenderer, $filterprops['function']], $argsarray);
                 $poodlltemplate = str_replace('@@renderedcontent@@', $renderedcontent, $poodlltemplate);
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $poodlltemplate = str_replace('@@renderedcontent@@', 'failed to render!!!', $poodlltemplate);
             }
         }

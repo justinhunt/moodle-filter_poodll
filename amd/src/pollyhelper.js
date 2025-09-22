@@ -16,6 +16,8 @@ define(['jquery', 'core/log'], function ($, log) {
         sentenceselector: '',
         passagecssclass: 'filterpoodll_pollytextblock_cont',
         cloudpoodlltoken: '',
+        cloudpoodllurl: '',
+        region: '',
         voice: '',
         highlightmode: '',
         theplayer: false,
@@ -102,7 +104,10 @@ define(['jquery', 'core/log'], function ($, log) {
 
         },
 
-        init: function (theplayer,itemid, textblock, voice,sentenceselector,wordselector,passagecssclass,highlightmode, cloudpoodlltoken) {
+        init: function (theplayer,itemid,
+                        textblock, voice,sentenceselector,wordselector,
+                        passagecssclass,highlightmode, cloudpoodlltoken,
+                        region, cloudpoodllurl ) {
             var that = this;
             this.sentenceselector= sentenceselector;
             this.wordselector= wordselector;
@@ -111,6 +116,10 @@ define(['jquery', 'core/log'], function ($, log) {
             this.highlightmode=highlightmode;
             this.voice = voice;
             this.theplayer = theplayer;
+            this.region = region;
+            //The url will be html encoded so we decode it
+            this.cloudpoodllurl = new DOMParser().parseFromString(cloudpoodllurl, "text/html").body.textContent;
+            log.debug('Polly Helper: cloudpoodllurl=' + this.cloudpoodllurl);
 
             this.set_textblock(textblock);
 
@@ -180,9 +189,9 @@ define(['jquery', 'core/log'], function ($, log) {
                     + '&voice=' + this.voice
                     + '&appid=' + 'filter_poodll'
                     + '&owner=poodll'
-                    + '&region=useast1';
+                    + '&region=' + this.region;
 
-            var serverurl = 'https://cloud.poodll.com' + "/webservice/rest/server.php";
+            var serverurl = this.cloudpoodllurl + "/webservice/rest/server.php";
             xhr.open("POST", serverurl, true);
             xhr.setRequestHeader("Cache-Control", "no-cache");
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");

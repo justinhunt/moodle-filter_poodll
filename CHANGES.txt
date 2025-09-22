@@ -1,5 +1,9 @@
 Change List
 =========
+Version 3.1.87 (Build 2025092200)
+-  Fix for sometimes broken lightbox2
+-  Fix for broken Polly in Ningxia region
+
 Version 3.1.86 (Build 2025061900)
 - Better cleaning up of filter string inputs to prevent variable injection and meddling
 

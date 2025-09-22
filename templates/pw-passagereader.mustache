@@ -45,7 +45,9 @@
                 //AMD modules share the instances they declare in the module, so we need to clone
                 //or they would all play the passage for the finally declared reader instance
                 this.pollyhelper = pollyhelper.clone();
-                this.pollyhelper.init(this.theplayer,this.itemid, this.textblock, this.voice,sentenceselector,wordselector,passagecssclass,'{{highlightmode}}', '{{CLOUDPOODLLTOKEN}}');
+                this.pollyhelper.init(this.theplayer,this.itemid, this.textblock,
+                            this.voice,sentenceselector,wordselector,
+                            passagecssclass,'{{highlightmode}}', '{{CLOUDPOODLLTOKEN}}','{{AWSREGION}}','{{CLOUDPOODLLURL}}');
                 this.sentences = $(sentenceselector);
             }
         },
