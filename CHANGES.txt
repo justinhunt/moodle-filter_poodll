@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.88 (Build 2025100500)
+- Tab widget security tightening
+
 Version 3.1.87 (Build 2025092200)
 -  Fix for sometimes broken lightbox2
 -  Fix for broken Polly in Ningxia region
