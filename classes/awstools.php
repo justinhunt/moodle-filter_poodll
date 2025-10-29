@@ -586,7 +586,7 @@ class awstools {
     }
 
     //Called from CloudPoodll
-    public function fetch_multipart_upload_details($mediatype, $minutes = 60, $key, $iosvideo = false) {
+    public function fetch_multipart_upload_details($mediatype, $minutes, $key, $iosvideo = false) {
         $s3client = $this->fetch_s3client();
 
         //Get bucket
