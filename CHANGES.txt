@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.89 (Build 2025121200)
+- Fix for drawingboard not saving data when image was large and/or "steps" were many
+
 Version 3.1.88 (Build 2025100500)
 - Tab widget security tightening
 

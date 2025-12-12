@@ -34,12 +34,15 @@ define(['jquery', 'core/log'], function ($, log) {
 
         pokeVectorData: function (recid, wboard, opts) {
             var vectordata = "";
+
             if (recid.indexOf('drawingboard_') == 0) {
-                vectordata = JSON.stringify(wboard.history, null, 2);
+                var historyCopy = JSON.parse(JSON.stringify(wboard.history));
+                var historytosave = this.trimDrawingBoardHistory(historyCopy);
+                vectordata = JSON.stringify(historytosave, null, 2);
             } else {
                 //only LC has vector data it seems
                 vectordata = JSON.stringify(wboard.getSnapshot());
-            }//end of of drawing board
+            }//end of if drawing board
 
             //need to do the poke here
             if (typeof opts['vectorcontrol'] !== 'undefined' && opts['vectorcontrol'] !== '') {
@@ -51,6 +54,26 @@ define(['jquery', 'core/log'], function ($, log) {
             //end of poke vectordata
         },
 
+        // Function to ensure vectordata size is less than 16MB before we stringify it
+        // This ensures it can be stored in a mysql medium TEXT field without truncation
+        // and a little bit of room for meta data etc, and also goes under
+        // MySQL default max packet size: 64MB
+        trimDrawingBoardHistory: function(history) {
+
+            // Keep removing base64 images from the beginning until size is under 64mb
+            while (JSON.stringify(history, null, 2).length > 15 * 1024 * 1024) {
+                if (history.values.length > 0) {
+                    history.values.shift(); // Remove the first base64 image
+                } else {
+                    break; // Stop if there are no more images to remove
+                }
+            }
+            // Reset the position to the final position (since values array may be trimmed)
+            history.position = history.values.length;
+
+            // Return the trimmed history
+            return history;
+        },
 
         _concatenateWavBlobs: function (blobs, callback) {
 
