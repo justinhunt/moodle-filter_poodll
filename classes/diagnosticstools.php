@@ -23,47 +23,53 @@ defined('MOODLE_INTERNAL') || die();
  *
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class diagnosticstools {
+class diagnosticstools
+{
 
     private $ds = null;
 
     /**
      *
      */
-    public function __construct() {
+    public function __construct()
+    {
         $this->ds = new \stdClass();
         $this->ds->properties = $this->compile_properties();
         $this->ds->logs = $this->compile_logs();
     }
 
-    public function fetch_props() {
+    public function fetch_props()
+    {
         return $this->ds->properties;
     }
 
-    public function fetch_logs() {
+    public function fetch_logs()
+    {
         return $this->ds->logs;
     }
 
-    public function compile_logs() {
+    public function compile_logs()
+    {
         return new \stdClass();
     }
 
-    public function compile_properties() {
+    public function compile_properties()
+    {
         global $CFG, $DB;
 
-        $ds = Array();
+        $ds = array();
 
-        //general version info
+        // General version info.
         $ds['moodle_version'] = $CFG->version;
         $ds['os_version'] = php_uname();
         $ds['php_version'] = phpversion();
-        //server time
+        // Server time.
         date_default_timezone_set('Asia/Tokyo');
         $timestamp = time();
         $server_time = date("d-m-Y (D) H:i:s", $timestamp);
         $ds['server_time'] = $server_time . ' (translated to JAPAN STANDARD TIME)';
 
-        //poodll version info
+        // Poodll version info.
         $ds['poodll_filter_version'] = get_config('filter_poodll', 'version');
         $ds['poodll_atto_version'] = get_config('atto_poodll', 'version');
         $ds['poodll_tinymce_version'] = get_config('tinymce_poodll', 'version');
@@ -83,7 +89,7 @@ class diagnosticstools {
         $ds['mod_wordcards_version'] = get_config('mod_wordcards', 'version');
         $ds['mod_pchat_version'] = get_config('mod_pchat', 'version');
 
-        //Registration Key info
+        // Registration Key info.
         $lm = new \filter_poodll\licensemanager();
         if ($CFG && property_exists($CFG, 'filter_poodll_registrationkey') && !empty($CFG->filter_poodll_registrationkey)) {
             $lm->validate_registrationkey($CFG->filter_poodll_registrationkey);
@@ -94,7 +100,7 @@ class diagnosticstools {
         }
         $ds['license_details'] = $display_license_details;
 
-        //API credentials info
+        // API credentials info.
         $apiuser = get_config('filter_poodll', 'cpapiuser');
         $apisecret = get_config('filter_poodll', 'cpapisecret');
         $ds['apiuser'] = $apiuser ? $apiuser : '';
@@ -103,7 +109,7 @@ class diagnosticstools {
             $ds['api_details'] = $lm->fetch_token_for_display($apiuser, $apisecret);
         }
 
-        //get active users
+        // Get active users.
         $oneyearago = strtotime('-1 year');
         try {
             $rec = $DB->get_record_sql('SELECT count(*) as activeusers FROM {user} WHERE lastaccess > ?', array($oneyearago));
@@ -120,17 +126,17 @@ class diagnosticstools {
         /*
         $sql="SELECT COUNT(DISTINCT(userid)) as poodllusers FROM {logstore_standard_log} WHERE component = 'filter_poodll' AND timecreated > ?";
         try{
-        	$rec = $DB->get_record_sql($sql,array($oneyearago));
+            $rec = $DB->get_record_sql($sql,array($oneyearago));
         }catch(Exception $e){
-        	$rec=false;
+            $rec=false;
         }
         if ($rec) {
             $ds['poodllusers'] = $rec->poodllusers;
         }else{
             $ds['poodllusers'] = 'unknown';
         }
-	*/
-        //site info
+    */
+        // Site info.
         $ds['wwwroot'] = $CFG->wwwroot;
         $ds['dirroot'] = $CFG->dirroot;
         $ds['dataroot'] = $CFG->dataroot;
@@ -139,21 +145,19 @@ class diagnosticstools {
         $ds['suhosin'] = extension_loaded('suhosin'); //this is not working what "name"?
         $ds['pfl_permissions'] = decoct(fileperms($CFG->dirroot . '/filter/poodll/poodllfilelib.php') & 0777);
         $ds['datadir_permissions'] = decoct(fileperms($CFG->dataroot) & 0777);
-        //disk space
+        // Disk space.
         $fd = disk_free_space($CFG->dataroot);
         if ($fd > 0) {
             $fd = round($fd / 1024 / 1024);
         }
         $ds['free_disk'] = $fd . ' MB';
 
-        //active users Moodle
-
-        //site setting info
-        $ds['currenttheme'] = \core_useragent::get_device_type_theme('default');
+        // Site setting info.
+        $ds['currenttheme'] = $CFG->theme;
         $ds['cachejs'] = $CFG->cachejs;
         $ds['debug'] = $CFG->debug;
 
-        //cron info
+        // Cron info.
         $lastcron = $DB->get_field_sql('SELECT MAX(lastruntime) FROM {task_scheduled}');
         $now = time();
         $minutessincecron = "--";
@@ -165,7 +169,7 @@ class diagnosticstools {
         $ds['lastcron'] = $lastcron;
         $ds['timesincecron'] = $minutessincecron . ' mins ' . $secondssincecron . ' secs';
 
-        //poodll setting info
+        // Poodll setting info.
         $ds['cloudrecording'] = $CFG->filter_poodll_cloudrecording;
         $ds['cloudnotifications'] = $CFG->filter_poodll_cloudnotifications;
         $ds['awsregion'] = $CFG->filter_poodll_aws_region;
@@ -193,26 +197,26 @@ class diagnosticstools {
         $ds['useplayertube'] = get_config('filter_poodll', 'useplayeryoutube');
         $ds['flashonandroid'] = $CFG->filter_poodll_flash_on_android;
 
-        //PHP settings
+        // PHP settings.
         $ds['maxexecutiontime'] = ini_get('max_execution_time');
         $ds['postmaxsize'] = ini_get('post_max_size');
         $ds['uploadmaxfilesize'] = ini_get('upload_max_filesize');
         $ds['memorylimit'] = ini_get('memory_limit');
 
-        //filter setting info
+        // Filter setting info.
         /*
         foreach (\core_component::get_plugin_list('filter') as $plugin => $unused) {
             $ds['installed_filter_' . $plugin] = filter_get_name($plugin);
         }
         */
-        //filters
+        // Filters.
         $filters = $DB->get_records('filter_active', array('contextid' => 1));
         foreach ($filters as $filter) {
             $ds['filter_active_' . $filter->filter] = $filter->active;
             $ds['filter_sortorder_' . $filter->filter] = $filter->sortorder;
         }
 
-        //red5 settings
+        // Red5 settings.
         $ds['filter_poodll_servername'] = $CFG->filter_poodll_servername;
         $ds['filter_poodll_serverid'] = $CFG->filter_poodll_serverid;
         $ds['filter_poodll_serverport'] = $CFG->filter_poodll_serverport;
@@ -222,4 +226,4 @@ class diagnosticstools {
         return $ds;
     }
 
-}//end of class
+}

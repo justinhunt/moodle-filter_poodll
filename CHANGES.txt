@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.90 (Build 2026011200)
+- Fix for deprecated message about get_device_type_theme
+
 Version 3.1.89 (Build 2025121200)
 - Fix for drawingboard not saving data when image was large and/or "steps" were many
 
