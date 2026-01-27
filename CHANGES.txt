@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.91 (Build 2026012700)
+- Added Finnish voices to Passage-Reader, Text-to-Audio and Select-to-Read(cloud) widgets
+
 Version 3.1.90 (Build 2026011200)
 - Fix for deprecated message about get_device_type_theme
 
