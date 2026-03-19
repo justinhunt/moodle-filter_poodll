@@ -390,13 +390,13 @@ class settingstools {
             $ext = trim($ext);
             switch ($ext) {
                 case 'youtube':
-                    $def_player = '1';
+                    $def_player = '';
                     break;
                 case 'rss':
-                    $def_player = '1';
+                    $def_player = '';
                     break;
                 default:
-                    $def_player = '1';
+                    $def_player = '';
             }
             $items[] = new \admin_setting_configcheckbox('filter_poodll/handle' . $ext,
                     get_string('handle', 'filter_poodll', strtoupper($ext)), '', 0);
