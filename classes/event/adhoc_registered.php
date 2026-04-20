@@ -53,11 +53,11 @@ class adhoc_registered extends \core\event\base {
         $userid = $filerecord->userid;
         $context = \context::instance_by_id($contextid);
 
+        $taskdata['relateduserid'] = $userid;
         $data = array(
                 'context' => $context,
                 'objectid' => $filerecord->id,
                 'userid' => $userid,
-                'relateduserid' => $userid,
                 'other' => $taskdata
         );
         /** @var extension_granted $event */
@@ -95,5 +95,8 @@ class adhoc_registered extends \core\event\base {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'files';
+        if (isset($this->other['relateduserid'])) {
+            $this->relateduserid = $this->other['relateduserid'];
+        }
     }
 }

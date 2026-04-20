@@ -58,7 +58,8 @@ class debug_log extends \core\event\base {
         //set user if we have one
         if ($debugobject->userid !== false) {
             $data['userid'] = $debugobject->userid;
-            $data['relateduserid'] = $debugobject->userid;
+            // We pass this in 'other' so init() can pick it up.
+            $data['other_relateduserid'] = $debugobject->userid;
         }
 
         /** @var debug_log $event */
@@ -105,5 +106,9 @@ class debug_log extends \core\event\base {
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_OTHER;
+        if (isset($this->data['other_relateduserid'])) {
+            $this->relateduserid = $this->data['other_relateduserid'];
+            unset($this->data['other_relateduserid']);
+        }
     }
 }

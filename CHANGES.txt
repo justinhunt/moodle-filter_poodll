@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.92 (Build 2026042000)
+- altered relateduser usage in events for Moodle 5.2 compatibility
+
 Version 3.1.91 (Build 2026012700)
 - Added Finnish voices to Passage-Reader, Text-to-Audio and Select-to-Read(cloud) widgets
 
