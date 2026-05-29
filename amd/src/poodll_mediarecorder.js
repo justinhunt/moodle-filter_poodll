@@ -7,7 +7,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
     'filter_poodll/dlg_download',
     'filter_poodll/speech_poodll',
     'filter_poodll/poodll_mediaskins'], function ($, log, utils, adapter, uploader, hermes, timer, audioanalyser,
-                                                  poodll_msr, errordialog, downloaddialog, speechrecognition, mediaskins) {
+        poodll_msr, errordialog, downloaddialog, speechrecognition, mediaskins) {
 
     "use strict"; // jshint ;_;
 
@@ -36,7 +36,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             var protocol_ok = M.cfg.wwwroot.indexOf('https:') == 0 ||
                 M.cfg.wwwroot.indexOf('http://localhost') == 0;
-            if(!protocol_ok){return false;}
+            if (!protocol_ok) { return false; }
 
             if (config.mediatype != 'audio' && config.mediatype != 'video') {
                 return false;
@@ -87,7 +87,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     ip.config.language = 'en-US';
                 }
                 ip.speechrec.init(ip.config);
-                ip.speechrec.onfinalspeechcapture = function (speechtext,speechresults) {
+                ip.speechrec.onfinalspeechcapture = function (speechtext, speechresults) {
                     var messageObject = {};
                     messageObject.type = "speech";
                     messageObject.capturedspeech = speechtext;
@@ -95,10 +95,10 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     ip.config.hermes.postMessage(messageObject);
                     //send message to our skin
                     if (theskin.hasOwnProperty('onfinalspeechcapture')) {
-                        theskin.onfinalspeechcapture(speechtext,speechresults);
+                        theskin.onfinalspeechcapture(speechtext, speechresults);
                     }
                 };
-            }else{
+            } else {
                 //just turn off speech events to make it easier to check later
                 log.debug('turning off speech events. not req. or not supported.');
                 ip.config.speechevents = false;
@@ -135,7 +135,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     }
 
                     // force permissions;
-                    navigator.mediaDevices.getUserMedia({"audio": true}).then(function (stream) {
+                    navigator.mediaDevices.getUserMedia({ "audio": true }).then(function (stream) {
                         //do nothing
                         log.debug('successfully forced permissions and got user media');
 
@@ -166,7 +166,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     }
 
                     //force permissions and show in preview
-                    navigator.mediaDevices.getUserMedia({"audio": true, "video": true}).then(function (stream) {
+                    navigator.mediaDevices.getUserMedia({ "audio": true, "video": true }).then(function (stream) {
                         //stop any playing tracks of the current stream
                         that.restream_preview_video_player(controlbarid, stream)
 
@@ -182,9 +182,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             // init timer
             ip.timer = timer.clone();
             ip.timer.init(ip.config.timelimit, function () {
-                    theskin.handle_timer_update(controlbarid);
-                    // ip.controlbar.status.html(ip.timer.fetch_display_time());
-                }
+                theskin.handle_timer_update(controlbarid);
+                // ip.controlbar.status.html(ip.timer.fetch_display_time());
+            }
             );
             theskin.handle_timer_update(controlbarid);
 
@@ -268,7 +268,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
 
         onMediaError: function (e, ip) {
-            if(ip.hasOwnProperty('errordialog')) {
+            if (ip.hasOwnProperty('errordialog')) {
                 ip.errordialog.open(e);
             }
             log.error('media error', e);
@@ -319,7 +319,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             this.warmup_preview(ip);
 
             //mute the preview
-            ip.controlbar.preview[0].muted=true;
+            ip.controlbar.preview[0].muted = true;
 
             ip.blobs = [];
             switch (ip.config.mediatype) {
@@ -349,13 +349,13 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             this.warmup_preview(ip);
 
             //mute the preview
-            ip.controlbar.preview[0].muted=true;
+            ip.controlbar.preview[0].muted = true;
 
             ip.blobs = [];
             //get media constraints
             var mediaConstraints = {
-                audio: {'echoCancellation': true},
-                video: {cursor: "motion"}
+                audio: { 'echoCancellation': true },
+                video: { cursor: "motion" }
             };
 
             //set aspect ratio and I think the "exact" below should be "ideal"
@@ -364,15 +364,15 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             //do all our stream stuff
             navigator.mediaDevices.getDisplayMedia(mediaConstraints)
-                .then(function(displayStream){
+                .then(function (displayStream) {
                     // check for a user audio selected device
                     if (ip.useraudiodeviceid) {
                         var audiodeviceid = ip.useraudiodeviceid.valueOf();
-                        mediaConstraints.audio.deviceId = audiodeviceid ? {exact: audiodeviceid} : undefined;
+                        mediaConstraints.audio.deviceId = audiodeviceid ? { exact: audiodeviceid } : undefined;
                     }
 
                     navigator.mediaDevices.getUserMedia({ audio: mediaConstraints.audio, video: false }).then(
-                        function(voiceStream) {
+                        function (voiceStream) {
                             var tracks = displayStream.getTracks().concat(voiceStream.getAudioTracks());
                             var stream = new MediaStream(tracks);
                             onMediaSuccess(stream);
@@ -381,7 +381,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                 })
                 .catch(function (e) {
                     that.onMediaError(e, ip);
-            });
+                });
         },
 
         do_start_video: function (ip, onMediaSuccess) {
@@ -390,7 +390,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
         do_stopplay_audio: function (ip, preview) {
             preview.pause();
-            preview.muted=false;
+            preview.muted = false;
 
             switch (ip.config.mediatype) {
                 case 'audio':
@@ -398,7 +398,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     break;
                 case 'video':
                     //Safari can not reuse the preview player, so we created a 'review' and now dispose of it
-                    if(ip.controlbar.hasOwnProperty('livepreview')){
+                    if (ip.controlbar.hasOwnProperty('livepreview')) {
                         ip.controlbar.preview.hide();
                         ip.controlbar.preview = ip.controlbar.livepreview;
                         ip.controlbar.preview.show();
@@ -432,7 +432,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                     preview.src = mediaurl;
                     preview.controls = false;
                     preview.volume = ip.previewvolume;
-                    preview.muted=false;
+                    preview.muted = false;
 
                     // Click the stop button if playback ends;
                     $(preview).bind('ended', function () {
@@ -499,7 +499,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             //just use do_stop_audio
         },
         do_stop_screen: function (ip) {
-         //just use do_stop_audio
+            //just use do_stop_audio
         },
         do_pause_audio: function (ip) {
             //if its paused we need to resume it before pausing again.
@@ -522,8 +522,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             var mediaConstraints = {
                 audio: !utils.is_opera() && !utils.is_edge(),
                 video: {
-                    width: {ideal: 640},
-                    height: {ideal: 480}
+                    width: { ideal: 640 },
+                    height: { ideal: 480 }
                 }
             };
 
@@ -534,16 +534,16 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             // check for a user video selected device
             if (ip.uservideodeviceid) {
                 var videodeviceid = ip.uservideodeviceid.valueOf();
-                var videoconstraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined};
-                videoconstraints.width={ideal: 640};
-                videoconstraints.height={ideal: 480};
+                var videoconstraints = { deviceId: videodeviceid ? { exact: videodeviceid } : undefined };
+                videoconstraints.width = { ideal: 640 };
+                videoconstraints.height = { ideal: 480 };
                 videoconstraints.frameRate = { ideal: 30, max: 60 };
                 mediaConstraints.video = videoconstraints;
             }
             // check for a user audio selected device
             if (ip.useraudiodeviceid) {
                 var audiodeviceid = ip.useraudiodeviceid.valueOf();
-                var audioconstraints = {deviceId: audiodeviceid ? {exact: audiodeviceid} : undefined};
+                var audioconstraints = { deviceId: audiodeviceid ? { exact: audiodeviceid } : undefined };
                 mediaConstraints.audio = audioconstraints;
             }
             return mediaConstraints;
@@ -558,19 +558,19 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
             //set aspect ratio
             // we try to get it right here, so we do not have to rely on re-orienting the video later
-            mediaConstraints.video = {aspectRatio: window.innerWidth > window.innerHeight ? 16/9 : 9/16 };
+            mediaConstraints.video = { aspectRatio: window.innerWidth > window.innerHeight ? 16 / 9 : 9 / 16 };
 
             // check for a user video selected device
             if (ip.uservideodeviceid) {
                 var videodeviceid = ip.uservideodeviceid.valueOf();
-                var constraints = {deviceId: videodeviceid ? {exact: videodeviceid} : undefined};
+                var constraints = { deviceId: videodeviceid ? { exact: videodeviceid } : undefined };
 
                 mediaConstraints.video = constraints;
             }
             // check for a user audio selected device
             if (ip.useraudiodeviceid) {
                 var audiodeviceid = ip.useraudiodeviceid.valueOf();
-                var constraints = {deviceId: audiodeviceid ? {exact: audiodeviceid} : undefined};
+                var constraints = { deviceId: audiodeviceid ? { exact: audiodeviceid } : undefined };
                 mediaConstraints.audio = constraints;
             }
             return mediaConstraints;
@@ -595,18 +595,18 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
             // check for a user selected device
             if (ip.useraudiodeviceid) {
                 audioconstraints.deviceID = ip.useraudiodeviceid;
-                customised=true;
+                customised = true;
             }
 
             //if shadowing we want to turn off echo cancellation and noise suppression
-            if(ip.config.shadowing){
+            if (ip.config.shadowing) {
                 audioconstraints.echoCancellation = false;
                 audioconstraints.noiseSuppression = false;
-                customised=true;
+                customised = true;
             }
 
             //if we have not customised the audio constraints, then just set to true
-            if(!customised){
+            if (!customised) {
                 audioconstraints = true;
             }
 
@@ -630,9 +630,9 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
 
                 //There is an occasion where the start recording event fires twice
                 //We hope to stop it here.. 2023-02-26
-                if(ip.mediaRecorder !== null && ip.mediaRecorder.state==='started'){
+                if (ip.mediaRecorder !== null && ip.mediaRecorder.state === 'started') {
                     return;
-                }else{
+                } else {
                     log.debug("register_events_audio - onmediasuccess");
                 }
 
@@ -684,7 +684,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                         callbackObject[4] = ip.config.s3filename;
                         callbackObject[4] = ip.config.s3filename;
 
-                        if (typeof(ip.config.callbackjs) === 'function') {
+                        if (typeof (ip.config.callbackjs) === 'function') {
                             ip.config.callbackjs(callbackObject);
                         } else {
                             uploader.executeFunctionByName(ip.config.callbackjs, window, callbackObject);
@@ -769,7 +769,7 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
                         callbackObject[3] = ip.config.updatecontrol;
                         callbackObject[4] = ip.config.s3filename;
 
-                        if (typeof(ip.config.callbackjs) === 'function') {
+                        if (typeof (ip.config.callbackjs) === 'function') {
                             ip.config.callbackjs(callbackObject);
                         } else {
                             uploader.executeFunctionByName(ip.config.callbackjs, window, callbackObject);
@@ -866,8 +866,8 @@ define(['jquery', 'core/log', 'filter_poodll/utils_amd',
         fetch_strings: function () {
             var ss = [];
             var keys = ['record', 'play', 'pause', 'continue', 'stop', 'save', 'restart', 'testmic',
-                 'upload', 'recordagain', 'readytorecord', 'downloadfile','takesnapshot','cancelsnapshot','pushtospeak',
-                 'settings','audiodevice','videodevice','soundtest','soundtesting','resume'];
+                'upload', 'recordagain', 'readytorecord', 'downloadfile', 'takesnapshot', 'cancelsnapshot', 'pushtospeak',
+                'settings', 'audiodevice', 'videodevice', 'soundtest', 'soundtesting', 'resume'];
             $.each(keys, function (index, key) {
                 ss['recui_' + key] = M.util.get_string('recui_' + key, 'filter_poodll');
                 //log.debug(key + ':' + ss['recui_' + key]);

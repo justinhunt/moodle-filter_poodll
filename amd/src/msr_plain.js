@@ -1,6 +1,6 @@
 /* jshint ignore:start */
 define(['jquery',
-        'core/log', 'filter_poodll/utils_amd'],
+    'core/log', 'filter_poodll/utils_amd'],
     function ($, log, utils) {
 
         "use strict"; // jshint ;_;
@@ -61,13 +61,13 @@ define(['jquery',
                 }
 
                 //lets work out our mime type
-                this.mimeType=false;
+                this.mimeType = false;
                 //if audio
-                if(this.mediaType==='audio') {
+                if (this.mediaType === 'audio') {
                     //if its a mediarecorder and does not support 'isTypeSupported' ..it can only be Safari ..
                     if (!MediaRecorder.isTypeSupported) {
                         this.mimeType = "audio/mp4";
-                    }else {
+                    } else {
                         var audiotypes = ['ogg', 'webm', 'quicktime', 'mp4', 'm4a', 'wav'];
                         for (var i = 0; i < audiotypes.length; i++) {
                             var themimetype = 'audio/' + audiotypes[i];
@@ -87,12 +87,12 @@ define(['jquery',
                         mimeType: this.mimeType
                     };
 
-                //else video
-                }else{
+                    //else video
+                } else {
                     //if its a mediarecorder and does not support 'isTypeSupported' ..it can only be Safari ..
                     if (!MediaRecorder.isTypeSupported) {
                         this.mimeType = "video/mp4";
-                    }else {
+                    } else {
                         var videotypes = ['webm', 'ogv', 'quicktime', 'mp4', 'mpeg'];
                         for (var i = 0; i < videotypes.length; i++) {
                             var themimetype = 'video/' + videotypes[i];
@@ -105,14 +105,33 @@ define(['jquery',
                         if (this.mimeType === false) {
                             this.mimeType = 'video/webm';
                         }
-                    }
+
+                        // In the case of webm video, we had trouble with large vp9 files, so we prefer vp8.
+                        if (this.mimeType === 'video/webm') {
+                            var supportsVP8 = MediaRecorder.isTypeSupported('video/webm;codecs=vp8');
+                            var supportsVP9 = MediaRecorder.isTypeSupported('video/webm;codecs=vp9');
+                            log.debug('Codec Support - VP8: ' + supportsVP8 + ', VP9: ' + supportsVP9);
+
+                            if (supportsVP8 && supportsVP9) {
+                                log.debug("Enforcing VP8 to optimize browser memory usage.");
+
+                                // We couple VP8 with Opus audio, falling back to basic VP8 if needed
+                                if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
+                                    this.mimeType = 'video/webm;codecs=vp8,opus';
+                                } else {
+                                    this.mimeType = 'video/webm;codecs=vp8';
+                                }
+                            } // end of if vp8+vp9
+                        } // end of if webm
+
+                    } //end of if type supported
 
                     var rec_options = {
                         //videoBitsPerSecond : this.videoBitsPerSecond,
                         //audioBitsPerSecond: this.audioBitsPerSecond,
                         mimeType: this.mimeType
                     };
-                }
+                } // End of if video
 
 
                 try {
@@ -140,9 +159,9 @@ define(['jquery',
                     //var blob = new Blob([e.data], {type: that.mimeType});
                     var blob = e.data; //in firefox this leaves hints about the codec
                     that.msr.ondataavailable(blob);
-                 //   log.debug('e.data.size:' + e.data);
-                 //   log.debug('abr:' + that.mediaRecorder.audioBitsPerSecond);
-                 //   log.debug('vbr:' + that.mediaRecorder.videoBitsPerSecond);
+                    //   log.debug('e.data.size:' + e.data);
+                    //   log.debug('abr:' + that.mediaRecorder.audioBitsPerSecond);
+                    //   log.debug('vbr:' + that.mediaRecorder.videoBitsPerSecond);
 
                 };
 
@@ -186,9 +205,7 @@ define(['jquery',
                 } catch (e) {
                     that.mediaRecorder = null;
                 }
-
-//end of start
-            },
+            }, //end of start method
 
             /**
              * This method stops recording MediaStream.
@@ -197,9 +214,9 @@ define(['jquery',
              * @memberof MediaStreamRecorder
              * @example
              * recorder.stop(function(blob) {
-     *     video.src = URL.createObjectURL(blob);
-     * });
-             */
+             *     video.src = URL.createObjectURL(blob);
+             * });
+                    */
             stop: function (callback) {
                 if (!this.mediaRecorder) {
                     return;
