@@ -57,11 +57,11 @@ class adhoc_completed extends \core\event\base {
         $taskjson = json_encode($taskdata);
         $taskvars = json_decode($taskjson, true);
 
+        $taskvars['relateduserid'] = $userid;
         $data = array(
                 'context' => $context,
                 'objectid' => $filerecord->id,
                 'userid' => $userid,
-                'relateduserid' => $userid,
                 'other' => $taskvars
         );
 
@@ -107,5 +107,8 @@ class adhoc_completed extends \core\event\base {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_OTHER;
         $this->data['objecttable'] = 'files';
+        if (isset($this->other['relateduserid'])) {
+            $this->relateduserid = $this->other['relateduserid'];
+        }
     }
 }
