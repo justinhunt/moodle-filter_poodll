@@ -1,5 +1,8 @@
 Change List
 =========
+Version 3.1.93 (Build 2026081600)
+- Added in-plugin free trial set up
+
 Version 3.1.92 (Build 2026042000)
 - altered relateduser usage in events for Moodle 5.2 compatibility
 

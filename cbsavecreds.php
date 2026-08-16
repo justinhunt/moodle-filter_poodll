@@ -15,46 +15,37 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * A Free Trial Jumper
- *
+ * Saves the Cloud Poodll API credentials submitted from the in page credentials panel.
  *
  * @package    filter_poodll
- * @copyright  Justin Hunt (justin@poodll.com)
+ * @copyright  2026 Justin Hunt (poodllsupport@gmail.com)
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
 
+use filter_poodll\cbcredentials;
 use filter_poodll\constants;
+
+$apiuser = required_param('apiuser', PARAM_TEXT);
+$apisecret = required_param('apisecret', PARAM_TEXT);
+$returnurl = optional_param('returnurl', '', PARAM_LOCALURL);
 
 require_login(0, false);
 $systemcontext = context_system::instance();
 $PAGE->set_context($systemcontext);
-$PAGE->set_url(constants::M_URL . '/fetchcbpage.php');
-$PAGE->set_pagelayout('standard');
-$PAGE->set_title(get_string('freetrial', constants::M_COMPONENT));
-$PAGE->set_heading(get_string('freetrial', constants::M_COMPONENT));
+$PAGE->set_url(constants::M_URL . '/cbsavecreds.php');
 
+require_sesskey();
 require_capability('moodle/site:config', $systemcontext);
 
-// The checkout details. These go to JS as JSON, never interpolated into a script by the template,
-// because names and emails can contain quotes.
-$cbdata = [
-    'site' => constants::M_CB_SITE,
-    'priceid' => constants::M_CB_TRIAL_PRICEID,
-    'wwwroot' => $CFG->wwwroot,
-    'firstname' => $USER->firstname,
-    'lastname' => $USER->lastname,
-    'email' => $USER->email,
-    'country' => $USER->country,
-];
-$PAGE->requires->js_call_amd(constants::M_COMPONENT . '/cbfreetrial', 'init', [$cbdata]);
+if (empty($returnurl)) {
+    $returnurl = $CFG->wwwroot . constants::M_PLUGINSETTINGS;
+}
 
-$templatedata = [
-    'wwwroot' => $CFG->wwwroot,
-    'settingsurl' => $CFG->wwwroot . constants::M_PLUGINSETTINGS,
-];
-
-echo $OUTPUT->header();
-echo $OUTPUT->render_from_template(constants::M_COMPONENT . '/fetchcbpage', $templatedata);
-echo $OUTPUT->footer();
+$error = cbcredentials::save($apiuser, $apisecret);
+if (empty($error)) {
+    redirect($returnurl, get_string('cbcredentialssaved', constants::M_COMPONENT), null, \core\output\notification::NOTIFY_SUCCESS);
+} else {
+    redirect($returnurl, $error, null, \core\output\notification::NOTIFY_ERROR);
+}

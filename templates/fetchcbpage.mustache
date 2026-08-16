@@ -1,28 +1,58 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
 
-<h2>{{#str}}freetrial, filter_poodll{{/str}}</h2>
-<div class="filter_poodll_freetrial_desc">
-    {{#str}}freetrial_desc, filter_poodll{{/str}}
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template filter_poodll/fetchcbpage
+
+    Explains the in app free trial and opens the Chargebee checkout on demand. The Chargebee
+    details are passed to filter_poodll/cbfreetrial from PHP, not from this template.
+
+    Example context (json):
+    {
+        "wwwroot": "https://mymoodle.com",
+        "settingsurl": "https://mymoodle.com/admin/settings.php?section=filter_poodll_general"
+    }
+}}
+<div class="filter_poodll_cbfreetrial">
+    <p>{{#str}}freetrial_desc, filter_poodll{{/str}}</p>
+
+    <ol class="filter_poodll_cbfreetrial_steps">
+        <li>{{#str}}cbtrialstep1, filter_poodll{{/str}}</li>
+        <li>{{#str}}cbtrialstep2, filter_poodll{{/str}}</li>
+        <li>{{#str}}cbtrialstep3, filter_poodll{{/str}}</li>
+    </ol>
+
+    <div class="alert alert-info">
+        {{#str}}cbtrialsiteurl, filter_poodll{{/str}}
+        <strong>{{wwwroot}}</strong>
+        <div class="small">{{#str}}cbtrialsiteurl_desc, filter_poodll{{/str}}</div>
+    </div>
+
+    <p>
+        <button type="button" class="btn btn-primary btn-lg" data-action="cbstarttrial">
+            {{#str}}cbgetfreetrial, filter_poodll{{/str}}
+        </button>
+    </p>
+
+    <div class="alert alert-success d-none" data-region="cbaftercheckout">
+        <h4>{{#str}}cbaftercheckout, filter_poodll{{/str}}</h4>
+        <p class="mb-0">{{#str}}cbaftercheckout_desc, filter_poodll{{/str}}</p>
+    </div>
+
+    <p>
+        <a href="{{{settingsurl}}}">{{#str}}cbgotosettings, filter_poodll{{/str}}</a>
+    </p>
 </div>
-{{^element.frozen}}
-    {{#js}}
-        require(['jquery'],function($) {
-            //set up checkout links
-                $.getScript('https://js.chargebee.com/v2/chargebee.js', function(){
-                    var chargebee = Chargebee.init({'site': '{{poodllcbsite}}', isItemsModel: true});
-                    var cart = chargebee.getCart()
-                    var planPriceId = 'Poodll-Free-Trial-USD-Daily';
-                    var planPriceQuantity = 1
-                    var product = chargebee.initializeProduct(planPriceId, planPriceQuantity)
-                    cart.replaceProduct(product);
-                    var customer = {email: "{{email}}", billing_address: {first_name: "{{first_name}}",last_name: "{{last_name}}", country: "{{country}}"}};
-                    cart.setCustomer(customer);
-                    // Passing values for custom fields
-                    product.setCustomData({cf_startsiteurl: "{{{wwwroot}}}"});
-
-                    // Opening the checkout
-                    cart.proceedToCheckout();
-                });
-
-        });
-    {{/js}}
-{{/element.frozen}}

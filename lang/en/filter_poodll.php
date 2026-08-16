@@ -439,6 +439,8 @@ $string['displaysubs'] = '{$a->subscriptionname} : expires {$a->displayexpiredat
 $string['noapiuser'] = "No API username entered.";
 $string['noapisecret'] = "No API secret entered.";
 $string['credentialsinvalid'] = "The API username and secret entered could not be used to get access. Please check them.";
+$string['novalidcredentials'] = 'API user and secret were rejected and could not gain access. Please check them on <a href="{$a}">the settings page.</a> You can get them from <a href="https://poodll.com/member">Poodll.com.</a>';
+$string['nosubscriptions'] = "There is no current subscription for this site/plugin.";
 $string['appauthorised'] = "Poodll filter is authorised for this site.";
 $string['appnotauthorised'] = "Poodll filter is NOT authorised for this site.";
 $string['refreshtoken'] = "Refresh license information";
@@ -495,11 +497,36 @@ $string['ppn_na'] = 'NA';
 $string['no_subscriptions'] = 'No subscriptions.';
 $string['failedfetchsubreport'] = 'Failed to fetch subscription report';
 
-$string['freetrial'] = "Get Cloud Poodll API Credentials and a Free Trial";
-$string['freetrial_desc'] = "A dialog should appear that allows you to register for a free trial with Poodll. After registering you should login to the members dashboard to get your API user and secret. And to register your site URL.";
+$string['freetrial'] = "Get a Poodll free trial";
+$string['freetrial_desc'] = "The Poodll filter is a premium Moodle plugin. A free trial can be set up in a couple of minutes without leaving your Moodle site. For details on pricing visit <a href='https://poodll.com/pricing'>Poodll.com</a>. ";
 $string['memberdashboard'] = "Member Dashboard";
 $string['memberdashboard_desc'] = "";
 $string['fillcredentials'] = "Set API user and secret with existing credentials";
+
+// In-app management of the Poodll API credentials (see classes/cbcredentials.php).
+// This filter calls its settings cpapiuser/cpapisecret; the shared credentials panel labels its
+// fields with the apiuser/apisecret names every other Poodll plugin uses, so define those too.
+$string['apiuser'] = 'Poodll API Username';
+$string['apisecret'] = 'Poodll API Secret';
+$string['cbsetupheading'] = "Set up your Poodll API credentials";
+$string['cbsetupintro'] = "The Poodll filter cannot run until the Poodll API user and secret have been set for this site. They are site wide settings, so you only need to do this once.";
+$string['cbsetupfound'] = "Another Poodll plugin on this site already has credentials. You can copy them across with the button below, then save them.";
+$string['cbsetupnotfound'] = "No Poodll credentials were found anywhere on this site. If you do not have them yet you can take a free trial, and your API user and secret will be emailed to you.";
+$string['cbsavecredentials'] = "Save credentials";
+$string['cbgotosettings'] = "Go to the Poodll filter settings page";
+$string['cbcredentialssaved'] = "Your Poodll API credentials were saved and accepted.";
+$string['cbnocredentialsset'] = "The Poodll filter cannot run yet because the Poodll API user and secret have not been set for this site.";
+$string['cbaskadmin'] = "Please ask your site administrator to set up the Poodll API credentials for this site.";
+$string['nocredentialsentered'] = "No API user and secret were entered.";
+$string['cbgetfreetrial'] = "Get free trial";
+$string['cbtrialstep1'] = "Click the \"Get free trial\" button below and fill in the Poodll checkout form. There is nothing to pay and no credit card is required.";
+$string['cbtrialstep2'] = "Check your email. Your Poodll API user and secret will arrive there a moment after you register.";
+$string['cbtrialstep3'] = "Return to the tab you came from, paste the API user and secret into the form there, and save.";
+$string['cbtrialsiteurl'] = "Your subscription will be registered for the site URL:";
+$string['cbtrialsiteurl_desc'] = "If that is not the address your users visit this Moodle site on, register the correct URL in the members dashboard at member.poodll.com after signing up.";
+$string['cbaftercheckout'] = "Almost done: check your email";
+$string['cbaftercheckout_desc'] = "Your Poodll API user and secret are on their way by email. When they arrive, return to the tab you came from, paste them into the credentials form and save.";
+$string['cbtrialfailed'] = "The Poodll signup form could not be loaded. Please check your internet connection and try again, or sign up at member.poodll.com instead.";
 $string['maxmonth'] = "Highest Month";
 
 // Audio and Video Player Strings

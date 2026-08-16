@@ -571,7 +571,7 @@ gQIDAQAB
                 //In the case of a connection fail, we are better to continue using old token
                 if(!$tokenobject){
                     $tokenobject = false;
-                    $debuginfo['messages'][]="curl failure 1: " . $this->curl->errorno . " " . $this->curl->error;
+                    $debuginfo['messages'][]="curl failure 1: " . $this->curl->errno . " " . $this->curl->error;
                 }
 
                 if ($tokenobject) {
@@ -590,7 +590,7 @@ gQIDAQAB
             //we used set tokenobject to false here, but in the case of a connection fail, we are better to continue using old token
             //so if its truthy, it's likely an old token, and we will just use it. Otherwise we make sure its false and not null
             if(!$tokenobject){ $tokenobject = false;}
-            $debuginfo['messages'][]="curl failure 2: " . $this->curl->errorno . " " . $this->curl->error;
+            $debuginfo['messages'][]="curl failure 2: " . $this->curl->errno . " " . $this->curl->error;
         }
         $debuginfo['finaltokenobject']=$tokenobject;
         if($force){

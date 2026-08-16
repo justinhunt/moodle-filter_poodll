@@ -1,0 +1,54 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template filter_poodll/cbmanagecreds
+
+    Buttons for getting hold of Cloud Poodll API credentials. If credentials were found elsewhere
+    on this site we offer to copy them into the fields identified by apiuserselector/apisecretselector.
+    If they were not, we offer the in app free trial.
+
+    Example context (json):
+    {
+        "foundcreds": true,
+        "apiuser": "poodlluser",
+        "apisecret": "abc123",
+        "apiuserselector": "#id_s_filter_poodll_apiuser",
+        "apisecretselector": "#id_s_filter_poodll_apisecret",
+        "fetchcbpageurl": "https://mymoodle.com/filter/poodll/fetchcbpage.php"
+    }
+}}
+<div class="filter_poodll_cbcredsmanager" data-region="cbcredsmanager">
+    {{#foundcreds}}
+        <button type="button" class="btn btn-secondary" data-action="cbpokecreds"
+                data-apiuser="{{apiuser}}"
+                data-apisecret="{{apisecret}}"
+                data-apiuserselector="{{apiuserselector}}"
+                data-apisecretselector="{{apisecretselector}}">
+            {{#str}}fillcredentials, filter_poodll{{/str}}
+        </button>
+    {{/foundcreds}}
+    {{^foundcreds}}
+        <a class="btn btn-primary" href="{{{fetchcbpageurl}}}" target="_blank" rel="noopener">
+            {{#str}}freetrial, filter_poodll{{/str}} [&#x2197;]
+        </a>
+    {{/foundcreds}}
+</div>
+{{#js}}
+    require(['filter_poodll/cbcredentials'], function(cbcredentials) {
+        cbcredentials.init();
+    });
+{{/js}}
