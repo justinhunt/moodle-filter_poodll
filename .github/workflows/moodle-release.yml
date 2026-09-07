@@ -1,0 +1,14 @@
+name: Release Plugin version to Moodle Marketplace
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release-to-marketplace:
+    uses: moodlehq/moodle-plugin-release/.github/workflows/moodle-release.yml@main
+    with:
+      tag: ${{ github.ref_name }}
+    secrets:
+      MOODLE_MARKETPLACE_TOKEN: ${{ secrets.MOODLE_MARKETPLACE_TOKEN }}
