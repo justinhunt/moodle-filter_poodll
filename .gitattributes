@@ -1,0 +1,13 @@
+# Keep development files out of release ZIPs (git archive semantics). Both the CAMP registry and
+# the Moodle Marketplace workflow build the release from `git archive` at the tag.
+.github export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+.camp export-ignore
+tests export-ignore
+node_modules export-ignore
+
+# Build inputs and tooling. The built outputs (amd/build, styles.css) ship.
+scss export-ignore
+package.json export-ignore
+package-lock.json export-ignore

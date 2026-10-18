@@ -1,0 +1,21 @@
+# camp listing manifest — the descriptive content for this plugin's page on
+# camp-registry.org. Edit and commit as normal; camp ingests and hash-pins it
+# at each tagged release. Schema: https://camp-registry.org/schema/listing.schema.json
+name: PoodLL Filter
+summary: Audio and video recorders, players and multimedia widgets for Moodle, used by the PoodLL plugin family.
+description: |
+  The PoodLL filter adds audio, video and whiteboard recorders and media players to Moodle. Other
+  PoodLL plugins use it to show their recorders, and teachers can add PoodLL widgets to any text
+  with filter tags.
+
+  **Requires a Cloud Poodll account.** Recording, transcription and playback run through the Cloud
+  Poodll service, so the plugin needs an API user and secret from https://poodll.com to function.
+labels:
+  - paid-service
+  - external-account
+  - commercial-support-available
+category: filter
+links:
+  docs: https://support.poodll.com
+  issues: https://github.com/justinhunt/moodle-filter_poodll/issues
+  changelog: https://github.com/justinhunt/moodle-filter_poodll/blob/poodll3/CHANGES.txt
