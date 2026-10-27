@@ -35,6 +35,7 @@ if($CFG->version<2023042400) {
 class taskrunner {
     protected $task_records = array();
     protected $taskstart = 0;
+    protected $timestart = 0;
 
     /**
      * Constructor
