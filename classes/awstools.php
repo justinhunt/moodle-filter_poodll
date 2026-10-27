@@ -543,7 +543,7 @@ class awstools {
             $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
             $theurl = (string) $request->getUri();
         } catch (\Exception $e) {
-            print_error($e->getMessage());
+            throw new \moodle_exception($e->getMessage());
             $theurl = $e->getMessage();
         }
         return $theurl;
@@ -578,7 +578,7 @@ class awstools {
             $options['MultipartUpload'] =["Parts"=>$partsModel["Parts"]];
             $s3client->completeMultipartUpload($options);
         } catch (\Exception $e) {
-            print_error($e->getMessage());
+            throw new \moodle_exception($e->getMessage());
             $ret->success=false;
             $ret->payload= $e->getMessage();
         }
@@ -618,7 +618,7 @@ class awstools {
         try {
             $ret->payload= $s3client->createMultipartUpload($options);
         } catch (\Exception $e) {
-            print_error($e->getMessage());
+            throw new \moodle_exception($e->getMessage());
             $ret->success=false;
             $ret->payload= $e->getMessage();
         }
@@ -653,7 +653,7 @@ class awstools {
            $request = $s3client->createPresignedRequest($cmd, '+' . $minutes . ' minutes');
            $theurl = (string) $request->getUri();
         } catch (\Exception $e) {
-            print_error($e->getMessage());
+            throw new \moodle_exception($e->getMessage());
             $theurl = $e->getMessage();
         }
         return $theurl;
